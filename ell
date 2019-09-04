@@ -1,0 +1,30 @@
+# usage: sh ell
+
+pathadd() {
+      if  [[ ":$PATH:" != *":$1:"* ]]; then
+          export PATH="${PATH:+"$PATH:"}$1"
+      fi
+}
+pathadd /usr/local/bin
+
+AFTER=true
+for c in python3 wget git tmux vim bash gawk; do
+   if [ -z "$(which $c)" ]; then 
+     AFTER=exit
+     echo "#E> missing: $c"
+    fi
+done
+$AFTER
+
+export Ell=$(git rev-parse --show-toplevel)
+From=https://raw.githubusercontent.com/timm/fun/master/etc
+
+mkdir -p etc
+for f in .bashrc .vimrc .tmuxrc; do
+  if [ ! -f "$Ell/etc/$f" ]; then
+     wget -O "$Ell/etc/$f" $From/$f
+     git add "$Ell/etc/$f"
+  fi
+done
+
+bash --init-file $Ell/etc/.bashrc  -i
