@@ -35,41 +35,57 @@ After all that,  `AbcdReport` would print:
 
 require "lib"
 
-Abcd={}
+local Abcd={}
 
-function Abcd.new(rx,data) return { 
-        known={}, a={}, b={}, c={}, d={}, yes=0, no=0,
-        data = data and data or 'data',
-        rx   = rx   and rx   or 'rx'}
+function Abcd:new(rx,data, x) 
+  x=Object(self)
+  x.known = {}
+  x.a={} 
+  x.b={}
+  x.c={}
+  x.d={}
+  x.yes=0
+  x.no=0
+  x.data = data and data or 'data'
+  x.rx   = rx   and rx   or 'rx'
+  return x
 end
 
-function Abcd.add(i,want,got) 
-  if inc(i.known, want) == 1 then i.a[want] = i.yes + i.no end
-  if inc(i.known, got)  == 1 then i.a[got]  = i.yes + i.no end
-  if want == got then i.yes = i.yes+1 else i.no = i.no + 1 end
-  for x,_ in pairs( i.known ) do 
+function Abcd:exists(x) 
+  self.a[x] = self.yes + self.no
+  self.b[x] = 0
+  self.c[x] = 0
+  self.d[x] = 0
+end
+
+function Abcd:add(want,got) 
+  if inc(self.known, want) == 1 then Abcd.exists(i,want) end
+  if inc(self.known, got)  == 1 then Abcd.exists(i,got)  end
+  if want==got then self.yes=self.yes+1 else self.no=self.no+1 end
+  for x,_ in pairs( self.known ) do 
     if   want == x
-    then inc(want == got and i.d or i.b, x)
-    else inc(got  == x   and i.c or i.a, x)
+    then inc(want == got and self.d or self.b, x)
+    else inc(got  == x   and self.c or self.a, x)
     end
   end
 end
 
-function Abcd.report(i,   p,out,a,b,c,d)
+function Abcd:show(   p,out,a,b,c,d,pd,pf,pn,f,acc,g,prec)
   p = function (z) return math.floor(100*z + 0.5) end
   out= {}
-  for x,_ in pairs( i.known ) do
+  for x,_ in pairs( self.known ) do
     pd,pf,pn,prec,g,f,acc = 0,0,0,0,0,0,0
-    a = i.a[x]; b = i.b[x]; c = i.c[x]; d = i.d[x];
-    if b+d > 0          then pd   = d     / (b+d) end
-    if a+c > 0          then pf   = c     / (a+c) end
-    if a+c > 0          then pn   = (b+d) / (a+c) end
-    if c+d > 0          then prec = d     / (c+d) end
-    if 1-pf+pd > 0      then g=2*(1-pf) * pd / (1-pf+pd) end 
-    if prec+pd > 0      then f=2*prec*pd / (prec + pd) end
-    if i.yes + i.no > 0 then acc= i.yes / (i.yes + i.no) end
-    out[x] = { data=i.data, rx=i.rx, num = i.yes+i.no,
-               a=a, b=b,c=c,d=d, 
+    a= self.a[x]; b= self.b[x]; c= self.c[x]; d= self.d[x];
+    if b+d > 0     then pd   = d     / (b+d)        end
+    if a+c > 0     then pf   = c     / (a+c)        end
+    if a+c > 0     then pn   = (b+d) / (a+c)        end
+    if c+d > 0     then prec = d     / (c+d)        end
+    if 1-pf+pd > 0 then g=2*(1-pf) * pd / (1-pf+pd) end 
+    if prec+pd > 0 then f=2*prec*pd / (prec + pd)   end
+    if self.yes + self.no > 0 then 
+       acc= self.yes / (self.yes + self.no) end
+    out[x] = { data=self.data, rx=self.rx, 
+               num = self.yes+self.no, a=a, b=b,c=c,d=d, 
                acc=p(acc), prec=p(prec), pd=p(pd), pf=p(pf), 
                f=p(f), g=p(g), class=x}
   end

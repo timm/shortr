@@ -1,6 +1,14 @@
 #!/usr/bin/env lua
 -- vim: ts=2 sw=2 sts=2  et :
 
+--[[
+
+# Never seen it brighter 
+
+aaaj how about those 
+
+--]]
+
 require "the"
 
 function inc(a,i,    new) 
@@ -19,20 +27,6 @@ function ordered(t)
       return tmp[i], t[tmp[i]] end end 
 end
 
-function show(a) 
-  local function go(x,str,sep,seen)  
-    if type(x) ~= "table" then return tostring(x) end
-    if seen[x] then return "..." end
-    seen[x] = true
-    for k,v in ordered(x) do
-      str = str .. sep .. k .. ": " .. go(v,"{","",seen)
-      sep = ", " 
-    end 
-    return str .. '}'
-  end 
-  print( go(a,"{","",{}) )
-end  
-
 function rogues(    ignore,match)
   ignore = {
     jit=true, utf8=true,math=true, package=true, table=true, 
@@ -46,19 +40,71 @@ function rogues(    ignore,match)
   end end end 
 end 
 
-floor=math.florr
-function ok(t,  n,score,s)
-  local function s(t1) 
-     return floor(0.5 + 100*(1-((t1.y-t1.n) / t1.y))) end
+floor=math.floor
+function ok(t,     n,score,s,my)
+  my=THE.sys.ok
+  local function s(t1)
+     return floor(0.5 + 100*(1-(
+             (my.tries - my.fails) / my.tries))) end
   for x,f in pairs(t) do
-    THE.sys.test.y = THE.sys.test.n + 1
-    print("-- Test #" .. THE.sys.test.y .. 
-          " (oops=".. s(THE.sys.test) .."%). Checking ".. x .."... ")
+    my.tries = my.tries + 1
+    print("-- Test #" .. my.tries .. 
+          " (oops=".. s() .."%). Checking ".. x .." ... ")
     local passed,err = pcall(f)
     if not passed then
-      The.ok.fails = The.ok.fails + 1
-      print("-- E> Failure " .. The.ok.fails .. " of " 
-            .. The.ok.tries ..": ".. err) end end
+      my.fails = my.fails + 1
+      print("-- E> Failure " .. my.fails .. " of " 
+            .. my.tries ..": ".. err) end end
   rogues()
 end
+
+do
+  local ids=0
+  local function id()
+    ids = ids + 1
+    return n
+  end
+end
+
+Object={}
+function Object:new(o)
+  o = o or {}   -- create object if user does not provide one
+  setmetatable(o, self)
+  self.id  = self.id or  id()
+  self.__index = self
+  return o
+end
+
+--[[
+
+## System stuff
+
+Refine `require` (so it makes globals when appropriate) and `tostring`
+(so it can print tables).
+
+--]]
+
+_require = require
+function require(x,    new) 
+  new = _require(x)
+  if type(new)=="table" then
+    if new[x] then
+      _ENV[x] = new[x] end end
+  return new
+end
+
+_tostring=tostring
+function tostring(a) 
+  local function go(x,str,sep,seen)  
+    if type(x) ~= "table" then return _tostring(x) end
+    if seen[x] then return "..." end
+    seen[x] = true
+    for k,v in ordered(x) do
+      str = str .. sep .. k .. ": " .. go(v,"{","",seen)
+      sep = ", " 
+    end 
+    return str .. '}'
+  end 
+  return go(a,"{","",{}) 
+end  
 
