@@ -2,7 +2,7 @@
 -- vim: ts=2 sw=2 sts=2  et :
 
 require "lib"
-require "Abcd"
+local Abcd= require "Abcd"
 
 ok{go=function( a,y,n,m)
   a= Abcd:new()

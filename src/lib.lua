@@ -60,20 +60,30 @@ end
 
 do
   local ids=0
-  local function id()
-    ids = ids + 1
-    return n
-  end
+  function id() ids = ids + 1; return ids end
+end
+Thing={}
+
+function Thing:new (o)
+	o = deepCopy(o) or {}   -- create object if user does not provide one
+	setmetatable(o, self)
+	self.__index = self
+  o.id = id()
+	return o
 end
 
-Object={}
-function Object:new(o)
-  o = o or {}   -- create object if user does not provide one
-  setmetatable(o, self)
-  self.id  = self.id or  id()
-  self.__index = self
-  return o
+
+function copy(t,f, out)
+  out={}
+  f = f and f or function(z) return z end
+  if t then for i,v in pairs(t) do out[i] = f(v) end end
+  return out
 end
+
+function deepCopy(t)  
+  return type(t) ~= 'table' and t or copy(t,deepCopy)
+end
+
 
 --[[
 
@@ -83,15 +93,6 @@ Refine `require` (so it makes globals when appropriate) and `tostring`
 (so it can print tables).
 
 --]]
-
-_require = require
-function require(x,    new) 
-  new = _require(x)
-  if type(new)=="table" then
-    if new[x] then
-      _ENV[x] = new[x] end end
-  return new
-end
 
 _tostring=tostring
 function tostring(a) 
@@ -107,4 +108,5 @@ function tostring(a)
   end 
   return go(a,"{","",{}) 
 end  
+
 

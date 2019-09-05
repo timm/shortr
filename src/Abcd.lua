@@ -35,19 +35,13 @@ After all that,  `AbcdReport` would print:
 
 require "lib"
 
-local Abcd={}
+Abcd={}
 
-function Abcd:new(rx,data, x) 
-  x=Object(self)
-  x.known = {}
-  x.a={} 
-  x.b={}
-  x.c={}
-  x.d={}
-  x.yes=0
-  x.no=0
+function Abcd00new(rx,data,  x) 
+  x = Thing.new(self)
+  x.known={}; x.a={}; x.b={}; x.c={}; x.d={}; x.yes=0; x.no=0
   x.data = data and data or 'data'
-  x.rx   = rx   and rx   or 'rx'
+  self.rx = rx and rx  or 'rx'
   return x
 end
 
@@ -59,8 +53,8 @@ function Abcd:exists(x)
 end
 
 function Abcd:add(want,got) 
-  if inc(self.known, want) == 1 then Abcd.exists(i,want) end
-  if inc(self.known, got)  == 1 then Abcd.exists(i,got)  end
+  if inc(self.known, want) == 1 then self:exists(i,want) end
+  if inc(self.known, got)  == 1 then self:exists(i,got)  end
   if want==got then self.yes=self.yes+1 else self.no=self.no+1 end
   for x,_ in pairs( self.known ) do 
     if   want == x
@@ -92,4 +86,4 @@ function Abcd:show(   p,out,a,b,c,d,pd,pf,pn,f,acc,g,prec)
   return out
 end
 
-return {Abcd=Abcd}
+return Abcd
