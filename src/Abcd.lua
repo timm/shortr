@@ -37,12 +37,13 @@ require "lib"
 
 Abcd={}
 
-function Abcd00new(rx,data,  x) 
-  x = Thing.new(self)
-  x.known={}; x.a={}; x.b={}; x.c={}; x.d={}; x.yes=0; x.no=0
-  x.data = data and data or 'data'
+function Abcd:new(rx,data) 
+  self = self or {}
+  setmetatable(self,{__index=Abcd})
+  self.known={}; self.a={}; self.b={}; self.c={}; self.d={}; self.yes=0; self.no=0
+  self.data = data and data or 'data'
   self.rx = rx and rx  or 'rx'
-  return x
+  return self
 end
 
 function Abcd:exists(x) 
@@ -64,6 +65,12 @@ function Abcd:add(want,got)
   end
 end
 
+x=Abcd:new("ferd")
+y=Abcd:new("ferd")
+y.b[120]=23
+x:exist("carrots")
+print(x)
+print(y)
 function Abcd:show(   p,out,a,b,c,d,pd,pf,pn,f,acc,g,prec)
   p = function (z) return math.floor(100*z + 0.5) end
   out= {}
