@@ -1,9 +1,14 @@
 
 require "obj"
 
-SpecialAccount = Account:new()
+SpecialAccount = Account:new() --{} --Account:new()
 
-s = SpecialAccount:new{limit=1000.00}
+function SpecialAccount:new(limit,balance)
+  local x= Account.new(balance)
+  x.limit=limit
+  return x
+end
+s = SpecialAccount:new(1000.00)
 s:deposit(100.00)
 
 function SpecialAccount:withdraw (v)
@@ -17,5 +22,7 @@ function SpecialAccount:getLimit ()
 	return self.limit or 0
 end
 
-s:withdraw(10)
-print(s)
+--s:withdraw(10)
+--print(s)
+
+

@@ -65,18 +65,17 @@ end
 Thing={}
 
 function Thing:new (o)
-	o = deepCopy(o) or {}   -- create object if user does not provide one
+	o = o or {}   -- create object if user does not provide one
 	setmetatable(o, self)
 	self.__index = self
   o.id = id()
-	return o
+  return o
 end
-
 
 function copy(t,f, out)
   out={}
-  f = f and f or function(z) return z end
-  if t then for i,v in pairs(t) do out[i] = f(v) end end
+  f =  f and f or function(z) return z end
+  if t then for i,v in pairs(t) do out[i] = f(v) end  end
   return out
 end
 
