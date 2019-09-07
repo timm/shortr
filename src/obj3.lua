@@ -54,7 +54,7 @@ function Animal.new(o)
 end
 
 local cat1 = Animal.new{name="one",sound="loud",bday={}}
-local cat2 = Animal.new{name="two",sound="loud",bday={}}
+local cat2 = Animal.new{name="two",bday={}}
 local god=Animal.new{name="god"}
 
 
