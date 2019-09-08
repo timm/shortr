@@ -1,10 +1,10 @@
 #!/usr/bin/env lua
 -- vim: ts=2 sw=2 sts=2  et :
 
-local Abcd = require("Abcd")
+require "Abcd"
 
 ok{go=function( a,y,n,m)
-  a= Abcd:new()
+  a= Abcd.new{data="kk"}
   y="yes"
   n="no"
   m="maybe"

@@ -83,5 +83,3 @@ function Abcd:report(   p,out,a,b,c,d,pd,pf,pn,f,acc,g,prec)
   end
   return out
 end
-
-return Abcd
