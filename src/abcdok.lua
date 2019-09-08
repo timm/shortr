@@ -1,8 +1,7 @@
 #!/usr/bin/env lua
 -- vim: ts=2 sw=2 sts=2  et :
 
-require "lib"
-local Abcd= require "Abcd"
+local Abcd = require("Abcd")
 
 ok{go=function( a,y,n,m)
   a= Abcd:new()
@@ -13,5 +12,6 @@ ok{go=function( a,y,n,m)
   for i = 1,2 do a:add(n,n) end
   for i = 1,5 do a:add(m,m) end
   a:add(m,n) 
-  print(a:show(a)[n])
+  for x,v in pairs(a:report()) do
+    print(x,v) end
 end}

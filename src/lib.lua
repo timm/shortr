@@ -60,16 +60,16 @@ end
 
 do
   local ids=0
-  function id() ids = ids + 1; return ids end
-end
-Thing={}
-
-function Thing:new (o)
-	o = o or {}   -- create object if user does not provide one
-	setmetatable(o, self)
-	self.__index = self
-  o.id = id()
-  return o
+  local function identity(o)
+    ids = ids + 1
+    o._id = ids
+    return o
+  end
+  function ako(o,c,  g)
+    g = _G[c]
+    g.__name = c
+    return identity( setmetatable(o ,{__index=g}))
+  end
 end
 
 function copy(t,f, out)
@@ -83,6 +83,31 @@ function deepCopy(t)
   return type(t) ~= 'table' and t or copy(t,deepCopy)
 end
 
+function cols(t,     numfmt, sfmt,noline,w,txt,sep)
+  w={}
+  for i,_ in pairs(t[1]) do w[i] = 0 end
+  for i,line in pairs(t) do
+    for j,cell in pairs(line) do
+      if type(cell)=="number" and numfmt then
+        cell    = string.format(numfmt,cell)
+        t[i][j] = cell end
+      w[j] = max( w[j], #tostring(cell) ) end end
+  for n,line in pairs(t) do
+    txt,sep="",""
+    for j,cell in pairs(line) do
+      sfmt = "%" .. (w[j]+1) .. "s"
+      txt = txt .. sep .. string.format(sfmt,cell)
+      sep = ","
+    end
+    print(txt)
+    if (n==1 and not noline) then
+      sep="#"
+      for _,w1 in pairs(w) do
+        io.write(sep .. string.rep("-",w1)  )
+        sep=", " end
+      print("") end end
+end
+
 
 --[[
 
@@ -94,18 +119,22 @@ Refine `require` (so it makes globals when appropriate) and `tostring`
 --]]
 
 _tostring=tostring
-function tostring(a) 
+function tostring(a,   prefix,t) 
   local function go(x,str,sep,seen)  
     if type(x) ~= "table" then return _tostring(x) end
     if seen[x] then return "..." end
     seen[x] = true
     for k,v in ordered(x) do
-      str = str .. sep .. k .. ": " .. go(v,"{","",seen)
-      sep = ", " 
-    end 
+      if not (type(k) == "string" and string.sub(k, 1, 1) == "_") then
+        str = str .. sep .. k .. ": " .. go(v,"{","",seen)
+        sep = ", " end end
     return str .. '}'
   end 
-  return go(a,"{","",{}) 
+  prefix="{"
+  if type(a)=="table" then
+    t = getmetatable(a) 
+    if t and t.__index and t.__index.__name then
+      prefix = t.__index.__name .. "{" end  end
+  return go(a,prefix,"",{}) 
 end  
-
 

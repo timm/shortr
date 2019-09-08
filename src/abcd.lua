@@ -5,8 +5,6 @@
 
 ## Compute classifier  performance measures
 
-@include "funny"
-
 To use this code:
 
 1. Create an `Abcd` object.
@@ -37,13 +35,12 @@ require "lib"
 
 Abcd={}
 
-function Abcd:new(rx,data) 
-  self = self or {}
-  setmetatable(self,{__index=Abcd})
-  self.known={}; self.a={}; self.b={}; self.c={}; self.d={}; self.yes=0; self.no=0
-  self.data = data and data or 'data'
-  self.rx = rx and rx  or 'rx'
-  return self
+function Abcd.new(o)
+  o.data = o.data or "data"
+  o.rx   = o.rx   or "rx"
+  o.known, o.a, o.b, o.c, o.d = {}, {}, {}, {}, {}
+  o.yes, o.no = 0, 0
+  return ako(o,"Abcd")
 end
 
 function Abcd:exists(x) 
@@ -54,8 +51,8 @@ function Abcd:exists(x)
 end
 
 function Abcd:add(want,got) 
-  if inc(self.known, want) == 1 then self:exists(i,want) end
-  if inc(self.known, got)  == 1 then self:exists(i,got)  end
+  if inc(self.known, want) == 1 then self:exists(want) end
+  if inc(self.known, got)  == 1 then self:exists(got)  end
   if want==got then self.yes=self.yes+1 else self.no=self.no+1 end
   for x,_ in pairs( self.known ) do 
     if   want == x
@@ -65,13 +62,7 @@ function Abcd:add(want,got)
   end
 end
 
-x=Abcd:new("ferd")
-y=Abcd:new("ferd")
-y.b[120]=23
-x:exist("carrots")
-print(x)
-print(y)
-function Abcd:show(   p,out,a,b,c,d,pd,pf,pn,f,acc,g,prec)
+function Abcd:report(   p,out,a,b,c,d,pd,pf,pn,f,acc,g,prec)
   p = function (z) return math.floor(100*z + 0.5) end
   out= {}
   for x,_ in pairs( self.known ) do
