@@ -33,14 +33,14 @@ After all that,  `AbcdReport` would print:
 
 require "lib"
 
-Abcd={}
+local Abcd={ako="Abcd"}
 
 function Abcd.new(o)
   o.data = o.data or "data"
   o.rx   = o.rx   or "rx"
   o.known, o.a, o.b, o.c, o.d = {}, {}, {}, {}, {}
   o.yes, o.no = 0, 0
-  return ako(o,"Abcd")
+  return isa(o,Abcd)
 end
 
 function Abcd:exists(x) 
@@ -83,3 +83,5 @@ function Abcd:report(   p,out,a,b,c,d,pd,pf,pn,f,acc,g,prec)
   end
   return out
 end
+
+return Abcd

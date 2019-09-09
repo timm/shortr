@@ -1,10 +1,11 @@
 require "lib"
 
-Animal = {}
+local Animal= {ako="Animal"}
+
 function Animal.new(o)
   o.name  = o.name  or "name"
   o.sound = o.sound or "sound"
-  return ako(o,"Animal")
+  return isa(o,Animal)
 end
 
 local cat1 = Animal.new{name="one",sound="loud",bday={}}
@@ -12,7 +13,6 @@ local cat2 = Animal.new{name="two",bday={}}
 local god=Animal.new{name="god"}
 
 
-getmetatable(cat1).__index.__name ="Bambi"
 
 print("cat1",getmetatable(cat1).__index.__name)
 print("cat2",getmetatable(cat2).__index.__name)

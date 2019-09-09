@@ -65,10 +65,8 @@ do
     o._id = ids
     return o
   end
-  function ako(o,c,  g)
-    g = _G[c]
-    g.__name = c
-    return identity( setmetatable(o ,{__index=g}))
+  function isa(o,c)
+    return identity( setmetatable(o ,{__index=c}))
   end
 end
 
@@ -133,8 +131,8 @@ function tostring(a,   prefix,t)
   prefix="{"
   if type(a)=="table" then
     t = getmetatable(a) 
-    if t and t.__index and t.__index.__name then
-      prefix = t.__index.__name .. "{" end  end
+    if t and t.__index and t.__index.ako then
+      prefix = t.__index.ako .. "{" end  end
   return go(a,prefix,"",{}) 
 end  
 
