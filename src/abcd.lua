@@ -44,16 +44,21 @@ function Abcd.new(o)
 end
 
 function Abcd:exists(x) 
-  self.a[x] = self.yes + self.no
-  self.b[x] = 0
-  self.c[x] = 0
-  self.d[x] = 0
+  if inc(self.known,x) == 1 then 
+    self.a[x] = self.yes + self.no
+    self.b[x] = 0
+    self.c[x] = 0
+    self.d[x] = 0
+  end
 end
 
 function Abcd:add(want,got) 
-  if inc(self.known, want) == 1 then self:exists(want) end
-  if inc(self.known, got)  == 1 then self:exists(got)  end
-  if want==got then self.yes=self.yes+1 else self.no=self.no+1 end
+  self:exists(want) 
+  self:exists(got)  
+  if   want==got 
+  then self.yes= self.yes + 1 
+  else self.no = self.no  + 1 
+  end
   for x,_ in pairs( self.known ) do 
     if   want == x
     then inc(want == got and self.d or self.b, x)
