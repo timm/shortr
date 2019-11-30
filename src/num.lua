@@ -1,6 +1,7 @@
---vim: ts=2 sw=2 sts=2 expandtab:cindent:
+-- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- --------- 
 
+function aa()
 local Column = require("column")
 local Num   = {is="Num"}
 

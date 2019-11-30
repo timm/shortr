@@ -1,4 +1,4 @@
---vim: ts=2 sw=2 sts=2 expandtab:cindent:
+-- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- --------- 
  
 require "lib"
@@ -29,11 +29,11 @@ return function (a)
       local now, after = x(a, j), x(a, j+1)
       if now ~= after then 
         if after - a[1] > epsilon then
-	  if a[#a] - now > epsilon then
-	    if math.abs( mid(a,lo,j) - mid(a,j,hi) ) > epsilon then
-	      local new = xpect(a,lo,j,hi)
-	      if new * THE.trivial < best then
-	        best,cut = new,j end end end end end  end
+          if a[#a] - now > epsilon then
+            if math.abs( mid(a,lo,j) - mid(a,j,hi) ) > epsilon then
+              local new = xpect(a,lo,j,hi)
+              if new * THE.trivial < best then
+                 best,cut = new,j end end end end end  end
     return cut  
   end
   local function recurse(lo,hi)
