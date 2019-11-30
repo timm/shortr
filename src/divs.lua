@@ -1,4 +1,5 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
+--------- --------- --------- --------- --------- --------- 
 -- [home](index.html) :: [about](about.html) :: [github](http://github.com/timm/lua) :: [discuss](http://github.com/timm/lua/issues) :: [&copy; 2020](https://github.com/timm/lua/blob/master/LICENSE.md) by [timm](http://menzies.us)
 
 
@@ -53,7 +54,7 @@ return function(a)
       if now ~= after then 
         if after - a[1] > epsilon then
           if a[#a] - now > epsilon then
-            if math.abs( mid(a,lo,j) - mid(a,j,hi) ) > epsilon then
+            if math.abs( mid(a,lo,j) - mid(a,j+1,hi) ) > epsilon then
               local new = xpect(a,lo,j,hi)
               if new * THE.trivial < best then
                  best,cut = new,j end end end end end  end
