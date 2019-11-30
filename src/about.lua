@@ -4,7 +4,8 @@
 
 -- ## No Globals, all modules
 
--- All files are modules that usually start with `local X={}` and end with `return X`.
+-- All files are modules that usually starts with `local X={}` and ends 
+-- with `return X`.
 --
 -- Whenever my tests are run (see below),
 -- the `rogues` function from [ok.lua](ok.html)
@@ -12,9 +13,9 @@
 
 -- ## Optional Config
 --
--- The file [the.lua](the.html) contains defaults that code can include using:
---
---      local THE=require("the")
+-- The file [the.lua](the.html) contains defaults that code can include using    
+-- 
+-- `local THE=require("the")`.
 
 -- ---------------------
 -- ## Test-Driven Development
@@ -36,11 +37,10 @@ ok{ok = function() assert(1==1,"not equal") end}
 o{aa=1, bb=2, cc={dd=22, ee=30, ff={10}}}
 
 
--- My `ok` test engine (shown at right, defined in [ok.lua](ok.html)):
---
--- - Accepts pairs `testName=function`,
--- -  Prints `testName`;
--- - and runs the `function`.
+-- My `ok` test engine (shown at right, defined in [ok.lua](ok.html))
+-- accepts pairs `testName=function`, then
+-- prints `testName`; then
+-- runs the `function`.
 --
 -- If `function`
 -- crashes, `ok` will just print the stack trace without terminating the program
@@ -52,16 +52,26 @@ o{aa=1, bb=2, cc={dd=22, ee=30, ff={10}}}
 -- My "object-ish" methods have no colon "`:`" operator.
 -- Why kludge objects when Lua has such a clean module system? 
 --
+-- Gutless supports encapsulation, polymorphism, constructors,
+-- inheritance of instance variables (but not inheritance of methods).
+
 -- An example Gutless file is shown at right. Note that that file:
+-- start with `local X={is="X"}`
+-- and  include the super class; e.g.    
+-- 
+-- `local Super=require("super")`
 --
--- - start with `local X={is="X"}`
--- - include the super class; e.g.    
---   `local Super=require("super")`
--- - have a constructor of `function X.new(t)` where the table `t`
---   contains overrides to the defaults.
--- - That constructor starts by calling   
---   `Super.new()`
--- - That constructor also adds a point `i.me` back to the class.
+-- The file also needs a constructor of `function X.new(t)` where the table `t`
+-- contains overrides to the defaults.
+-- That constructor starts by calling `Super.new()` and
+-- also  adds a point `i.me` back to the class.
+--
+-- The `i.me` pointer enables polymorphism.  To send
+-- a `message`  back to an object with arguments `args` (and to
+-- the receiver based on
+-- the type of the receiver), then call:       
+--
+-- `i.me.message(i, args)`
 
 local Object=require("object")
 local Column={is="Column"}

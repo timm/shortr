@@ -53,7 +53,8 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-3'>#</a>
       </div>
-      <p>All files are modules that usually start with <code>local X={}</code> and end with <code>return X</code>.</p>
+      <p>All files are modules that usually starts with <code>local X={}</code> and ends 
+with <code>return X</code>.</p>
 <p>Whenever my tests are run (see below),
 the <code>rogues</code> function from <a href="ok.html">ok.lua</a>
 warns about anything that has inappropriately escaped to the global space.</p>
@@ -69,9 +70,8 @@ warns about anything that has inappropriately escaped to the global space.</p>
         <a class='octothorpe' href='#section-4'>#</a>
       </div>
       <h2>Optional Config</h2>
-<p>The file <a href="the.html">the.lua</a> contains defaults that code can include using:</p>
-<pre><code> local THE=require("the")
-</code></pre>
+<p>The file <a href="the.html">the.lua</a> contains defaults that code can include using    </p>
+<p><code>local THE=require("the")</code>.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -107,12 +107,10 @@ patch the load path then load <code>src</code> files. For example, see right.</p
       <div class='octowrap'>
         <a class='octothorpe' href='#section-6'>#</a>
       </div>
-      <p>My <code>ok</code> test engine (shown at right, defined in <a href="ok.html">ok.lua</a>):</p>
-<ul>
-<li>Accepts pairs <code>testName=function</code>,</li>
-<li>Prints <code>testName</code>;</li>
-<li>and runs the <code>function</code>.</li>
-</ul>
+      <p>My <code>ok</code> test engine (shown at right, defined in <a href="ok.html">ok.lua</a>)
+accepts pairs <code>testName=function</code>, then
+prints <code>testName</code>; then
+runs the <code>function</code>.</p>
 <p>If <code>function</code>
 crashes, <code>ok</code> will just print the stack trace without terminating the program
 (so having crashing code does not block other tests from executing).</p>
@@ -131,17 +129,32 @@ crashes, <code>ok</code> will just print the stack trace without terminating the
 <h2>Gutless Objects</h2>
 <p>My &ldquo;object-ish&rdquo; methods have no colon &ldquo;<code>:</code>&rdquo; operator.
 Why kludge objects when Lua has such a clean module system? </p>
-<p>An example Gutless file is shown at right. Note that that file:</p>
-<ul>
-<li>start with <code>local X={is="X"}</code></li>
-<li>include the super class; e.g.  <br />
-<code>local Super=require("super")</code></li>
-<li>have a constructor of <code>function X.new(t)</code> where the table <code>t</code>
-  contains overrides to the defaults.</li>
-<li>That constructor starts by calling <br />
-<code>Super.new()</code></li>
-<li>That constructor also adds a point <code>i.me</code> back to the class.</li>
-</ul>
+<p>Gutless supports encapsulation, polymorphism, constructors,
+inheritance of instance variables (but not inheritance of methods).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>An example Gutless file is shown at right. Note that that file:
+start with <code>local X={is="X"}</code>
+and  include the super class; e.g.    </p>
+<p><code>local Super=require("super")</code></p>
+<p>The file also needs a constructor of <code>function X.new(t)</code> where the table <code>t</code>
+contains overrides to the defaults.
+That constructor starts by calling <code>Super.new()</code> and
+also  adds a point <code>i.me</code> back to the class.</p>
+<p>The <code>i.me</code> pointer enables polymorphism.  To send
+a <code>message</code>  back to an object with arguments <code>args</code> (and to
+the receiver based on
+the type of the receiver), then call:       </p>
+<p><code>i.me.message(i, args)</code></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="kd">local</span> <span class="n">Object</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">)</span>
