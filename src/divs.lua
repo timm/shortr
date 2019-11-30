@@ -17,7 +17,27 @@ function xpect(a,lo,j,hi)
   local n1, n2, n = j-lo+1, hi-j , hi - lo
   return n1/n * var(a,lo,j) + n2/n * var(a,j,hi) end
 
-return function (a)
+--[[
+## some details
+
+We can visualize the process of discretizing as:
+
+- Analyzing the continuous values a variable takes on,
+- Dividing them into segments,
+- Grouping them into bins. First, decide how to select the number of bins; and second, decide how wide to make them.
+
+It is important to realize that in any actual discretizing, a certain
+amount of error is introduced. The prime goal is always to minimize
+the error as much as possible when choosing the number of bins and
+their width. We can do this by increasing the number of intervals
+we’re dividing our function or variable; just as a pixelated photo
+made up of tiny squares will become more true-to-life as we decrease
+the size of the squares.  
+
+--]]
+
+
+return function(a)
   table.sort(a)
   local cuts    = {}
   local step    = math.floor((#a)^THE.step)

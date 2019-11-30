@@ -25,7 +25,7 @@
 <span class="kd">local</span> <span class="n">Sym</span>   <span class="o">=</span> <span class="p">{</span><span class="n">klass</span><span class="o">=</span><span class="s2">&quot;Sym&quot;</span><span class="p">}</span>
 
 <span class="kr">function</span> <span class="nc">Sym</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-  <span class="n">i</span>        <span class="o">=</span> <span class="n">Thing</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">i</span>  <span class="o">=</span> <span class="n">Thing</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
   <span class="n">i</span><span class="p">.</span><span class="n">me</span>     <span class="o">=</span> <span class="n">Sym</span>
   <span class="n">i</span><span class="p">.</span><span class="n">counts</span> <span class="o">=</span> <span class="p">{}</span>
   <span class="n">i</span><span class="p">.</span><span class="n">most</span>   <span class="o">=</span> <span class="mi">0</span>

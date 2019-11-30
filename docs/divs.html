@@ -36,9 +36,35 @@
 
 <span class="kr">function</span> <span class="nf">xpect</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">j</span><span class="o">-</span><span class="n">lo</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">hi</span><span class="o">-</span><span class="n">j</span> <span class="p">,</span> <span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span>
-  <span class="kr">return</span> <span class="n">n1</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="n">n2</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="kr">end</span>
+  <span class="kr">return</span> <span class="n">n1</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="n">n2</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h2>some details</h2>
+<p>We can visualize the process of discretizing as:</p>
+<ul>
+<li>Analyzing the continuous values a variable takes on,</li>
+<li>Dividing them into segments,</li>
+<li>Grouping them into bins. First, decide how to select the number of bins; and second, decide how wide to make them.</li>
+</ul>
+<p>It is important to realize that in any actual discretizing, a certain
+amount of error is introduced. The prime goal is always to minimize
+the error as much as possible when choosing the number of bins and
+their width. We can do this by increasing the number of intervals
+we’re dividing our function or variable; just as a pixelated photo
+made up of tiny squares will become more true-to-life as we decrease
+the size of the squares.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="c1">--]]</span>
 
-<span class="kr">return</span> <span class="kr">function</span> <span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+<span class="kr">return</span> <span class="kr">function</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
   <span class="nb">table.sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">cuts</span>    <span class="o">=</span> <span class="p">{}</span>
   <span class="kd">local</span> <span class="n">step</span>    <span class="o">=</span> <span class="nb">math.floor</span><span class="p">((</span><span class="o">#</span><span class="n">a</span><span class="p">)</span><span class="o">^</span><span class="n">THE</span><span class="p">.</span><span class="n">step</span><span class="p">)</span>
@@ -50,11 +76,11 @@
       <span class="kd">local</span> <span class="n">now</span><span class="p">,</span> <span class="n">after</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
       <span class="kr">if</span> <span class="n">now</span> <span class="o">~=</span> <span class="n">after</span> <span class="kr">then</span> 
         <span class="kr">if</span> <span class="n">after</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">epsilon</span> <span class="kr">then</span>
-	  <span class="kr">if</span> <span class="n">a</span><span class="p">[</span><span class="o">#</span><span class="n">a</span><span class="p">]</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&gt;</span> <span class="n">epsilon</span> <span class="kr">then</span>
-	    <span class="kr">if</span> <span class="nb">math.abs</span><span class="p">(</span> <span class="n">mid</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">-</span> <span class="n">mid</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="n">epsilon</span> <span class="kr">then</span>
-	      <span class="kd">local</span> <span class="n">new</span> <span class="o">=</span> <span class="n">xpect</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
-	      <span class="kr">if</span> <span class="n">new</span> <span class="o">*</span> <span class="n">THE</span><span class="p">.</span><span class="n">trivial</span> <span class="o">&lt;</span> <span class="n">best</span> <span class="kr">then</span>
-	        <span class="n">best</span><span class="p">,</span><span class="n">cut</span> <span class="o">=</span> <span class="n">new</span><span class="p">,</span><span class="n">j</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>  <span class="kr">end</span>
+          <span class="kr">if</span> <span class="n">a</span><span class="p">[</span><span class="o">#</span><span class="n">a</span><span class="p">]</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&gt;</span> <span class="n">epsilon</span> <span class="kr">then</span>
+            <span class="kr">if</span> <span class="nb">math.abs</span><span class="p">(</span> <span class="n">mid</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">-</span> <span class="n">mid</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="n">epsilon</span> <span class="kr">then</span>
+              <span class="kd">local</span> <span class="n">new</span> <span class="o">=</span> <span class="n">xpect</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
+              <span class="kr">if</span> <span class="n">new</span> <span class="o">*</span> <span class="n">THE</span><span class="p">.</span><span class="n">trivial</span> <span class="o">&lt;</span> <span class="n">best</span> <span class="kr">then</span>
+                 <span class="n">best</span><span class="p">,</span><span class="n">cut</span> <span class="o">=</span> <span class="n">new</span><span class="p">,</span><span class="n">j</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>  <span class="kr">end</span>
     <span class="kr">return</span> <span class="n">cut</span>  
   <span class="kr">end</span>
   <span class="kd">local</span> <span class="kr">function</span> <span class="nf">recurse</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
