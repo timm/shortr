@@ -197,7 +197,7 @@ bashrc() { cat<<-'EOF'
 
 	htmls() {
 	    ( cd $root/src
-              pycco -i -d ../docs -l lua *.lua
+              pycco -d ../docs -l lua *.lua
               git add ../docs/* )
 	} 
 	alias vi="vim -u $ishs/.vimrc "
