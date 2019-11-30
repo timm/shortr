@@ -194,7 +194,10 @@ bashrc() { cat<<-'EOF'
 	root=$(git rev-parse --show-toplevel)
 	ishs=$HOME/tmp/ish
 	mkdir -p $ishs
- 
+
+        htms() {
+          (cd $root/src; pycco -i -d ../docs -l lua *.lua)
+        } 
 	alias vi="vim -u $ishs/.vimrc "
 	alias ..='cd ..'
 	alias tmux="$(which tmux) -f $ishs/.tmuxrc "
@@ -260,7 +263,7 @@ bashrc() { cat<<-'EOF'
 AFTER=1
 #brew install bsdgames-osx
 
-for c in python3 git tmux vim pandoc pdoc3 mc tree cmatrix rain; do
+for c in lua pycco git tmux vim mc tree cmatrix rain; do
   if [ -z "$(which $c)" ]; then
     AFTER=""
     echo "#E> missing: $c"
