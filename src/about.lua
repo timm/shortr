@@ -1,6 +1,6 @@
 -- [home](index.html) :: [about](about.html) :: [github](http://github.com/timm/lua) :: [discuss](http://github.com/timm/lua/issues) :: [&copy; 2020](https://github.com/timm/lua/blob/master/LICENSE.md) by [timm](http://menzies.us)
 
--- This file discussed the conventions used in this code.
+-- This file shows the conventions used in this code.
 
 -- ## No Globals, all modules
 
@@ -28,7 +28,7 @@ package.path = '../src/?.lua;' .. package.path
 require "lib"
 local ok = require("ok")
 
-roguevar=22
+roguevar=22 -- this rogue global will generate a warning message
 
 ok{notok = function() assert(1~=1,"not eq") end}
 ok{ok = function() assert(1==1,"not equal") end}
@@ -49,7 +49,7 @@ o{aa=1, bb=2, cc={dd=22, ee=30, ff={10}}}
 -- ---------------------
 -- ## Gutless Objects 
 --
--- My "object-ish" method has no colon "`:`" operator.
+-- My "object-ish" methods have no colon "`:`" operator.
 -- Why kludge objects when Lua has such a clean module system? 
 --
 -- An example Gutless file is shown at right. Note that that file:
@@ -61,6 +61,7 @@ o{aa=1, bb=2, cc={dd=22, ee=30, ff={10}}}
 --   contains overrides to the defaults.
 -- - That constructor starts by calling   
 --   `Super.new()`
+-- - That constructor also adds a point `i.me` back to the class.
 
 local Object=require("object")
 local Column={is="Column"}
