@@ -17,7 +17,8 @@ function xpect(a,lo,j,hi)
   local n1, n2, n = j-lo+1, hi-j , hi - lo
   return n1/n * var(a,lo,j) + n2/n * var(a,j,hi) end
 
----[[
+--[[
+
 ## some details
 
 We can visualize the process of discretizing as:
@@ -34,7 +35,7 @@ we’re dividing our function or variable; just as a pixelated photo
 made up of tiny squares will become more true-to-life as we decrease
 the size of the squares.  
 
----]]
+--]]
 
 
 return function(a)
