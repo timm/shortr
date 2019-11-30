@@ -1,11 +1,11 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- --------- 
 
-local Thing = require("thing")
-local Sym   = {klass="Sym"}
+local Column = require("column")
+local Sym   = {is="Sym"}
 
 function Sym.new(t)
-  local i  = Thing.new(t)
+  local i  = Column.new(t)
   i.me     = Sym
   i.counts = {}
   i.most   = 0

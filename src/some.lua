@@ -1,12 +1,12 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- --------- 
 
-local Thing = require("thing")
+local Column = require("columns")
 local div   = require("divs")
-local Some  = {klass="Some"}
+local Some  = {is="Some"}
 
 function Some.new(t)
-  local i = Thing.new(t)
+  local i = Column.new(t)
   i.me    = Some
   i.has   = {}
   i.divs  = nil

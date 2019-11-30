@@ -205,7 +205,6 @@ bashrc() { cat<<-'EOF'
 	    echo "-- - [$f]($h)"
 	  done >> $d/$$.list
 	  cat index.lua $d/$$.list > $d/index.lua
-	  echo pycco -d ../docs -l lua $d/index.lua
 	  pycco -d ../docs -l lua $d/index.lua
 	}
 	htmls() {

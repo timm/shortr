@@ -4,7 +4,7 @@
 require "lib"
 
 local Object=require("object")
-local Column={is="Thing"}
+local Column={is="Column"}
 
 function Column.new(t)
   local i = Object.new()
