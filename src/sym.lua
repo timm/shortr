@@ -5,7 +5,7 @@ local Thing = require("thing")
 local Sym   = {klass="Sym"}
 
 function Sym.new(t)
-  i        = Thing.new(t)
+  local i  = Thing.new(t)
   i.me     = Sym
   i.counts = {}
   i.most   = 0

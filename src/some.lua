@@ -6,11 +6,11 @@ local div   = require("divs")
 local Some  = {klass="Some"}
 
 function Some.new(t)
-  i      = Thing.new(t)
-  i.me   = Some
-  i.has  = {}
-  i.divs = nil
-  i.most = t.most or THE.some.most
+  local i = Thing.new(t)
+  i.me    = Some
+  i.has   = {}
+  i.divs  = nil
+  i.most  = t.most or THE.some.most
   return i
 end
 
