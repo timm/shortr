@@ -209,7 +209,7 @@ bashrc() { cat<<-'EOF'
 	}
 	htmls() {
 	    ( cd $root/src
-              pycco -d ../docs -l lua *.lua
+              pycco -d ../docs  *.lua
               patches
               git add ../docs/* )
 	} 

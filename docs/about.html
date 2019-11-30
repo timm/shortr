@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>about.lua</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>about.lua</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p><a href="index.html">home</a> :: <a href="about.html">about</a> :: <a href="http://github.com/timm/lua">github</a> :: <a href="http://github.com/timm/lua/issues">discuss</a> :: <a href="https://github.com/timm/lua/blob/master/LICENSE.md">&copy; 2020</a> by <a href="http://menzies.us">timm</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>This file discussed the conventions used in this code.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <h2>No Globals, all modules</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>All files are modules that usually start with <code>local X={}</code> and end with <code>return X</code>.</p>
+<p>Whenever my tests are run (see below),
+the <code>rogues</code> function from <a href="ok.html">ok.lua</a>
+warns about anything that has inappropriately escaped to the global space.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <h2>Optional Config</h2>
+<p>The file <a href="the.html">the.lua</a> contains defaults that code can include using:</p>
+<pre><code> local THE=require("the")
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <hr />
+<h2>Test-Driven Development</h2>
+<p>Most files in <code>src/X.lua</code> have unit test files <code>tests/X.lua</code>. The unit tests files
+patch the load path then load <code>src</code> files. For example, see right.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nb">package.path</span> <span class="o">=</span> <span class="s1">&#39;../src/?.lua;&#39;</span> <span class="o">..</span> <span class="nb">package.path</span>
+<span class="nb">require</span> <span class="s2">&quot;lib&quot;</span>
+<span class="kd">local</span> <span class="n">ok</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">)</span>
+
+<span class="n">roguevar</span><span class="o">=</span><span class="mi">22</span>
+
+<span class="n">ok</span><span class="p">{</span><span class="n">notok</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span> <span class="nb">assert</span><span class="p">(</span><span class="mi">1</span><span class="o">~=</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;not eq&quot;</span><span class="p">)</span> <span class="kr">end</span><span class="p">}</span>
+<span class="n">ok</span><span class="p">{</span><span class="n">ok</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span> <span class="nb">assert</span><span class="p">(</span><span class="mi">1</span><span class="o">==</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;not equal&quot;</span><span class="p">)</span> <span class="kr">end</span><span class="p">}</span>
+
+<span class="n">o</span><span class="p">{</span><span class="n">aa</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bb</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">cc</span><span class="o">=</span><span class="p">{</span><span class="n">dd</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">ee</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">ff</span><span class="o">=</span><span class="p">{</span><span class="mi">10</span><span class="p">}}}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>My <code>ok</code> test engine (shown at right, defined in <a href="ok.html">ok.lua</a>):</p>
+<ul>
+<li>Accepts pairs <code>testName=function</code>,</li>
+<li>Prints <code>testName</code>;</li>
+<li>and runs the <code>function</code>.</li>
+</ul>
+<p>If <code>function</code>
+crashes, <code>ok</code> will just print the stack trace without terminating the program
+(so having crashing code does not block other tests from executing).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <hr />
+<h2>Gutless Objects</h2>
+<p>My &ldquo;object-ish&rdquo; method has no colon &ldquo;<code>:</code>&rdquo; operator.
+Why kludge objects when Lua has such a clean module system? </p>
+<p>An example Gutless file is shown at right. Note that that file:</p>
+<ul>
+<li>start with <code>local X={is="X"}</code></li>
+<li>include the super class; e.g.  <br />
+<code>local Super=require("super")</code></li>
+<li>have a constructor of <code>function X.new(t)</code> where the table <code>t</code>
+  contains overrides to the defaults.</li>
+<li>That constructor starts by calling <br />
+<code>Super.new()</code></li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span> <span class="n">Object</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">Column</span><span class="o">=</span><span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Column&quot;</span><span class="p">}</span>
+
+<span class="kr">function</span> <span class="nc">Column</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Object</span><span class="p">.</span><span class="n">new</span><span class="p">()</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">me</span> <span class="o">=</span> <span class="n">Column</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">n</span>   <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">t</span>     <span class="o">=</span> <span class="n">t</span> <span class="ow">or</span> <span class="p">{}</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">txt</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">txt</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">pos</span> <span class="ow">or</span> <span class="mi">0</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">w</span>   <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">txt</span><span class="p">:</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="mi">1</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">key</span> <span class="ow">or</span> <span class="kr">function</span> <span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="kr">return</span> <span class="n">z</span> <span class="kr">end</span>
+  <span class="kr">return</span> <span class="n">i</span>
+<span class="kr">end</span>
+
+<span class="kr">return</span> <span class="n">Column</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
