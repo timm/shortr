@@ -195,9 +195,9 @@ bashrc() { cat<<-'EOF'
 	ishs=$HOME/tmp/ish
 	mkdir -p $ishs
 
-        htms() {
-          (cd $root/src; pycco -i -d ../docs -l lua *.lua)
-        } 
+	htmls() {
+	    (cd $root/src; pycco -i -d ../docs -l lua *.lua)
+	} 
 	alias vi="vim -u $ishs/.vimrc "
 	alias ..='cd ..'
 	alias tmux="$(which tmux) -f $ishs/.tmuxrc "
