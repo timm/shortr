@@ -197,8 +197,7 @@ bashrc() { cat<<-'EOF'
 	patches() {
 	  d=/tmp/$USER/$$
 	  mkdir -p $d
-	  echo "-- <br clear=all>" > $d/$$.list
-	  echo "-- ## Files " >> $d/$$.list
+	  echo " " > $d/$$.list
 	  fs=$(ls *.lua)
 	  for f in $fs; do
 	    h=${f%.lua}.html
