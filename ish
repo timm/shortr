@@ -194,10 +194,24 @@ bashrc() { cat<<-'EOF'
 	root=$(git rev-parse --show-toplevel)
 	ishs=$HOME/tmp/ish
 	mkdir -p $ishs
-
+	patches() {
+	  d=/tmp/$USER/$$
+	  mkdir -p $d
+	  echo "-- <br clear=all>" > $d/$$.list
+	  echo "-- ## Files " >> $d/$$.list
+	  fs=$(ls *.lua)
+	  for f in $fs; do
+	    h=${f%.lua}.html
+	    echo "-- - [$f]($h)"
+	  done >> $d/$$.list
+	  cat index.lua $d/$$.list > $d/index.lua
+	  echo pycco -d ../docs -l lua $d/index.lua
+	  pycco -d ../docs -l lua $d/index.lua
+	}
 	htmls() {
 	    ( cd $root/src
               pycco -d ../docs -l lua *.lua
+              patches
               git add ../docs/* )
 	} 
 	alias vi="vim -u $ishs/.vimrc "
