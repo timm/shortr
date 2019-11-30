@@ -19,7 +19,7 @@
 -- ---------------------
 -- ## Test-Driven Development
 --
--- Most files in `src/X.lua` have unit test files `tests/X.lua`. The unit tests files
+-- Most files in `src/X.lua` have unit test files `test/X.lua`. The unit tests files
 -- patch the load path then load `src` files. For example, see right.
 
 

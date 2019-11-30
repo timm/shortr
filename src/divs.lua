@@ -58,14 +58,14 @@ return function(a)
               if new * THE.trivial < best then
                  best,cut = new,j end end end end end  end
     return cut  
-  end
+  end -- end div
   local function recurse(lo,hi)
     cut = div(lo,hi)
     if   cut 
     then recurse(lo,cut)
          recurse(cut+1,his) 
     else cuts[ #cuts+1 ] = a[cut] end  
-  end
+  end -- end recurse
   recurse(1, #a)
   return cuts
 end  

@@ -82,14 +82,14 @@ the size of the squares.  </p>
               <span class="kr">if</span> <span class="n">new</span> <span class="o">*</span> <span class="n">THE</span><span class="p">.</span><span class="n">trivial</span> <span class="o">&lt;</span> <span class="n">best</span> <span class="kr">then</span>
                  <span class="n">best</span><span class="p">,</span><span class="n">cut</span> <span class="o">=</span> <span class="n">new</span><span class="p">,</span><span class="n">j</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>  <span class="kr">end</span>
     <span class="kr">return</span> <span class="n">cut</span>  
-  <span class="kr">end</span>
+  <span class="kr">end</span> <span class="c1">-- end div</span>
   <span class="kd">local</span> <span class="kr">function</span> <span class="nf">recurse</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
     <span class="n">cut</span> <span class="o">=</span> <span class="n">div</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
     <span class="kr">if</span>   <span class="n">cut</span> 
     <span class="kr">then</span> <span class="n">recurse</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">cut</span><span class="p">)</span>
          <span class="n">recurse</span><span class="p">(</span><span class="n">cut</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">his</span><span class="p">)</span> 
     <span class="kr">else</span> <span class="n">cuts</span><span class="p">[</span> <span class="o">#</span><span class="n">cuts</span><span class="o">+</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">cut</span><span class="p">]</span> <span class="kr">end</span>  
-  <span class="kr">end</span>
+  <span class="kr">end</span> <span class="c1">-- end recurse</span>
   <span class="n">recurse</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">a</span><span class="p">)</span>
   <span class="kr">return</span> <span class="n">cuts</span>
 <span class="kr">end</span>
