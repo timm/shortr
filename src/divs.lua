@@ -3,8 +3,10 @@
  
 -- <img align=right src="https://github.com/timm/lua/raw/master/etc/img/divs.jpg">
 -- 
--- Divide a list of numbers such that the variability
+-- This file returns a function that
+-- divides a list of numbers such that the variability
 -- of each division is minimized. 
+--
 -- To simplify that task, we sort the numbers once
 -- then measure variance using the 10th and 90th percentile 
 -- of that list. This has the advantage that, if we recurse
@@ -41,9 +43,8 @@ function xpect(a,lo,j,hi)
 -- square root size of the list-- see the `step` var);
 -- or that divide the numbers into bins of size less 
 -- than `epsilon`
--- (less than 30% of the standard deviation); or
--- that improve things by less than a `trivial` amount
--- (say, 5%).
+-- (less than 30% of the standard deviation).
+
 
 return function(a)
   table.sort(a)
@@ -59,6 +60,9 @@ return function(a)
           if a[#a] - now > epsilon then
             if math.abs( mid(a,lo,j) - mid(a,j+1,hi) ) > epsilon then
               local new = xpect(a,lo,j,hi)
+              -- Ignore new divisions that improve things
+              -- by less than a `trivial` amount
+              -- (say, 5%).
               if new * THE.trivial < best then
                  best,cut = new,j end end end end end  end
     return cut  

@@ -1,7 +1,8 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 ------- --------- --------- --------- --------- --------- 
 
-
+-- A super class for [Num](num.html) and [Sym](sym.html)
+-- and [Some](some.html) classes.
 
 require "lib"
 
