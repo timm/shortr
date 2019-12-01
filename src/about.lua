@@ -3,12 +3,13 @@
 
 -- This file shows the conventions used in this code.
 --
--- <img width=300 src="https://artclasscurator.com/wp-content/uploads/2014/10/Egyptian-Nebamun-hunting-in-the-marshes-fragment-of-a-scene-from-the-tomb-chapel-of-Nebamun-Late-18th-Dynasty-around-1350-B.jpg">
---
+-- <img align=right width=500 
+--  src="https://github.com/timm/lua/raw/master/etc/img/about.png">
+-- 
 
 -- ## No Globals, all modules
 
--- All files are modules that usually starts with `local X={}` and ends 
+-- All files are modules that usually start with `local X={}` and ends 
 -- with `return X`.
 --
 -- Whenever my tests are run (see below),

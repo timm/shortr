@@ -3,7 +3,7 @@
 
 -- Just a little light Lua. Less, but better.
 -- 
--- <img align=right width=150 
+-- <img align=right width=250 
 --  src="https://github.com/timm/lua/raw/master/etc/img/contents.jpg">
 -- 
 -- Useful  for training graduate students in software analytics. "Here, take this executable

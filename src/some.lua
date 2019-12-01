@@ -1,7 +1,7 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- --------- 
 
--- <img align=right width=200 src="https://github.com/timm/lua/raw/master/etc/img/reservoir.png">
+-- <img align=right width=150 src="https://github.com/timm/lua/raw/master/etc/img/reservoir.png">
 -- Implements _reservoir_ sampling; i.e. keep a random sample of a stream
 -- of items. 
 --
@@ -24,7 +24,7 @@ end
 -- up until `i.most`. 
 -- Then, after seeing
 -- `i.n` items, keep the next item at probability of `i.most/i.n`. 
--- And by "keeping", we mean "replace anything at random with the new items".
+-- And by "keeping", we mean "replace anything at random with the new item".
 
 function Some.add(i,x) 
   if x == "?" then return x end
