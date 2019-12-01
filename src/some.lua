@@ -1,6 +1,12 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- --------- 
 
+-- <img align=right width=200 src="https://github.com/timm/lua/raw/master/etc/img/reservoir.png">
+-- Implements _reservoir_ sampling; i.e. keep a random sample of a stream
+-- of items. 
+--
+-- This is a very useful when streaming over a large data space.
+
 local Column = require("columns")
 local div   = require("divs")
 local Some  = {is="Some"}
@@ -10,14 +16,15 @@ function Some.new(t)
   i.me    = Some
   i.has   = {}
   i.divs  = nil
-  i.most  = t.most or THE.some.most
+  i.most  = t.most or THE.some.most or 256
   return i
 end
 
-function Some.div(i) 
-  i.divs = i.divs and i.divs or divs(i.has) 
-  return i.divs
-end
+-- Given a maximum reservoir size  then keep everything
+-- up until `i.most`. 
+-- Then, after seeing
+-- `i.n` items, keep the next item at probability of `i.most/i.n`. 
+-- And by "keeping", we mean "replace anything at random with the new items".
 
 function Some.add(i,x) 
   if x == "?" then return x end
@@ -29,5 +36,15 @@ function Some.add(i,x)
   elseif r() < i.most/i.n then
     i.has[ math.floor(#i.has*r()) + 1 ] = x end
 end
+
+-- Also supported is a hook into an unsupervised discretization function
+-- that divides the kept numbers in a manner that minimizing the standard
+-- deviation of the divided bins.
+
+function Some.div(i) 
+  i.divs = i.divs and i.divs or divs(i.has) 
+  return i.divs
+end
+
 
 return Some

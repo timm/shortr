@@ -3,7 +3,8 @@
 
 -- Just a little light Lua. Less, but better.
 -- 
--- <img align=right width=300 src="https://reviewediting.files.wordpress.com/2012/07/contents.jpg">
+-- <img align=right width=150 
+--  src="https://github.com/timm/lua/raw/master/etc/img/contents.jpg">
 -- 
 -- Useful  for training graduate students in software analytics. "Here, take this executable
 -- specification and code it up in e.g. Python."
