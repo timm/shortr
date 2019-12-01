@@ -21,22 +21,7 @@
 <hr />
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span></span> 
-<span class="nb">require</span> <span class="s2">&quot;lib&quot;</span>
-<span class="kd">local</span> <span class="n">THE</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">).</span><span class="n">divs</span>
-
-<span class="kd">local</span> <span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">var</span><span class="p">,</span><span class="n">xpect</span> <span class="c1">-- functions</span>
-
-<span class="kr">function</span> <span class="nf">x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>       <span class="kr">return</span> <span class="n">a</span><span class="p">[</span><span class="nb">math.floor</span><span class="p">(</span><span class="n">z</span><span class="p">)]</span> <span class="kr">end</span>
-<span class="kr">function</span> <span class="nf">p</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>       <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="o">*#</span><span class="n">i</span><span class="p">.</span><span class="n">has</span> <span class="p">)</span> <span class="kr">end</span>
-<span class="kr">function</span> <span class="nf">mid</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">lo</span> <span class="o">+</span> <span class="mf">.5</span><span class="o">*</span><span class="p">(</span><span class="n">hi</span><span class="o">-</span><span class="n">lo</span><span class="p">)</span> <span class="p">)</span> <span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nf">var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> 
-  <span class="kr">return</span> <span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="o">+</span><span class="mf">.9</span><span class="o">*</span><span class="p">(</span><span class="n">hi</span><span class="o">-</span><span class="n">lo</span><span class="p">))</span> <span class="o">-</span> <span class="n">x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="o">+</span><span class="mf">.1</span><span class="o">*</span><span class="p">(</span><span class="n">hi</span><span class="o">-</span><span class="n">lo</span><span class="p">)))</span><span class="o">/</span><span class="mf">2.7</span> <span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nf">xpect</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">j</span><span class="o">-</span><span class="n">lo</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">hi</span><span class="o">-</span><span class="n">j</span> <span class="p">,</span> <span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span> <span class="o">+</span> <span class="mi">1</span>
-  <span class="kr">return</span> <span class="n">n1</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="n">n2</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="kr">end</span></pre></div>
+      <div class="highlight"><pre><span></span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -45,25 +30,74 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <h2>some details</h2>
-<p>We can visualize the process of discretizing as:</p>
-<ul>
-<li>Analyzing the continuous values a variable takes on,</li>
-<li>Dividing them into segments,</li>
-<li>Grouping them into bins. First, decide how to select the number of bins; and second, decide how wide to make them.</li>
-</ul>
-<p>It is important to realize that in any actual discretizing, a certain
-amount of error is introduced. The prime goal is always to minimize
-the error as much as possible when choosing the number of bins and
-their width. We can do this by increasing the number of intervals
-we’re dividing our function or variable; just as a pixelated photo
-made up of tiny squares will become more true-to-life as we decrease
-the size of the squares.  </p>
+      <p><img align=right src="https://github.com/timm/lua/raw/master/etc/img/divs.jpg"></p>
+<p>Divide a list of numbers such that the variability
+of each division is minimized. 
+To simplify that task, we sort the numbers once
+then measure variance using the 10th and 90th percentile 
+of that list. This has the advantage that, if we recurse
+into some part of that list, then we can quickly estimate
+the variance of that sublist using that list&rsquo;s 10th and 90th
+percentile.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="c1">--]]</span>
+      <div class="highlight"><pre><span class="nb">require</span> <span class="s2">&quot;lib&quot;</span>
+<span class="kd">local</span> <span class="n">THE</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">).</span><span class="n">divs</span>
 
-<span class="kr">return</span> <span class="kr">function</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">var</span><span class="p">,</span><span class="n">xpect</span> <span class="c1">-- functions</span>
+
+<span class="kr">function</span> <span class="nf">x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>       <span class="kr">return</span> <span class="n">a</span><span class="p">[</span><span class="nb">math.floor</span><span class="p">(</span><span class="n">z</span><span class="p">)]</span> <span class="kr">end</span>
+<span class="kr">function</span> <span class="nf">p</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>       <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">z</span><span class="o">*#</span><span class="n">i</span><span class="p">.</span><span class="n">has</span> <span class="p">)</span> <span class="kr">end</span>
+<span class="kr">function</span> <span class="nf">mid</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">lo</span> <span class="o">+</span> <span class="mf">.5</span><span class="o">*</span><span class="p">(</span><span class="n">hi</span><span class="o">-</span><span class="n">lo</span><span class="p">)</span> <span class="p">)</span> <span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>On experimentation, we found dividing the 90th minus
+10th percentile by 2.7 returns a value close to the normal
+Gaussian variance.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nf">var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> 
+  <span class="kr">return</span> <span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="o">+</span><span class="mf">.9</span><span class="o">*</span><span class="p">(</span><span class="n">hi</span><span class="o">-</span><span class="n">lo</span><span class="p">))</span> <span class="o">-</span> <span class="n">x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="o">+</span><span class="mf">.1</span><span class="o">*</span><span class="p">(</span><span class="n">hi</span><span class="o">-</span><span class="n">lo</span><span class="p">)))</span><span class="o">/</span><span class="mf">2.7</span> <span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>The expected value of two <code>Some</code>s is the weighed sum of
+their variances.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nf">xpect</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">j</span><span class="o">-</span><span class="n">lo</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">hi</span><span class="o">-</span><span class="n">j</span> <span class="p">,</span> <span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="kr">return</span> <span class="n">n1</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="n">n2</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>When we seek divisions, 
+ignore divisions that are too small (less than, say,
+square root size of the list&ndash; see the <code>step</code> var);
+or that divide the numbers into bins of size less 
+than <code>epsilon</code>
+(less than 30% of the standard deviation); or
+that improve things by less than a <code>trivial</code> amount
+(say, 5%).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">return</span> <span class="kr">function</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
   <span class="nb">table.sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">cuts</span>    <span class="o">=</span> <span class="p">{}</span>
   <span class="kd">local</span> <span class="n">step</span>    <span class="o">=</span> <span class="nb">math.floor</span><span class="p">((</span><span class="o">#</span><span class="n">a</span><span class="p">)</span><span class="o">^</span><span class="n">THE</span><span class="p">.</span><span class="n">step</span><span class="p">)</span>

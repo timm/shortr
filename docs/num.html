@@ -38,9 +38,20 @@ and standard deviation <code>i.sd</code>).</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="kd">local</span> <span class="n">Column</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;column&quot;</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">Num</span>   <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Num&quot;</span><span class="p">}</span>
-
-<span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">Num</span>   <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Num&quot;</span><span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>To customize what kinds of numbers we track, change <code>i.key</code>
+to some selector function.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Column</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
   <span class="n">i</span><span class="p">.</span><span class="n">me</span> <span class="o">=</span> <span class="n">Num</span>
   <span class="n">i</span><span class="p">.</span><span class="n">mu</span>  <span class="o">=</span> <span class="mi">0</span>
@@ -67,10 +78,10 @@ and standard deviation <code>i.sd</code>).</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-2'>
+  <div class='section' id='section-3'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-2'>#</a>
+        <a class='octothorpe' href='#section-3'>#</a>
       </div>
       <p>Also supported, removing numbers from a stream.
 Note: this code does not update <code>i.lo</code> and <code>i.hi</code>.
@@ -93,10 +104,10 @@ So avoid using this for <code>i.n</code> under 8.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-3'>
+  <div class='section' id='section-4'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
+        <a class='octothorpe' href='#section-4'>#</a>
       </div>
       <p>Compute standard deviation. Dodge hard cases.</p>
     </div>
@@ -109,10 +120,10 @@ So avoid using this for <code>i.n</code> under 8.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-4'>
+  <div class='section' id='section-5'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
+        <a class='octothorpe' href='#section-5'>#</a>
       </div>
       <p>Return a number <code>x</code> normalized to the range 0..1, 
 <code>i.lo..i.hi</code>.</p>
@@ -124,10 +135,10 @@ So avoid using this for <code>i.n</code> under 8.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-5'>
+  <div class='section' id='section-6'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-5'>#</a>
+        <a class='octothorpe' href='#section-6'>#</a>
       </div>
       <p>The expected value of two <code>Num</code>s is the weighted sum of their
 standard deviation.</p>

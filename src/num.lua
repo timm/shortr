@@ -11,6 +11,9 @@
 local Column = require("column")
 local Num   = {is="Num"}
 
+-- To customize what kinds of numbers we track, change `i.key`
+-- to some selector function.
+
 function Num.new(t)
   local i = Column.new(t)
   i.me = Num
