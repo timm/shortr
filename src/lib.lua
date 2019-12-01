@@ -10,6 +10,7 @@ function within(a,b,c) return b>=a and b<=c end
 
 function round(x) return math.floor( x + 0.5 ) end
 
+function same(x) return x end
 
 -- Convert tables to strings (and do so recursively).
 -- Work over the tables in alphabetically order of the keys.

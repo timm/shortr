@@ -14,7 +14,7 @@ function var(a,lo,hi)
   return (x(a,lo+.9*(hi-lo)) - x(a,lo+.1*(hi-lo)))/2.7 end
 
 function xpect(a,lo,j,hi)
-  local n1, n2, n = j-lo+1, hi-j , hi - lo
+  local n1, n2, n = j-lo+1, hi-j , hi - lo + 1
   return n1/n * var(a,lo,j) + n2/n * var(a,j,hi) end
 
 --[[
@@ -36,7 +36,6 @@ made up of tiny squares will become more true-to-life as we decrease
 the size of the squares.  
 
 --]]
-
 
 return function(a)
   table.sort(a)
