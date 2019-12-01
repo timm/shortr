@@ -1,4 +1,5 @@
--- [home](index.html) :: [about](about.html) :: [github](http://github.com/timm/lua) :: [discuss](http://github.com/timm/lua/issues) :: [&copy; 2020](https://github.com/timm/lua/blob/master/LICENSE.md) by [timm](http://menzies.us)
+-- vim: ts=2 sw=2 sts=2 expandtab:cindent:
+------- --------- --------- --------- --------- --------- 
 
 -- This file shows the conventions used in this code.
 
