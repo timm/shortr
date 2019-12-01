@@ -44,7 +44,6 @@ return function(a)
   local step    = math.floor((#a)^THE.step)
   local epsilon = var(a,1,#a)*THE.cohen
   local function div(lo,hi,     cut)
-    print("step",step,"lo",lo,"hi",hi)
     local best = var(a,lo,hi)
     for j = lo+step, hi-step do
       local now, after = x(a, j), x(a, j+1)
@@ -57,12 +56,12 @@ return function(a)
                  best,cut = new,j end end end end end  end
     return cut  
   end -- end div
-  local function recurse(lo,hi)
+  local function recurse(lo,hi,  cut)
     cut = div(lo,hi)
     if   cut 
-    then recurse(lo,cut)
-         recurse(cut+1,his) 
-    else cuts[ #cuts+1 ] = a[cut] end  
+    then recurse(lo, cut)
+         recurse(cut+1, hi) 
+    else cuts[ #cuts+1 ] = lo end  
   end -- end recurse
   recurse(1, #a)
   return cuts

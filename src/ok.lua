@@ -23,7 +23,7 @@ return function(t,  score)
   for x,f in pairs(t) do
     y = y + 1
     print("-- Test #" .. y ..
-          " (oops=".. s() .."%) : " .. x )
+          " (oops= ".. n .. " =" .. s() .."%) : " .. x )
     math.randomseed(seed)
     local passed,err = pcall(f)
     if not passed then
