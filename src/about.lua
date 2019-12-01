@@ -55,21 +55,24 @@ o{aa=1, bb=2, cc={dd=22, ee=30, ff={10}}}
 -- Gutless supports encapsulation, polymorphism, constructors,
 -- inheritance of instance variables (but not inheritance of methods).
 
--- An example Gutless file is shown at right. Note that that file:
--- start with `local X={is="X"}`
--- and  include the super class; e.g.    
+-- An example Gutless file is shown at right. 
+-- In that example, `Object` and `Column` are classes
+-- while `i` is an instance.
+-- Note that that file:
+-- start by defining a new class `local Column={is="Column"}`
+-- and  includes the super class; e.g.    
 -- 
--- `local Super=require("super")`
+-- `local Object=require("Object")`
 --
--- The file also needs a constructor of `function X.new(t)` where the table `t`
+-- The file also needs a constructor of `function Column.new(t)` where the table `t`
 -- contains overrides to the defaults.
--- That constructor starts by calling `Super.new()` and
+-- That constructor starts by calling `Object.new()` and
 -- also  adds a point `i.me` back to the class.
 --
--- The `i.me` pointer enables polymorphism.  To send
--- a `message`  back to an object with arguments `args` (and to
--- the receiver based on
--- the type of the receiver), then call:       
+-- This `i.me` pointer enables polymorphism.  To send
+-- a `message`  back to an class with arguments `args` (and to
+-- select the receiver based on
+-- the type of the object), then call:       
 --
 -- `i.me.message(i, args)`
 
@@ -77,15 +80,15 @@ local Object=require("object")
 local Column={is="Column"}
 
 function Column.new(t)
-  local i = Object.new()
+  local i = Object.new() -- begin standard creation stuff
   i.me = Column
   i.n   = 0
   t     = t or {}
-  i.txt = t.txt or ""
+  i.txt = t.txt or "" -- begin stuff just for Column instances
   i.pos = t.pos or 0
   i.w   = i.txt:match("<") and -1 or 1
   i.key = t.key or function (z) return z end
-  return i
+  return i -- don't forget to return the new instance.
 end
 
 return Column

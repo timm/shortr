@@ -142,18 +142,21 @@ inheritance of instance variables (but not inheritance of methods).</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-8'>#</a>
       </div>
-      <p>An example Gutless file is shown at right. Note that that file:
-start with <code>local X={is="X"}</code>
-and  include the super class; e.g.    </p>
-<p><code>local Super=require("super")</code></p>
-<p>The file also needs a constructor of <code>function X.new(t)</code> where the table <code>t</code>
+      <p>An example Gutless file is shown at right. 
+In that example, <code>Object</code> and <code>Column</code> are classes
+while <code>i</code> is an instance.
+Note that that file:
+start by defining a new class <code>local Column={is="Column"}</code>
+and  includes the super class; e.g.    </p>
+<p><code>local Object=require("Object")</code></p>
+<p>The file also needs a constructor of <code>function Column.new(t)</code> where the table <code>t</code>
 contains overrides to the defaults.
-That constructor starts by calling <code>Super.new()</code> and
+That constructor starts by calling <code>Object.new()</code> and
 also  adds a point <code>i.me</code> back to the class.</p>
-<p>The <code>i.me</code> pointer enables polymorphism.  To send
-a <code>message</code>  back to an object with arguments <code>args</code> (and to
-the receiver based on
-the type of the receiver), then call:       </p>
+<p>This <code>i.me</code> pointer enables polymorphism.  To send
+a <code>message</code>  back to an class with arguments <code>args</code> (and to
+select the receiver based on
+the type of the object), then call:       </p>
 <p><code>i.me.message(i, args)</code></p>
     </div>
     <div class='code'>
@@ -161,15 +164,15 @@ the type of the receiver), then call:       </p>
 <span class="kd">local</span> <span class="n">Column</span><span class="o">=</span><span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Column&quot;</span><span class="p">}</span>
 
 <span class="kr">function</span> <span class="nc">Column</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Object</span><span class="p">.</span><span class="n">new</span><span class="p">()</span>
+  <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Object</span><span class="p">.</span><span class="n">new</span><span class="p">()</span> <span class="c1">-- begin standard creation stuff</span>
   <span class="n">i</span><span class="p">.</span><span class="n">me</span> <span class="o">=</span> <span class="n">Column</span>
   <span class="n">i</span><span class="p">.</span><span class="n">n</span>   <span class="o">=</span> <span class="mi">0</span>
   <span class="n">t</span>     <span class="o">=</span> <span class="n">t</span> <span class="ow">or</span> <span class="p">{}</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">txt</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">txt</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">txt</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">txt</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span> <span class="c1">-- begin stuff just for Column instances</span>
   <span class="n">i</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">pos</span> <span class="ow">or</span> <span class="mi">0</span>
   <span class="n">i</span><span class="p">.</span><span class="n">w</span>   <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">txt</span><span class="p">:</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="mi">1</span>
   <span class="n">i</span><span class="p">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">key</span> <span class="ow">or</span> <span class="kr">function</span> <span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="kr">return</span> <span class="n">z</span> <span class="kr">end</span>
-  <span class="kr">return</span> <span class="n">i</span>
+  <span class="kr">return</span> <span class="n">i</span> <span class="c1">-- don&#39;t forget to return the new instance.</span>
 <span class="kr">end</span>
 
 <span class="kr">return</span> <span class="n">Column</span>

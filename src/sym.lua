@@ -12,35 +12,35 @@ function Sym.new(t)
   i.counts = {}
   i.most   = 0
   i.mode   = nil
-  i.ent    = nil
+  i._ent    = nil
   return t
 end
 
 function Sym.ent(i)
-  if i.ent == nil then
+  if i._ent == nil then
     for k,v in pairs(i.count) do
       p = v/i.n
-      i.ent = i.ent - p*math.log(p,2) end end
-  return i.ent
+      i._ent = i._ent - p*math.log(p,2) end end
+  return i._ent
 end
 
 function Sym.add(i,x,    d)
   if x=="?" then return x end
   x = i.key(x)
-  t._ent= nil
-  d = (t.counts[x] or 0) + 1
-  t.counts[x] = d
-  if d > t.most then
-    t.most, t.mode = d, x end
+  i._ent= nil
+  d = (i.counts[x] or 0) + 1
+  i.counts[x] = d
+  if d > i.most then
+    i.most, i.mode = d, x end
 end
 
 function Sym.dec(i,x,   d)
   if x=="?" then return x end
   x = i.key(x)
-  t._ent= nil
-  if t.n > 0 then
-    t.n = t.n - 1
-    t.counts[x] = t.counts[x] - 1 end
+  i._ent= nil
+  if i.n > 0 then
+    i.n = i.n - 1
+    i.counts[x] = i.counts[x] - 1 end
 end
 
 function Sym.xpect(i,j,   n)  
