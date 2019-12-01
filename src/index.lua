@@ -5,8 +5,6 @@
 -- 
 -- <img align=right width=300 src="https://reviewediting.files.wordpress.com/2012/07/contents.jpg">
 -- 
--- "He was glad that he liked the country undecorated, hard, and stripped of its finery. He had got down to the bare bones of it, and they were fine and strong and simple." -- [M. Ole](https://www.gutenberg.org/files/289/289-h/289-h.htm#link2H_4_0004)
---
 -- Useful  for training graduate students in software analytics. "Here, take this executable
 -- specification and code it up in e.g. Python."
 -- 
