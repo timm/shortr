@@ -21,7 +21,23 @@
 <hr />
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span></span><span class="kd">local</span> <span class="n">Column</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;column&quot;</span><span class="p">)</span>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p><img align=right src="https://github.com/timm/lua/raw/master/etc/img/normal.jpg"></p>
+<p>Incrementally track a stream of numbers, mainitaning
+the lowest (<code>i.lo</code>), highest (<code>i.hi</code>) 
+seen so far (as well as the mean <code>i.mu</code>
+and standard deviation <code>i.sd</code>).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span> <span class="n">Column</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;column&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Num</span>   <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Num&quot;</span><span class="p">}</span>
 
 <span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -37,12 +53,6 @@
   <span class="kr">return</span> <span class="n">i</span>
 <span class="kr">end</span>
 
-<span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">sd</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-  <span class="kr">if</span>     <span class="n">i</span><span class="p">.</span><span class="n">n</span>  <span class="o">&lt;</span> <span class="mi">2</span> <span class="kr">then</span> <span class="kr">return</span> <span class="mi">0</span> 
-  <span class="kr">elseif</span> <span class="n">i</span><span class="p">.</span><span class="n">m2</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="kr">then</span> <span class="kr">return</span> <span class="mi">0</span>
-  <span class="kr">else</span>  <span class="kr">return</span> <span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">m2</span><span class="o">/</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span><span class="o">^</span><span class="mf">0.5</span> <span class="kr">end</span>
-<span class="kr">end</span>
-
 <span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span>    <span class="n">d</span><span class="p">)</span> 
   <span class="kr">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span> <span class="kr">then</span> <span class="kr">return</span> <span class="n">x</span> <span class="kr">end</span>
   <span class="n">x</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">key</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -53,9 +63,23 @@
   <span class="kr">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">.</span><span class="n">hi</span> <span class="kr">then</span> <span class="n">i</span><span class="p">.</span><span class="n">hi</span> <span class="o">=</span> <span class="n">x</span> <span class="kr">end</span>
   <span class="kr">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">i</span><span class="p">.</span><span class="n">lo</span> <span class="kr">then</span> <span class="n">i</span><span class="p">.</span><span class="n">lo</span> <span class="o">=</span> <span class="n">x</span> <span class="kr">end</span>
   <span class="n">i</span><span class="p">.</span><span class="n">sd</span> <span class="o">=</span> <span class="n">Num</span><span class="p">.</span><span class="n">sd</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-<span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">sub</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span>   <span class="n">d</span><span class="p">)</span> 
+<span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Also supported, removing numbers from a stream.
+Note: this code does not update <code>i.lo</code> and <code>i.hi</code>.
+Also this method has a well-known numerical methods
+problem when <code>i.n</code> gets small and the <code>i.mu</code> approaches zero.
+So avoid using this for <code>i.n</code> under 8.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">sub</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span>   <span class="n">d</span><span class="p">)</span> 
   <span class="kr">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span> <span class="kr">then</span> <span class="kr">return</span> <span class="n">x</span> <span class="kr">end</span>
   <span class="n">x</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">key</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
   <span class="kr">if</span> <span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="kr">then</span> <span class="kr">return</span> <span class="n">x</span> <span class="kr">end</span>
@@ -65,13 +89,51 @@
   <span class="n">i</span><span class="p">.</span><span class="n">m2</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">m2</span> <span class="o">-</span> <span class="n">d</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">-</span> <span class="n">i</span><span class="p">.</span><span class="n">mu</span><span class="p">)</span>
   <span class="n">i</span><span class="p">.</span><span class="n">sd</span> <span class="o">=</span> <span class="n">Num</span><span class="p">.</span><span class="n">sd</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
   <span class="kr">return</span> <span class="n">x</span>
-<span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">norm</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">)</span> 
+<span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Compute standard deviation. Dodge hard cases.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">sd</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+  <span class="kr">if</span>     <span class="n">i</span><span class="p">.</span><span class="n">n</span>  <span class="o">&lt;</span> <span class="mi">2</span> <span class="kr">then</span> <span class="kr">return</span> <span class="mi">0</span> 
+  <span class="kr">elseif</span> <span class="n">i</span><span class="p">.</span><span class="n">m2</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="kr">then</span> <span class="kr">return</span> <span class="mi">0</span>
+  <span class="kr">else</span>  <span class="kr">return</span> <span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">m2</span><span class="o">/</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span><span class="o">^</span><span class="mf">0.5</span> <span class="kr">end</span>
+<span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Return a number <code>x</code> normalized to the range 0..1, 
+<code>i.lo..i.hi</code>.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">norm</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">)</span> 
   <span class="kr">return</span> <span class="n">x</span><span class="o">==</span><span class="s2">&quot;?&quot;</span> <span class="ow">and</span> <span class="mf">0.5</span> <span class="ow">or</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">i</span><span class="p">.</span><span class="n">lo</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">hi</span><span class="o">-</span><span class="n">i</span><span class="p">.</span><span class="n">lo</span> <span class="o">+</span> <span class="mi">10</span><span class="o">^-</span><span class="mi">32</span><span class="p">)</span>
-<span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">xpect</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span>  <span class="n">n</span><span class="p">)</span>  
+<span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>The expected value of two <code>Num</code>s is the weighted sum of their
+standard deviation.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">xpect</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span>  <span class="n">n</span><span class="p">)</span>  
   <span class="n">n</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span> <span class="n">j</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span><span class="mf">0.0001</span>
   <span class="kr">return</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">i</span><span class="p">.</span><span class="n">sd</span><span class="o">+</span> <span class="n">j</span><span class="p">.</span><span class="n">n</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">j</span><span class="p">.</span><span class="n">sd</span>
 <span class="kr">end</span>

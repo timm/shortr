@@ -36,7 +36,7 @@ of items. </p>
 <p>This is a very useful when streaming over a large data space.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span> <span class="n">Column</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
+      <div class="highlight"><pre><span class="kd">local</span> <span class="n">Column</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;column&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">div</span>   <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;divs&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Some</span>  <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Some&quot;</span><span class="p">}</span>
 
@@ -67,10 +67,11 @@ And by &ldquo;keeping&rdquo;, we mean &ldquo;replace anything at random with the
   <span class="kr">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span> <span class="kr">then</span> <span class="kr">return</span> <span class="n">x</span> <span class="kr">end</span>
   <span class="n">x</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">key</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
   <span class="n">i</span><span class="p">.</span><span class="n">n</span>  <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">divs</span> <span class="o">=</span> <span class="kc">nil</span>
   <span class="kr">if</span> <span class="o">#</span><span class="n">i</span><span class="p">.</span><span class="n">has</span> <span class="o">&lt;</span> <span class="n">i</span><span class="p">.</span><span class="n">most</span> <span class="kr">then</span> 
+    <span class="n">i</span><span class="p">.</span><span class="n">divs</span> <span class="o">=</span> <span class="kc">nil</span>
     <span class="n">i</span><span class="p">.</span><span class="n">has</span><span class="p">[</span><span class="o">#</span><span class="n">i</span><span class="p">.</span><span class="n">has</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> 
   <span class="kr">elseif</span> <span class="n">r</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">i</span><span class="p">.</span><span class="n">most</span><span class="o">/</span><span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="kr">then</span>
+    <span class="n">i</span><span class="p">.</span><span class="n">divs</span> <span class="o">=</span> <span class="kc">nil</span>
     <span class="n">i</span><span class="p">.</span><span class="n">has</span><span class="p">[</span> <span class="nb">math.floor</span><span class="p">(</span><span class="o">#</span><span class="n">i</span><span class="p">.</span><span class="n">has</span><span class="o">*</span><span class="n">r</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="kr">end</span>
 <span class="kr">end</span></pre></div>
     </div>
