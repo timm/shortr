@@ -4,7 +4,7 @@
 -- This file shows the conventions used in this code.
 --
 -- <img align=right width=500 
---  src="https://github.com/timm/lua/raw/master/etc/img/about.png">
+--  src="https://github.com/timm/lua/raw/master/etc/img/about.jpg">
 -- 
 
 -- ## No Globals, all modules
