@@ -56,6 +56,8 @@ o{aa=1, bb=2, cc={dd=22, ee=30, ff={10}}}
 -- inheritance of instance variables (but not inheritance of methods).
 
 -- An example Gutless file is shown at right. 
+-- I always use `i` to denote the receiver instance (analogous to the `self` convention of
+-- Python or the `this` convention of Java).
 -- In that example, `Object` and `Column` are classes
 -- while `i` is an instance.
 -- Note that that file:
@@ -69,18 +71,18 @@ o{aa=1, bb=2, cc={dd=22, ee=30, ff={10}}}
 -- That constructor starts by calling `Object.new()` and
 -- also  adds a point `i.me` back to the class.
 --
--- This `i.me` pointer enables polymorphism.  To send
+-- this `i.me` pointer enables polymorphism.  to send
 -- a `message`  back to an class with arguments `args` (and to
 -- select the receiver based on
 -- the type of the object), then call:       
 --
 -- `i.me.message(i, args)`
 
-local Object=require("object")
-local Column={is="Column"}
+local object=require("object")
+local column={is="column"}
 
-function Column.new(t)
-  local i = Object.new() -- begin standard creation stuff
+function column.new(t)
+  local i = object.new() -- begin standard creation stuff
   i.me = Column
   i.n   = 0
   t     = t or {}
