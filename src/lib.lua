@@ -6,6 +6,8 @@ local THE=require("the").misc
 math.randomseed(THE.seed)
 r = math.random
 
+function sort(a) table.sort(a) return a end
+
 function within(a,b,c) return b>=a and b<=c end
 
 function round(x) return math.floor( x + 0.5 ) end

@@ -7,7 +7,7 @@
 --
 -- This is a very useful when streaming over a large data space.
 
-local Column = require("columns")
+local Column = require("column")
 local div   = require("divs")
 local Some  = {is="Some"}
 
@@ -30,10 +30,11 @@ function Some.add(i,x)
   if x == "?" then return x end
   x = i.key(x)
   i.n  = i.n + 1
-  i.divs = nil
   if #i.has < i.most then 
+    i.divs = nil
     i.has[#i.has+1] = x 
   elseif r() < i.most/i.n then
+    i.divs = nil
     i.has[ math.floor(#i.has*r()) + 1 ] = x end
 end
 
