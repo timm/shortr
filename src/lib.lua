@@ -23,6 +23,7 @@ function same(x) return x end
 function o(t) print(oo(t))  end
 
 function oo(t,     s,sep,keys, nums)
+  if type(t) ~= "table" then return tostring(t) end
   s, sep, keys, nums = '','', {}, true
   for k, v in pairs(t) do 
     if type(v) ~= 'function' then

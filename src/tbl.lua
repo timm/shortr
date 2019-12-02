@@ -1,36 +1,16 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:formatoptions+=cro 
 --------- --------- --------- --------- --------- --------- 
 
-require "num"
-require "sym"
+local Object = require("object")
+local Cols   = require("cols")
+local Row    = require("rows")
+local Tbl    = {is="Tbl"}
 
-function 
-function data()
-  return {w={}, syms={}, nums={}, class=nil, 
-          rows={}, name= {}, col={}, _use={}} 
-end
-
-function indep(t,c) return not t.w[c] and t.class ~= c end
-function dep(t,c)   return not indep(t,c) end
-
-function header(cells,t,       c,w)
-  t = t or data()
-  t.indeps = {}
-  for c0,x in pairs(cells) do
-    if not x:match("%?")  then
-      c = #t._use+1
-      t._use[c] = c0
-      t.name[c] = x
-      t.col[x]  = c
-      if x:match("[<>%$]") 
-     then t.nums[c] = num() 
-     else t.syms[c] = sym() 
-      end 
-      if     x:match("<") then t.w[c]  = -1 
-      elseif x:match(">") then t.w[c]  =  1  
-      elseif x:match("!") then t.class =  c 
-      else   t.indeps[ #t.indeps+1 ] = c end end end
-  return t
+function Tbl.new(f)
+  local i = Object.new()
+  i._use, i.me   = {}, Tbl
+  i.rows, i.cols = {}, Cols.new()
+  return i
 end
 
 function row(t,cells,     x,r)
