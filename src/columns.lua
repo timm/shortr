@@ -5,7 +5,7 @@
 --  src="https://github.com/timm/lua/raw/master/etc/img/cols.jpg">
 --
 -- This is a helper class for [Tbl](tbl.html). Everything that tables
--- knows about its columns, are stored here in `Cols`.
+-- knows about its columns, are stored here in `Columns`.
 --
 -- (By the way, if this code seems a little complex, just relax. Its
 -- only called once on the first row. )
@@ -14,11 +14,11 @@
 local Object = require("object")
 local Num    = require("num")
 local Sym    = require("sym")
-local Cols   = {is="Cols"}
+local Columns   = {is="Columns"}
 
-function Cols.new()
+function Columns.new()
   local i = Object.new()
-  i.me    = Cols
+  i.me    = Columns
   i.all, i.nums, i.syms = {},{},{}
   i.x ={all={},  nums={}, syms={}}
   i.y ={all={},  nums={}, syms={}, goals={}, klass=nil}
@@ -27,8 +27,9 @@ function Cols.new()
   return i
 end
 
+-- ----------------------------------
 -- When we read a csv file, the column names
--- on the first row can contain certain magic charcters
+-- on the first row can contain certain magic characters
 -- that tell us the type of the column:
 
 local function usep(x)   return not x:match("%?") end
@@ -37,20 +38,46 @@ local function klassp(x) return x:match("!") end
 local function depp(x)   return klassp(x) or goalp(x) end
 local function nump(x)   return goalp(x) or x:match("%$") end
 
--- This means that if we
+-- For example, here some data with a goal of
+-- reducing temperature (denoted `<temp`) while predicting
+-- for `!play` (and `$humid` is a number). 
+--
+--       outlook,  <temp, $humid, wind, !play
+--       sunny, 85, 85,  FALSE, no
+--       sunny, 80, 90, TRUE, no
+--       overcast, 83, 86, FALSE, yes
+--       rainy, 70, 96, FALSE, yes
+--       rainy, 68, 80, FALSE, yes # comments
+--       rainy, 65, 70, TRUE, no
+--       overcast, 64, 65, TRUE, yes
+--       sunny, 72, 95, FALSE, no
+--       sunny, 69, 70, FALSE, yes
+--       
+
+
+-- With this little language for the column headers,
+-- if we
 -- wanted to make a whole new table with the
 -- same structure as some current one, 
 -- we just pass along the `i.names` we used to make the
 -- old table.
 
-function Cols.clone(i)
-  return Cols.add(Cols.new(), i.names)
+function Columns.clone(i)
+  return Columns.add(Columns.new(), i.names)
 end
 
 
 
--- There are many types of columns.
--- For example, Some columns, marked with a `?`, we just want to skip over.
+-- ----------------------------------
+-- The actual work of reading the names and placing them in
+-- right list is done by `Col.add`.
+-- Using the  column names, when we create a `Num` or a `Sym`
+-- (to store what we find in each column) then we add that new
+-- `Column` into one or more lists:
+--
+-- There are many types of columns so `Col.add` needs to peek at the names
+-- for the magic characters.
+-- Some columns, marked with a `?`, we just want to skip over.
 -- Also,  some columns are numeric `nums`, marked with a `$`, and all
 --   the rest are symbolic.
 --
@@ -62,19 +89,14 @@ end
 -- All goal and klass columns are dependent `y` columns,
 --   and anything else is an independent `x` column.
 --
--- The actual work of reading the names and placing them in
--- right list is done by `Col.add`.
--- Using the  column names, when we create a `Num` or a `Sym`
--- (to store what we find in each column) then we add that new
--- `Column` into one or more lists:
 --
 
-function Cols.add(i,cells,   c,what,alike,xs,ys,new)
-  local function push(a,x) a[#a+1] = x end
+function Columns.add(i,cells,   c,what,alike,xs,ys,new)
+  local function add(a,x) a[#a+1] = new end
   c = 0
   for c0,x in pairs(cells) do
     if usep(x) then
-      c = c+1
+      c          = c+1
       i.use[c]   = c0
       i.names[c] = x
       if   nump(x)
@@ -82,15 +104,13 @@ function Cols.add(i,cells,   c,what,alike,xs,ys,new)
       else what, alike,xs,ys = Sym, i.syms, i.x.syms, i.y.syms
       end
       new  = what.new{pos=c,txt=x}
-      push(i.all, new)
-      push(alike, new)
-      push(depp(x) and ys or xs, new)
-      if klassp(x) then i.y.klass = new end
-      if goalp(x)  then push(i.y.goals, new) end 
-    end
-  end 
+      add(i.all)
+      add(alike)
+      add(depp(x) and ys or xs)
+      if goalp(x)  then add(i.y.goals) end 
+      if klassp(x) then i.y.klass = new end end end 
   return i
 end
 
 
-return Cols
+return Columns

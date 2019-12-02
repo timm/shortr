@@ -2,14 +2,14 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8">
-  <title>cols.lua</title>
+  <title>columns.lua</title>
   <link rel="stylesheet" href="pycco.css">
-<script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script></head>
+<script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script></head>
 <body>
 <div id='container'>
   <div id="background"></div>
   <div class='section'>
-    <div class='docs'><h1>DUO = Data Miners using <br>and/or using  Optimizers </h1><h1>DUO = Data Miners using <br>and/or using  Optimizers </h1><h1>DUO=Data Miners using <br>and/or using  Optimizers </h1><h1>DUO=Data Miners using <br>and/or using  Optimizers </h1><h1>DUO=Data Miners Used-by/ Using  Optimizers </h1><h1>DUO=Data Miners Using/ Used-by  Optimizers </h1><h1>DUO=Data Miners Used-by/Using  Optimizers </h1><h1>DUO=Data Miners Used-by/Using  Optimizers </h1><h1>DUO=Data Miners Using/Used-by Optimizers </h1><h1>DUO=Data Miners Using Optimizers </h1><h1>DUO=Data Miners Using Optimizers </h1><h1>DUO=Data Miners Using Optimizers </h1><h1>DUO=Data Miners Using Optimizers </h1><h1>cols.lua</h1></div>
+    <div class='docs'><h1>DUO = Data Miners using <br>and/or using  Optimizers </h1><h1>columns.lua</h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -33,7 +33,7 @@
       <p><img align=right  width=200
  src="https://github.com/timm/lua/raw/master/etc/img/cols.jpg"></p>
 <p>This is a helper class for <a href="tbl.html">Tbl</a>. Everything that tables
-knows about its columns, are stored here in <code>Cols</code>.</p>
+knows about its columns, are stored here in <code>Columns</code>.</p>
 <p>(By the way, if this code seems a little complex, just relax. Its
 only called once on the first row. )</p>
     </div>
@@ -41,11 +41,11 @@ only called once on the first row. )</p>
       <div class="highlight"><pre><span class="kd">local</span> <span class="n">Object</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Num</span>    <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Sym</span>    <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;sym&quot;</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">Cols</span>   <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Cols&quot;</span><span class="p">}</span>
+<span class="kd">local</span> <span class="n">Columns</span>   <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Columns&quot;</span><span class="p">}</span>
 
-<span class="kr">function</span> <span class="nc">Cols</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
+<span class="kr">function</span> <span class="nc">Columns</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
   <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Object</span><span class="p">.</span><span class="n">new</span><span class="p">()</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">me</span>    <span class="o">=</span> <span class="n">Cols</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">me</span>    <span class="o">=</span> <span class="n">Columns</span>
   <span class="n">i</span><span class="p">.</span><span class="n">all</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">nums</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">syms</span> <span class="o">=</span> <span class="p">{},{},{}</span>
   <span class="n">i</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span><span class="p">{</span><span class="n">all</span><span class="o">=</span><span class="p">{},</span>  <span class="n">nums</span><span class="o">=</span><span class="p">{},</span> <span class="n">syms</span><span class="o">=</span><span class="p">{}}</span>
   <span class="n">i</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span><span class="p">{</span><span class="n">all</span><span class="o">=</span><span class="p">{},</span>  <span class="n">nums</span><span class="o">=</span><span class="p">{},</span> <span class="n">syms</span><span class="o">=</span><span class="p">{},</span> <span class="n">goals</span><span class="o">=</span><span class="p">{},</span> <span class="n">klass</span><span class="o">=</span><span class="kc">nil</span><span class="p">}</span>
@@ -61,8 +61,9 @@ only called once on the first row. )</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
       </div>
-      <p>When we read a csv file, the column names
-on the first row can contain certain magic charcters
+      <hr />
+<p>When we read a csv file, the column names
+on the first row can contain certain magic characters
 that tell us the type of the column:</p>
     </div>
     <div class='code'>
@@ -79,16 +80,23 @@ that tell us the type of the column:</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-3'>#</a>
       </div>
-      <p>This means that if we
-wanted to make a whole new table with the
-same structure as some current one, 
-we just pass along the <code>i.names</code> we used to make the
-old table.</p>
+      <p>For example, here some data with a goal of
+reducing temperature (denoted <code>&lt;temp</code>) while predicting
+for <code>!play</code> (and <code>$humid</code> is a number). </p>
+<pre><code>  outlook,  &lt;temp, $humid, wind, !play
+  sunny, 85, 85,  FALSE, no
+  sunny, 80, 90, TRUE, no
+  overcast, 83, 86, FALSE, yes
+  rainy, 70, 96, FALSE, yes
+  rainy, 68, 80, FALSE, yes # comments
+  rainy, 65, 70, TRUE, no
+  overcast, 64, 65, TRUE, yes
+  sunny, 72, 95, FALSE, no
+  sunny, 69, 70, FALSE, yes
+</code></pre>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Cols</span><span class="p">.</span><span class="nf">clone</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-  <span class="kr">return</span> <span class="n">Cols</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">Cols</span><span class="p">.</span><span class="n">new</span><span class="p">(),</span> <span class="n">i</span><span class="p">.</span><span class="n">names</span><span class="p">)</span>
-<span class="kr">end</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -97,8 +105,34 @@ old table.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-4'>#</a>
       </div>
-      <p>There are many types of columns.
-For example, Some columns, marked with a <code>?</code>, we just want to skip over.
+      <p>With this little language for the column headers,
+if we
+wanted to make a whole new table with the
+same structure as some current one, 
+we just pass along the <code>i.names</code> we used to make the
+old table.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Columns</span><span class="p">.</span><span class="nf">clone</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+  <span class="kr">return</span> <span class="n">Columns</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">Columns</span><span class="p">.</span><span class="n">new</span><span class="p">(),</span> <span class="n">i</span><span class="p">.</span><span class="n">names</span><span class="p">)</span>
+<span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <hr />
+<p>The actual work of reading the names and placing them in
+right list is done by <code>Col.add</code>.
+Using the  column names, when we create a <code>Num</code> or a <code>Sym</code>
+(to store what we find in each column) then we add that new
+<code>Column</code> into one or more lists:</p>
+<p>There are many types of columns so <code>Col.add</code> needs to peek at the names
+for the magic characters.
+Some columns, marked with a <code>?</code>, we just want to skip over.
 Also,  some columns are numeric <code>nums</code>, marked with a <code>$</code>, and all
   the rest are symbolic.</p>
 <p>Some columns are numeric <code>goals</code> we want to minimize or maximize.
@@ -107,19 +141,14 @@ Also,  some columns are numeric <code>nums</code>, marked with a <code>$</code>,
   we want to predict.</p>
 <p>All goal and klass columns are dependent <code>y</code> columns,
   and anything else is an independent <code>x</code> column.</p>
-<p>The actual work of reading the names and placing them in
-right list is done by <code>Col.add</code>.
-Using the  column names, when we create a <code>Num</code> or a <code>Sym</code>
-(to store what we find in each column) then we add that new
-<code>Column</code> into one or more lists:</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Cols</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">cells</span><span class="p">,</span>   <span class="n">c</span><span class="p">,</span><span class="n">what</span><span class="p">,</span><span class="n">alike</span><span class="p">,</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span><span class="p">,</span><span class="n">new</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="kr">function</span> <span class="nf">push</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">x</span><span class="p">)</span> <span class="n">a</span><span class="p">[</span><span class="o">#</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="kr">end</span>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Columns</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">cells</span><span class="p">,</span>   <span class="n">c</span><span class="p">,</span><span class="n">what</span><span class="p">,</span><span class="n">alike</span><span class="p">,</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span><span class="p">,</span><span class="n">new</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="kr">function</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">x</span><span class="p">)</span> <span class="n">a</span><span class="p">[</span><span class="o">#</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span> <span class="kr">end</span>
   <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
   <span class="kr">for</span> <span class="n">c0</span><span class="p">,</span><span class="n">x</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">cells</span><span class="p">)</span> <span class="kr">do</span>
     <span class="kr">if</span> <span class="n">usep</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="kr">then</span>
-      <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="o">+</span><span class="mi">1</span>
+      <span class="n">c</span>          <span class="o">=</span> <span class="n">c</span><span class="o">+</span><span class="mi">1</span>
       <span class="n">i</span><span class="p">.</span><span class="n">use</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>   <span class="o">=</span> <span class="n">c0</span>
       <span class="n">i</span><span class="p">.</span><span class="n">names</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
       <span class="kr">if</span>   <span class="n">nump</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -127,18 +156,16 @@ Using the  column names, when we create a <code>Num</code> or a <code>Sym</code>
       <span class="kr">else</span> <span class="n">what</span><span class="p">,</span> <span class="n">alike</span><span class="p">,</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span> <span class="o">=</span> <span class="n">Sym</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">syms</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">x</span><span class="p">.</span><span class="n">syms</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">y</span><span class="p">.</span><span class="n">syms</span>
       <span class="kr">end</span>
       <span class="n">new</span>  <span class="o">=</span> <span class="n">what</span><span class="p">.</span><span class="n">new</span><span class="p">{</span><span class="n">pos</span><span class="o">=</span><span class="n">c</span><span class="p">,</span><span class="n">txt</span><span class="o">=</span><span class="n">x</span><span class="p">}</span>
-      <span class="n">push</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">all</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
-      <span class="n">push</span><span class="p">(</span><span class="n">alike</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
-      <span class="n">push</span><span class="p">(</span><span class="n">depp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ys</span> <span class="ow">or</span> <span class="n">xs</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
-      <span class="kr">if</span> <span class="n">klassp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="kr">then</span> <span class="n">i</span><span class="p">.</span><span class="n">y</span><span class="p">.</span><span class="n">klass</span> <span class="o">=</span> <span class="n">new</span> <span class="kr">end</span>
-      <span class="kr">if</span> <span class="n">goalp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="kr">then</span> <span class="n">push</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">y</span><span class="p">.</span><span class="n">goals</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span> <span class="kr">end</span> 
-    <span class="kr">end</span>
-  <span class="kr">end</span> 
+      <span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">all</span><span class="p">)</span>
+      <span class="n">add</span><span class="p">(</span><span class="n">alike</span><span class="p">)</span>
+      <span class="n">add</span><span class="p">(</span><span class="n">depp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ys</span> <span class="ow">or</span> <span class="n">xs</span><span class="p">)</span>
+      <span class="kr">if</span> <span class="n">goalp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="kr">then</span> <span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">y</span><span class="p">.</span><span class="n">goals</span><span class="p">)</span> <span class="kr">end</span> 
+      <span class="kr">if</span> <span class="n">klassp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="kr">then</span> <span class="n">i</span><span class="p">.</span><span class="n">y</span><span class="p">.</span><span class="n">klass</span> <span class="o">=</span> <span class="n">new</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> 
   <span class="kr">return</span> <span class="n">i</span>
 <span class="kr">end</span>
 
 
-<span class="kr">return</span> <span class="n">Cols</span>
+<span class="kr">return</span> <span class="n">Columns</span>
 
 </pre></div>
     </div>

@@ -5,11 +5,11 @@ package.path = '../src/?.lua;' .. package.path
 require "lib"
 
 local ok=require("ok")
-local Cols=require("cols")
+local Columns=require("columns")
 
 ok{less=function(   c)
-  c= Cols.new()
-  Cols.add(c,{"<age", "?id", "name", "$salary", "!job"})
+  c= Columns.new()
+  Columns.add(c,{"<age", "?id", "name", "$salary", "!job"})
   o(c.syms)
 end}
 

@@ -2,14 +2,14 @@
 --------- --------- --------- --------- --------- --------- 
 
 local Object = require("object")
-local Cols   = require("cols")
+local Columns= require("columns")
 local Row    = require("rows")
 local Tbl    = {is="Tbl"}
 
 function Tbl.new(f)
   local i = Object.new()
-  i._use, i.me   = {}, Tbl
-  i.rows, i.cols = {}, Cols.new()
+  i.me = Tbl
+  i.rows, i.cols = {}, Columns.new()
   return i
 end
 
