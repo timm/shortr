@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>tbl.lua</title>
+  <link rel="stylesheet" href="pycco.css">
+<script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script></head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>DUO=Data Miners Using Optimizers </h1><h1>tbl.lua</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <a href=index.html>home</a> :: <a href=about.html>about</a> :: <a href=https://github.com/timm/lua/tree/master/test>examples</a> :: <a href=http://github.com/timm/lua>src</a> :: <a href=http://github.com/timm/lua/issues>discuss</a> :: <a href=https://github.com/timm/lua/blob/master/LICENSE.md>© 2020</a> by <a href=http://menzies.us>timm</a></p>
+<hr />
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kd">local</span> <span class="n">Object</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">Cols</span>   <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;cols&quot;</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">Row</span>    <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;rows&quot;</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">Tbl</span>    <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Tbl&quot;</span><span class="p">}</span>
+
+<span class="kr">function</span> <span class="nc">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Object</span><span class="p">.</span><span class="n">new</span><span class="p">()</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">_use</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">me</span>   <span class="o">=</span> <span class="p">{},</span> <span class="n">Tbl</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">cols</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">Cols</span><span class="p">.</span><span class="n">new</span><span class="p">()</span>
+  <span class="kr">return</span> <span class="n">i</span>
+<span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nf">row</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">cells</span><span class="p">,</span>     <span class="n">x</span><span class="p">,</span><span class="n">r</span><span class="p">)</span>
+  <span class="n">r</span><span class="o">=</span> <span class="o">#</span><span class="n">t</span><span class="p">.</span><span class="n">rows</span><span class="o">+</span><span class="mi">1</span>
+  <span class="n">t</span><span class="p">.</span><span class="n">rows</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+  <span class="kr">for</span> <span class="n">c</span><span class="p">,</span><span class="n">c0</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="n">_use</span><span class="p">)</span> <span class="kr">do</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">cells</span><span class="p">[</span><span class="n">c0</span><span class="p">]</span>
+    <span class="kr">if</span> <span class="n">x</span> <span class="o">~=</span> <span class="s2">&quot;?&quot;</span> <span class="kr">then</span>
+      <span class="kr">if</span> <span class="n">t</span><span class="p">.</span><span class="n">nums</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="kr">then</span> 
+          <span class="n">x</span> <span class="o">=</span> <span class="nb">tonumber</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">numInc</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="n">nums</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="n">x</span><span class="p">)</span>
+      <span class="kr">else</span>
+          <span class="n">symInc</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="n">syms</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="n">x</span><span class="p">)</span>
+    <span class="kr">end</span> <span class="kr">end</span>
+    <span class="n">t</span><span class="p">.</span><span class="n">rows</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>  <span class="kr">end</span>
+  <span class="kr">return</span> <span class="n">t</span>
+<span class="kr">end</span>  
+
+<span class="kr">function</span> <span class="nf">clone</span><span class="p">(</span><span class="n">data0</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span>   <span class="n">data1</span><span class="p">)</span>
+   <span class="n">data1</span> <span class="o">=</span> <span class="n">header</span><span class="p">(</span><span class="n">data0</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+   <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">cells</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">rows</span> <span class="ow">or</span> <span class="n">data0</span><span class="p">.</span><span class="n">rows</span><span class="p">)</span> <span class="kr">do</span> 
+     <span class="n">row</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">cells</span><span class="p">)</span> <span class="kr">end</span>
+   <span class="kr">return</span> <span class="n">data1</span>
+<span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h2>Making <code>data</code> from Ram</h2>
+<p>Reading data from disk, is handled by the
+<code>rows</code> function (that sets some defaults), after
+which time it calls <code>rows1</code> to do the actually
+stream over the disk data. </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nf">rows1</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span><span class="n">f0</span><span class="p">,</span><span class="n">f</span><span class="p">,</span>   <span class="n">first</span><span class="p">,</span><span class="n">line</span><span class="p">,</span><span class="n">cells</span><span class="p">)</span>
+  <span class="n">first</span><span class="p">,</span><span class="n">line</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span><span class="nb">io.read</span><span class="p">()</span>
+  <span class="kr">while</span> <span class="n">line</span> <span class="kr">do</span>
+    <span class="n">line</span><span class="o">=</span> <span class="n">line</span><span class="p">:</span><span class="n">gsub</span><span class="p">(</span><span class="s2">&quot;[</span><span class="se">\t\r</span><span class="s2"> ]*&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+              <span class="p">:</span><span class="n">gsub</span><span class="p">(</span><span class="s2">&quot;#.*&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">cells</span> <span class="o">=</span> <span class="n">split</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="nb">io.read</span><span class="p">()</span>
+    <span class="kr">if</span> <span class="o">#</span><span class="n">cells</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="kr">then</span>
+      <span class="kr">if</span> <span class="n">first</span> <span class="kr">then</span> <span class="n">f0</span><span class="p">(</span><span class="n">cells</span><span class="p">,</span><span class="n">t</span><span class="p">)</span> <span class="kr">else</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">cells</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span>
+      <span class="n">first</span> <span class="o">=</span> <span class="kc">false</span>
+  <span class="kr">end</span> 
+  <span class="nb">io.close</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+  <span class="kr">return</span> <span class="n">t</span>
+<span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nf">rows</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">f0</span><span class="p">,</span><span class="n">f</span><span class="p">,</span>      <span class="n">stream</span><span class="p">,</span><span class="n">txt</span><span class="p">,</span><span class="n">cells</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+  <span class="kr">return</span> <span class="n">rows1</span><span class="p">(</span> <span class="n">file</span> <span class="ow">and</span> <span class="nb">io.input</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="c1">-- reading from some specified file</span>
+                      <span class="ow">or</span> <span class="nb">io.input</span><span class="p">(),</span>    <span class="c1">-- reading from standard input</span>
+                <span class="n">t</span>  <span class="ow">or</span> <span class="n">data</span><span class="p">(),</span> <span class="n">f0</span> <span class="ow">or</span> <span class="n">header</span><span class="p">,</span> <span class="n">f</span> <span class="ow">or</span> <span class="n">row</span><span class="p">)</span> <span class="kr">end</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
