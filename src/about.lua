@@ -98,6 +98,9 @@ function column.new(t)
   return i -- don't forget to return the new instance.
 end
 
+-- ----------
+-- And finally...
+
 return Column
 
 

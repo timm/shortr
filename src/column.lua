@@ -21,4 +21,7 @@ function Column.new(t)
   return i
 end
 
+-- ----------
+-- And finally...
+
 return Column

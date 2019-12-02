@@ -40,9 +40,12 @@ local function nump(x)   return goalp(x) or x:match("%$") end
 
 -- For example, here some data with a goal of
 -- reducing temperature (denoted `<temp`) while predicting
--- for `!play` (and `$humid` is a number). 
+-- for `!play` (and `$humid` is a number). Note that
+-- `?wind` means we intend to ignore that column. Also,
+-- when something has no magic (e.g. `outlook`) then it is just
+-- an independent symbol:
 --
---       outlook,  <temp, $humid, wind, !play
+--       outlook,  <temp, $humid, ?wind, !play
 --       sunny, 85, 85,  FALSE, no
 --       sunny, 80, 90, TRUE, no
 --       overcast, 83, 86, FALSE, yes
@@ -65,8 +68,6 @@ local function nump(x)   return goalp(x) or x:match("%$") end
 function Columns.clone(i)
   return Columns.add(Columns.new(), i.names)
 end
-
-
 
 -- ----------------------------------
 -- The actual work of reading the names and placing them in
@@ -92,7 +93,7 @@ end
 --
 
 function Columns.add(i,cells,   c,what,alike,xs,ys,new)
-  local function add(a,x) a[#a+1] = new end
+  local function add(a) a[#a+1] = new end
   c = 0
   for c0,x in pairs(cells) do
     if usep(x) then
@@ -111,6 +112,10 @@ function Columns.add(i,cells,   c,what,alike,xs,ys,new)
       if klassp(x) then i.y.klass = new end end end 
   return i
 end
+
+-- ----------
+-- And finally...
+
 
 
 return Columns

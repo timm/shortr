@@ -81,4 +81,8 @@ function Num.xpect(i,j,  n)
   return i.n/n * i.sd+ j.n/n * j.sd
 end
 
+-- ----------
+-- And finally...
+
+
 return Num

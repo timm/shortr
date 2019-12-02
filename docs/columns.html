@@ -82,8 +82,11 @@ that tell us the type of the column:</p>
       </div>
       <p>For example, here some data with a goal of
 reducing temperature (denoted <code>&lt;temp</code>) while predicting
-for <code>!play</code> (and <code>$humid</code> is a number). </p>
-<pre><code>  outlook,  &lt;temp, $humid, wind, !play
+for <code>!play</code> (and <code>$humid</code> is a number). Note that
+<code>?wind</code> means we intend to ignore that column. Also,
+when something has no magic (e.g. <code>outlook</code>) then it is just
+an independent symbol:</p>
+<pre><code>  outlook,  &lt;temp, $humid, ?wind, !play
   sunny, 85, 85,  FALSE, no
   sunny, 80, 90, TRUE, no
   overcast, 83, 86, FALSE, yes
@@ -144,7 +147,7 @@ Also,  some columns are numeric <code>nums</code>, marked with a <code>$</code>,
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Columns</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">cells</span><span class="p">,</span>   <span class="n">c</span><span class="p">,</span><span class="n">what</span><span class="p">,</span><span class="n">alike</span><span class="p">,</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span><span class="p">,</span><span class="n">new</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="kr">function</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">x</span><span class="p">)</span> <span class="n">a</span><span class="p">[</span><span class="o">#</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span> <span class="kr">end</span>
+  <span class="kd">local</span> <span class="kr">function</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="n">a</span><span class="p">[</span><span class="o">#</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span> <span class="kr">end</span>
   <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
   <span class="kr">for</span> <span class="n">c0</span><span class="p">,</span><span class="n">x</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">cells</span><span class="p">)</span> <span class="kr">do</span>
     <span class="kr">if</span> <span class="n">usep</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="kr">then</span>
@@ -162,10 +165,20 @@ Also,  some columns are numeric <code>nums</code>, marked with a <code>$</code>,
       <span class="kr">if</span> <span class="n">goalp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="kr">then</span> <span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">y</span><span class="p">.</span><span class="n">goals</span><span class="p">)</span> <span class="kr">end</span> 
       <span class="kr">if</span> <span class="n">klassp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="kr">then</span> <span class="n">i</span><span class="p">.</span><span class="n">y</span><span class="p">.</span><span class="n">klass</span> <span class="o">=</span> <span class="n">new</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> 
   <span class="kr">return</span> <span class="n">i</span>
-<span class="kr">end</span>
-
-
-<span class="kr">return</span> <span class="n">Columns</span>
+<span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <hr />
+<p>And finally&hellip;</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">return</span> <span class="n">Columns</span>
 
 </pre></div>
     </div>

@@ -48,4 +48,8 @@ function Sym.xpect(i,j,   n)
   return i.n/n * Sym.ent(i) + j.n/n * Sym.ent(j)
 end
 
+-- ----------
+-- And finally...
+
+
 return Sym
