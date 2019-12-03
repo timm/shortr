@@ -10,5 +10,6 @@ install:
 
 script:
   - ls
-  - cd timm/lua/test
+  - cd ~/lua/test
+  - pwd
   - bash all.sh
