@@ -5,8 +5,12 @@ for i in *.lua; do
 done 
 
 ../lua-5.3.5/src/lua  -e "$s" | 
-gawk ' 1 
-       /^-- Test.*oops/ { err = $5}
-       END               { exit err - 1}
-     '
+gawk ' 
+1                                  # a) print current line      
+/^-- Test.*oops/ { err = $5}       # b) catch current error number
+END               { exit err - 1}  # c) one test is designed to fail 
+                                   #    (just to test the test engine)
+                                   #    so "pass" really means, "only
+                                   #    one test fails"
+'
 

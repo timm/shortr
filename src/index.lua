@@ -3,11 +3,10 @@
 
 -- Just a little light Lua. Less, but better.
 -- 
+-- <img src="https://travis-ci.org/timm/lua.svg?branch=master">
 -- <img align=right width=250 
 --  src="https://github.com/timm/lua/raw/master/etc/img/contents.jpg">
 -- 
--- <img src="https://travis-ci.org/timm/lua.svg?branch=master">
---
 -- Useful  for training graduate students in software analytics. "Here, take this executable
 -- specification and code it up in e.g. Python."
 -- 
