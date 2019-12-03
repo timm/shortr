@@ -10,6 +10,6 @@ install:
 
 script:
   - ls
-  - cd ~/lua/test
+  - cd ../test
   - pwd
   - bash all.sh
