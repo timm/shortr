@@ -6,4 +6,4 @@
 
 Sample lua code. Share and enjoy.
 
-For details, see [website](http://github.com/timm/lua)
+For details, see [website](http://menzies.us/lua).
