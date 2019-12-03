@@ -1,11 +1,15 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 ------- --------- --------- --------- --------- --------- 
 
--- Just a little light Lua. Less, but better.
--- 
+-- <img src="https://img.shields.io/badge/language-lua-orange">
+-- <img src="https://img.shields.io/badge/purpose-ai,se,teaching-blueviolet">
+-- <img src="https://img.shields.io/badge/platform-mac,linux-informational">
 -- <img src="https://travis-ci.org/timm/lua.svg?branch=master">
--- <img align=right width=250 
---  src="https://github.com/timm/lua/raw/master/etc/img/contents.jpg">
+
+-- Just a little light Lua. Less, but better.
+--
+-- <!--img align=right width=250 
+--  src="https://github.com/timm/lua/raw/master/etc/img/contents.jpg"-->
 -- 
 -- Useful  for training graduate students in software analytics. "Here, take this executable
 -- specification and code it up in e.g. Python."
