@@ -9,5 +9,5 @@ install:
   - make linux test
 
 script:
-  - cd test
+  - cd lua/test
   - bash all.sh
