@@ -1,5 +1,3 @@
-# lua
-
 <img src="https://img.shields.io/badge/language-lua-orange">
 <img src="https://img.shields.io/badge/purpose-ai,se,teaching-blueviolet">
 <img src="https://img.shields.io/badge/platform-mac,linux-informational">
