@@ -9,7 +9,7 @@
 <div id='container'>
   <div id="background"></div>
   <div class='section'>
-    <div class='docs'><h1>DUO=Data Miners Using Optimizers </h1><h1>csv.lua</h1></div>
+    <div class='docs'><h1>DUO = Data Miners using <br>and/or using  Optimizers </h1><h1>csv.lua</h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -30,7 +30,7 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p><img align=right 
+      <p><img align=right width=200 
  src="https://github.com/timm/lua/raw/master/etc/img/csv.png">
 Returns a function that reads a csv file.  Coerce string 
 to numbers (or strings) as appropriate. If a line one 
@@ -100,9 +100,11 @@ coerce strings to numbers (or strings) as appropriate.</p>
   <span class="kr">if</span> <span class="n">file</span> <span class="kr">then</span> <span class="nb">io.input</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="kr">else</span> <span class="n">stream</span><span class="o">=</span><span class="nb">io.input</span><span class="p">()</span> <span class="kr">end</span>
   <span class="n">first</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span>  <span class="kc">true</span><span class="p">,</span> <span class="nb">io.read</span><span class="p">()</span>
   <span class="kr">while</span> <span class="n">line</span> <span class="kr">do</span>
-    <span class="kr">if</span>   <span class="n">first</span> 
-    <span class="kr">then</span> <span class="n">todo</span><span class="p">,</span><span class="n">cells</span> <span class="o">=</span> <span class="n">usable</span><span class="p">(</span> <span class="n">split</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="p">);</span> <span class="n">f0</span><span class="p">(</span><span class="n">cells</span><span class="p">)</span>  
-    <span class="kr">else</span> <span class="n">f</span><span class="p">(</span> <span class="n">use</span><span class="p">(</span> <span class="n">split</span><span class="p">(</span><span class="n">line</span><span class="p">),</span> <span class="n">todo</span><span class="p">)</span> <span class="p">)</span> 
+    <span class="kr">if</span> <span class="n">first</span> <span class="kr">then</span> 
+      <span class="n">todo</span><span class="p">,</span><span class="n">cells</span> <span class="o">=</span> <span class="n">usable</span><span class="p">(</span> <span class="n">split</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="p">)</span>
+      <span class="n">f0</span><span class="p">(</span><span class="n">cells</span><span class="p">)</span>  
+    <span class="kr">else</span> 
+      <span class="n">f</span><span class="p">(</span> <span class="n">use</span><span class="p">(</span> <span class="n">split</span><span class="p">(</span><span class="n">line</span><span class="p">),</span> <span class="n">todo</span><span class="p">)</span> <span class="p">)</span> 
     <span class="kr">end</span>
     <span class="n">first</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="nb">io.read</span><span class="p">()</span>
   <span class="kr">end</span>

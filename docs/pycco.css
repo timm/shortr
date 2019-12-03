@@ -111,14 +111,13 @@ div.code {
   padding: 14px 15px 16px 50px;
   vertical-align: top;
 }
-  .code pre, .docs p code {
-    font-size: 12px;
-  }
+  .code pre, .docs p code { font-size: 12px; }
     pre, tt, code {
       line-height: 18px;
       font-family: Monaco, Consolas, "Lucida Console", monospace;
       margin: 0; padding: 0;
     }
+  .docs pre { font-size: 11px; line-height:12px; }
 div.clearall {
     clear: both;
 }
