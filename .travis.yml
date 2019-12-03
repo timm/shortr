@@ -3,7 +3,7 @@ language: C
 sudo: true
 
 install:
-   - sudo apt install gawk lua
+   - sudo apt install gawk lua5.3
 
 script:
   - cd test
