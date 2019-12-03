@@ -7,7 +7,7 @@
 -- This is a helper class for [Tbl](tbl.html). Everything that tables
 -- knows about its columns, are stored here in `Columns`.
 --
--- (By the way, if this code seems a little complex, just relax. Its
+-- (By the way, if this code seems a little arcane, just relax. Its
 -- only called once on the first row. )
 --
 
@@ -55,7 +55,6 @@ local function nump(x)   return goalp(x) or x:match("%$") end
 --       sunny, 72, 95, FALSE, no
 --       sunny, 69, 70, FALSE, yes
 --       
-
 
 -- With this little language for the column headers,
 -- if we
