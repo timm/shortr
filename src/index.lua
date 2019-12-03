@@ -6,11 +6,11 @@
 -- <img src="https://img.shields.io/badge/platform-mac,linux-informational">
 -- <img src="https://travis-ci.org/timm/lua.svg?branch=master">
 
+-- <img  width=400 
+--  src="https://github.com/timm/lua/raw/master/etc/img/index.jpg">
+
 -- Just a little light Lua. Less, but better.
 --
--- <img align=right width=400 
---  src="https://github.com/timm/lua/raw/master/etc/img/index.jpg">
--- 
 -- Useful  for training graduate students in software analytics. "Here, take this executable
 -- specification and code it up in e.g. Python."
 -- 
