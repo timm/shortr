@@ -21,18 +21,7 @@
 <hr />
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span></span><span class="kd">local</span> <span class="n">THE</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">).</span><span class="n">misc</span>
-
-<span class="nb">math.randomseed</span><span class="p">(</span><span class="n">THE</span><span class="p">.</span><span class="n">seed</span><span class="p">)</span>
-<span class="n">r</span> <span class="o">=</span> <span class="nb">math.random</span>
-
-<span class="kr">function</span> <span class="nf">sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="nb">table.sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">return</span> <span class="n">a</span> <span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nf">within</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span> <span class="kr">return</span> <span class="n">b</span><span class="o">&gt;=</span><span class="n">a</span> <span class="ow">and</span> <span class="n">b</span><span class="o">&lt;=</span><span class="n">c</span> <span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nf">round</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="kr">return</span> <span class="nb">math.floor</span><span class="p">(</span> <span class="n">x</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="p">)</span> <span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nf">same</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="kr">return</span> <span class="n">x</span> <span class="kr">end</span></pre></div>
+      <div class="highlight"><pre><span></span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -41,7 +30,42 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>Convert tables to strings (and do so recursively).
+      <p>Set up the standard random seed.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span> <span class="n">THE</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">).</span><span class="n">misc</span>
+<span class="nb">math.randomseed</span><span class="p">(</span><span class="n">THE</span><span class="p">.</span><span class="n">seed</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <hr />
+<p>Just some commonly used functions.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">r</span> <span class="o">=</span> <span class="nb">math.random</span>
+
+<span class="kr">function</span> <span class="nf">same</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="kr">return</span> <span class="n">x</span> <span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nf">sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="nb">table.sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">return</span> <span class="n">a</span> <span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nf">within</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span> <span class="kr">return</span> <span class="n">b</span><span class="o">&gt;=</span><span class="n">a</span> <span class="ow">and</span> <span class="n">b</span><span class="o">&lt;=</span><span class="n">c</span> <span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nf">round</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="kr">return</span> <span class="nb">math.floor</span><span class="p">(</span> <span class="n">x</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="p">)</span> <span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <hr />
+<p>Convert tables to strings (and do so recursively).
 Work over the tables in alphabetically order of the keys.
 Skip entries that are <em>private</em> (that start with <code>_</code>)
 or which point to functions.
