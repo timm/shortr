@@ -3,8 +3,9 @@
 
 package.path = '../src/?.lua;' .. package.path
 require "lib"
+local ok = require("ok")
 local csv = require("csv")
 
-csv("../data/weather.csv", o, o)
-csv("../data/weather.csv", o, o)
+ok{once=function() csv("../data/weather.csv", o) end}
+ok{twice=function() csv("../data/weather.csv", o) end}
 

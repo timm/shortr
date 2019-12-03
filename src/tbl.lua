@@ -3,62 +3,42 @@
 
 local Object = require("object")
 local Columns= require("columns")
-local Row    = require("rows")
+local Csv    = require("csv")
+local Row    = require("row")
 local Tbl    = {is="Tbl"}
 
-function Tbl.new(f)
+function Tbl.new(t)
   local i = Object.new()
   i.me = Tbl
   i.rows, i.cols = {}, Columns.new()
+  t = t or {}
+  if t.file then Tbl.read(i,t.file) end
+  i.frozen = t.frozen or false
+  i.fixed = t.fixed or false
   return i
 end
 
-function row(t,cells,     x,r)
-  r= #t.rows+1
-  t.rows[r] = {}
-  for c,c0 in pairs(t._use) do
-    x = cells[c0]
-    if x ~= "?" then
-      if t.nums[c] then 
-          x = tonumber(x)
-        numInc(t.nums[c], x)
-      else
-          symInc(t.syms[c], x)
-    end end
-    t.rows[r][c] = x  end
-  return t
+function Tbl.read(i,file) 
+   Csv(file, function(a,   f) 
+               f = #i.rows==0 and Tbl.header or Tbl.row
+               f(i,a)
+             end) 
+end
+
+function Tbl.header(i,a) Columns.add(i.cols,a) end
+
+function Tbl.row(i,a)
+  if not i.frozen then
+    for _,x in pairs(i.cols.all) do c.me.add(c, a[c.pos]) end
+  end
+  if not i.fixed then
+    i.rows[#i.rows + 1] = Row.new(a) 
+  end
 end  
 
-function clone(data0, rows,   data1)
-   data1 = header(data0.name)
-   for _,cells in pairs(rows or data0.rows) do 
-     row(data1, cells) end
-   return data1
+function Tbl.clone(i, rows)
+   i = Columns.clone(i.columns)
+   if rows then 
+     for _,row in pairs(rows) do Tbl.row(i,row.cells) end end
+   return i
 end
-
--- ## Making `data` from Ram 
---
--- Reading data from disk, is handled by the
--- `rows` function (that sets some defaults), after
--- which time it calls `rows1` to do the actually
--- stream over the disk data. 
-
-function rows1(stream, t,f0,f,   first,line,cells)
-  first,line = true,io.read()
-  while line do
-    line= line:gsub("[\t\r ]*","")
-              :gsub("#.*","")
-    cells = split(line)
-    line = io.read()
-    if #cells > 0 then
-      if first then f0(cells,t) else f(t,cells) end end
-      first = false
-  end 
-  io.close(stream)
-  return t
-end
-
-function rows(file,t,f0,f,      stream,txt,cells,r,line)
-  return rows1( file and io.input(file) -- reading from some specified file
-                      or io.input(),    -- reading from standard input
-                t  or data(), f0 or header, f or row) end 
