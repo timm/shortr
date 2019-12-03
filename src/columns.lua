@@ -23,7 +23,6 @@ function Columns.new()
   i.x ={all={},  nums={}, syms={}}
   i.y ={all={},  nums={}, syms={}, goals={}, klass=nil}
   i.names = {}
-  i.use   = {}
   return i
 end
 
@@ -92,24 +91,20 @@ end
 --
 --
 
-function Columns.add(i,cells,   c,what,alike,xs,ys,new)
+function Columns.add(i,cells,   what,alike,xs,ys,new)
   local function add(a) a[#a+1] = new end
-  c = 0
-  for c0,x in pairs(cells) do
-    if usep(x) then
-      c          = c+1
-      i.use[c]   = c0
-      i.names[c] = x
-      if   nump(x)
-      then what, alike,xs,ys = Num, i.nums, i.x.nums, i.y.nums
-      else what, alike,xs,ys = Sym, i.syms, i.x.syms, i.y.syms
-      end
-      new  = what.new{pos=c,txt=x}
-      add(i.all)
-      add(alike)
-      add(depp(x) and ys or xs)
-      if goalp(x)  then add(i.y.goals) end 
-      if klassp(x) then i.y.klass = new end end end 
+  i.names = cells
+  for c,x in pairs(cells) do
+    if   nump(x)
+    then what, alike,xs,ys = Num, i.nums, i.x.nums, i.y.nums
+    else what, alike,xs,ys = Sym, i.syms, i.x.syms, i.y.syms
+    end
+    new = what.new{pos=c,txt=x}
+    add(i.all)
+    add(alike)
+    add(depp(x) and ys or xs)
+    if goalp(x)  then add(i.y.goals) end 
+    if klassp(x) then i.y.klass = new end end 
   return i
 end
 

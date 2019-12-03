@@ -6,3 +6,5 @@ require "lib"
 local csv = require("csv")
 
 csv("../data/weather.csv", o, o)
+csv("../data/weather.csv", o, o)
+
