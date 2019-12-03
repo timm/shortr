@@ -5,10 +5,14 @@ for i in *.lua; do
 done 
 
 /usr/bin/lua -e "$s" | 
+gawk ' 1 
+       /^-- Test.*oops/ { err = $5}
+       END               { exit err - 1}
+     '
+
 /usr/bin/lua5.3 -e "$s" | 
 gawk ' 1 
        /^-- Test.*oops/ { err = $5}
        END               { exit err - 1}
      '
 
-exit $?
