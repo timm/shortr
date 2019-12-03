@@ -9,5 +9,6 @@ install:
   - make linux test
 
 script:
-  - cd lua/test
+  - ls
+  - cd timm/lua/test
   - bash all.sh
