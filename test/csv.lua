@@ -6,10 +6,10 @@ require "lib"
 local ok = require("ok")
 local csv = require("csv")
 
-for line in csv1("../data/weather.csv") do
+for line in csv("../data/weather.csv") do
   o(line)
 end
-for line in csv1("../data/weather.csv") do
+for line in csv("../data/weather.csv") do
   o(line)
 end
 
