@@ -10,6 +10,10 @@ function Row.new(cells)
   return i
 end
 
+--function Row.dist(i,j,t,cols,     n,d)
+--
+--   for 
+ppend:w
 -- ----------
 -- And finally...
 

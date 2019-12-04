@@ -47,6 +47,12 @@ function Sym.xpect(i,j,   n)
   return i.n/n * Sym.ent(i) + j.n/n * Sym.ent(j)
 end
 
+function Sym.dist(i,x,y)
+  if   x == THE.char.skip and y == THE.char.skip then return 1
+  else return  x==y  and 0 or 1
+  end
+end
+  
 -- ----------
 -- And finally...
 

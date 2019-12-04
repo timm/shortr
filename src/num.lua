@@ -81,6 +81,19 @@ function Num.xpect(i,j,  n)
   return i.n/n * i.sd+ j.n/n * j.sd
 end
 
+-- -----------
+function Num.dist(i,x,y,   nox,noy,z)
+  nox = x == THE.char.skip
+  noy = y == THE.char.skip
+  if nox and noy then return 1 
+  elseif nox then y= Num.norm(i,y); x= y>0.5 and 1 or 0 
+  elseif noy then x= Num.norm(i,x); y= x>0.5 and 1 or 0 
+  else            x= Num.norm(i,x)
+                  y= Num.norm(i,y)
+  end
+  return x>y and x-y or y-x
+end
+
 -- ----------
 -- And finally...
 
