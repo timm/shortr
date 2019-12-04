@@ -1,7 +1,7 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:formatoptions+=cro 
 --------- --------- --------- --------- --------- --------- 
 
--- <img align=right width=200 
+-- <img 
 --  src="https://github.com/timm/lua/raw/master/etc/img/tbl.png">
 -- Tables store [Row](row.html)s, which are summarized
 -- [Columns](columns.html).
@@ -25,7 +25,8 @@ function Tbl.new(t)
   return i
 end
 
--- Tables can be initialized from csv files.
+-- Tables can be initialized from csv files
+-- using the call `Tbl.new{file="xxx.csv"}`.
 function Tbl.read(i,file) 
   Csv(file, function(a) Tbl.add(i,a) end) 
   return i end
@@ -35,7 +36,7 @@ function Tbl.read(i,file)
 -- row define the column name and type (e.g. numeric
 -- or symbolic) and the rest of the rows define the table data.
 function Tbl.add(i, a)
-  if #i.cols.all==0 
+  if #i.cols.all==0  -- i.e. no headers seen so far
   then Tbl.header(i,a) 
   else Tbl.row(i,a) end end
 
@@ -62,8 +63,12 @@ function Tbl.row(i,a)
 function Tbl.clone(i, rows)
    i = Columns.clone(i.columns)
    if rows then 
-     for _,row in pairs(rows) do Tbl.row(i,row.cells) end end
+     for _,row in pairs(rows) do 
+       Tbl.row(i,row.cells) end end
    return i
 end
+
+-- ---------------------
+-- And finally...
 
 return Tbl
