@@ -1,7 +1,7 @@
 # INSTALL
 
 
-<img align=right  width=400
+<img align=right  width=300
      src="https://github.com/timm/lua/raw/master/etc/img/install.png">
 
 
