@@ -99,7 +99,8 @@ function column.new(t)
 end
 
 -- ----------
--- And finally...
+-- And finally, all my files return some local variable
+-- which, users of this file, can utilize in their own work.
 
 return Column
 
