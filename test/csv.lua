@@ -2,7 +2,7 @@
 --------- --------- --------- --------- --------- --------- 
 
 package.path = '../src/?.lua;' .. package.path
-require "lib"
+local o=require("lib").o
 local ok = require("ok")
 local csv = require("csv")
 

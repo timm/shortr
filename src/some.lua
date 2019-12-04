@@ -8,9 +8,9 @@
 -- This is a very useful when streaming over a large data space.
 
 local Column = require("column")
+local r     = require("lib").r
 local div   = require("divs")
 local Some  = {is="Some"}
-
 function Some.new(t)
   local i = Column.new(t)
   i.me    = Some

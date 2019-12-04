@@ -2,7 +2,7 @@
 --------- --------- --------- --------- --------- --------- 
 
 package.path = '../src/?.lua;' .. package.path
-require "lib"
+r=require("lib").r
 
 local ok   = require("ok")
 local divs = require("divs")

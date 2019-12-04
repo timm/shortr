@@ -2,7 +2,6 @@
 --------- --------- --------- --------- --------- --------- 
 
 package.path = '../src/?.lua;' .. package.path
-require "lib"
 local ok = require("ok")
 
 roguevar=22

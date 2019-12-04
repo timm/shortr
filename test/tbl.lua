@@ -3,6 +3,7 @@
 
 package.path = '../src/?.lua;' .. package.path
 
+local within=require("lib").within
 local ok=require("ok")
 local Tbl=require("tbl")
 
@@ -14,3 +15,4 @@ ok{tbl=function(t)
   assert(within(6.57,n.sd,6.58))
   assert(within(73.57, n.mu, 73.58))
 end}
+

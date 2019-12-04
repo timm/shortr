@@ -5,19 +5,26 @@
 
 local THE=require("the").misc
 math.randomseed(THE.seed)
+local Lib={}
 
 -- ------------------------------------
 -- Just some commonly used functions.
+Lib.r = math.random
 
-r = math.random
+function Lib.same(x) return x end
+function Lib.last(a) return a[#a] end
 
-function same(x) return x end
+function Lib.sort(a) table.sort(a) return a end
 
-function sort(a) table.sort(a) return a end
+function Lib.within(a,b,c) return b>=a and b<=c end
 
-function within(a,b,c) return b>=a and b<=c end
+function Lib.round(x) return math.floor( x + 0.5 ) end
 
-function round(x) return math.floor( x + 0.5 ) end
+function Lib.mean(a,       n,sum) 
+  n,sum=0,0
+  for _,one in pairs(a) do n=n+1; sum= sum+ one end 
+  return sum/n
+end
 
 -- -------------------------
 -- Convert tables to strings (and do so recursively).
@@ -27,9 +34,9 @@ function round(x) return math.floor( x + 0.5 ) end
 -- If all the indexes are numeric,
 -- then do not show the keys. 
 
-function o(t) print(oo(t))  end
+function Lib.o(t) print(Lib.oo(t))  end
 
-function oo(t,     s,sep,keys, nums)
+function Lib.oo(t,     s,sep,keys, nums)
   if type(t) ~= "table" then return tostring(t) end
   s, sep, keys, nums = '','', {}, true
   for k, v in pairs(t) do 
@@ -41,7 +48,7 @@ function oo(t,     s,sep,keys, nums)
   table.sort(keys)
   for _, k in pairs(keys) do
     local v = t[k]
-    v   = type(v) == 'table' and oo(v) or tostring(v) 
+    v   = type(v) == 'table' and Lib.oo(v) or tostring(v) 
     if nums
     then s = s .. sep .. v
     else s = s .. sep .. tostring(k) .. '=' .. v
@@ -50,3 +57,8 @@ function oo(t,     s,sep,keys, nums)
   end 
   return  '{' .. s ..'}'
 end
+
+-- -----------------
+-- And finally...
+
+return Lib

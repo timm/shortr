@@ -2,7 +2,7 @@
 --------- --------- --------- --------- --------- --------- 
 
 package.path = '../src/?.lua;' .. package.path
-require "lib"
+local within = require("lib").within
 
 local ok=require("ok")
 local Sym=require("sym")
