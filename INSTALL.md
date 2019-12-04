@@ -14,7 +14,7 @@
      - and running `lua x.lua`
      - or, in a lua session in that directory `local Num=require('num')`.
 - Or, you can access this code by placing it at the end of  `LUA_PATH`; e.g
-  - `export LUA_PATH="$LUA_PATH:/Users/timm/gits/lua/src/?.lua"`
+  - `export LUA_PATH="$LUA_PATH;/Users/timm/gits/lua/src/?.lua"`
   - Once you do that, you can load this code via; e.g.
     - `local Num=require('num')`
 
