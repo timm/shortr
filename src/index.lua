@@ -29,7 +29,7 @@
 -- 
 -- - LUA is  a wonderful language: clean and simple syntax, quick to learn, very portable, supports
 -- garbage collection, objects, functional programming, and tail call optimization. Also, it is
--- well documented, and can boast a friendly and enthusiastic  support community.
+-- well documented, and can has a friendly and enthusiastic  support community.
 -- - When you need AI on edge devices,
 -- better to use something very concise and lightweight (like LUA).
 -- - Finally, LUA is very useful  for training graduate students in how to build AI systems ("Here, take this executable
