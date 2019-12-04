@@ -6,7 +6,7 @@ package.path = '../src/?.lua;' .. package.path
 local ok=require("ok")
 local Tbl=require("tbl")
 
-ok{num=function(t)
+ok{tbl=function(t)
   t = Tbl.new{file="../data/weather.csv"}
   assert(#t.rows==14)
   assert(t.cols.y.klass.mode=="yes")

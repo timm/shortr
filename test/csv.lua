@@ -4,8 +4,12 @@
 package.path = '../src/?.lua;' .. package.path
 require "lib"
 local ok = require("ok")
-local csv = require("csv")
+local csv1 = require("csv1")
 
-ok{once=function() csv("../data/weather.csv", o) end}
-ok{twice=function() csv("../data/weather.csv", o) end}
+for line in csv1("../data/weather.csv") do
+  o(line)
+end
+for line in csv1("../data/weather.csv") do
+  o(line)
+end
 

@@ -8,11 +8,8 @@
 -- word holds the skip character `?`, then ignore that column.
 
 -- ---------
--- The `usable` function works out what columns to use and
--- `use` actually does the selection.
-
-require "lib"
-
+-- The `usable` function works out what `todo` with the columns
+-- and `use` applies that `todo` list.
 local function usable(a,    b,todo)
   b,todo = {},{}
   for k,v in pairs(a) do
@@ -30,7 +27,6 @@ end
 -- -----------------
 -- Split a line on comma, trim leading/training whitespace, 
 -- coerce strings to numbers (or strings) as appropriate.
-
 local function atoms(str,  a)
   local function trim(s) return s:gsub("^%s*(.-)%s*$","%1") end
   local function atom(s) return tonumber(s) or s end
@@ -40,19 +36,17 @@ local function atoms(str,  a)
 end
 
 -- ----------
--- Run the rows, call the 
---  and `f` on all the other rows.
--- If `file` is nil then read from standard input.
-
-return function (file, f,    line,a,b4,todo)
+-- Finally, return the iterator that handles all the above.
+return function (file,      todo,line,first)
   if file then io.input(file) else stream=io.input() end
-  f  = f or print
-  b4, line =  true, io.read()
-  while line do
-    a = atoms(line)
-    if b4 then todo,a = usable(a) else a = use(a,todo) end
-    f(a)
-    b4, line = false, io.read()
+  first, line =  true, io.read()
+  return function (    a)
+    if line then 
+      a = atoms(line)
+      if first then todo,a = usable(a) else a = use(a,todo) end
+      first,line = false,io.read()
+    else
+      if stream then io.close(stream) end end 
+    return a
   end
-  if stream then io.close(stream) end
 end

@@ -10,7 +10,7 @@
 require "lib"
 local Object = require("object")
 local Columns= require("columns")
-local Csv    = require("csv")
+local csv    = require("csv")
 local Row    = require("row")
 local Tbl    = {is="Tbl"}
 
@@ -28,12 +28,11 @@ end
 -- Tables can be initialized from csv files
 -- using the call `Tbl.new{file="xxx.csv"}`.
 function Tbl.read(i,file) 
-  Csv(file, function(a) Tbl.add(i,a) end) 
+  for line in csv(file) do Tbl.add(i,line) end
   return i end
 
 -- When new data is added to tables,
--- the first
--- row define the column name and type (e.g. numeric
+-- the first row define the column name and type (e.g. numeric
 -- or symbolic) and the rest of the rows define the table data.
 function Tbl.add(i, a)
   if #i.cols.all==0  -- i.e. no headers seen so far
@@ -61,11 +60,11 @@ function Tbl.row(i,a)
 -- the new data then (b) optionally, adding in any
 -- some old data.
 function Tbl.clone(i, rows)
-   i = Columns.clone(i.columns)
-   if rows then 
-     for _,row in pairs(rows) do 
-       Tbl.row(i,row.cells) end end
-   return i
+  i = Columns.clone(i.columns)
+  if rows then 
+    for _,row in pairs(rows) do 
+      Tbl.row(i,row.cells) end end
+  return i
 end
 
 -- ---------------------
