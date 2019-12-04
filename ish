@@ -205,7 +205,9 @@ bashrc() { cat<<-'EOF'
 	  done >> $d/$$.list
 	  cat index.lua $d/$$.list > $d/index.lua
 	  pycco -d ../docs -l lua $d/index.lua
-	  cp ../etc/pycco.css ../docs
+	  if [ -f "../etc/pycco.css" ]; then
+	     cp ../etc/pycco.css ../docs
+          fi
           cd ../docs
 	  for f in *.html; do
             sed -i '' -e 'sZ<h1>Z<h1>DUO = Data Miners using <br>and/or using  Optimizers </h1><h1>Z' $f

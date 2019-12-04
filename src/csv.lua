@@ -33,7 +33,7 @@ end
 
 local function atoms(str,  a)
   local function trim(s) return s:gsub("^%s*(.-)%s*$","%1") end
-  local function atom(s) return tostring(s) or s end
+  local function atom(s) return tonumber(s) or s end
   a = {}
   for x in str:gmatch('([^,]+)') do a[#a+1] = atom(trim(x)) end
   return a
@@ -44,7 +44,7 @@ end
 --  and `f` on all the other rows.
 -- If `file` is nil then read from standard input.
 
-return function (file, f,    a,b4,todo)
+return function (file, f,    line,a,b4,todo)
   if file then io.input(file) else stream=io.input() end
   f  = f or print
   b4, line =  true, io.read()

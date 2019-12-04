@@ -10,34 +10,33 @@ function Sym.new(t)
   i.counts = {}
   i.most   = 0
   i.mode   = nil
-  i._ent   = nil
+  i.ent   = nil
   return i
 end
 
 function Sym.ent(i)
-  if i._ent == nil then
-    i._ent = 0
+  if i.ent == nil then
+    i.ent = 0
     for k,v in pairs(i.counts) do
       local p = v/i.n
-      i._ent = i._ent - p*math.log(p,2) end end
-  return i._ent
+      i.ent = i.ent - p*math.log(p,2) end end
+  return i.ent
 end
 
 function Sym.add(i,x,    d)
   if x=="?" then return x end
   x = i.key(x)
   i.n = i.n+1
-  i._ent= nil
+  i.ent= nil
   d = (i.counts[x] or 0) + 1
   i.counts[x] = d
-  if d > i.most then
-    i.most, i.mode = d, x end
+  if d > i.most then i.most, i.mode = d, x end
 end
 
 function Sym.dec(i,x,   d)
   if x=="?" then return x end
   x = i.key(x)
-  i._ent= nil
+  i.ent= nil
   if i.n > 0 then
     i.n = i.n - 1
     i.counts[x] = i.counts[x] - 1 end
