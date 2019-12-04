@@ -4,7 +4,7 @@
 package.path = '../src/?.lua;' .. package.path
 require "lib"
 local ok = require("ok")
-local csv1 = require("csv1")
+local csv = require("csv")
 
 for line in csv1("../data/weather.csv") do
   o(line)
