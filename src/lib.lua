@@ -14,6 +14,11 @@ Lib.r = math.random
 function Lib.same(x) return x end
 function Lib.last(a) return a[#a] end
 
+function Lib.round(num, places)
+  local mult = 10^(places or 0)
+  return math.floor(num * mult + 0.5) / mult
+end
+
 function Lib.sort(a,f) 
   f = f or function(x,y) return x<y end
   table.sort(a,f) 
@@ -21,8 +26,6 @@ function Lib.sort(a,f)
 end
 
 function Lib.within(a,b,c) return b>=a and b<=c end
-
-function Lib.round(x) return math.floor( x + 0.5 ) end
 
 function Lib.mean(a,       n,sum) 
   n,sum=0,0

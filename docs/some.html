@@ -38,8 +38,9 @@ of items. </p>
     <div class='code'>
       <div class="highlight"><pre><span class="kd">local</span> <span class="n">Column</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;column&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">r</span>     <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;lib&quot;</span><span class="p">).</span><span class="n">r</span>
-<span class="kd">local</span> <span class="n">div</span>   <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;divs&quot;</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">divs</span>   <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;divs&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Some</span>  <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Some&quot;</span><span class="p">}</span>
+
 <span class="kr">function</span> <span class="nc">Some</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Column</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
   <span class="n">i</span><span class="p">.</span><span class="n">me</span>    <span class="o">=</span> <span class="n">Some</span>
@@ -87,7 +88,7 @@ that divides the kept numbers in a manner that minimizing the standard
 deviation of the divided bins.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Some</span><span class="p">.</span><span class="nf">div</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> 
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Some</span><span class="p">.</span><span class="nf">divs</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> 
   <span class="n">i</span><span class="p">.</span><span class="n">divs</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">divs</span> <span class="ow">and</span> <span class="n">i</span><span class="p">.</span><span class="n">divs</span> <span class="ow">or</span> <span class="n">divs</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">has</span><span class="p">)</span> 
   <span class="kr">return</span> <span class="n">i</span><span class="p">.</span><span class="n">divs</span>
 <span class="kr">end</span></pre></div>
