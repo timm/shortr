@@ -17,10 +17,8 @@ end
 
 -- Distance between rows
 function Row.dist(i,j,t,p,cols,     x,y,d1,d,n)
-  p = p or THE.dist.p
-  cols = cols or t.cols.x.all
-  d, n = 0, 0.0001
-  for _,c in pairs(cols) do
+  d, n, p = 0, 0.0001, p or THE.dist.p
+  for _,c in pairs(cols or t.cols.x.all) do
     x,y = i.cells[c.pos], j.cells[c.pos]
     d1  = c.me.dist(c, x, y)
     d   = d + d1^p
