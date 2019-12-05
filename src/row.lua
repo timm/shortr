@@ -31,7 +31,8 @@ end
 
 -- k-th nearest neighbors
 function Row.knn(i,k,get,combine,t,rows,p,cols,    a)
-  get = get or function(z) return z.cells[z.cells+1] end
+  get = get or function(z) 
+         return z.cells[t.cols.y.klass.pos] end
   a= Row.neighbors(i, t,rows,p,cols)
   b={}
   for j=1,k do b[#b+1] = get(a[j]) end
