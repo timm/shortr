@@ -40,11 +40,11 @@ end
 
 -- Return  `rows`, sorted by distance to row `i`.
 function Row.neighbors(i,t,rows,p,cols,   a)
-  a, rows=  {}, rows or t.rows
-  for _,j in pairs(rows) do 
+  a = {}
+  for _,j in pairs(rows or t.rows) do 
     a[#a+1]= {Row.dist(i,j,t,p,cols), j} 
   end
-  table.sort(a,function (x,y) return x[1] < y[1] end)
+  table.sort(a, function (x,y) return x[1] < y[1] end)
   return a
 end
 
