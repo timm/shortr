@@ -27,14 +27,16 @@ function Row.dist(i,j,t,p,cols,     x,y,d1,d,n)
   return ( d/n ) ^ ( 1/p )
 end
 
--- k-th nearest neighbors
+-- Find the k-th nearest neighbors. For each, access
+-- some value using `get` (e.g. get the klass variable).
+-- Summarize those values using `mean` (e.g. find their mean).
 function Row.knn(i,k,get,combine,t,rows,p,cols,    a)
   get = get or function(z) 
          return z.cells[t.cols.y.klass.pos] end
   a= Row.neighbors(i, t,rows,p,cols)
   b={}
   for j=1,k do b[#b+1] = get(a[j]) end
-  combine = combine or mean
+  combine = combine or Lib.mean
   return combine(b)
 end
 
