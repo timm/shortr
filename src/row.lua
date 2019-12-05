@@ -46,8 +46,7 @@ function Row.neighbors(i,t,rows,p,cols,   a)
   for _,j in pairs(rows or t.rows) do 
     a[#a+1]= {Row.dist(i,j,t,p,cols), j} 
   end
-  table.sort(a, function (x,y) return x[1] < y[1] end)
-  return a
+  return Lib.sort(a, function (x,y) return x[1] < y[1] end)
 end
 
 -- ----------

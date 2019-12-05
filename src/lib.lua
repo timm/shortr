@@ -14,7 +14,11 @@ Lib.r = math.random
 function Lib.same(x) return x end
 function Lib.last(a) return a[#a] end
 
-function Lib.sort(a) table.sort(a) return a end
+function Lib.sort(a,f) 
+  f = f or function(x,y) return x<y end
+  table.sort(a,f) 
+  return a 
+end
 
 function Lib.within(a,b,c) return b>=a and b<=c end
 

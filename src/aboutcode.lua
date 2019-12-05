@@ -52,6 +52,15 @@ o{aa=1, bb=2, cc={dd=22, ee=30, ff={10}}}
 -- (so having crashing code does not block other tests from executing).
 
 -- ---------------------
+-- ## Dress to Impress
+
+-- All code is formatted to be displayed on the web using
+-- the `pycco` double column format. For that reason, code
+-- lines should be be narrow (less than 60 characters wide)
+-- and short (so often I will write consecutive `ends` on
+-- the same line.
+
+-- ---------------------
 -- ## Gutless Objects 
 --
 -- My "object-ish" methods have no colon "`:`" operator.
