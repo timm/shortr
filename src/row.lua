@@ -1,7 +1,7 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:formatoptions+=cro 
 --------- --------- --------- --------- --------- --------- 
 
--- <img align=right  width=200
+-- <img 
 --  src="https://github.com/timm/lua/raw/master/etc/img/row.jpg">
 
 local Object = require("Object")
