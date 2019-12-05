@@ -21,7 +21,20 @@
 <hr />
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span></span><span class="kd">local</span> <span class="n">Object</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;Object&quot;</span><span class="p">)</span>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p><img align=right  width=200
+ src="https://github.com/timm/lua/raw/master/etc/img/row.jpg"></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span> <span class="n">Object</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;Object&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Lib</span>    <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;lib&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">THE</span>    <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Row</span>    <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Row&quot;</span><span class="p">}</span>
@@ -34,10 +47,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-1'>
+  <div class='section' id='section-2'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-1'>#</a>
+        <a class='octothorpe' href='#section-2'>#</a>
       </div>
       <hr />
 <p>Distance between rows</p>
@@ -54,18 +67,38 @@
     <span class="n">n</span>   <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
   <span class="kr">end</span>
   <span class="kr">return</span> <span class="p">(</span> <span class="n">d</span><span class="o">/</span><span class="n">n</span> <span class="p">)</span> <span class="o">^</span> <span class="p">(</span> <span class="mi">1</span><span class="o">/</span><span class="n">p</span> <span class="p">)</span>
-<span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nc">Row</span><span class="p">.</span><span class="nf">knn</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">get</span><span class="p">,</span><span class="n">combine</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">rows</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">cols</span><span class="p">,</span>    <span class="n">a</span><span class="p">)</span>
+<span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>k-th nearest neighbors</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Row</span><span class="p">.</span><span class="nf">knn</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">get</span><span class="p">,</span><span class="n">combine</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">rows</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">cols</span><span class="p">,</span>    <span class="n">a</span><span class="p">)</span>
   <span class="n">get</span> <span class="o">=</span> <span class="n">get</span> <span class="ow">or</span> <span class="kr">function</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="kr">return</span> <span class="n">z</span><span class="p">.</span><span class="n">cells</span><span class="p">[</span><span class="n">z</span><span class="p">.</span><span class="n">cells</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="kr">end</span>
   <span class="n">a</span><span class="o">=</span> <span class="n">Row</span><span class="p">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span><span class="n">rows</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">cols</span><span class="p">)</span>
   <span class="n">b</span><span class="o">=</span><span class="p">{}</span>
   <span class="kr">for</span> <span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">k</span> <span class="kr">do</span> <span class="n">b</span><span class="p">[</span><span class="o">#</span><span class="n">b</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="kr">end</span>
   <span class="n">combine</span> <span class="o">=</span> <span class="n">combine</span> <span class="ow">or</span> <span class="n">mean</span>
   <span class="kr">return</span> <span class="n">combine</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-<span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nc">Row</span><span class="p">.</span><span class="nf">neighbors</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">rows</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">cols</span><span class="p">,</span>   <span class="n">a</span><span class="p">)</span>
+<span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>all rows, sorted by distance to row <code>i</code>.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Row</span><span class="p">.</span><span class="nf">neighbors</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">rows</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">cols</span><span class="p">,</span>   <span class="n">a</span><span class="p">)</span>
   <span class="n">rows</span><span class="o">=</span>  <span class="n">rows</span> <span class="ow">or</span> <span class="n">t</span><span class="p">.</span><span class="n">rows</span>
   <span class="n">a</span><span class="o">=</span> <span class="p">{}</span>
   <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">j</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="kr">do</span> 
@@ -77,10 +110,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-2'>
+  <div class='section' id='section-5'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-2'>#</a>
+        <a class='octothorpe' href='#section-5'>#</a>
       </div>
       <hr />
 <p>And finally&hellip;</p>
