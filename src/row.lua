@@ -1,8 +1,8 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:formatoptions+=cro 
 --------- --------- --------- --------- --------- --------- 
 
--- <img 
---  src="https://github.com/timm/lua/raw/master/etc/img/row.jpg">
+-- <center><img 
+--  src="https://github.com/timm/lua/raw/master/etc/img/row.jpg"></center>
 
 local Object = require("Object")
 local Lib    = require("lib")
@@ -15,7 +15,6 @@ function Row.new(cells)
   return i
 end
 
--- ------
 -- Distance between rows
 function Row.dist(i,j,t,p,cols,     x,y,d1,d,n)
   p = p or THE.dist.p
