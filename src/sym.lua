@@ -2,6 +2,7 @@
 --------- --------- --------- --------- --------- --------- 
 
 local Column = require("column")
+local THE   = require("the")
 local Sym   = {is="Sym"}
 
 function Sym.new(t)

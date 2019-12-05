@@ -1,7 +1,12 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:formatoptions+=cro 
 --------- --------- --------- --------- --------- --------- 
 
+-- <img align=right  width=200
+--  src="https://github.com/timm/lua/raw/master/etc/img/row.jpg">
+
 local Object = require("Object")
+local Lib    = require("lib")
+local THE    = require("the")
 local Row    = {is="Row"}
 
 function Row.new(cells)
@@ -16,7 +21,7 @@ function Row.dist(i,j,t,p,cols,     x,y,d1,d,n)
   p = p or THE.dist.p
   cols = cols or t.cols.x.all
   d, n = 0, 0.0001
-  for _,c in pairs(col) do
+  for _,c in pairs(cols) do
     x,y = i.cells[c.pos], j.cells[c.pos]
     d1  = c.me.dist(c, x, y)
     d   = d + d1^p
@@ -25,23 +30,27 @@ function Row.dist(i,j,t,p,cols,     x,y,d1,d,n)
   return ( d/n ) ^ ( 1/p )
 end
 
-function Row.knn(i,k,get,combine,t,p,cols,rows,    a)
+-- k-th nearest neighbors
+function Row.knn(i,k,get,combine,t,rows,p,cols,    a)
   get = get or function(z) return z.cells[z.cells+1] end
-  a= Row.neighbors(i, t,p,cols,rows)
+  a= Row.neighbors(i, t,rows,p,cols)
   b={}
   for j=1,k do b[#b+1] = get(a[j]) end
   combine = combine or mean
   return combine(b)
 end
 
-function Row.neighbors(i,t,p,cols,rows)
-  p = p or THE.dist.p
-  rows,cols = rows or t.rows, cols or t.cols.x.all
+-- all rows, sorted by distance to row `i`.
+function Row.neighbors(i,t,rows,p,cols,   a)
+  rows=  rows or t.rows
   a= {}
-  for _,j in pairs(rows) do a[#a+1]= {Row.dist(i,j), j} end
+  for _,j in pairs(rows) do 
+     a[#a+1]= {Row.dist(i,j,t,p,cols), j} 
+  end
   table.sort(a,function (x,y) return x[1] < y[1] end)
   return a
 end
+
 -- ----------
 -- And finally...
 

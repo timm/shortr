@@ -9,6 +9,7 @@
 -- and standard deviation `i.sd`).
 
 local Column = require("column")
+local THE   = require("the")
 local Num   = {is="Num"}
 
 -- To customize what kinds of numbers we track, change `i.key`

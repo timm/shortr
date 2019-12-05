@@ -102,6 +102,7 @@ function Columns.add(i,cells,   what,alike,xs,ys,new)
     add(i.all)
     add(alike)
     add(depp(x) and ys or xs)
+    add(depp(x) and i.y.all or i.x.all)
     if goalp(x)  then add(i.y.goals) end 
     if klassp(x) then i.y.klass = new end end 
   return i
