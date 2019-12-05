@@ -38,7 +38,7 @@ function Row.knn(i,k,get,combine,t,rows,p,cols,    a)
   return combine(b)
 end
 
--- all rows, sorted by distance to row `i`.
+-- Return  `rows`, sorted by distance to row `i`.
 function Row.neighbors(i,t,rows,p,cols,   a)
   a, rows=  {}, rows or t.rows
   for _,j in pairs(rows) do 
