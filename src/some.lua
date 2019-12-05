@@ -9,8 +9,9 @@
 
 local Column = require("column")
 local r     = require("lib").r
-local div   = require("divs")
+local divs   = require("divs")
 local Some  = {is="Some"}
+
 function Some.new(t)
   local i = Column.new(t)
   i.me    = Some
@@ -42,7 +43,7 @@ end
 -- that divides the kept numbers in a manner that minimizing the standard
 -- deviation of the divided bins.
 
-function Some.div(i) 
+function Some.divs(i) 
   i.divs = i.divs and i.divs or divs(i.has) 
   return i.divs
 end

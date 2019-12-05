@@ -3,12 +3,13 @@
 
 package.path = '../src/?.lua;' .. package.path
 local Lib=require("lib")
+local o,r=Lib.o,Lib.r
 
 local ok=require("ok")
 local Some=require("some")
 
 ok{adds100=function(   s)
-  s=Some.new{most=32}
-  for i=1,1000 do Some.add(s,i) end
-  assert(Lib.sort(s.has)[16] == 505 )
+  s=Some.new{most=128}
+  for i=1,10^7 do Some.add(s,r()) end
+  o(Some.divs(s))
 end}
