@@ -4,7 +4,7 @@
 -- <center><img 
 --  src="https://github.com/timm/lua/raw/master/etc/img/row.jpg"></center>
 
-local Object = require("Object")
+local Object = require("object")
 local Lib    = require("lib")
 local THE    = require("the")
 local Row    = {is="Row"}
