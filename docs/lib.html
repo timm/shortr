@@ -53,6 +53,11 @@
 <span class="kr">function</span> <span class="nc">Lib</span><span class="p">.</span><span class="nf">same</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="kr">return</span> <span class="n">x</span> <span class="kr">end</span>
 <span class="kr">function</span> <span class="nc">Lib</span><span class="p">.</span><span class="nf">last</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">return</span> <span class="n">a</span><span class="p">[</span><span class="o">#</span><span class="n">a</span><span class="p">]</span> <span class="kr">end</span>
 
+<span class="kr">function</span> <span class="nc">Lib</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">places</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">mult</span> <span class="o">=</span> <span class="mi">10</span><span class="o">^</span><span class="p">(</span><span class="n">places</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span>
+  <span class="kr">return</span> <span class="nb">math.floor</span><span class="p">(</span><span class="n">num</span> <span class="o">*</span> <span class="n">mult</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">/</span> <span class="n">mult</span>
+<span class="kr">end</span>
+
 <span class="kr">function</span> <span class="nc">Lib</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">f</span><span class="p">)</span> 
   <span class="n">f</span> <span class="o">=</span> <span class="n">f</span> <span class="ow">or</span> <span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="kr">return</span> <span class="n">x</span><span class="o">&lt;</span><span class="n">y</span> <span class="kr">end</span>
   <span class="nb">table.sort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">f</span><span class="p">)</span> 
@@ -60,8 +65,6 @@
 <span class="kr">end</span>
 
 <span class="kr">function</span> <span class="nc">Lib</span><span class="p">.</span><span class="nf">within</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span> <span class="kr">return</span> <span class="n">b</span><span class="o">&gt;=</span><span class="n">a</span> <span class="ow">and</span> <span class="n">b</span><span class="o">&lt;=</span><span class="n">c</span> <span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nc">Lib</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="kr">return</span> <span class="nb">math.floor</span><span class="p">(</span> <span class="n">x</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="p">)</span> <span class="kr">end</span>
 
 <span class="kr">function</span> <span class="nc">Lib</span><span class="p">.</span><span class="nf">mean</span><span class="p">(</span><span class="n">a</span><span class="p">,</span>       <span class="n">n</span><span class="p">,</span><span class="n">sum</span><span class="p">)</span> 
   <span class="n">n</span><span class="p">,</span><span class="n">sum</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
