@@ -6,6 +6,7 @@ local within=require("lib").within
 local ok=require("ok")
 local Num=require("num")
 
+
 ok{sd=function()
   local s1,s2 = Num.new(), Num.new()
   for _,v in pairs{9,2,5,4,12,7,8,11,9,3,
