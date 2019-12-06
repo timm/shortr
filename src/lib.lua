@@ -1,32 +1,33 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:formatoptions+=cro :
 --------- --------- --------- --------- --------- --------- 
 
--- Set up the standard random seed.
-
 local THE=require("the").misc
-local Rand=require("rand")
 local Lib={}
 
--- ------------------------------------
--- Just some commonly used functions.
+-- Numbers
+local Rand=require("rand")
 Lib.r = Rand.r
-
-
-function Lib.same(x) return x end
-function Lib.last(a) return a[#a] end
 
 function Lib.round(num, places)
   local mult = 10^(places or 0)
   return math.floor(num * mult + 0.5) / mult
 end
 
+function Lib.within(a,b,c) return b>=a and b<=c end
+
+-- ---------------------------------
+-- Meta
+function Lib.same(x) return x end
+
+-- ---------------------------------
+-- Lists
+function Lib.last(a) return a[#a] end
+
 function Lib.sort(a,f) 
   f = f or function(x,y) return x<y end
   table.sort(a,f) 
   return a 
 end
-
-function Lib.within(a,b,c) return b>=a and b<=c end
 
 function Lib.mean(a,       n,sum) 
   n,sum=0,0
@@ -35,6 +36,8 @@ function Lib.mean(a,       n,sum)
 end
 
 -- -------------------------
+-- Print tables.
+-- 
 -- Convert tables to strings (and do so recursively).
 -- Work over the tables in alphabetically order of the keys.
 -- Skip entries that are _private_ (that start with `_`)

@@ -10,6 +10,7 @@
 local Column = require("column")
 local r      = require("lib").r
 local divs   = require("divs")
+local THE    = require("the")
 local Some   = {is="Some"}
 
 function Some.new(t)
@@ -17,6 +18,7 @@ function Some.new(t)
   i.me    = Some
   i.has   = {}
   i.divs  = nil
+  t = t or {}
   i.most  = t.most or THE.some.most or 256
   return i
 end

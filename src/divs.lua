@@ -44,7 +44,6 @@ function xpect(a,lo,j,hi)
 -- than `epsilon`
 -- (less than 30% of the standard deviation).
 
-
 return function(a)
   table.sort(a)
   local cuts    = {}
@@ -71,7 +70,7 @@ return function(a)
     if   cut 
     then recurse(lo, cut)
          recurse(cut+1, hi) 
-    else cuts[ #cuts+1 ] = lo end  
+    else cuts[ #cuts+1 ] = a[lo] end  
   end -- end recurse
   recurse(1, #a)
   return cuts
