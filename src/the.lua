@@ -2,11 +2,11 @@
 --------- --------- --------- --------- --------- --------- 
 
 return {
-  dist  = { p      = 2    },
-  char  = { skip   = "?"  },
-  misc = { seed    = 1    },
-  some = { most    = 128  },
-  divs = { step    = 0.5   ,
-           cohen   = 0.3   ,
-           trivial = 1.05 }
+  dist = { p      = 2      },
+  char = { skip   = "?"    },
+  rand = { seed    = 10013 },
+  some = { most    = 128   },
+  divs = { step    = 0.5    ,
+           cohen   = 0.3    ,
+           trivial = 1.05  }
 }

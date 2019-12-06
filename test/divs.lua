@@ -24,7 +24,7 @@ local function y2(x)
 ok{big=function(   a,s)
   a={}
   s=Some.new{most=256}
-  for i=1,10^7 do Some.add(s, r()) end
+  for i=1,10^5 do Some.add(s, r()) end
   -- for k,v in pairs(a) do print(k,v) end
   --o(divs(a))
 end}

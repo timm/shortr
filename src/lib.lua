@@ -4,12 +4,13 @@
 -- Set up the standard random seed.
 
 local THE=require("the").misc
-math.randomseed(THE.seed)
+local Rand=require("rand")
 local Lib={}
 
 -- ------------------------------------
 -- Just some commonly used functions.
-Lib.r = math.random
+Lib.r = Rand.r
+
 
 function Lib.same(x) return x end
 function Lib.last(a) return a[#a] end

@@ -1,7 +1,7 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- --------- 
 
-local seed=require("the").misc.seed
+local Rand = require("rand")
 
 local y,n = 0,0
 
@@ -24,7 +24,7 @@ return function(t,  score)
     y = y + 1
     print("-- Test #" .. y ..
           " (oops= ".. n .. " =" .. s() .."%) : " .. x )
-    math.randomseed(seed)
+    Rand.seed()
     local passed,err = pcall(f)
     if not passed then
       n = n + 1

@@ -31,21 +31,21 @@
 -- Also, the raw random number generator is wrapped in a
 -- "97 table" to increase randomness.
 
+local THE=require("the")
 local Rand = {}
 
-local seed0 = 10013
-local seed  = seed0
+local seed  = THE.rand.seed
 local multipler = 16807.0
 local modulus = 2147483647.0
 local randomtable = nil
 
 local function park_miller_randomizer()
-  seed = (multipler * seed) % modulus -- cycle= 2,147,483,646 numbers
+  seed = (multipler * seed) % modulus -- cycle=2,147,483,646
   return seed / modulus end 
 
 -- Reset the random seed.
 function Rand.seed(n) 
-  seed = n and n or seed0; randomtable = nil end
+  seed = n and n or THE.rand.seed; randomtable = nil end
 
 -- Pull the next random number.
 function Rand.r(  x,i)
