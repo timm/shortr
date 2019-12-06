@@ -68,16 +68,16 @@ see:</p>
 &ldquo;97 table&rdquo; to increase randomness.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span> <span class="n">Rand</span> <span class="o">=</span> <span class="p">{}</span>
+      <div class="highlight"><pre><span class="kd">local</span> <span class="n">THE</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">Rand</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="kd">local</span> <span class="n">seed0</span> <span class="o">=</span> <span class="mi">10013</span>
-<span class="kd">local</span> <span class="n">seed</span>  <span class="o">=</span> <span class="n">seed0</span>
+<span class="kd">local</span> <span class="n">seed</span>  <span class="o">=</span> <span class="n">THE</span><span class="p">.</span><span class="n">rand</span><span class="p">.</span><span class="n">seed</span>
 <span class="kd">local</span> <span class="n">multipler</span> <span class="o">=</span> <span class="mf">16807.0</span>
 <span class="kd">local</span> <span class="n">modulus</span> <span class="o">=</span> <span class="mf">2147483647.0</span>
 <span class="kd">local</span> <span class="n">randomtable</span> <span class="o">=</span> <span class="kc">nil</span>
 
 <span class="kd">local</span> <span class="kr">function</span> <span class="nf">park_miller_randomizer</span><span class="p">()</span>
-  <span class="n">seed</span> <span class="o">=</span> <span class="p">(</span><span class="n">multipler</span> <span class="o">*</span> <span class="n">seed</span><span class="p">)</span> <span class="o">%</span> <span class="n">modulus</span> <span class="c1">-- cycle= 2,147,483,646 numbers</span>
+  <span class="n">seed</span> <span class="o">=</span> <span class="p">(</span><span class="n">multipler</span> <span class="o">*</span> <span class="n">seed</span><span class="p">)</span> <span class="o">%</span> <span class="n">modulus</span> <span class="c1">-- cycle=2,147,483,646</span>
   <span class="kr">return</span> <span class="n">seed</span> <span class="o">/</span> <span class="n">modulus</span> <span class="kr">end</span></pre></div>
     </div>
   </div>
@@ -91,7 +91,7 @@ see:</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Rand</span><span class="p">.</span><span class="nf">seed</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> 
-  <span class="n">seed</span> <span class="o">=</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">n</span> <span class="ow">or</span> <span class="n">seed0</span><span class="p">;</span> <span class="n">randomtable</span> <span class="o">=</span> <span class="kc">nil</span> <span class="kr">end</span></pre></div>
+  <span class="n">seed</span> <span class="o">=</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">n</span> <span class="ow">or</span> <span class="n">THE</span><span class="p">.</span><span class="n">rand</span><span class="p">.</span><span class="n">seed</span><span class="p">;</span> <span class="n">randomtable</span> <span class="o">=</span> <span class="kc">nil</span> <span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
