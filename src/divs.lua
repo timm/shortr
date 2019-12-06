@@ -30,7 +30,6 @@ function mid(a,lo,hi) return x(a, lo + .5*(hi-lo) ) end
 function var(a,lo,hi) 
   return (x(a,lo+.9*(hi-lo)) - x(a,lo+.1*(hi-lo)))/2.7 end
 
-
 -- The expected value of two `Some`s is the weighed sum of
 -- their variances.
 

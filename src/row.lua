@@ -19,7 +19,7 @@ end
 function Row.dist(i,j,t,p,cols,     x,y,d1,d,n)
   d, n, p = 0, 0.0001, p or THE.dist.p
   for _,c in pairs(cols or t.cols.x.all) do
-    x,y = i.cells[c.pos], j.cells[c.pos]:
+    x,y = i.cells[c.pos], j.cells[c.pos]
     d1  = c.me.dist(c, x, y)
     d   = d + d1^p
     n   = n + 1

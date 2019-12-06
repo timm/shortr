@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>rand.lua</title>
+  <link rel="stylesheet" href="pycco.css">
+<script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script></head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>DUO = Data Miners using <br>and/or using  Optimizers </h1><h1>rand.lua</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <a href=index.html>home</a> :: <a href=https://github.com/timm/lua/tree/master/INSTALL.md>install</a> :: <a href=about.html>about</a> :: <a href=https://github.com/timm/lua/tree/master/test>demo</a> :: <a href=http://github.com/timm/lua>src</a> :: <a href=http://github.com/timm/lua/issues>discuss</a> :: <a href=https://github.com/timm/lua/blob/master/LICENSE.md>© 2020</a> by <a href=http://menzies.us>timm</a></p>
+<hr />
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p><img 
+ src="https://github.com/timm/lua/raw/master/etc/img/random.png"></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Lua&rsquo;s math.random() is an interface to the C rand() function
+provided by the OS libc; its implementation varies by platform
+so the numbers it generates also varies. </p>
+<p>Can&rsquo;t have that (tests won&rsquo;t port across platforms)</p>
+<p>The following is library is recommended as a
+replacement for the ANSI C rand() and srand()
+functions, particularly in simulation applications
+where the statistical &lsquo;goodness&rsquo; of the random
+number generator is important. </p>
+<p>The generator used in this library is a so-called
+&lsquo;Lehmer random number generator&rsquo; which returns a
+pseudo-random number uniformly distributed 0.0 and
+1.0. The period is (m - 1) where m=2,147,483,647
+and the smallest and largest possible values are (1/m) 
+and 1-(1/m) respectively. For more details
+see:</p>
+<ul>
+<li>&ldquo;Random Number Generators: Good Ones Are Hard To Find&rdquo;
+   Steve Park and Keith Miller
+   Communications of the ACM, October 1988</li>
+</ul>
+<p>Also, the raw random number generator is wrapped in a
+&ldquo;97 table&rdquo; to increase randomness.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span> <span class="n">Rand</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="kd">local</span> <span class="n">seed0</span> <span class="o">=</span> <span class="mi">10013</span>
+<span class="kd">local</span> <span class="n">seed</span>  <span class="o">=</span> <span class="n">seed0</span>
+<span class="kd">local</span> <span class="n">multipler</span> <span class="o">=</span> <span class="mf">16807.0</span>
+<span class="kd">local</span> <span class="n">modulus</span> <span class="o">=</span> <span class="mf">2147483647.0</span>
+<span class="kd">local</span> <span class="n">randomtable</span> <span class="o">=</span> <span class="kc">nil</span>
+
+<span class="kd">local</span> <span class="kr">function</span> <span class="nf">park_miller_randomizer</span><span class="p">()</span>
+  <span class="n">seed</span> <span class="o">=</span> <span class="p">(</span><span class="n">multipler</span> <span class="o">*</span> <span class="n">seed</span><span class="p">)</span> <span class="o">%</span> <span class="n">modulus</span> <span class="c1">-- cycle= 2,147,483,646 numbers</span>
+  <span class="kr">return</span> <span class="n">seed</span> <span class="o">/</span> <span class="n">modulus</span> <span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Reset the random seed.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Rand</span><span class="p">.</span><span class="nf">seed</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> 
+  <span class="n">seed</span> <span class="o">=</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">n</span> <span class="ow">or</span> <span class="n">seed0</span><span class="p">;</span> <span class="n">randomtable</span> <span class="o">=</span> <span class="kc">nil</span> <span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Pull the next random number.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Rand</span><span class="p">.</span><span class="nf">r</span><span class="p">(</span>  <span class="n">x</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+  <span class="kr">if</span> <span class="n">randomtable</span> <span class="o">==</span> <span class="kc">nil</span> <span class="kr">then</span>
+    <span class="n">randomtable</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="kr">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">97</span> <span class="kr">do</span>
+     <span class="n">randomtable</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">park_miller_randomizer</span><span class="p">()</span> <span class="kr">end</span> <span class="kr">end</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="n">park_miller_randomizer</span><span class="p">()</span>
+  <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">math.floor</span><span class="p">(</span><span class="mi">97</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">x</span><span class="p">,</span> <span class="n">randomtable</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">randomtable</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">x</span>
+  <span class="kr">return</span> <span class="n">x</span>
+<span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <hr />
+<p>And finally&hellip;</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">return</span> <span class="n">Rand</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

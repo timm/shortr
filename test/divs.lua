@@ -4,8 +4,7 @@
 package.path = '../src/?.lua;' .. package.path
 local Lib=require("lib")
 local Some=require("some")
-local r,o = Lib.r, Lib.o
-
+local r, o, same = Lib.r, Lib.o, Lib.same
 
 local ok   = require("ok")
 local divs = require("divs")
@@ -22,16 +21,15 @@ local function y2(x)
   elseif x <= 0.8 then return 3+r()
   else                 return 4+r() end end
 
-ok{big=function(   a)
+ok{big=function(   a,s)
   a={}
   s=Some.new{most=256}
   for i=1,10^7 do Some.add(s, r()) end
   -- for k,v in pairs(a) do print(k,v) end
-  o(divs(a))
+  --o(divs(a))
 end}
 
-
-ok{less1=function(   a)
+same{less1=function(   a)
   a={}
   for i=1,30 do a[#a+1] = y1( r() ) end
   table.sort(a)
@@ -44,7 +42,7 @@ ok{less1=function(   a)
   assert(a[4] == 26)
 end}
 
-ok{less2=function(   a)
+same{less2=function(   a)
   a={}
   for i=1,30 do a[#a+1] = y2( r() ) end
   table.sort(a)
