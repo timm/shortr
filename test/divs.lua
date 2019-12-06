@@ -45,7 +45,7 @@ ok{less2=function(   a)
   a= divs(a)
 end}
 
-ok{auto=function(  t)
+ok{auto=function(  s,t)
   t=Tbl.new{file="../data/auto93.csv"}
   for _,col in pairs(t.cols.nums) do
     s=Some.new()
