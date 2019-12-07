@@ -3,7 +3,7 @@
 
 -- Lua's math.random() is an interface to the C rand() function
 -- provided by the OS libc; its implementation varies by platform
--- so the numbers it generates also varies. 
+-- so the numbers it generates also varies (e.g. between lua and luajit). 
 -- 
 -- Can't have that (tests won't port across platforms)
 -- 
