@@ -33,11 +33,12 @@ fix.gh=[[
 ]]
 
 fix.top=[[
+<center>
 <a href="index.html">home</a> :: 
 <a href="about.html">about</a> :: 
 <a href="https://github.com/timm/lua/tree/master/INSTALL.md">install</a> :: 
 <a href="https://github.com/timm/lua/tree/master/test">demos</a> :: 
-<a href="http://github.com/timm/lua">source</a>   :: 
+<a href="http://github.com/timm/lua">github</a>   :: 
 <a href="http://github.com/timm/lua/issues>discuss"</a>  
 <a href="https://github.com/timm/lua/blob/master/LICENSE.md">&copy; 2020</a> by
 <a href="http://menzies.us">timm</a>
@@ -47,18 +48,19 @@ fix.top=[[
 fix.title = "DUO =  Data Miners using<br>and/or used-by Optimizers"
 
 fix.buttons=[[
-<hr>
-<p><a href="https://www.lua.org"><img 
+<center><hr>
+<a href="https://www.lua.org"><img 
       src=https://img.shields.io/badge/language-lua-orange></a>
 <img  src=https://img.shields.io/badge/purpose-ai,se-blueviolet> 
 <img  src=https://img.shields.io/badge/platform-mac,*nux-informational> 
 <a    href="https://travis-ci.org/timm/lua"><img 
-      src=https://travis-ci.org/timm/lua.svg?branch=master></a></p>
+      src=https://travis-ci.org/timm/lua.svg?branch=master></a>
+      </center>
 ]]
 
 function fix.spit(file,x, f)
   local f = io.open(file, "w")
-  f:write(file,x)
+  f:write(x)
   f:close()
 end
 

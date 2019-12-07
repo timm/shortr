@@ -1,13 +1,7 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 ------- --------- --------- --------- --------- --------- 
 
--- <img src="https://img.shields.io/badge/language-lua-orange">
--- <img src="https://img.shields.io/badge/purpose-ai,se-blueviolet">
--- <img src="https://img.shields.io/badge/platform-mac,*nux-informational">
--- <img src="https://img.shields.io/badge/license-Bsd2-informational">
--- <img src="https://travis-ci.org/timm/lua.svg?branch=master">
-
--- ( Just a little light LUA. Less, but better. )
+--  Just a little light LUA. Less, but better. 
 
 -- <img  width=400 
 --  src="https://github.com/timm/lua/raw/master/etc/img/index.jpg">

@@ -208,16 +208,12 @@ bashrc() { cat<<-'EOF'
 	  if [ -f "../etc/pycco.css" ]; then
 	     cp ../etc/pycco.css ../docs
           fi
-	  cd ../docs
-	  for f in *.html; do
-	    if [ -f "../etc/template.lua" ] ; then
-	       lua ../etc/template.lua $f 
-	  fi; done
-	#            sed -i '' -e 'sZ<h1>Z<h1>DUO = Data Miners using Optimizers </h1><h1>Z' $f
-	#            sed -i '' -e 'sZ</head>Z<script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script></head>Z' $f
-	#	    sed -i '' -e  'sZ<p>vim:.*<\/p>Z<a href=index.html>home</a> :: <a href=https://github.com/timm/lua/tree/master/INSTALL.md>install</a> :: <a href=about.html>about</a> :: <a href=https://github.com/timm/lua/tree/master/test>demo</a> :: <a href=http://github.com/timm/lua>src</a> :: <a href=http://github.com/timm/lua/issues>discuss</a> :: <a href=https://github.com/timm/lua/blob/master/LICENSE.md>© 2020</a> by <a href=http://menzies.us>timm</a></p>Z' $f
-	#
-	#	  done 
+	  if [ -f "../etc/patch.lua" ]; then
+	    cd ../docs
+	    for f in *.html; do 
+		lua ../etc/patch.lua $f 
+	    done 
+	  fi
 	}
 	htmls() {
 	    ( cd $root/src
