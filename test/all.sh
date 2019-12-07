@@ -20,3 +20,8 @@ END              { exit err - 1} # c) one test is designed to fail
                                  #    one test fails"
 '
 
+out="$?"
+
+echo "Result: $out"
+
+exit $out
