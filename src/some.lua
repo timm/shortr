@@ -1,7 +1,6 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- --------- 
 
--- <img align=right width=150 src="https://github.com/timm/lua/raw/master/etc/img/reservoir.png">
 -- Implements _reservoir_ sampling; i.e. keep a random sample of a stream
 -- of items. 
 --

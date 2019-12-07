@@ -1,9 +1,6 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:formatoptions+=cro 
 --------- --------- --------- --------- --------- --------- 
 
--- <img align=right  width=200
---  src="https://github.com/timm/lua/raw/master/etc/img/cols.jpg">
---
 -- This is a helper class for [Tbl](tbl.html). Everything that tables
 -- knows about its columns, are stored here in `Columns`.
 --

@@ -1,8 +1,6 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:formatoptions+=cro 
 --------- --------- --------- --------- --------- --------- 
 
--- <img 
---  src="https://github.com/timm/lua/raw/master/etc/img/tbl.png">
 -- Tables store [Row](row.html)s, which are summarized
 -- [Columns](columns.html).
 -- Tables can be `fixed` or `frozen` (explained below).

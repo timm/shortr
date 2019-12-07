@@ -48,7 +48,8 @@ fix.top=[[
 fix.title = "DUO =  Data Miners using and/or used-by Optimizers"
 
 fix.buttons=[[
-<center><hr>
+<center>
+<hr>
 <a href="https://www.lua.org"><img 
       src=https://img.shields.io/badge/language-lua-orange></a>
 <img  src=https://img.shields.io/badge/purpose-teach,ai,se-blueviolet> 

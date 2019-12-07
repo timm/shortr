@@ -22,6 +22,6 @@ END              { exit err - 1} # c) one test is designed to fail
 
 out="$?"
 
-echo "Result: $out"
+echo "Number of problems: $out"
 
 exit $out

@@ -1,8 +1,6 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- ---------
 
--- <img align=right width=200 
---  src="https://github.com/timm/lua/raw/master/etc/img/csv.png">
 -- Returns a function that reads a csv file.  Coerce string 
 -- to numbers (or strings) as appropriate. If a line one 
 -- word holds the skip character `?`, then ignore that column.

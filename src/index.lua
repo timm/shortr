@@ -3,10 +3,6 @@
 
 --  Just a little light LUA. Less, but better. 
 
--- <img  width=400 
---  src="https://github.com/timm/lua/raw/master/etc/img/index.jpg">
-
-
 -- Why combine data miners and optimisers? Well, consider:
 --
 -- - Data miners divide up some space of things. 

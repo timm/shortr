@@ -1,9 +1,6 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:formatoptions+=cro 
 --------- --------- --------- --------- --------- --------- 
 
--- <img 
---  src="https://github.com/timm/lua/raw/master/etc/img/random.png">
-
 -- Lua's math.random() is an interface to the C rand() function
 -- provided by the OS libc; its implementation varies by platform
 -- so the numbers it generates also varies. 

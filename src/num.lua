@@ -1,8 +1,6 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- --------- 
 
--- <img align=right src="https://github.com/timm/lua/raw/master/etc/img/normal.jpg">
--- 
 -- Incrementally track a stream of numbers, mainitaning
 -- the lowest (`i.lo`), highest (`i.hi`) 
 -- seen so far (as well as the mean `i.mu`

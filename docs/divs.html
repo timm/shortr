@@ -39,7 +39,8 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <center><hr>
+      <center>
+<hr>
 <a href="https://www.lua.org"><img 
       src=https://img.shields.io/badge/language-lua-orange></a>
 <img  src=https://img.shields.io/badge/purpose-teach,ai,se-blueviolet> 
@@ -58,8 +59,7 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p><img align=right src="https://github.com/timm/lua/raw/master/etc/img/divs.jpg"></p>
-<p>This file returns a function that
+      <p>This file returns a function that
 divides a list of numbers such that the variability
 of each division is minimized. </p>
 <p>To simplify that task, we sort the numbers once
@@ -70,8 +70,19 @@ the variance of that sublist using that list&rsquo;s 10th and 90th
 percentile.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="nb">require</span> <span class="s2">&quot;lib&quot;</span>
-<span class="kd">local</span> <span class="n">THE</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">).</span><span class="n">divs</span>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>require &ldquo;lib&rdquo;</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span> <span class="n">THE</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">).</span><span class="n">divs</span>
 
 <span class="kd">local</span> <span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">var</span><span class="p">,</span><span class="n">xpect</span> <span class="c1">-- functions</span>
 
@@ -81,10 +92,10 @@ percentile.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-2'>
+  <div class='section' id='section-3'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-2'>#</a>
+        <a class='octothorpe' href='#section-3'>#</a>
       </div>
       <p>On experimentation, we found dividing the 90th minus
 10th percentile by 2.7 returns a value close to the normal
@@ -96,10 +107,10 @@ Gaussian variance.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-3'>
+  <div class='section' id='section-4'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
+        <a class='octothorpe' href='#section-4'>#</a>
       </div>
       <p>The expected value of two <code>Some</code>s is the weighed sum of
 their variances.</p>
@@ -111,10 +122,10 @@ their variances.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-4'>
+  <div class='section' id='section-5'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
+        <a class='octothorpe' href='#section-5'>#</a>
       </div>
       <p>When we seek divisions, 
 ignore divisions that are too small (less than, say,
@@ -141,10 +152,10 @@ than <code>epsilon</code>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-5'>
+  <div class='section' id='section-6'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-5'>#</a>
+        <a class='octothorpe' href='#section-6'>#</a>
       </div>
       <p>Ignore new divisions that improve things
 by less than a <code>trivial</code> amount

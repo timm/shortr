@@ -1,8 +1,6 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- --------- 
  
--- <img align=right src="https://github.com/timm/lua/raw/master/etc/img/divs.jpg">
--- 
 -- This file returns a function that
 -- divides a list of numbers such that the variability
 -- of each division is minimized. 
@@ -14,7 +12,7 @@
 -- the variance of that sublist using that list's 10th and 90th
 -- percentile.
 
-require "lib"
+--require "lib"
 local THE=require("the").divs
 
 local x,p,mid,var,xpect -- functions

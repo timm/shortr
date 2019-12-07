@@ -1,9 +1,6 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:formatoptions+=cro 
 --------- --------- --------- --------- --------- --------- 
 
--- <center><img 
---  src="https://github.com/timm/lua/raw/master/etc/img/row.jpg"></center>
-
 local Object = require("object")
 local Lib    = require("lib")
 local THE    = require("the")
