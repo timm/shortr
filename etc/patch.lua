@@ -51,7 +51,7 @@ fix.buttons=[[
 <center><hr>
 <a href="https://www.lua.org"><img 
       src=https://img.shields.io/badge/language-lua-orange></a>
-<img  src=https://img.shields.io/badge/purpose-ai,se-blueviolet> 
+<img  src=https://img.shields.io/badge/purpose-teach,ai,se-blueviolet> 
 <img  src=https://img.shields.io/badge/platform-mac,*nux-informational> 
 <a    href="https://travis-ci.org/timm/lua"><img 
       src=https://travis-ci.org/timm/lua.svg?branch=master></a>
