@@ -77,7 +77,7 @@ x=fix.slurp(file)
 local function swap(a,b) x= string.gsub(x,a,b,1) end
 
 swap("</head>" , fix.mathjax .. fix.inline .. "</head>")
-swap("<h1>"    , fix.top.. "<h2>"  .. fix.title .. "</h2><h1>")
+swap("<h1>"    , fix.top.. "<h1>"  .. fix.title .. "</h1><h1>")
 swap("<p>vim:([^\n]*)\n([^\n]*)\n",fix.buttons)
 
 fix.spit(file,x)
