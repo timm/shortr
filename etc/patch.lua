@@ -59,6 +59,11 @@ fix.buttons=[[
       </center>
 ]]
 
+fix.image=[[
+<img src="https://raw.githubusercontent.com/timm/lua/master/etc/img/otter.png"
+width=200>
+]]
+
 function fix.spit(file,x, f)
   local f = io.open(file, "w")
   f:write(x)
@@ -77,8 +82,9 @@ file=arg[1]
 x=fix.slurp(file)
 local function swap(a,b) x= string.gsub(x,a,b,1) end
 
+
 swap("</head>" , fix.mathjax .. fix.inline .. "</head>")
-swap("<h1>"    , fix.top.. "<h1>"  .. fix.title .. "</h1><h1>")
+swap("<h1>"    , fix.top.. "<h1>"  .. fix.title .. "<br>".. fix.image.."<br>")
 swap("<p>vim:([^\n]*)\n([^\n]*)\n",fix.buttons)
 
 fix.spit(file,x)
