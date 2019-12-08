@@ -21,8 +21,8 @@ function Num.new(t)
   i.sd  = 0
   t     = t or {}
   i.key = t.key or function (z) return z end
-  i.lo  = math.maxinteger
-  i.hi  = math.mininteger
+  i.lo  = t.lo or math.maxinteger
+  i.hi  = t.hi or math.mininteger
   return i
 end
 

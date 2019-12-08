@@ -35,15 +35,14 @@ function Lib.mean(a,       n,sum)
   return sum/n
 end
 
-function Lib.collect(a,f,     b)
-  b, a, f = {}, a or {}, f or Lib.same
-  for i,v in pairs(a) do b[i] = f(v) end 
+function Lib.map(a,f,     b)
+  b, f = {}, f or Lib.same
+  for i,v in pairs(a or {}) do b[i] = f(v) end 
   return b
 end 
 
 function Lib.copy(t) 
-  return type(t) ~= 'table' and t or Lib.collect(t,Lib.copy) 
-end
+  return type(t) ~= 'table' and t or Lib.map(t,Lib.copy) end
 
 -- -------------------------
 -- Print tables.

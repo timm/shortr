@@ -4,10 +4,6 @@
 -- <center><img width=500
 --  src="https://raw.githubusercontent.com/timm/lua/master/etc/img/index.png"></center>
 
-
--- <center><img width=500
---  src="https://raw.githubusercontent.com/timm/lua/master/etc/img/index1.png"></center>
-
 -- Why combine data miners and optimisers? Well, consider:
 --
 -- - Data miners divide up some space of things. 
