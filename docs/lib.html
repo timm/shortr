@@ -113,15 +113,14 @@ width=200>
   <span class="kr">return</span> <span class="n">sum</span><span class="o">/</span><span class="n">n</span>
 <span class="kr">end</span>
 
-<span class="kr">function</span> <span class="nc">Lib</span><span class="p">.</span><span class="nf">collect</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">f</span><span class="p">,</span>     <span class="n">b</span><span class="p">)</span>
-  <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">a</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">f</span> <span class="ow">or</span> <span class="n">Lib</span><span class="p">.</span><span class="n">same</span>
-  <span class="kr">for</span> <span class="n">i</span><span class="p">,</span><span class="n">v</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">do</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="kr">end</span> 
+<span class="kr">function</span> <span class="nc">Lib</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">f</span><span class="p">,</span>     <span class="n">b</span><span class="p">)</span>
+  <span class="n">b</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">f</span> <span class="ow">or</span> <span class="n">Lib</span><span class="p">.</span><span class="n">same</span>
+  <span class="kr">for</span> <span class="n">i</span><span class="p">,</span><span class="n">v</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">a</span> <span class="ow">or</span> <span class="p">{})</span> <span class="kr">do</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="kr">end</span> 
   <span class="kr">return</span> <span class="n">b</span>
 <span class="kr">end</span> 
 
 <span class="kr">function</span> <span class="nc">Lib</span><span class="p">.</span><span class="nf">copy</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> 
-  <span class="kr">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">~=</span> <span class="s1">&#39;table&#39;</span> <span class="ow">and</span> <span class="n">t</span> <span class="ow">or</span> <span class="n">Lib</span><span class="p">.</span><span class="n">collect</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">Lib</span><span class="p">.</span><span class="n">copy</span><span class="p">)</span> 
-<span class="kr">end</span></pre></div>
+  <span class="kr">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">~=</span> <span class="s1">&#39;table&#39;</span> <span class="ow">and</span> <span class="n">t</span> <span class="ow">or</span> <span class="n">Lib</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">Lib</span><span class="p">.</span><span class="n">copy</span><span class="p">)</span> <span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>

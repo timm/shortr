@@ -90,8 +90,8 @@ to some selector function.</p>
   <span class="n">i</span><span class="p">.</span><span class="n">sd</span>  <span class="o">=</span> <span class="mi">0</span>
   <span class="n">t</span>     <span class="o">=</span> <span class="n">t</span> <span class="ow">or</span> <span class="p">{}</span>
   <span class="n">i</span><span class="p">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">key</span> <span class="ow">or</span> <span class="kr">function</span> <span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="kr">return</span> <span class="n">z</span> <span class="kr">end</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">lo</span>  <span class="o">=</span> <span class="nb">math.maxinteger</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">hi</span>  <span class="o">=</span> <span class="nb">math.mininteger</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">lo</span>  <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">lo</span> <span class="ow">or</span> <span class="nb">math.maxinteger</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">hi</span>  <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">hi</span> <span class="ow">or</span> <span class="nb">math.mininteger</span>
   <span class="kr">return</span> <span class="n">i</span>
 <span class="kr">end</span>
 
