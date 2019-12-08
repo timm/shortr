@@ -24,18 +24,12 @@ function Sym.ent(i)
   return i.ent
 end
 
-function Sym.adds(i, t)
-  for n,x in pairs(t) do Sym.add(i,x,n) end
-  return i
-end
-
-function Sym.add(i,x,inc,    d)
+function Sym.add(i,x,   d)
   if x=="?" then return x end
   x = i.key(x)
-  inc = inc or 1
-  i.n = i.n+inc
+  i.n = i.n + 1
   i.ent= nil
-  d = (i.counts[x] or 0) + inc
+  d = (i.counts[x] or 0) + 1
   i.counts[x] = d
   if d > i.most then i.most, i.mode = d, x end
 end

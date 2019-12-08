@@ -20,29 +20,30 @@ local function num1(nums, n,   a)
   return a
 end
 
-function Tree.range(i, col, y)
-  local a, s = {}, Some.new()
+function Tree.range(i, col, x, xis, y, yis)
+  local x   = x or function(r) return r.cells[col] end
+  local xis, yis = xis or Some, yis or Sym
+  local xs  = xis.new()
+  local out = {}
   -- Sample the data in this column.
-  for _,row in pairs(i.tbl.rows) do 
-    Some.add(s, row.cells[col.pos]  )
-  end
+  for _,row in pairs(i.tbl.rows) do xis.add(s, x(row)) end
   -- Make one `Num` per division of that sample.
-  for _,lo  in pairs( Some.divs(s) ) do 
+  for _,lo  in pairs( xis.divs(s) ) do 
     num = Num.new{lo=lo} 
-    num.syms = Sym.new()
-    a[#a+1] = num
+    num.ys = yis.new()
+    out[ #out+1 ] = num
   end
   -- Tag each value with its associated `Num`.
   for _,row in pairs(t.rows) do 
-    local xval = row.cells[col.pos]
+    local xval = x(row)
     if xval ~= THE.char.skip then 
-      local num = num1(a, xval) 
-      r.cooked[col.pos] = num 
+      local one = num1(a, xval) 
+      r.cooked[col] = one 
       -- If the `klass` has already been discredited,
       -- then remember which range we say there
       if y then
-        Sym.add( num.syms, y(row) ) end end end
-  return y and Tree.combine(a) or a
+        yis.add( one.ys, y(row) ) end end end
+  return y and Tree.combine(out) or out
 end
 
 function Tree.combine(a)
