@@ -97,3 +97,5 @@ ok{autos= function(  s,a,d)
   assert(d[2] == 20)
   assert(d[3] == 30)
 end}
+
+
