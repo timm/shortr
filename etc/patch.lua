@@ -45,7 +45,6 @@ fix.top=[[
 <a href="https://github.com/timm/lua/blob/master/LICENSE.md">&copy;&nbsp;2020</a>&nbsp;by&nbsp;<a href="http://menzies.us">timm</a>
 </b>
 </small>
-<hr>
 ]]
 
 fix.title = "DUO =  Data Miners using and/or used-by Optimizers"
