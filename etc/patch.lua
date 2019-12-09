@@ -33,7 +33,6 @@ fix.gh=[[
 ]]
 
 fix.top=[[
-<center>
 <small>
 <b>
 <a href="index.html">home</a> :: 
@@ -50,7 +49,6 @@ fix.top=[[
 fix.title = "DUO =  Data Miners using and/or used-by Optimizers"
 
 fix.buttons=[[
-<center>
 <hr>
 <a href="https://www.lua.org"><img 
       src=https://img.shields.io/badge/language-lua-orange></a>
@@ -58,11 +56,11 @@ fix.buttons=[[
 <img  src=https://img.shields.io/badge/platform-mac,*nux-informational> 
 <a    href="https://travis-ci.org/timm/lua"><img 
       src=https://travis-ci.org/timm/lua.svg?branch=master></a>
-      </center>
 ]]
 
 fix.image=[[
-<img src="https://raw.githubusercontent.com/timm/lua/master/etc/img/otter.png"
+<img align=middle
+ src="https://raw.githubusercontent.com/timm/lua/master/etc/img/otter.png"
 width=200>
 ]]
 
