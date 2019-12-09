@@ -61,7 +61,7 @@ fix.buttons=[[
 fix.image=[[
 <img 
  src="https://raw.githubusercontent.com/timm/lua/master/etc/img/otter.png"
- width=200>
+ width=200><br>
 ]]
 
 function fix.spit(file,x, f)
