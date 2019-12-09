@@ -5,6 +5,12 @@ local Column = require("column")
 local THE   = require("the")
 local Sym   = {is="Sym"}
 
+function Sym.var(i) return i.sd end
+function Sym.xpect(i,j,  n)  
+  n = i.n + j.n +0.0001
+  return i.n/n * Sym.ent(i) + j.n/n * Sym.ent(j) 
+end
+
 function Sym.new(t)
   local i  = Column.new(t)
   i.me     = Sym
@@ -24,6 +30,14 @@ function Sym.ent(i)
   return i.ent
 end
 
+-- Bulk addition to a `Num`.
+function Sym.alls(lst,key, i)
+  i = Sym.new{key=key}
+  for _,x in pairs(lst) do Sym.add(i, x) end
+  return i
+end
+
+-- Add one item to a `Num`.
 function Sym.add(i,x,   d)
   if x=="?" then return x end
   x = i.key(x)

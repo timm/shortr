@@ -33,8 +33,7 @@ fix.gh=[[
 ]]
 
 fix.top=[[
-<small>
-<b>
+<center>
 <a href="index.html">home</a> :: 
 <a href="about.html">about</a> :: 
 <a href="https://github.com/timm/lua/tree/master/INSTALL.md">install</a> :: 
@@ -42,14 +41,15 @@ fix.top=[[
 <a href="http://github.com/timm/lua">github</a>   :: 
 <a href="http://github.com/timm/lua/issues>discuss"</a>  
 <a href="https://github.com/timm/lua/blob/master/LICENSE.md">&copy;&nbsp;2020</a>&nbsp;by&nbsp;<a href="http://menzies.us">timm</a>
-</b>
-</small>
+<hr>
+</center>
 ]]
 
 fix.title = "DUO =  Data Miners using and/or used-by Optimizers"
 
 fix.buttons=[[
 <hr>
+<center>
 <a href="https://www.lua.org"><img 
       src=https://img.shields.io/badge/language-lua-orange></a>
 <img  src=https://img.shields.io/badge/purpose-teach,ai,se-blueviolet> 
@@ -84,7 +84,7 @@ local function swap(a,b) x= string.gsub(x,a,b,1) end
 
 
 swap("</head>" , fix.mathjax .. fix.inline .. "</head>")
-swap("<h1>"    , fix.top.. "<h1>"  .. fix.title .. "<br>".. fix.image )
+swap("<h1>"    , "<center>" .. fix.top.. "<h1>"  .. fix.title .. "<br>".. fix.image )
 swap("<p>vim:([^\n]*)\n([^\n]*)\n",fix.buttons)
 
 fix.spit(file,x)

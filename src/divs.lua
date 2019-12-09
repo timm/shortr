@@ -12,7 +12,6 @@
 -- the variance of that sublist using that list's 10th and 90th
 -- percentile.
 
---require "lib"
 local THE=require("the").divs
 
 local x,p,mid,var,xpect -- functions
@@ -42,11 +41,21 @@ function xpect(a,lo,j,hi)
 -- than `epsilon`
 -- (less than 30% of the standard deviation).
 
-return function(a)
-  table.sort(a)
+return function(a,x,xis,two,y,yis,    xs,ys)
+  xis = xis or  Num
+  yis = yis or  Num
+  no  = THE.char.skip
+  x   = x   or  function (r)  return r.cells[1]        end
+  y   = y   or  function (r)  return r.cells[#r.cells] end
+  xs  = xs  or  function ()   return Num.new{key=x}    end 
+  ys  = ys  or  function ()   return Num.new{key=x}    end 
+  local all =   function(a,w,f) 
+                  w= w or xis; return w.alls(a,f or x) end
+  table.sort(a, function(b,c) return b==no or c==no 
+                                     or x(b) < x(c)  end)
   local cuts    = {}
   local step    = math.floor((#a)^THE.step)
-  local epsilon = var(a,1,#a)*THE.cohen
+  local epsilon = all(a,Num).sd*THE.cohen
   local function div(lo,hi,     cut)
     local best = var(a,lo,hi)
     for j = lo+step, hi-step do

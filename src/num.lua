@@ -10,6 +10,20 @@ local Column = require("column")
 local THE   = require("the")
 local Num   = {is="Num"}
 
+function Num.var(i) return i.sd end
+
+function Num.xpect(i,j,  n)  
+  n = i.n + j.n +0.0001
+  return i.n/n * i.sd+ j.n/n * j.sd 
+end
+
+function Num.alls(lst,key)
+  local i = Num.new{key=key}
+  for _,x in pairs(lst) do Num.add(i, x) end
+  return i
+end
+
+
 -- To customize what kinds of numbers we track, change `i.key`
 -- to some selector function.
 
@@ -26,6 +40,8 @@ function Num.new(t)
   return i
 end
 
+-- Bulk addition to a `Num`.
+-- Add one item to a `Num`.
 function Num.add(i,x,    d) 
   if x == "?" then return x end
   x = i.key(x)
@@ -53,7 +69,6 @@ function Num.sub(i,x,   d)
   i.mu = i.mu - d/i.n
   i.m2 = i.m2 - d*(x- i.mu)
   i.sd = Num.sd(i)
-  return x
 end
 
 -- Compute standard deviation. Dodge hard cases.
@@ -70,14 +85,6 @@ end
 
 function Num.norm(i,x) 
   return x=="?" and 0.5 or (x-i.lo) / (i.hi-i.lo + 10^-32)
-end
-
--- The expected value of two `Num`s is the weighted sum of their
--- standard deviation.
-
-function Num.xpect(i,j,  n)  
-  n = i.n + j.n +0.0001
-  return i.n/n * i.sd+ j.n/n * j.sd
 end
 
 -- -----------
