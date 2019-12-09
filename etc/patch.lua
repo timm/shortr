@@ -59,7 +59,7 @@ fix.buttons=[[
 ]]
 
 fix.image=[[
-<img align=center
+<img align=left
  src="https://raw.githubusercontent.com/timm/lua/master/etc/img/otter.png"
  width=200>
 ]]
