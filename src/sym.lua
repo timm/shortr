@@ -6,6 +6,7 @@ local THE   = require("the")
 local Sym   = {is="Sym"}
 
 function Sym.var(i) return i.sd end
+function Sym.mid(i) return i.mode end
 function Sym.xpect(i,j,  n)  
   n = i.n + j.n +0.0001
   return i.n/n * Sym.ent(i) + j.n/n * Sym.ent(j) 

@@ -12,6 +12,12 @@ local divs   = require("divs")
 local THE    = require("the")
 local Some   = {is="Some"}
 
+function Some.all(lst, out)
+  out = out or Some.new()
+  for _,one in pairs(lst) do Some.add(out,one) end
+  return out
+end
+
 function Some.new(t)
   local i = Column.new(t)
   i.me    = Some

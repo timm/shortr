@@ -16,7 +16,7 @@ local THE=require("the").divs
 
 local x,p,mid,var,xpect -- functions
 
-function x(a,z)       return a[math.floor(z)] end
+local function x(a,z)       return a[math.floor(z)] end
 function p(a,z)       return x(a, z*#i.has ) end
 function mid(a,lo,hi) return x(a, lo + .5*(hi-lo) ) end
 
@@ -41,44 +41,56 @@ function xpect(a,lo,j,hi)
 -- than `epsilon`
 -- (less than 30% of the standard deviation).
 
-return function(a,x,xis,two,y,yis,    xs,ys)
-  xis = xis or  Num
-  yis = yis or  Num
+local  function div(a, col,  t, -- maxDepth,x,xis, y, yis,  
+                    epsilon, start,stop, step, out)
+  out = {}
   no  = THE.char.skip
-  x   = x   or  function (r)  return r.cells[1]        end
-  y   = y   or  function (r)  return r.cells[#r.cells] end
-  xs  = xs  or  function ()   return Num.new{key=x}    end 
-  ys  = ys  or  function ()   return Num.new{key=x}    end 
-  local all =   function(a,w,f) 
-                  w= w or xis; return w.alls(a,f or x) end
-  table.sort(a, function(b,c) return b==no or c==no 
-                                     or x(b) < x(c)  end)
-  local cuts    = {}
-  local step    = math.floor((#a)^THE.step)
-  local epsilon = all(a,Num).sd*THE.cohen
+  a   = Some.all( a, Some.new{most=t.most}).has
+  maxDepth= t.maxDepth or 1
+  xis = t.xis or Num
+  x   = t.x   or  function(r) row.cells[col] end
+  yis = t.yis or xis
+  y   = t.y   or x
+  table.sort(a, function(u,v) 
+                  return x(u)==no or x(v)==no or x(u) < x(v) end)
+  start,stop = x(a[1]), x(a[#a])
+  step       =  math.floor(#a)^THE.divs.step
+  local function leftRight(lo,hi)
+    local xl,xr= xis.new{key=x}, xis.new{key=x}
+    local yl,yr= yis.new{key=y}, yis.new{key=y}
+    for j = lo,hi do
+      xis.add(xr, a[j])
+      yis.add(yr, a[j])
+    end
+    local xsd = xis.var(xr)
+    local ysd = yis.var(yr)
+    epsilon  = epsilon or xsd*THE.divs.cohen
+    return xl,xr,xsd,   yl,yr,ysd
+  end
   local function div(lo,hi,     cut)
-    local best = var(a,lo,hi)
-    for j = lo+step, hi-step do
-      local now, after = x(a, j), x(a, j+1)
-      if now ~= after then 
-        if after - a[1] > epsilon then
-          if a[#a] - now > epsilon then
-            if math.abs( mid(a,lo,j) - mid(a,j+1,hi) ) > epsilon then
-              local new = xpect(a,lo,j,hi)
-              -- Ignore new divisions that improve things
-              -- by less than a `trivial` amount
-              -- (say, 5%).
-              if new * THE.trivial < best then
-                 best,cut = new,j end end end end end  end
-    return cut  
-  end -- end div
-  local function recurse(lo,hi,  cut)
-    cut = div(lo,hi)
-    if   cut 
-    then recurse(lo, cut)
-         recurse(cut+1, hi) 
-    else cuts[ #cuts+1 ] = a[lo] end  
+    local xl,xr,xbest, yl,yr,ybest = leftRight(lo,hi) 
+    for j = lo, hi do
+      xis.add(xl, a[j] ); xis.sub(xr, a[j])
+      yis.add(yl, a[j] ); yis.sub(yr, a[j])
+      if j > lo + step then
+        if j < hi - step then
+          local now, after = x(a[j]), x(a[j+1])     
+          if now ~= after then 
+            if after - start > epsilon then
+              if stop  - now > epsilon then
+                if xis.mid(xr)  - xis.mid(xl) > epsilon then
+                  local new = yis.xpect(yl,yr)
+                  -- Ignore new divisions that improve things
+                  -- by less than a `trivial` amount
+                  -- (say, 5%).
+                  if new * THE.divs.trivial < ybest then
+                    ybest,cut = new,j end end end end end end end end 
+    maxDepth = maxDepth - 1
+    if   cut and maxDepth > 0
+    then div(lo, cut)
+         div(cut+1, hi) 
+    else cuts[ #cuts+1 ] = x(a[lo]) end  
   end -- end recurse
-  recurse(1, #a)
+  div(1, #a)
   return cuts
 end  

@@ -11,13 +11,14 @@ local THE   = require("the")
 local Num   = {is="Num"}
 
 function Num.var(i) return i.sd end
+function Num.mid(i) return i.mu end
 
 function Num.xpect(i,j,  n)  
   n = i.n + j.n +0.0001
   return i.n/n * i.sd+ j.n/n * j.sd 
 end
 
-function Num.alls(lst,key)
+function Num.all(lst,key)
   local i = Num.new{key=key}
   for _,x in pairs(lst) do Num.add(i, x) end
   return i
