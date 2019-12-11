@@ -5,92 +5,75 @@
 -- divides a list of numbers such that the variability
 -- of each division is minimized. 
 --
--- To simplify that task, we sort the numbers once
--- then measure variance using the 10th and 90th percentile 
--- of that list. This has the advantage that, if we recurse
--- into some part of that list, then we can quickly estimate
--- the variance of that sublist using that list's 10th and 90th
--- percentile.
 
-local THE=require("the").divs
+local THE  = require("the")
+local r    = require("lib").r
+local Num  = require("num")
+local Sym  = require("Sym")
+local Divs = {is="Divs"}
 
-local x,p,mid,var,xpect -- functions
+function Divs.new(a, t) -- col,depth,x,xis,y,ys
+  local i = Object.new(t)
+  i.me    = Divs
+  t       = t or {}
+  a       = Divs.sort(i,a, t.most or THE.divs.most)
+  i.xis   = t.xis or Num
+  i.x     = t.x   or function(r) row.cells[col] end
+  i.yis   = t.yis or i.xis
+  i.y     = t.y   or i.x
+  i.start,i.stop = i.x(a[1]), i.x(a[#a])
+  i.step  =  math.floor(#a)^THE.divs.step
+  return Divs.recurse(i, a, 1, #a, {}, t.depth or 1)
+end 
 
-local function x(a,z)       return a[math.floor(z)] end
-function p(a,z)       return x(a, z*#i.has ) end
-function mid(a,lo,hi) return x(a, lo + .5*(hi-lo) ) end
+function Divs.sort(i,a,most,    b)
+  for _,one in pairs(a) do
+    if r() < most/#a then
+      if i.x(one) ~= "?" then
+        b[#b+1] = one end end end
+  table.sort(b, 
+         function(u,v) return i.x(u) < i.x(v) end)
+  return b
+end
 
--- On experimentation, we found dividing the 90th minus
--- 10th percentile by 2.7 returns a value close to the normal
--- Gaussian variance.
+function Divs.recurse(i, a, lo, hi, out, depth)
+  local cut = Divs.argmin(i, a, lo, hi)
+  if   cut and depth > 0
+  then Divs.recurse(i, a, lo,    cut, out, depth-1)
+       Divs.recurse(i, a, cut+1, hi,  out, depht-1) 
+  else out[ #out+1 ] = i.x(a[lo]) 
+  end  
+  return out
+end 
 
-function var(a,lo,hi) 
-  return (x(a,lo+.9*(hi-lo)) - x(a,lo+.1*(hi-lo)))/2.7 end
+function Divs.argmin(i,a,lo,hi,     cut)
+  local xl,xr,_, yl,yr,best = Divs.leftRight(i,a,lo,hi) 
+  for j = lo, hi do
+    xis.add(xl, a[j] ); xis.sub(xr, a[j])
+    yis.add(yl, a[j] ); yis.sub(yr, a[j])
+    if j > lo + step then
+      if j < hi - step then
+        local now, after = i.x( a[j] ), i.x( a[j+1] )     
+        if now ~= after then 
+          if after - start > epsilon then
+            if stop  - now > epsilon then
+              if xis.mid(xr)  - xis.mid(xl) > epsilon then
+                local new = yis.xpect(yl,yr)
+                if new * THE.divs.trivial < best then
+                  best,cut = new,j 
+  end end end end end end end end 
+  return cut
+end
 
--- The expected value of two `Some`s is the weighed sum of
--- their variances.
-
-function xpect(a,lo,j,hi)
-  local n1, n2, n = j-lo+1, hi-j , hi - lo + 1
-  return n1/n * var(a,lo,j) + n2/n * var(a,j,hi) end
-
--- When we seek divisions, 
--- ignore divisions that are too small (less than, say,
--- square root size of the list-- see the `step` var);
--- or that divide the numbers into bins of size less 
--- than `epsilon`
--- (less than 30% of the standard deviation).
-
-local  function div(a, col,  t, -- maxDepth,x,xis, y, yis,  
-                    epsilon, start,stop, step, out)
-  out = {}
-  no  = THE.char.skip
-  a   = Some.all( a, Some.new{most=t.most}).has
-  maxDepth= t.maxDepth or 1
-  xis = t.xis or Num
-  x   = t.x   or  function(r) row.cells[col] end
-  yis = t.yis or xis
-  y   = t.y   or x
-  table.sort(a, function(u,v) 
-                  return x(u)==no or x(v)==no or x(u) < x(v) end)
-  start,stop = x(a[1]), x(a[#a])
-  step       =  math.floor(#a)^THE.divs.step
-  local function leftRight(lo,hi)
-    local xl,xr= xis.new{key=x}, xis.new{key=x}
-    local yl,yr= yis.new{key=y}, yis.new{key=y}
-    for j = lo,hi do
-      xis.add(xr, a[j])
-      yis.add(yr, a[j])
-    end
-    local xsd = xis.var(xr)
-    local ysd = yis.var(yr)
-    epsilon  = epsilon or xsd*THE.divs.cohen
-    return xl,xr,xsd,   yl,yr,ysd
-  end
-  local function div(lo,hi,     cut)
-    local xl,xr,xbest, yl,yr,ybest = leftRight(lo,hi) 
-    for j = lo, hi do
-      xis.add(xl, a[j] ); xis.sub(xr, a[j])
-      yis.add(yl, a[j] ); yis.sub(yr, a[j])
-      if j > lo + step then
-        if j < hi - step then
-          local now, after = x(a[j]), x(a[j+1])     
-          if now ~= after then 
-            if after - start > epsilon then
-              if stop  - now > epsilon then
-                if xis.mid(xr)  - xis.mid(xl) > epsilon then
-                  local new = yis.xpect(yl,yr)
-                  -- Ignore new divisions that improve things
-                  -- by less than a `trivial` amount
-                  -- (say, 5%).
-                  if new * THE.divs.trivial < ybest then
-                    ybest,cut = new,j end end end end end end end end 
-    maxDepth = maxDepth - 1
-    if   cut and maxDepth > 0
-    then div(lo, cut)
-         div(cut+1, hi) 
-    else cuts[ #cuts+1 ] = x(a[lo]) end  
-  end -- end recurse
-  div(1, #a)
-  return cuts
-end  
+function Divs.leftRight(i,a,lo,hi, 
+                        xl,xr,xsd, yl,yr,ysd)
+  xl,xr = i.xis.new{key=i.x}, i.xis.new{key=i.x}
+  yl,yr = i.yis.new{key=i.y}, i.yis.new{key=i.y}
+  for j = lo,hi do
+    i.xis.add(xr, a[j])
+    i.yis.add(yr, a[j]) end 
+  xsd = i.xis.var(xr)
+  ysd = i.yis.var(yr)
+  i.epsilon = i.epsilon or xsd*THE.divs.cohen
+  return  xl,xr,xsd,   yl,yr,ysd
+end
