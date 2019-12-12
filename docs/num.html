@@ -21,8 +21,7 @@
 <div id='container'>
   <div id="background"></div>
   <div class='section'>
-    <div class='docs'><center><center>
-<a href="index.html">home</a> :: 
+    <div class='docs'><a href="index.html">home</a> :: 
 <a href="about.html">about</a> :: 
 <a href="https://github.com/timm/lua/tree/master/INSTALL.md">install</a> :: 
 <a href="https://github.com/timm/lua/tree/master/test">demos</a> :: 
@@ -30,10 +29,9 @@
 <a href="http://github.com/timm/lua/issues>discuss"</a>  
 <a href="https://github.com/timm/lua/blob/master/LICENSE.md">&copy;&nbsp;2020</a>&nbsp;by&nbsp;<a href="http://menzies.us">timm</a>
 <hr>
-</center>
-<h1>DUO =  Data Miners using and/or used-by Optimizers<br><img 
- src="https://raw.githubusercontent.com/timm/lua/master/etc/img/otter.png"
- width=200><br>
+<h1>DUO =  Data Miners using and/or used-by Optimizers<br><br><img 
+ src="https://raw.githubusercontent.com/timm/lua/master/etc/img/index.png"
+ width=500><br>
 num.lua</h1></div>
   </div>
   <div class='clearall'>
@@ -43,7 +41,6 @@ num.lua</h1></div>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
       <hr>
-<center>
 <a href="https://www.lua.org"><img 
       src=https://img.shields.io/badge/language-lua-orange></a>
 <img  src=https://img.shields.io/badge/purpose-teach,ai,se-blueviolet> 
@@ -69,7 +66,21 @@ and standard deviation <code>i.sd</code>).</p>
     <div class='code'>
       <div class="highlight"><pre><span class="kd">local</span> <span class="n">Column</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;column&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">THE</span>   <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">Num</span>   <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Num&quot;</span><span class="p">}</span></pre></div>
+<span class="kd">local</span> <span class="n">Num</span>   <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Num&quot;</span><span class="p">}</span>
+
+<span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">var</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="kr">return</span> <span class="n">i</span><span class="p">.</span><span class="n">sd</span> <span class="kr">end</span>
+<span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="kr">return</span> <span class="n">i</span><span class="p">.</span><span class="n">mu</span> <span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">xpect</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span>  <span class="n">n</span><span class="p">)</span>  
+  <span class="n">n</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span> <span class="n">j</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span><span class="mf">0.0001</span>
+  <span class="kr">return</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">i</span><span class="p">.</span><span class="n">sd</span><span class="o">+</span> <span class="n">j</span><span class="p">.</span><span class="n">n</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">j</span><span class="p">.</span><span class="n">sd</span> 
+<span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">all</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span><span class="n">key</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Num</span><span class="p">.</span><span class="n">new</span><span class="p">{</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">}</span>
+  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">x</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="kr">do</span> <span class="n">Num</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="kr">end</span>
+  <span class="kr">return</span> <span class="n">i</span>
+<span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -93,9 +104,20 @@ to some selector function.</p>
   <span class="n">i</span><span class="p">.</span><span class="n">lo</span>  <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">lo</span> <span class="ow">or</span> <span class="nb">math.maxinteger</span>
   <span class="n">i</span><span class="p">.</span><span class="n">hi</span>  <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">hi</span> <span class="ow">or</span> <span class="nb">math.mininteger</span>
   <span class="kr">return</span> <span class="n">i</span>
-<span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span>    <span class="n">d</span><span class="p">)</span> 
+<span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Bulk addition to a <code>Num</code>.
+Add one item to a <code>Num</code>.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span>    <span class="n">d</span><span class="p">)</span> 
   <span class="kr">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span> <span class="kr">then</span> <span class="kr">return</span> <span class="n">x</span> <span class="kr">end</span>
   <span class="n">x</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">key</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
   <span class="n">i</span><span class="p">.</span><span class="n">n</span>  <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
@@ -109,10 +131,10 @@ to some selector function.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-3'>
+  <div class='section' id='section-4'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
+        <a class='octothorpe' href='#section-4'>#</a>
       </div>
       <p>Also supported, removing numbers from a stream.
 Note: this code does not update <code>i.lo</code> and <code>i.hi</code>.
@@ -130,15 +152,14 @@ So avoid using this for <code>i.n</code> under 8.</p>
   <span class="n">i</span><span class="p">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">mu</span> <span class="o">-</span> <span class="n">d</span><span class="o">/</span><span class="n">i</span><span class="p">.</span><span class="n">n</span>
   <span class="n">i</span><span class="p">.</span><span class="n">m2</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">m2</span> <span class="o">-</span> <span class="n">d</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">-</span> <span class="n">i</span><span class="p">.</span><span class="n">mu</span><span class="p">)</span>
   <span class="n">i</span><span class="p">.</span><span class="n">sd</span> <span class="o">=</span> <span class="n">Num</span><span class="p">.</span><span class="n">sd</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-  <span class="kr">return</span> <span class="n">x</span>
 <span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-4'>
+  <div class='section' id='section-5'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
+        <a class='octothorpe' href='#section-5'>#</a>
       </div>
       <p>Compute standard deviation. Dodge hard cases.</p>
     </div>
@@ -151,10 +172,10 @@ So avoid using this for <code>i.n</code> under 8.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-5'>
+  <div class='section' id='section-6'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-5'>#</a>
+        <a class='octothorpe' href='#section-6'>#</a>
       </div>
       <p>Return a number <code>x</code> normalized to the range 0..1, 
 <code>i.lo..i.hi</code>.</p>
@@ -162,22 +183,6 @@ So avoid using this for <code>i.n</code> under 8.</p>
     <div class='code'>
       <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">norm</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">)</span> 
   <span class="kr">return</span> <span class="n">x</span><span class="o">==</span><span class="s2">&quot;?&quot;</span> <span class="ow">and</span> <span class="mf">0.5</span> <span class="ow">or</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">i</span><span class="p">.</span><span class="n">lo</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">hi</span><span class="o">-</span><span class="n">i</span><span class="p">.</span><span class="n">lo</span> <span class="o">+</span> <span class="mi">10</span><span class="o">^-</span><span class="mi">32</span><span class="p">)</span>
-<span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-6'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-6'>#</a>
-      </div>
-      <p>The expected value of two <code>Num</code>s is the weighted sum of their
-standard deviation.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Num</span><span class="p">.</span><span class="nf">xpect</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span>  <span class="n">n</span><span class="p">)</span>  
-  <span class="n">n</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span> <span class="n">j</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span><span class="mf">0.0001</span>
-  <span class="kr">return</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">i</span><span class="p">.</span><span class="n">sd</span><span class="o">+</span> <span class="n">j</span><span class="p">.</span><span class="n">n</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">j</span><span class="p">.</span><span class="n">sd</span>
 <span class="kr">end</span></pre></div>
     </div>
   </div>
