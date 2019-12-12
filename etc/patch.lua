@@ -33,6 +33,7 @@ fix.gh=[[
 ]]
 
 fix.top=[[
+<center>
 <a href="index.html">home</a> :: 
 <a href="about.html">about</a> :: 
 <a href="https://github.com/timm/lua/tree/master/INSTALL.md">install</a> :: 
@@ -47,6 +48,7 @@ fix.title = "DUO =  Data Miners using and/or used-by Optimizers"
 
 fix.buttons=[[
 <hr>
+<center>
 <a href="https://www.lua.org"><img 
       src=https://img.shields.io/badge/language-lua-orange></a>
 <img  src=https://img.shields.io/badge/purpose-teach,ai,se-blueviolet> 
