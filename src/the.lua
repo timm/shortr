@@ -7,6 +7,8 @@ return {
   rand = { seed    = 10013 },
   some = { most    = 128   },
   divs = { step    = 0.5    ,
+           most    = 128    ,
+           skip    = "?"    ,
            cohen   = 0.3    ,
            trivial = 1.05  }
 }
