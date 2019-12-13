@@ -10,12 +10,15 @@ local divs = require("divs")
 local r, o, same, round = Lib.r, Lib.o, Lib.same, Lib.round
 local within= Lib.within
 
-ok{big= function (   a,s,m,d)
+local function big(   a,s,m,d)
   a,m = {},1000
   for i=1,m do a[#a+1] = round(i/m,3) end
   d= divs(a)
-  assert(within(0.49,d[5][1],0.51))
-end}
+  o(d)
+  assert(within(0.4,d[4][1],0.43))
+end
+
+ok{big= big} 
 
 ok{autos= function(  a,d)
   a={10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
@@ -50,6 +53,8 @@ ok{autos= function(  a,d)
   30, 30, 30, 30 , 30, 30, 30, 30, 30, 30, 30, 30,
   30, 30, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
   40, 40 , 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+  40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40 ,
+  40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40 ,
   40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40 ,
   40, 50 }
   d= divs(a)

@@ -32,6 +32,8 @@ fix.gh=[[
 
 ]]
 
+
+
 fix.top=[[
 <center>
 <a href="index.html">home</a> :: 
@@ -47,7 +49,6 @@ fix.top=[[
 fix.title = "DUO =  Data Miners using and/or used-by Optimizers"
 
 fix.buttons=[[
-<hr>
 <center>
 <a href="https://www.lua.org"><img 
       src=https://img.shields.io/badge/language-lua-orange></a>
@@ -55,12 +56,19 @@ fix.buttons=[[
 <img  src=https://img.shields.io/badge/platform-mac,*nux-informational> 
 <a    href="https://travis-ci.org/timm/lua"><img 
       src=https://travis-ci.org/timm/lua.svg?branch=master></a>
+      <hr>
 ]]
 
 fix.image=[[
-<img 
- src="https://raw.githubusercontent.com/timm/lua/master/etc/img/index.png"
- width=500><br>
+<br>
+<span style="font-size: 75px; color: purple;">
+  <i class="fas fa-bezier-curve"></i>
+  </span>
+<br>
+
+<!-- img 
+ src="https://raw.githubusercontent.com/timm/lua/master/etc/img/otter.png"
+ width=100 --><br>
 ]]
 
 function fix.spit(file,x, f)
@@ -83,7 +91,7 @@ local function swap(a,b) x= string.gsub(x,a,b,1) end
 
 
 swap("</head>" , fix.mathjax .. fix.inline .. "</head>")
-swap("<h1>"    , fix.top.. "<h1>"  .. fix.title .. "<br><br>".. fix.image )
+swap("<h1>"    , fix.top.. "<h1>"  .. fix.title .. "<br>" .. fix.image )
 swap("<p>vim:([^\n]*)\n([^\n]*)\n",fix.buttons)
 
 fix.spit(file,x)

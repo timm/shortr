@@ -30,9 +30,15 @@
 <a href="http://github.com/timm/lua/issues>discuss"</a>  
 <a href="https://github.com/timm/lua/blob/master/LICENSE.md">&copy;&nbsp;2020</a>&nbsp;by&nbsp;<a href="http://menzies.us">timm</a>
 <hr>
-<h1>DUO =  Data Miners using and/or used-by Optimizers<br><br><img 
- src="https://raw.githubusercontent.com/timm/lua/master/etc/img/index.png"
- width=500><br>
+<h1>DUO =  Data Miners using and/or used-by Optimizers<br><br>
+<span style="font-size: 75px; color: purple;">
+  <i class="fas fa-bezier-curve"></i>
+  </span>
+<br>
+
+<!-- img 
+ src="https://raw.githubusercontent.com/timm/lua/master/etc/img/otter.png"
+ width=100 --><br>
 divs.lua</h1></div>
   </div>
   <div class='clearall'>
@@ -41,14 +47,14 @@ divs.lua</h1></div>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <hr>
-<center>
+      <center>
 <a href="https://www.lua.org"><img 
       src=https://img.shields.io/badge/language-lua-orange></a>
 <img  src=https://img.shields.io/badge/purpose-teach,ai,se-blueviolet> 
 <img  src=https://img.shields.io/badge/platform-mac,*nux-informational> 
 <a    href="https://travis-ci.org/timm/lua"><img 
       src=https://travis-ci.org/timm/lua.svg?branch=master></a>
+      <hr>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span></span></pre></div>
@@ -60,9 +66,13 @@ divs.lua</h1></div>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>Simple, fast,  recursive discretizer which returns splits
-that minimized the post-split expected value of the
-standard deviation.</p>
+      <p><img  align=right 
+  src= "http://raw.githubusercontent.com/timm/lua/master/etc/img/divs.jpg"></p>
+<h2>Synopsis</h2>
+<p>Simple, fast,  recursive discretizer.</p>
+<h2>Description</h2>
+<p>Splits a list of numbers such that the
+the expected value of the standard deviation (after the splits) is minimized.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -75,9 +85,26 @@ standard deviation.</p>
         <a class='octothorpe' href='#section-2'>#</a>
       </div>
       <p>Standard deviation of a sub range is estimated using the 90th-10th percentile difference within
-that sub-range (that exact calculation is (90th=10th)/2.56,
+that sub-range. That exact calculation is (90th=10th)/2.56,
 where 2.56 is a magic number derived from 
-<a href="https://gist.github.com/timm/934d4664de105544e51cc67444aa8c60">this code</a>).</p>
+<a href="https://gist.github.com/timm/934d4664de105544e51cc67444aa8c60">this code</a>.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <h2>Options</h2>
+<p>| Tables        | Are           | Cool  | 
+| ------------- | ------------- | ----- |
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="kd">local</span> <span class="n">Lib</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;lib&quot;</span><span class="p">)</span>
@@ -85,7 +112,7 @@ where 2.56 is a magic number derived from
 
 <span class="kr">return</span> <span class="kr">function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">the</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">stdev</span><span class="p">,</span><span class="n">xpect</span><span class="p">,</span><span class="n">argmin</span> <span class="c1">-- local functions</span>
-  <span class="kd">local</span> <span class="n">out</span><span class="p">,</span><span class="n">a1</span> <span class="o">=</span> <span class="p">{},{}</span> <span class="c1">-- local vars</span>
+  <span class="kd">local</span> <span class="n">out</span><span class="p">,</span><span class="n">nums</span> <span class="o">=</span> <span class="p">{},{}</span> <span class="c1">-- local vars</span>
   <span class="n">the</span> <span class="o">=</span> <span class="n">has</span><span class="p">(</span><span class="n">the</span><span class="p">,{</span> <span class="n">no</span>     <span class="o">=</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span>
                   <span class="n">max</span>    <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>
                   <span class="n">magic</span>  <span class="o">=</span> <span class="mf">2.56</span><span class="p">,</span>
@@ -97,17 +124,17 @@ where 2.56 is a magic number derived from
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-3'>
+  <div class='section' id='section-4'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
+        <a class='octothorpe' href='#section-4'>#</a>
       </div>
       <hr />
 <p>Support code.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">function</span> <span class="nf">x</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>      <span class="kr">return</span> <span class="n">a1</span><span class="p">[</span><span class="nb">math.floor</span><span class="p">(</span><span class="n">z</span><span class="p">)]</span> <span class="kr">end</span>
-  <span class="kr">function</span> <span class="nf">p</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>      <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">z</span><span class="o">*#</span><span class="n">a1</span> <span class="p">)</span> <span class="kr">end</span>
+      <div class="highlight"><pre>  <span class="kr">function</span> <span class="nf">x</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>      <span class="kr">return</span> <span class="n">nums</span><span class="p">[</span><span class="nb">math.floor</span><span class="p">(</span><span class="n">z</span><span class="p">)]</span> <span class="kr">end</span>
+  <span class="kr">function</span> <span class="nf">p</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>      <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">z</span><span class="o">*#</span><span class="n">nums</span> <span class="p">)</span> <span class="kr">end</span>
   <span class="kr">function</span> <span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>  <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mf">.5</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">)</span> <span class="p">)</span> <span class="kr">end</span>
   <span class="kr">function</span> <span class="nf">stdev</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>  
     <span class="kr">return</span> <span class="n">abs</span><span class="p">((</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mf">.9</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">-</span> <span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mf">.1</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">)))</span><span class="o">/</span><span class="n">the</span><span class="p">.</span><span class="n">magic</span><span class="p">)</span> <span class="kr">end</span>
@@ -117,10 +144,10 @@ where 2.56 is a magic number derived from
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-4'>
+  <div class='section' id='section-5'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
+        <a class='octothorpe' href='#section-5'>#</a>
       </div>
       <p>Main worker: don&rsquo;t cut if:</p>
 <ul>
@@ -135,7 +162,7 @@ where 2.56 is a magic number derived from
     <div class='code'>
       <div class="highlight"><pre>  <span class="kr">function</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">,</span>   <span class="n">min</span><span class="p">,</span><span class="n">new</span><span class="p">,</span><span class="n">cut</span><span class="p">)</span>
     <span class="n">min</span> <span class="o">=</span> <span class="n">stdev</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
-    <span class="kr">for</span> <span class="n">j</span> <span class="o">=</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">the</span><span class="p">.</span><span class="n">step</span><span class="p">,</span> <span class="n">hi</span><span class="o">-</span><span class="n">the</span><span class="p">.</span><span class="n">step</span> <span class="kr">do</span>
+    <span class="kr">for</span> <span class="n">j</span> <span class="o">=</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="kr">do</span>
       <span class="kd">local</span> <span class="n">now</span><span class="p">,</span> <span class="n">after</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
       <span class="kr">if</span> <span class="n">now</span> <span class="o">~=</span> <span class="n">after</span> <span class="kr">then</span> 
        <span class="kr">if</span> <span class="n">after</span> <span class="o">-</span> <span class="n">the</span><span class="p">.</span><span class="n">start</span> <span class="o">&gt;</span> <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> <span class="kr">then</span> 
@@ -147,16 +174,16 @@ where 2.56 is a magic number derived from
     <span class="kr">if</span>   <span class="n">cut</span> 
     <span class="kr">then</span> <span class="n">argmin</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span>   <span class="n">cut</span><span class="p">)</span>
          <span class="n">argmin</span><span class="p">(</span><span class="n">cut</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span> 
-    <span class="kr">else</span> <span class="n">out</span><span class="p">[</span> <span class="o">#</span><span class="n">out</span><span class="o">+</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">a1</span><span class="p">[</span><span class="n">lo</span><span class="p">],</span> <span class="n">mid</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="p">}</span> <span class="kr">end</span>
+    <span class="kr">else</span> <span class="n">out</span><span class="p">[</span> <span class="o">#</span><span class="n">out</span><span class="o">+</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">nums</span><span class="p">[</span><span class="n">lo</span><span class="p">],</span> <span class="n">mid</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="p">}</span> <span class="kr">end</span>
     <span class="kr">return</span> <span class="n">out</span>
   <span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-5'>
+  <div class='section' id='section-6'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-5'>#</a>
+        <a class='octothorpe' href='#section-6'>#</a>
       </div>
       <hr />
 <p>Get ready.</p>
@@ -175,34 +202,57 @@ numbers only once.</li>
       <div class="highlight"><pre>  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">one</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">do</span>
     <span class="kr">if</span> <span class="n">the</span><span class="p">.</span><span class="n">f</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="o">~=</span> <span class="n">the</span><span class="p">.</span><span class="n">no</span> <span class="kr">then</span>
       <span class="kr">if</span> <span class="n">r</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">the</span><span class="p">.</span><span class="n">max</span><span class="o">/#</span><span class="n">a</span> <span class="kr">then</span> 
-        <span class="n">a1</span><span class="p">[</span><span class="o">#</span><span class="n">a1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">the</span><span class="p">.</span><span class="n">f</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>
-  <span class="nb">table.sort</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
-  <span class="n">the</span><span class="p">.</span><span class="n">step</span>    <span class="o">=</span> <span class="nb">math.floor</span><span class="p">((</span><span class="o">#</span><span class="n">a1</span><span class="p">)</span><span class="o">^</span><span class="n">the</span><span class="p">.</span><span class="n">step</span><span class="p">)</span>
-  <span class="n">the</span><span class="p">.</span><span class="n">stop</span>    <span class="o">=</span> <span class="n">a1</span><span class="p">[</span><span class="o">#</span><span class="n">a1</span><span class="p">]</span>
-  <span class="n">the</span><span class="p">.</span><span class="n">start</span>   <span class="o">=</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-  <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> 
-                <span class="ow">or</span> <span class="n">stdev</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">#</span><span class="n">a1</span><span class="p">)</span> <span class="o">*</span> <span class="n">the</span><span class="p">.</span><span class="n">cohen</span></pre></div>
+        <span class="n">nums</span><span class="p">[</span><span class="o">#</span><span class="n">nums</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">the</span><span class="p">.</span><span class="n">f</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>
+  <span class="nb">table.sort</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+  <span class="n">the</span><span class="p">.</span><span class="n">step</span>    <span class="o">=</span> <span class="nb">math.floor</span><span class="p">((</span><span class="o">#</span><span class="n">nums</span><span class="p">)</span><span class="o">^</span><span class="n">the</span><span class="p">.</span><span class="n">step</span><span class="p">)</span>
+  <span class="n">the</span><span class="p">.</span><span class="n">stop</span>    <span class="o">=</span> <span class="n">nums</span><span class="p">[</span><span class="o">#</span><span class="n">nums</span><span class="p">]</span>
+  <span class="n">the</span><span class="p">.</span><span class="n">start</span>   <span class="o">=</span> <span class="n">nums</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+  <span class="kr">if</span> <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">==</span> <span class="mi">0</span> <span class="kr">then</span> 
+    <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">stdev</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">#</span><span class="n">nums</span><span class="p">)</span> <span class="o">*</span> <span class="n">the</span><span class="p">.</span><span class="n">cohen</span> <span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-6'>
+  <div class='section' id='section-7'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-6'>#</a>
+        <a class='octothorpe' href='#section-7'>#</a>
       </div>
       <hr />
-<p>Go!</p>
+<h2>Return Value</h2>
 <p>Returns a list of pairs <code>{break, summary}</code> where the former
 shows the lower bound of some division while the latter shows
-a summary of the data in that division. For example <code>{{2,3},{5,7}}</code>
-says that the data divides on 2 and 5 and in those two
+a summary of the nums in that division. For example <code>{{2,3},{5,7}}</code>
+says that the nums divides on 2 and 5 and in those two
 regions, the mean values are 3 and 7 (respectively).</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">return</span> <span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">a1</span><span class="p">)</span>
-<span class="kr">end</span>
-
-</pre></div>
+      <div class="highlight"><pre>  <span class="kr">return</span> <span class="n">argmin</span><span class="p">(</span><span class="mi">1</span>     <span class="o">+</span> <span class="n">the</span><span class="p">.</span><span class="n">step</span><span class="p">,</span> 
+                <span class="o">#</span><span class="n">nums</span> <span class="o">-</span> <span class="n">the</span><span class="p">.</span><span class="n">step</span><span class="p">)</span>
+<span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <h2>Author</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>Written by  Tim Menzies.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>

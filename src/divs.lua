@@ -1,21 +1,36 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- --------- 
 
--- Simple, fast,  recursive discretizer which returns splits
--- that minimized the post-split expected value of the
--- standard deviation.
+-- <img  align=right 
+--   src= "http://raw.githubusercontent.com/timm/lua/master/etc/img/divs.jpg">
+-- ## Synopsis
+-- Simple, fast,  recursive discretizer.
+--
+-- ## Description
+-- Splits a list of numbers such that the
+-- the expected value of the standard deviation (after the splits) is minimized.
 
 -- Standard deviation of a sub range is estimated using the 90th-10th percentile difference within
--- that sub-range (that exact calculation is (90th=10th)/2.56,
+-- that sub-range. That exact calculation is (90th=10th)/2.56,
 -- where 2.56 is a magic number derived from 
--- [this code](https://gist.github.com/timm/934d4664de105544e51cc67444aa8c60)).
+-- [this code](https://gist.github.com/timm/934d4664de105544e51cc67444aa8c60).
+
+-- ## Options
+--  
+-- | Tables        | Are           | Cool  | 
+-- | ------------- | ------------- | ----- |
+-- | col 3 is      | right-aligned | $1600 |
+-- | col 2 is      | centered      |   $12 |
+-- | zebra stripes | are neat      |    $1 |
+--  
+
 
 local Lib=require("lib")
 local r,abs,has = Lib.r,Lib.abs, Lib.has
 
 return function(a, the)
   local x,p,mid,stdev,xpect,argmin -- local functions
-  local out,a1 = {},{} -- local vars
+  local out,nums = {},{} -- local vars
   the = has(the,{ no     = "?",
                   max    = 256,
                   magic  = 2.56,
@@ -26,8 +41,8 @@ return function(a, the)
                   step   = 0.5})
   -------------------------------------
   -- Support code.
-  function x(z)      return a1[math.floor(z)] end
-  function p(z)      return x(z*#a1 ) end
+  function x(z)      return nums[math.floor(z)] end
+  function p(z)      return x(z*#nums ) end
   function mid(i,j)  return x(i + .5*(j-i) ) end
   function stdev(i,j)  
     return abs((x(i+.9*(j-i)) - x(i+.1*(j-i)))/the.magic) end
@@ -44,7 +59,7 @@ return function(a, the)
   --   less than `epsilon`
   function argmin(lo,hi,   min,new,cut)
     min = stdev(lo,hi)
-    for j = lo + the.step, hi-the.step do
+    for j = lo, hi do
       local now, after = x(j), x(j+1)
       if now ~= after then 
        if after - the.start > the.epsilon then 
@@ -56,7 +71,7 @@ return function(a, the)
     if   cut 
     then argmin(lo,   cut)
          argmin(cut+1, hi) 
-    else out[ #out+1 ] = {a1[lo], mid(lo,hi) } end
+    else out[ #out+1 ] = {nums[lo], mid(lo,hi) } end
     return out
   end 
   -------------------------------------
@@ -73,22 +88,27 @@ return function(a, the)
   for _,one in pairs(a) do
     if the.f(one) ~= the.no then
       if r() < the.max/#a then 
-        a1[#a1+1] = the.f(one) end end end
-  table.sort(a1)
-  the.step    = math.floor((#a1)^the.step)
-  the.stop    = a1[#a1]
-  the.start   = a1[1]
-  the.epsilon = the.epsilon > 0 and the.epsilon 
-                or stdev(1,#a1) * the.cohen
+        nums[#nums+1] = the.f(one) end end end
+  table.sort(nums)
+  the.step    = math.floor((#nums)^the.step)
+  the.stop    = nums[#nums]
+  the.start   = nums[1]
+  if the.epsilon == 0 then 
+    the.epsilon = stdev(1,#nums) * the.cohen end
 
 -- ------
--- Go!
+-- ## Return Value
 -- 
 -- Returns a list of pairs `{break, summary}` where the former
 -- shows the lower bound of some division while the latter shows
--- a summary of the data in that division. For example `{{2,3},{5,7}}`
--- says that the data divides on 2 and 5 and in those two
+-- a summary of the nums in that division. For example `{{2,3},{5,7}}`
+-- says that the nums divides on 2 and 5 and in those two
 -- regions, the mean values are 3 and 7 (respectively).
 
-  return argmin(1, #a1)
+  return argmin(1     + the.step, 
+                #nums - the.step)
 end
+
+-- ## Author
+
+-- Written by  Tim Menzies.
