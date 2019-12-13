@@ -11,20 +11,19 @@
 -- [this code](https://gist.github.com/timm/934d4664de105544e51cc67444aa8c60)).
 
 local Lib=require("lib")
-local r,abs,settings = Lib.r,Lib.abs, Lib.settings
+local r,abs,has = Lib.r,Lib.abs, Lib.has
 
 return function(a, the)
   local x,p,mid,stdev,xpect,argmin -- local functions
   local out,a1 = {},{} -- local vars
-  the = settings(the,{
-             no     = "?",
-             max    = 256,
-             magic  = 2.56,
-             f      = function(z) return z end,
-             trivial= 1.05,
-             cohen  = 0.3,
-             epsilon = 0,
-             step   = 0.5})
+  the = has(the,{ no     = "?",
+                  max    = 256,
+                  magic  = 2.56,
+                  f      = function(z) return z end,
+                  trivial= 1.05,
+                  cohen  = 0.3,
+                  epsilon = 0,
+                  step   = 0.5})
   -------------------------------------
   -- Support code.
   function x(z)      return a1[math.floor(z)] end
