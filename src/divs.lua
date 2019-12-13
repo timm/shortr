@@ -21,21 +21,21 @@ local magic=2.56
 local   function divs (a,t)
   local no,max,f,step,stop,start, epsilon, trivial,cohen -- config
   local out,a1, step, stop, start -- local vars
-  local x,p,mid,var,expect,argmin,recurse -- local functions
+  local x,p,mid,stdev,expect,argmin,recurse -- local functions
   -------------------------------------
   -- Support
   function x(z)      return a1[math.floor(z)] end
   function p(z)      return x(z*#a1 ) end
   function mid(i,j)  return x(i + .5*(j-i) ) end
-  function var(i,j)  
+  function stdev(i,j)  
     return abs((x(i+.9*(j-i)) - x(i+.1*(j-i)))/magic) end
   function xpect(i,m,j)
     local n=j-i+1
-    return (m-i)/n*var(i,m) + (j-m -1)/n*var(m+1,j) end
+    return (m-i)/n*stdev(i,m) + (j-m -1)/n*stdev(m+1,j) end
   -------------------------------------
   -- Main worker
   function argmin(lo,hi, depth ,  min,new,cut)
-    min = var(lo,hi)
+    min = stdev(lo,hi)
     for j = lo+step, hi-step do
       local now, after = x(j), x(j+1)
       if now ~= after then 
@@ -67,7 +67,7 @@ local   function divs (a,t)
   step    = math.floor(t.step or (#a1)^0.5)
   stop    = a1[#a1]
   start   = a1[1]
-  epsilon = t.epsilon or var(1,#a1) * cohen
+  epsilon = t.epsilon or stdev(1,#a1) * cohen
   -------------------------------------
   -- Let's go!
   out ={}
