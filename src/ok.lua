@@ -6,12 +6,18 @@ local Rand = require("rand")
 local y,n = 0,0
 
 local function rogues(    skip)
-  skip = {jit=true, utf8=true, math=true, package=true,
-            table=true, coroutine=true, bit=true, os=true,
-            io=true, bit32=true, string=true, arg=true,
-            debug=true, _VERSION=true, _G=true }
+  skip = {
+    jit=true, utf8=true, math=true, package=true, table=true,
+    coroutine=true, bit=true, os=true, io=true, bit32=true,
+    string=true, arg=true, debug=true, _VERSION=true, _G=true,
+    getmetatable=true, print=true, rawequal=true, dofile=true,
+    load=true, collectgarbage=true, rawget=true, loadfile=true,
+    tostring=true, pairs=true, pcall=true, error=true,
+    xpcall=true, select=true, assert=true, rawset=true,
+    setmetatable=true, type=true, rawlen=true, next=true,
+    ipairs=true, require=true, tonumber=true}
   for k,v in pairs( _G ) do
-    if type(v) ~= "function" and not skip[k] then
+    if not skip[k] then
       if k:match("^[^A-Z]") then
         print("-- rogue ["..k.."]") end end end
 end

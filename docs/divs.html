@@ -60,13 +60,9 @@ divs.lua</h1></div>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>Simple, fast,  recursive discretizer. Only reason over a random
-selection of the numbers. Sorts all the 
-numbers once, then estimates standard deviation for any
-sub range using the 90th-10th percentile difference within
-that sub-range (that exact calculation is (90th=10th)/2.56,
-where 2.56 is a magic number derived from 
-<a href="https://gist.github.com/timm/934d4664de105544e51cc67444aa8c60">this code</a>).</p>
+      <p>Simple, fast,  recursive discretizer which returns splits
+that minimized the post-split expected value of the
+standard deviation.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -78,19 +74,27 @@ where 2.56 is a magic number derived from
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
       </div>
-      <p>Returns a list of pairs <code>{break, summary}</code> where the former
-shows the lower bound of some division while the latter shows
-a summary of the data in that division. For example <code>{{2,3},{5,7}}</code>
-says that the data divides on 2 and 5 and in those two
-regions, the mean values are 3 and 7 (respectively).</p>
+      <p>Standard deviation of a sub range is estimated using the 90th-10th percentile difference within
+that sub-range (that exact calculation is (90th=10th)/2.56,
+where 2.56 is a magic number derived from 
+<a href="https://gist.github.com/timm/934d4664de105544e51cc67444aa8c60">this code</a>).</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="kd">local</span> <span class="n">Lib</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;lib&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">r</span><span class="p">,</span><span class="n">abs</span><span class="p">,</span><span class="n">settings</span> <span class="o">=</span> <span class="n">Lib</span><span class="p">.</span><span class="n">r</span><span class="p">,</span><span class="n">Lib</span><span class="p">.</span><span class="n">abs</span><span class="p">,</span> <span class="n">Lib</span><span class="p">.</span><span class="n">settings</span>
 
 <span class="kr">return</span> <span class="kr">function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">the</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">stdev</span><span class="p">,</span><span class="n">xpect</span><span class="p">,</span><span class="n">argmin</span> <span class="c1">-- local functions</span>
   <span class="kd">local</span> <span class="n">out</span><span class="p">,</span><span class="n">a1</span> <span class="o">=</span> <span class="p">{},{}</span> <span class="c1">-- local vars</span>
-  <span class="kd">local</span> <span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">stdev</span><span class="p">,</span><span class="n">expect</span> <span class="c1">-- local functions</span></pre></div>
+  <span class="n">the</span> <span class="o">=</span> <span class="n">settings</span><span class="p">(</span><span class="n">the</span><span class="p">,{</span>
+             <span class="n">no</span>     <span class="o">=</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span>
+             <span class="n">max</span>    <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>
+             <span class="n">magic</span>  <span class="o">=</span> <span class="mf">2.56</span><span class="p">,</span>
+             <span class="n">f</span>      <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="kr">return</span> <span class="n">z</span> <span class="kr">end</span><span class="p">,</span>
+             <span class="n">trivial</span><span class="o">=</span> <span class="mf">1.05</span><span class="p">,</span>
+             <span class="n">cohen</span>  <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+             <span class="n">epsilon</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+             <span class="n">step</span>   <span class="o">=</span> <span class="mf">0.5</span><span class="p">})</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -119,8 +123,7 @@ regions, the mean values are 3 and 7 (respectively).</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-4'>#</a>
       </div>
-      <hr />
-<p>Main worker: don&rsquo;t cut if:</p>
+      <p>Main worker: don&rsquo;t cut if:</p>
 <ul>
 <li>you are within <code>epsilon</code> of  <code>start</code> or <code>stop</code></li>
 <li>the numbers before and after the break are the same</li>
@@ -145,8 +148,8 @@ regions, the mean values are 3 and 7 (respectively).</p>
     <span class="kr">if</span>   <span class="n">cut</span> 
     <span class="kr">then</span> <span class="n">argmin</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span>   <span class="n">cut</span><span class="p">)</span>
          <span class="n">argmin</span><span class="p">(</span><span class="n">cut</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span> 
-    <span class="kr">else</span> <span class="n">out</span><span class="p">[</span> <span class="o">#</span><span class="n">out</span><span class="o">+</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">a1</span><span class="p">[</span><span class="n">lo</span><span class="p">],</span> <span class="n">mid</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="p">}</span>
-    <span class="kr">end</span>  
+    <span class="kr">else</span> <span class="n">out</span><span class="p">[</span> <span class="o">#</span><span class="n">out</span><span class="o">+</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">a1</span><span class="p">[</span><span class="n">lo</span><span class="p">],</span> <span class="n">mid</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="p">}</span> <span class="kr">end</span>
+    <span class="kr">return</span> <span class="n">out</span>
   <span class="kr">end</span></pre></div>
     </div>
   </div>
@@ -157,18 +160,20 @@ regions, the mean values are 3 and 7 (respectively).</p>
         <a class='octothorpe' href='#section-5'>#</a>
       </div>
       <hr />
-<p>Config</p>
+<p>Get ready.</p>
+<ul>
+<li>Only reason over a random
+selection of the numbers. </li>
+<li>Select numbers within the input list using the <code>f</code> function.</li>
+<li>Sort all the 
+numbers only once.</li>
+<li>Ignore <em>don&rsquo;t care</em> symbols;</li>
+<li>Divide the numbers into <code>steps</code> of size, say, square root of the total list.</li>
+<li>Guess a value for a small <code>epsilon</code> using Cohen&rsquo;s rule.</li>
+</ul>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="n">the</span> <span class="o">=</span> <span class="n">settings</span><span class="p">(</span><span class="n">the</span><span class="p">,{</span>
-             <span class="n">no</span>     <span class="o">=</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span>
-             <span class="n">max</span>    <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>
-             <span class="n">magic</span>  <span class="o">=</span> <span class="mf">2.56</span><span class="p">,</span>
-             <span class="n">f</span>      <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="kr">return</span> <span class="n">z</span> <span class="kr">end</span><span class="p">,</span>
-             <span class="n">trivial</span><span class="o">=</span> <span class="mf">1.05</span><span class="p">,</span>
-             <span class="n">cohen</span>  <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
-             <span class="n">step</span>   <span class="o">=</span> <span class="mf">0.5</span><span class="p">})</span>
-  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">one</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">do</span>
+      <div class="highlight"><pre>  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">one</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">do</span>
     <span class="kr">if</span> <span class="n">the</span><span class="p">.</span><span class="n">f</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="o">~=</span> <span class="n">the</span><span class="p">.</span><span class="n">no</span> <span class="kr">then</span>
       <span class="kr">if</span> <span class="n">r</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">the</span><span class="p">.</span><span class="n">max</span><span class="o">/#</span><span class="n">a</span> <span class="kr">then</span> 
         <span class="n">a1</span><span class="p">[</span><span class="o">#</span><span class="n">a1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">the</span><span class="p">.</span><span class="n">f</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>
@@ -176,7 +181,8 @@ regions, the mean values are 3 and 7 (respectively).</p>
   <span class="n">the</span><span class="p">.</span><span class="n">step</span>    <span class="o">=</span> <span class="nb">math.floor</span><span class="p">((</span><span class="o">#</span><span class="n">a1</span><span class="p">)</span><span class="o">^</span><span class="n">the</span><span class="p">.</span><span class="n">step</span><span class="p">)</span>
   <span class="n">the</span><span class="p">.</span><span class="n">stop</span>    <span class="o">=</span> <span class="n">a1</span><span class="p">[</span><span class="o">#</span><span class="n">a1</span><span class="p">]</span>
   <span class="n">the</span><span class="p">.</span><span class="n">start</span>   <span class="o">=</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-  <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">stdev</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">#</span><span class="n">a1</span><span class="p">)</span> <span class="o">*</span> <span class="n">the</span><span class="p">.</span><span class="n">cohen</span></pre></div>
+  <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> 
+                <span class="ow">or</span> <span class="n">stdev</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">#</span><span class="n">a1</span><span class="p">)</span> <span class="o">*</span> <span class="n">the</span><span class="p">.</span><span class="n">cohen</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -186,11 +192,15 @@ regions, the mean values are 3 and 7 (respectively).</p>
         <a class='octothorpe' href='#section-6'>#</a>
       </div>
       <hr />
-<p>Let&rsquo;s go!</p>
+<p>Go!</p>
+<p>Returns a list of pairs <code>{break, summary}</code> where the former
+shows the lower bound of some division while the latter shows
+a summary of the data in that division. For example <code>{{2,3},{5,7}}</code>
+says that the data divides on 2 and 5 and in those two
+regions, the mean values are 3 and 7 (respectively).</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">a1</span><span class="p">)</span>
-  <span class="kr">return</span> <span class="n">out</span>
+      <div class="highlight"><pre>  <span class="kr">return</span> <span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">a1</span><span class="p">)</span>
 <span class="kr">end</span>
 
 </pre></div>
