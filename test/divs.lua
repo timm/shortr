@@ -14,7 +14,7 @@ ok{big= function (   a,s,m,d)
   a,m = {},1000
   for i=1,m do a[#a+1] = round(i/m,3) end
   d= divs(a)
-  assert(within(0.49,d[5],0.51))
+  assert(within(0.49,d[5][1],0.51))
 end}
 
 ok{autos= function(  a,d)
@@ -53,8 +53,8 @@ ok{autos= function(  a,d)
   40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40 ,
   40, 50 }
   d= divs(a)
-  assert(d[1]==10)
-  assert(d[2]==20)
-  assert(d[3]==30)
-  assert(d[4]==40)
+  assert(d[1][1]==10)
+  assert(d[2][1]==20)
+  assert(d[3][1]==30)
+  assert(d[4][1]==40)
 end}

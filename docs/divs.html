@@ -4,36 +4,12 @@
   <meta http-equiv="content-type" content="text/html;charset=utf-8">
   <title>divs.lua</title>
   <link rel="stylesheet" href="pycco.css">
-<script src="https://kit.fontawesome.com/7abee6b155.js" crossorigin="anonymous"></script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id=MathJax-script async 
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script type="text/x-mathjax-config">
-        MathJax.Hub.Config({
-            tex2jax: {
-                  inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                  processEscapes: true
-            }
-        });
-</script>
-</head>
+<script src=https://polyfill.io/v3/polyfill.min.js?features=es6></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script></head>
 <body>
 <div id='container'>
   <div id="background"></div>
   <div class='section'>
-    <div class='docs'><center>
-<a href="index.html">home</a> :: 
-<a href="about.html">about</a> :: 
-<a href="https://github.com/timm/lua/tree/master/INSTALL.md">install</a> :: 
-<a href="https://github.com/timm/lua/tree/master/test">demos</a> :: 
-<a href="http://github.com/timm/lua">github</a>   :: 
-<a href="http://github.com/timm/lua/issues>discuss"</a>  
-<a href="https://github.com/timm/lua/blob/master/LICENSE.md">&copy;&nbsp;2020</a>&nbsp;by&nbsp;<a href="http://menzies.us">timm</a>
-<hr>
-<h1>DUO =  Data Miners using and/or used-by Optimizers<br><br><img 
- src="https://raw.githubusercontent.com/timm/lua/master/etc/img/index.png"
- width=500><br>
-divs.lua</h1></div>
+    <div class='docs'><h1>DUO = Data Miners using <br>and/or using  Optimizers </h1><h1>divs.lua</h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -41,14 +17,8 @@ divs.lua</h1></div>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <hr>
-<center>
-<a href="https://www.lua.org"><img 
-      src=https://img.shields.io/badge/language-lua-orange></a>
-<img  src=https://img.shields.io/badge/purpose-teach,ai,se-blueviolet> 
-<img  src=https://img.shields.io/badge/platform-mac,*nux-informational> 
-<a    href="https://travis-ci.org/timm/lua"><img 
-      src=https://travis-ci.org/timm/lua.svg?branch=master></a>
+      <a href=index.html>home</a> :: <a href=about.html>about</a> :: <a href=https://github.com/timm/lua/tree/master/test>examples</a> :: <a href=http://github.com/timm/lua>src</a> :: <a href=http://github.com/timm/lua/issues>discuss</a> :: <a href=https://github.com/timm/lua/blob/master/LICENSE.md>© 2020</a> by <a href=http://menzies.us>timm</a></p>
+<hr />
     </div>
     <div class='code'>
       <div class="highlight"><pre><span></span></pre></div>
@@ -60,14 +30,16 @@ divs.lua</h1></div>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>Simple, fast,  recursive discretizer. Sorts all the 
+      <p>Simple, fast,  recursive discretizer. Only reason over a random
+selection of the numbers. Sorts all the 
 numbers once, then estimates standard deviation for any
 sub range using the 90th-10th percentile difference within
-that sub-range.</p>
+that sub-range (that exact calculation is (90th=10th)/2.56,
+where 2.56 is a magic number derived from 
+<a href="https://gist.github.com/timm/934d4664de105544e51cc67444aa8c60">this code</a>).</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span> <span class="n">Lib</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;lib&quot;</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">r</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">round</span><span class="p">,</span> <span class="n">abs</span> <span class="o">=</span> <span class="n">Lib</span><span class="p">.</span><span class="n">r</span><span class="p">,</span> <span class="n">Lib</span><span class="p">.</span><span class="n">o</span><span class="p">,</span> <span class="n">Lib</span><span class="p">.</span><span class="n">round</span><span class="p">,</span> <span class="n">Lib</span><span class="p">.</span><span class="n">abs</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -76,13 +48,19 @@ that sub-range.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
       </div>
-      <hr />
-<p>Magic parameter. 
-Set using <a href="https://gist.github.com/timm/934d4664de105544e51cc67444aa8c60">this code</a>.
-Standard deviation of a sub-range estiamted via <code>(90th-10th)/magic</code>.</p>
+      <p>Returns a list of pairs <code>{break, summary}</code> where the former
+shows the lower bound of some division while the latter shows
+a summary of the data in that division. For example <code>{{2,3},{5,7}}</code>
+says that the data divides on 2 and 5 and in those two
+regions, the mean values are 3 and 7 (respectively).</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span> <span class="n">magic</span><span class="o">=</span><span class="mf">2.56</span></pre></div>
+      <div class="highlight"><pre><span class="kd">local</span> <span class="n">Lib</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;lib&quot;</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">r</span><span class="p">,</span><span class="n">abs</span><span class="p">,</span><span class="n">settings</span> <span class="o">=</span> <span class="n">Lib</span><span class="p">.</span><span class="n">r</span><span class="p">,</span><span class="n">Lib</span><span class="p">.</span><span class="n">abs</span><span class="p">,</span> <span class="n">Lib</span><span class="p">.</span><span class="n">settings</span>
+
+<span class="kr">return</span> <span class="kr">function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">the</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">out</span><span class="p">,</span><span class="n">a1</span> <span class="o">=</span> <span class="p">{},{}</span> <span class="c1">-- local vars</span>
+  <span class="kd">local</span> <span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">stdev</span><span class="p">,</span><span class="n">expect</span> <span class="c1">-- local functions</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -92,13 +70,17 @@ Standard deviation of a sub-range estiamted via <code>(90th-10th)/magic</code>.<
         <a class='octothorpe' href='#section-3'>#</a>
       </div>
       <hr />
-<p>The worker</p>
+<p>Support code.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span>   <span class="kr">function</span> <span class="nf">divs</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">no</span><span class="p">,</span><span class="n">max</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">step</span><span class="p">,</span><span class="n">stop</span><span class="p">,</span><span class="n">start</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="n">trivial</span><span class="p">,</span><span class="n">cohen</span> <span class="c1">-- config</span>
-  <span class="kd">local</span> <span class="n">out</span><span class="p">,</span><span class="n">a1</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">start</span> <span class="c1">-- local vars</span>
-  <span class="kd">local</span> <span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">var</span><span class="p">,</span><span class="n">expect</span><span class="p">,</span><span class="n">argmin</span><span class="p">,</span><span class="n">recurse</span> <span class="c1">-- local functions</span></pre></div>
+      <div class="highlight"><pre>  <span class="kr">function</span> <span class="nf">x</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>      <span class="kr">return</span> <span class="n">a1</span><span class="p">[</span><span class="nb">math.floor</span><span class="p">(</span><span class="n">z</span><span class="p">)]</span> <span class="kr">end</span>
+  <span class="kr">function</span> <span class="nf">p</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>      <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">z</span><span class="o">*#</span><span class="n">a1</span> <span class="p">)</span> <span class="kr">end</span>
+  <span class="kr">function</span> <span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>  <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mf">.5</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">)</span> <span class="p">)</span> <span class="kr">end</span>
+  <span class="kr">function</span> <span class="nf">stdev</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>  
+    <span class="kr">return</span> <span class="n">abs</span><span class="p">((</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mf">.9</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">-</span> <span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mf">.1</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">)))</span><span class="o">/</span><span class="n">the</span><span class="p">.</span><span class="n">magic</span><span class="p">)</span> <span class="kr">end</span>
+  <span class="kr">function</span> <span class="nf">xpect</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">n</span><span class="o">=</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+    <span class="kr">return</span> <span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="n">n</span><span class="o">*</span><span class="n">stdev</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">m</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">m</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">n</span><span class="o">*</span><span class="n">stdev</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -108,17 +90,34 @@ Standard deviation of a sub-range estiamted via <code>(90th-10th)/magic</code>.<
         <a class='octothorpe' href='#section-4'>#</a>
       </div>
       <hr />
-<p>Support</p>
+<p>Main worker: don&rsquo;t cut if:</p>
+<ul>
+<li>you are within <code>epsilon</code> of  <code>start</code> or <code>stop</code></li>
+<li>the numbers before and after the break are the same</li>
+<li>the break does not reduce the expected value of the
+  standard deviation (by more than a <code>trivial</code> amount) </li>
+<li>the mean value of the two new breaks differ by
+  less than <code>epsilon</code></li>
+</ul>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">function</span> <span class="nf">x</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>      <span class="kr">return</span> <span class="n">a1</span><span class="p">[</span><span class="nb">math.floor</span><span class="p">(</span><span class="n">z</span><span class="p">)]</span> <span class="kr">end</span>
-  <span class="kr">function</span> <span class="nf">p</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>      <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">z</span><span class="o">*#</span><span class="n">a1</span> <span class="p">)</span> <span class="kr">end</span>
-  <span class="kr">function</span> <span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>  <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mf">.5</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">)</span> <span class="p">)</span> <span class="kr">end</span>
-  <span class="kr">function</span> <span class="nf">var</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>  
-    <span class="kr">return</span> <span class="n">abs</span><span class="p">((</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mf">.9</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">-</span> <span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mf">.1</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">)))</span><span class="o">/</span><span class="n">magic</span><span class="p">)</span> <span class="kr">end</span>
-  <span class="kr">function</span> <span class="nf">xpect</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
-    <span class="kd">local</span> <span class="n">n</span><span class="o">=</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
-    <span class="kr">return</span> <span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="n">n</span><span class="o">*</span><span class="n">var</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">m</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">m</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">n</span><span class="o">*</span><span class="n">var</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="kr">end</span></pre></div>
+      <div class="highlight"><pre>  <span class="kr">function</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">,</span>   <span class="n">min</span><span class="p">,</span><span class="n">new</span><span class="p">,</span><span class="n">cut</span><span class="p">)</span>
+    <span class="n">min</span> <span class="o">=</span> <span class="n">stdev</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
+    <span class="kr">for</span> <span class="n">j</span> <span class="o">=</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">the</span><span class="p">.</span><span class="n">step</span><span class="p">,</span> <span class="n">hi</span><span class="o">-</span><span class="n">the</span><span class="p">.</span><span class="n">step</span> <span class="kr">do</span>
+      <span class="kd">local</span> <span class="n">now</span><span class="p">,</span> <span class="n">after</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+      <span class="kr">if</span> <span class="n">now</span> <span class="o">~=</span> <span class="n">after</span> <span class="kr">then</span> 
+       <span class="kr">if</span> <span class="n">after</span> <span class="o">-</span> <span class="n">the</span><span class="p">.</span><span class="n">start</span> <span class="o">&gt;</span> <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> <span class="kr">then</span> 
+        <span class="kr">if</span> <span class="n">the</span><span class="p">.</span><span class="n">stop</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&gt;</span> <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span>  <span class="kr">then</span>
+         <span class="kr">if</span> <span class="n">mid</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="o">-</span> <span class="n">mid</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> <span class="kr">then</span>
+           <span class="kd">local</span> <span class="n">new</span> <span class="o">=</span> <span class="n">xpect</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> 
+           <span class="kr">if</span> <span class="n">new</span> <span class="o">*</span> <span class="n">the</span><span class="p">.</span><span class="n">trivial</span> <span class="o">&lt;</span> <span class="n">min</span> <span class="kr">then</span>
+             <span class="n">min</span><span class="p">,</span><span class="n">cut</span> <span class="o">=</span> <span class="n">new</span><span class="p">,</span><span class="n">j</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>
+    <span class="kr">if</span>   <span class="n">cut</span> 
+    <span class="kr">then</span> <span class="n">argmin</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span>   <span class="n">cut</span><span class="p">)</span>
+         <span class="n">argmin</span><span class="p">(</span><span class="n">cut</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span> 
+    <span class="kr">else</span> <span class="n">out</span><span class="p">[</span> <span class="o">#</span><span class="n">out</span><span class="o">+</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">a1</span><span class="p">[</span><span class="n">lo</span><span class="p">],</span> <span class="n">mid</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="p">}</span>
+    <span class="kr">end</span>  
+  <span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -128,26 +127,26 @@ Standard deviation of a sub-range estiamted via <code>(90th-10th)/magic</code>.<
         <a class='octothorpe' href='#section-5'>#</a>
       </div>
       <hr />
-<p>Main worker</p>
+<p>Config</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">function</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">,</span> <span class="n">depth</span> <span class="p">,</span>  <span class="n">min</span><span class="p">,</span><span class="n">new</span><span class="p">,</span><span class="n">cut</span><span class="p">)</span>
-    <span class="n">min</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
-    <span class="kr">for</span> <span class="n">j</span> <span class="o">=</span> <span class="n">lo</span><span class="o">+</span><span class="n">step</span><span class="p">,</span> <span class="n">hi</span><span class="o">-</span><span class="n">step</span> <span class="kr">do</span>
-      <span class="kd">local</span> <span class="n">now</span><span class="p">,</span> <span class="n">after</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-      <span class="kr">if</span> <span class="n">now</span> <span class="o">~=</span> <span class="n">after</span> <span class="kr">then</span> 
-       <span class="kr">if</span> <span class="n">after</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="n">epsilon</span> <span class="kr">then</span> 
-        <span class="kr">if</span> <span class="n">stop</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&gt;</span> <span class="n">epsilon</span>  <span class="kr">then</span>
-         <span class="kr">if</span> <span class="n">mid</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="o">-</span> <span class="n">mid</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">epsilon</span> <span class="kr">then</span>
-           <span class="kd">local</span> <span class="n">new</span> <span class="o">=</span> <span class="n">xpect</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> 
-           <span class="kr">if</span> <span class="n">new</span> <span class="o">*</span> <span class="n">trivial</span> <span class="o">&lt;</span> <span class="n">min</span> <span class="kr">then</span>
-             <span class="n">min</span><span class="p">,</span><span class="n">cut</span> <span class="o">=</span> <span class="n">new</span><span class="p">,</span><span class="n">j</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>
-    <span class="kr">if</span>   <span class="n">cut</span> 
-    <span class="kr">then</span> <span class="n">argmin</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span>   <span class="n">cut</span><span class="p">,</span><span class="n">depth</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-         <span class="n">argmin</span><span class="p">(</span><span class="n">cut</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span><span class="n">depth</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> 
-    <span class="kr">else</span> <span class="n">out</span><span class="p">[</span> <span class="o">#</span><span class="n">out</span><span class="o">+</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="n">a1</span><span class="p">[</span><span class="n">lo</span><span class="p">]</span> 
-    <span class="kr">end</span>  
-  <span class="kr">end</span></pre></div>
+      <div class="highlight"><pre>  <span class="n">the</span> <span class="o">=</span> <span class="n">settings</span><span class="p">(</span><span class="n">the</span><span class="p">,{</span>
+             <span class="n">no</span>     <span class="o">=</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span>
+             <span class="n">max</span>    <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>
+             <span class="n">magic</span>  <span class="o">=</span> <span class="mf">2.56</span><span class="p">,</span>
+             <span class="n">f</span>      <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="kr">return</span> <span class="n">z</span> <span class="kr">end</span><span class="p">,</span>
+             <span class="n">trivial</span><span class="o">=</span> <span class="mf">1.05</span><span class="p">,</span>
+             <span class="n">cohen</span>  <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+             <span class="n">step</span>   <span class="o">=</span> <span class="mf">0.5</span><span class="p">})</span>
+  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">one</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">do</span>
+    <span class="kr">if</span> <span class="n">the</span><span class="p">.</span><span class="n">f</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="o">~=</span> <span class="n">the</span><span class="p">.</span><span class="n">no</span> <span class="kr">then</span>
+      <span class="kr">if</span> <span class="n">r</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">the</span><span class="p">.</span><span class="n">max</span><span class="o">/#</span><span class="n">a</span> <span class="kr">then</span> 
+        <span class="n">a1</span><span class="p">[</span><span class="o">#</span><span class="n">a1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">the</span><span class="p">.</span><span class="n">f</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>
+  <span class="nb">table.sort</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+  <span class="n">the</span><span class="p">.</span><span class="n">step</span>    <span class="o">=</span> <span class="nb">math.floor</span><span class="p">((</span><span class="o">#</span><span class="n">a1</span><span class="p">)</span><span class="o">^</span><span class="n">the</span><span class="p">.</span><span class="n">step</span><span class="p">)</span>
+  <span class="n">the</span><span class="p">.</span><span class="n">stop</span>    <span class="o">=</span> <span class="n">a1</span><span class="p">[</span><span class="o">#</span><span class="n">a1</span><span class="p">]</span>
+  <span class="n">the</span><span class="p">.</span><span class="n">start</span>   <span class="o">=</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+  <span class="n">the</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">stdev</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">#</span><span class="n">a1</span><span class="p">)</span> <span class="o">*</span> <span class="n">the</span><span class="p">.</span><span class="n">cohen</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -157,42 +156,12 @@ Standard deviation of a sub-range estiamted via <code>(90th-10th)/magic</code>.<
         <a class='octothorpe' href='#section-6'>#</a>
       </div>
       <hr />
-<p>Config</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>  <span class="n">t</span>       <span class="o">=</span> <span class="n">t</span> <span class="ow">or</span> <span class="p">{}</span>
-  <span class="n">no</span>      <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">no</span> <span class="ow">or</span> <span class="s2">&quot;?&quot;</span>
-  <span class="n">max</span>     <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">max</span> <span class="ow">or</span> <span class="mi">256</span>
-  <span class="n">f</span>       <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">f</span> <span class="ow">or</span> <span class="kr">function</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="kr">return</span> <span class="n">z</span> <span class="kr">end</span>
-  <span class="n">trivial</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">trivial</span> <span class="ow">or</span> <span class="mf">1.05</span>
-  <span class="n">cohen</span>   <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">cohen</span>   <span class="ow">or</span> <span class="mf">0.30</span>
-  <span class="n">a1</span>      <span class="o">=</span> <span class="p">{}</span>
-  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">one</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">do</span>
-    <span class="kr">if</span> <span class="n">f</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="o">~=</span> <span class="n">no</span> <span class="kr">then</span>
-      <span class="kr">if</span> <span class="n">r</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">max</span><span class="o">/#</span><span class="n">a</span> <span class="kr">then</span> <span class="n">a1</span><span class="p">[</span><span class="o">#</span><span class="n">a1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>
-  <span class="nb">table.sort</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span> <span class="kr">return</span> <span class="n">f</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">f</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="kr">end</span><span class="p">)</span>
-  <span class="n">step</span>    <span class="o">=</span> <span class="nb">math.floor</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="n">step</span> <span class="ow">or</span> <span class="p">(</span><span class="o">#</span><span class="n">a1</span><span class="p">)</span><span class="o">^</span><span class="mf">0.5</span><span class="p">)</span>
-  <span class="n">stop</span>    <span class="o">=</span> <span class="n">a1</span><span class="p">[</span><span class="o">#</span><span class="n">a1</span><span class="p">]</span>
-  <span class="n">start</span>   <span class="o">=</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-  <span class="n">epsilon</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">epsilon</span> <span class="ow">or</span> <span class="n">var</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">#</span><span class="n">a1</span><span class="p">)</span> <span class="o">*</span> <span class="n">cohen</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-7'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-7'>#</a>
-      </div>
-      <hr />
 <p>Let&rsquo;s go!</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="n">out</span> <span class="o">=</span><span class="p">{}</span>
-  <span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">a1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+      <div class="highlight"><pre>  <span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">a1</span><span class="p">)</span>
   <span class="kr">return</span> <span class="n">out</span>
 <span class="kr">end</span>
-
-<span class="kr">return</span> <span class="n">divs</span>
 
 </pre></div>
     </div>

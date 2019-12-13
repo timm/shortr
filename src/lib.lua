@@ -4,6 +4,13 @@
 local THE=require("the").misc
 local Lib={}
 
+function Lib.settings(t,s)
+  for k,v in pairs(t or {}) do
+    assert(s[k],"unknown setting ["..k.."]")
+    s[k] = v
+  end
+  return s
+end
 -- Numbers
 local Rand=require("rand")
 Lib.r = Rand.r
