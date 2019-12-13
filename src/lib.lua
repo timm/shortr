@@ -13,6 +13,8 @@ function Lib.round(num, places)
   return math.floor(num * mult + 0.5) / mult
 end
 
+function Lib.abs(n) return n>0 and n or -1*n end
+
 function Lib.within(a,b,c) return b>=a and b<=c end
 
 -- ---------------------------------

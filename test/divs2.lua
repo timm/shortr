@@ -7,7 +7,7 @@ local ok   = require("ok")
 
 local Object=require("object")
 local Some=require("some")
-local Divs = require("divs")
+local Divs2 = require("divs2")
 local Tbl = require("tbl")
 
 local r, o, same, round = Lib.r, Lib.o, Lib.same, Lib.round
@@ -32,7 +32,7 @@ local function second(a) return a[2] end
 ok{big=function(   a,s,m,d)
   a,m = {},10^5
   for i=1,m do a[#a+1] = y1(i/m) end
-  d= Divs.new(a,{x=first,y=second})
+  d= Divs2.new(a,{x=first,y=second})
   assert(d[1]==0.012)
   assert(d[2]==0.251)
   assert(d[3]==0.505)
@@ -42,7 +42,7 @@ end}
 ok{less1=function(   a,m,d)
   a,m = {},10^4
   for i=1,m do a[#a+1] = y2( i/m ) end
-  d= Divs.new(a,{x=first, y=second})
+  d= Divs2.new(a,{x=first, y=second})
   assert(d[1]==0.0)
   assert(d[2]==0.258)
   assert(d[3]==0.507)
@@ -84,7 +84,7 @@ ok{autos= function(  a,d)
   40, 40 , 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
   40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40 ,
   40, 50 }
-  d= Divs.new(a,{x=same})
+  d= Divs2.new(a,{x=same})
   assert(d[1]==10)
   assert(d[2]==20)
   assert(d[3]==30)

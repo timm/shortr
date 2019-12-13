@@ -9,7 +9,7 @@ local ok=require("ok")
 local Some=require("some")
 local Divs=require("divs")
 
-ok{adds100=function(   s,d)
+same{adds100=function(   s,d)
   s = Some.new{most=128}
   for i=1,30 do Some.add(s,round(r(),3)) end
   d= Divs.new(s.has)
