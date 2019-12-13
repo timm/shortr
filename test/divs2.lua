@@ -5,7 +5,10 @@ package.path = '../src/?.lua;' .. package.path
 local Lib=require("lib")
 local ok   = require("ok")
 
-local divs = require("divs")
+local Object=require("object")
+local Some=require("some")
+local Divs = require("divs")
+local Tbl = require("tbl")
 
 local r, o, same, round = Lib.r, Lib.o, Lib.same, Lib.round
 
@@ -26,31 +29,27 @@ local function y2(x)
 local function first(a) return a[1] end
 local function second(a) return a[2] end
 
-ok{big= function (   a,s,m,d)
-  a,m = {},300
-  --for i=1,m do a[#a+1] = y1(i/m) end
-  for i=1,m do a[#a+1] = r() end
-  d= divs(a)
-  --{f=first})
-  o(d)
-  --  assert(d[1]==0.012)
-  --  assert(d[2]==0.251)
-  --  assert(d[3]==0.505)
-  --  assert(d[4]==0.763)
+ok{big=function(   a,s,m,d)
+  a,m = {},10^5
+  for i=1,m do a[#a+1] = y1(i/m) end
+  d= Divs.new(a,{x=first,y=second})
+  assert(d[1]==0.012)
+  assert(d[2]==0.251)
+  assert(d[3]==0.505)
+  assert(d[4]==0.763)
 end}
 
-same{less1=function(   a,m,d)
+ok{less1=function(   a,m,d)
   a,m = {},10^4
   for i=1,m do a[#a+1] = y2( i/m ) end
-  d= divs(a,{f=first})
-  o(d)
-  -- assert(d[1]==0.0)
-  -- assert(d[2]==0.258)
-  -- assert(d[3]==0.507)
-  -- assert(d[4]==0.775)
+  d= Divs.new(a,{x=first, y=second})
+  assert(d[1]==0.0)
+  assert(d[2]==0.258)
+  assert(d[3]==0.507)
+  assert(d[4]==0.775)
 end}
 
-same{autos= function(  a,d)
+ok{autos= function(  a,d)
   a={10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
   10, 10, 10, 10, 10, 10, 10, 10, 10, 10 , 10, 10,
   10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
@@ -85,9 +84,9 @@ same{autos= function(  a,d)
   40, 40 , 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
   40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40 ,
   40, 50 }
-  d= divs(a)
--- assert(d[1]==10)
--- assert(d[2]==20)
--- assert(d[3]==30)
--- assert(d[4]==40)
+  d= Divs.new(a,{x=same})
+  assert(d[1]==10)
+  assert(d[2]==20)
+  assert(d[3]==30)
+  assert(d[4]==40)
 end}
