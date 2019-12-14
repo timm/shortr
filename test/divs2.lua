@@ -29,27 +29,31 @@ local function y2(x)
 local function first(a) return a[1] end
 local function second(a) return a[2] end
 
-ok{big=function(   a,s,m,d)
+function big(   a,s,m,d)
   a,m = {},10^5
   for i=1,m do a[#a+1] = y1(i/m) end
-  d= Divs2.new(a,{x=first,y=second})
+  d= Divs2.new(a,{fx=first,fy=second})
+  for _,x in pairs(d) do o(x) end
   assert(d[1]==0.012)
   assert(d[2]==0.251)
   assert(d[3]==0.505)
   assert(d[4]==0.763)
-end}
+end
+big()
 
-ok{less1=function(   a,m,d)
+ok{big=big}
+
+same{less1=function(   a,m,d)
   a,m = {},10^4
   for i=1,m do a[#a+1] = y2( i/m ) end
-  d= Divs2.new(a,{x=first, y=second})
+  d= Divs2.new(a,{fx=first, fy=second})
   assert(d[1]==0.0)
   assert(d[2]==0.258)
   assert(d[3]==0.507)
   assert(d[4]==0.775)
 end}
 
-ok{autos= function(  a,d)
+same{autos= function(  a,d)
   a={10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
   10, 10, 10, 10, 10, 10, 10, 10, 10, 10 , 10, 10,
   10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,

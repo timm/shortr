@@ -57,15 +57,15 @@ o,r,copy,same,has = Lib.o, Lib.r, Lib.copy,Lib.same,Lib.has
 function Divs.new(a, the) 
   local i = Object.new()
   i.me  = Divs
-  i = has({xtype=Num, ytype=Num, fx=same, fy=same},
-          copy(THE.divs))
-  a     = Divs.some(i,a)
+  i.the = has({xtype=Num, ytype=Num, fx=same, fy=same},
+               copy(THE.divs))
+  a       = Divs.some(i,a)
   i.start = i.fx( a[1] )
   i.stop  = i.fx( a[#a] )
-  i.step  = math.floor(#a)^i.the.step
+  i.step  = math.floor(#a)^i.step
   return Divs.split(i, a, 1, #a, 
-                    i.xtype.all(a,fx),
-                    i.ytype.all(a,fy),
+                    i.the.xtype.all(a,fx),
+                    i.the.ytype.all(a,fy),
                     {}, 
                     t.depth or 1000)
 end 
@@ -74,25 +74,29 @@ end
 -- some random subset, sort the numbers using the `x` function.
 function Divs.some(i,a,    out)
   out = {}
-  for one in pairs(a) do
-    if r() < i.most/#a then
-      if i.fx(one) ~= i.skip then
+  for _,one in pairs(a) do
+    if r() < i.the.most/#a then
+      if i.the.fx(one) ~= i.the.skip then
         out[#out+1] = one end end end
-  table.sort(out, function(y,z) 
-                    return i.fx(y) < i.fy(z) end)
+  table.sort(out, 
+    function(y,z) 
+     o(i.the.fx(y))
+     return i.the.fx(y) < i.the.fy(z) end)
+  o(out)
   return out
 end
 
 -- If we can find a cut point, recurse left and
 -- right of the cut. If we are too deep, just stop
 function Divs.split(i, a, lo, hi,x,y,out, depth)
-  local cut,lx,ly, rx,ry = Divs.argmin(i, a, lo, hi)
+  local saved = copy(x)
+  local cut,lx,ly, rx,ry = Divs.argmin(i, a, lo, hi,x,y)
   if   cut and depth > 0
   then Divs.split(i, a, lo,    cut, lx,ly, out, depth-1)
        Divs.split(i, a, cut+1, hi,  rx,ry, out, depth-1) 
   else 
-       out[ #out+1 ] = {x= i.xtype.all(a,i.fx,lo,hi),
-                        y= i.ytype.all(a,i.fy,lo,hi)} end
+       out[ #out+1 ] = {x= saved,
+                        y= i.the.ytype.all(a,i.fy,lo,hi)} end
   return out
 end 
 
@@ -105,28 +109,28 @@ end
 -- while decrementing the "right" lists `xr,yr`.
 function Divs.argmin(i,a,lo,hi,xr,yr,     out)
   local xl1,yl1,  xr1,yr1, min, xl, yl
-  i.epsilon = i.epsilon or i.xtype.var(xr)*i.cohen
-  min       = i.ytype.var(yr)
-  xl        = i.xtype.new{key=i.fx}
-  yl        = i.ytype.new{key=i.fy}
+  i.epsilon = i.epsilon or i.the.xtype.var(xr)*i.cohen
+  min       = i.the.ytype.var(yr)
+  xl        = i.the.xtype.new{key=i.fx}
+  yl        = i.the.ytype.new{key=i.fy}
   for j = lo, hi do
-    i.xtype.add(xl, a[j])
-    i.ytype.add(yl, a[j])
-    i.xtype.sub(xr, a[j])
-    i.ytype.sub(yr, a[j])
+    i.the.xtype.add(xl, a[j])
+    i.the.ytype.add(yl, a[j])
+    i.the.xtype.sub(xr, a[j])
+    i.the.ytype.sub(yr, a[j])
     if j > lo + i.step and
        j < hi - i.step 
     then
-      local now   = i.fx(a[j  ])
-      local after = i.fx(a[j+1])     
-      if now ~= i.skip and
+      local now   = i.the.fx(a[j  ])
+      local after = i.the.fx(a[j+1])     
+      if now ~= i.the.skip and
         now  ~= after  and 
         after  - i.start > i.epsilon and
         i.stop - now     > i.epsilon and
-        i.xtype.mid(xr) - i.xtype.mid(xl) > i.epsilon 
+        i.the.xtype.mid(xr) - i.the.xtype.mid(xl) > i.epsilon 
       then
-        local new = i.ytype.xpect(yl,yr)
-        if new * i.trivial < min 
+        local new = i.the.ytype.xpect(yl,yr)
+        if new * i.ithe.trivial < min 
         then
           min, out = new, j
           xl1,yl1,xr1,yr1 = copy(xl),copy(yl),copy(xr),copy(yr) 
