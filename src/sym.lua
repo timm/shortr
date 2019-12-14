@@ -32,9 +32,9 @@ function Sym.ent(i)
 end
 
 -- Bulk addition to a `Num`.
-function Sym.alls(lst,key, i)
+function Sym.all(a,key,lo,hi,    i)
   i = Sym.new{key=key}
-  for _,x in pairs(lst) do Sym.add(i, x) end
+  for j = lo or 1, hi or #lst do Sym.add(i, a[j]) end
   return i
 end
 

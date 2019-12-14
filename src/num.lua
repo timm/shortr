@@ -18,12 +18,11 @@ function Num.xpect(i,j,  n)
   return i.n/n * i.sd+ j.n/n * j.sd 
 end
 
-function Num.all(lst,key)
-  local i = Num.new{key=key}
-  for _,x in pairs(lst) do Num.add(i, x) end
+function Num.all(a,key,lo,hi,    i)
+  i = Num.new{key=key}
+  for j = lo or 1,hi or #lst do Num.add(i, a[j]) end
   return i
 end
-
 
 -- To customize what kinds of numbers we track, change `i.key`
 -- to some selector function.

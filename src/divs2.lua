@@ -37,7 +37,7 @@ local Num  = require("num")
 local Sym  = require("Sym")
 local Divs = {is="Divs"}
 
-o,r,copy,same = Lib.o, Lib.r, Lib.copy,Lib.same
+o,r,copy,same,has = Lib.o, Lib.r, Lib.copy,Lib.same,Lib.has
 
 -- The optional `t` parameter can be used to set
 -- some options:` 
@@ -54,45 +54,44 @@ o,r,copy,same = Lib.o, Lib.r, Lib.copy,Lib.same
 --         trivial=1.05, -- ignore small reductions  
 --         cohen=0.3}}   -- ignore splits under cohen*sd
 
-function Divs.new(a, t) 
+function Divs.new(a, the) 
   local i = Object.new()
-  i.me    = Divs
-  t       = t or {}
-  i.THE   = copy(t.the or THE.divs)
-  i.xis   = t.xis or Num
-  i.x     = t.x   or same
-  i.yis   = t.yis or i.xis
-  i.y     = t.y   or i.x
-  a       = Divs.sort(i,a, i.THE.skip, t.most or i.THE.most)
-  i.start = i.x(a[1])
-  i.stop  = i.x(a[#a])
-  i.step  = math.floor(#a)^i.THE.step
-  return Divs.split(i, a, 1, #a, {}, t.depth or 1000)
+  i.me  = Divs
+  i.the = has({xtype=Num, ytype=Num, fx=same, fy=same},
+              copy(THE.divs))
+  a     = Divs.some(i,a)
+  i.the.start = i.fx( a[1] )
+  i.the.stop  = i.fx( a[#a] )
+  i.the.step  = math.floor(#a)^i.the.step
+  return Divs.split(i, a, 1, #a, 
+                    i.xtype.all(a,fx),
+                    i.ytype.all(a,fy),
+                    {}, 
+                    t.depth or 1000)
 end 
 
 -- Ignoring the skipped values, sampling 
 -- some random subset, sort the numbers using the `x` function.
-function Divs.sort(i,a,skip,most,    b)
-  b={}
-  for _,one in pairs(a) do
-    if r() < most/#a then
-      if i.x(one) ~= skip then
-        b[#b+1] = one end end end
-  table.sort(b, function(u,v) 
-     return i.x(u) < i.x(v) end)
-  return b
+function Divs.some(i,a)
+  local out = {}
+  for one in pairs(a) do
+    if r() < i.the.most/#a then
+      if i.the.fx(one) ~= i.the.skip then
+        out[#out+1] = one end end end
+  table.sort(out,
+             function(y,z) return x(y) < y(z) end)
+  return out
 end
-
 
 -- If we can find a cut point, recurse left and
 -- right of the cut. If we are too deep, just stop
-function Divs.split(i, a, lo, hi, out, depth)
-  local cut = Divs.argmin(i, a, lo, hi)
+function Divs.split(i, a, lo, hi,x,y,out, depth)
+  local cut,lx,ly, rx,ry = Divs.argmin(i, a, lo, hi)
   if   cut and depth > 0
-  then Divs.split(i, a, lo,    cut, out, depth-1)
-       Divs.split(i, a, cut+1, hi,  out, depth-1) 
-  else out[ #out+1 ] = i.x(a[lo]) 
-  end  
+  then Divs.split(i, a, lo,    cut, lx,ly, out, depth-1)
+       Divs.split(i, a, cut+1, hi,  rx,ry, out, depth-1) 
+  else out[ #out+1 ] = {x= i.xtype.all(a,fx,lo,hi),
+                        y= i.ytype.all(a,fy,lo,hi)} end
   return out
 end 
 
@@ -103,25 +102,28 @@ end
 -- incrementally add the current `x,y` values
 -- to the "left" lists `xl,yl`
 -- while decrementing the "right" lists `xr,yr`.
-
 function Divs.argmin(i,a,lo,hi,     out)
+  local xl1,yl1,xr1,yr1
   local xl,xr,_, yl,yr,min = Divs.leftRight(i,a,lo,hi) 
   for arg = lo, hi do
-    i.xis.add(xl, a[arg] ); i.xis.sub(xr, a[arg])
-    i.yis.add(yl, a[arg] ); i.yis.sub(yr, a[arg])
+    i.xtype.add(xl, a[arg] ); i.xtype.sub(xr, a[arg])
+    i.ytype.add(yl, a[arg] ); i.ytype.sub(yr, a[arg])
     if arg > lo + i.step then
-      if arg < hi - i.step then
-        local now, after = i.x( a[arg] ), i.x( a[arg+1] )     
-        if now ~= i.THE.skip then
-          if now ~= after then 
-            if after - i.start > i.epsilon then
-              if i.stop  - now > i.epsilon then
-                if i.xis.mid(xr) - i.xis.mid(xl) > i.epsilon then
-                  local new = i.yis.xpect(yl,yr)
-                  if new * i.THE.trivial < min then
-                    min,out = new,arg 
+     if arg < hi - i.step then
+      local now   = i.the.fx(a[arg  ])
+      local after = i.the.fx(a[arg+1])     
+      if now ~= i.the.skip then
+       if now ~= after then 
+        if after - i.start > i.epsilon then
+         if i.stop  - now > i.epsilon then
+          if i.xtype.mid(xr) - i.xtype.mid(xl) > i.epsilon then
+           local new = i.yis.xpect(yl,yr)
+           if new * i.THE.trivial < min then
+             min,out, xl1,yl1, xr1, yr1 = new,arg, 
+                                          copy(xl), copy(yl),
+                                          copy(xr), copy(yr)
   end end end end end end end end end 
-  return out
+  return out,xl1,yl1, xr1, yr1
 end
 
 -- Here's a low level function that initialized
