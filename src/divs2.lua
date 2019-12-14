@@ -57,12 +57,12 @@ o,r,copy,same,has = Lib.o, Lib.r, Lib.copy,Lib.same,Lib.has
 function Divs.new(a, the) 
   local i = Object.new()
   i.me  = Divs
-  i.the = has({xtype=Num, ytype=Num, fx=same, fy=same},
-              copy(THE.divs))
+  i = has({xtype=Num, ytype=Num, fx=same, fy=same},
+          copy(THE.divs))
   a     = Divs.some(i,a)
-  i.the.start = i.fx( a[1] )
-  i.the.stop  = i.fx( a[#a] )
-  i.the.step  = math.floor(#a)^i.the.step
+  i.start = i.fx( a[1] )
+  i.stop  = i.fx( a[#a] )
+  i.step  = math.floor(#a)^i.the.step
   return Divs.split(i, a, 1, #a, 
                     i.xtype.all(a,fx),
                     i.ytype.all(a,fy),
@@ -72,14 +72,14 @@ end
 
 -- Ignoring the skipped values, sampling 
 -- some random subset, sort the numbers using the `x` function.
-function Divs.some(i,a)
-  local out = {}
+function Divs.some(i,a,    out)
+  out = {}
   for one in pairs(a) do
-    if r() < i.the.most/#a then
-      if i.the.fx(one) ~= i.the.skip then
+    if r() < i.most/#a then
+      if i.fx(one) ~= i.skip then
         out[#out+1] = one end end end
-  table.sort(out,
-             function(y,z) return x(y) < y(z) end)
+  table.sort(out, function(y,z) 
+                    return i.fx(y) < i.fy(z) end)
   return out
 end
 
@@ -90,8 +90,9 @@ function Divs.split(i, a, lo, hi,x,y,out, depth)
   if   cut and depth > 0
   then Divs.split(i, a, lo,    cut, lx,ly, out, depth-1)
        Divs.split(i, a, cut+1, hi,  rx,ry, out, depth-1) 
-  else out[ #out+1 ] = {x= i.xtype.all(a,fx,lo,hi),
-                        y= i.ytype.all(a,fy,lo,hi)} end
+  else 
+       out[ #out+1 ] = {x= i.xtype.all(a,i.fx,lo,hi),
+                        y= i.ytype.all(a,i.fy,lo,hi)} end
   return out
 end 
 
@@ -102,46 +103,35 @@ end
 -- incrementally add the current `x,y` values
 -- to the "left" lists `xl,yl`
 -- while decrementing the "right" lists `xr,yr`.
-function Divs.argmin(i,a,lo,hi,     out)
-  local xl1,yl1,xr1,yr1
-  local xl,xr,_, yl,yr,min = Divs.leftRight(i,a,lo,hi) 
-  for arg = lo, hi do
-    i.xtype.add(xl, a[arg] ); i.xtype.sub(xr, a[arg])
-    i.ytype.add(yl, a[arg] ); i.ytype.sub(yr, a[arg])
-    if arg > lo + i.step then
-     if arg < hi - i.step then
-      local now   = i.the.fx(a[arg  ])
-      local after = i.the.fx(a[arg+1])     
-      if now ~= i.the.skip then
-       if now ~= after then 
-        if after - i.start > i.epsilon then
-         if i.stop  - now > i.epsilon then
-          if i.xtype.mid(xr) - i.xtype.mid(xl) > i.epsilon then
-           local new = i.yis.xpect(yl,yr)
-           if new * i.THE.trivial < min then
-             min,out, xl1,yl1, xr1, yr1 = new,arg, 
-                                          copy(xl), copy(yl),
-                                          copy(xr), copy(yr)
-  end end end end end end end end end 
+function Divs.argmin(i,a,lo,hi,xr,yr,     out)
+  local xl1,yl1,  xr1,yr1, min, xl, yl
+  i.epsilon = i.epsilon or i.xtype.var(xr)*i.cohen
+  min       = i.ytype.var(yr)
+  xl        = i.xtype.new{key=i.fx}
+  yl        = i.ytype.new{key=i.fy}
+  for j = lo, hi do
+    i.xtype.add(xl, a[j])
+    i.ytype.add(yl, a[j])
+    i.xtype.sub(xr, a[j])
+    i.ytype.sub(yr, a[j])
+    if j > lo + i.step and
+       j < hi - i.step 
+    then
+      local now   = i.fx(a[j  ])
+      local after = i.fx(a[j+1])     
+      if now ~= i.skip and
+        now  ~= after  and 
+        after  - i.start > i.epsilon and
+        i.stop - now     > i.epsilon and
+        i.xtype.mid(xr) - i.xtype.mid(xl) > i.epsilon 
+      then
+        local new = i.ytype.xpect(yl,yr)
+        if new * i.trivial < min 
+        then
+          min, out = new, j
+          xl1,yl1,xr1,yr1 = copy(xl),copy(yl),copy(xr),copy(yr) 
+          end end end end 
   return out,xl1,yl1, xr1, yr1
-end
-
--- Here's a low level function that initialized
--- the "left" and "right" lists. The "left" lists
--- of `xl,yl` are initially empty while the "right"
--- lists initially contain everything between `lo` and `hi`.
-function Divs.leftRight(i,a,lo,hi) 
-  local xl = i.xis.new{key=i.x}
-  local xr = i.xis.new{key=i.x}
-  local yl = i.yis.new{key=i.y}
-  local yr = i.yis.new{key=i.y}
-  for j = lo,hi do 
-    i.xis.add(xr, a[j])
-    i.yis.add(yr, a[j])
-  end 
-  i.epsilon = i.epsilon or i.xis.var(xr)*i.THE.cohen
-  return  xl,xr,i.xis.var(xr),
-          yl,yr,i.yis.var(yr)
 end
 
 -- ----
