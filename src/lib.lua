@@ -5,11 +5,15 @@ local THE=require("the").misc
 local Lib={}
 
 
-function Lib.has(t,s)
-  for k,v in pairs(t or {}) do
-    s[k] = v
-  end
-  return s
+local function fillInDefaults(new, defaults)
+  for k,v in pairs(defaults) do new[k] = new[k] or v end
+  return new
+end
+
+function Lib.has(t)
+  t=t or {}
+  setmetatable(t or {}, {__call=fillInDefaults}) 
+  return t
 end
 
 -- Numbers

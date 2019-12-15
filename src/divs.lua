@@ -17,93 +17,90 @@
 
 -- ## Options
 --  
--- | Tables        | Are           | Cool  | 
--- | ------------- | ------------- | ----- |
--- | col 3 is      | right-aligned | $1600 |
--- | col 2 is      | centered      |   $12 |
--- | zebra stripes | are neat      |    $1 |
---  
 
 
 local Lib=require("lib")
 local r,abs,has = Lib.r,Lib.abs, Lib.has
 
-return function(a, the)
+return function(a, my)
   local x,p,mid,stdev,xpect,argmin -- local functions
   local out,nums = {},{} -- local vars
-  the = has(the,{ no     = "?",
+  my= has(my){    no     = "?",
                   max    = 256,
-                  magic  = 2.56,
+                  magic  = 2.6,
                   f      = function(z) return z end,
                   trivial= 1.05,
                   cohen  = 0.3,
                   epsilon = 0,
-                  step   = 0.5})
+                  step   = 0.5}
   -------------------------------------
   -- Support code.
   function x(z)      return nums[math.floor(z)] end
   function p(z)      return x(z*#nums ) end
   function mid(i,j)  return x(i + .5*(j-i) ) end
   function stdev(i,j)  
-    return abs((x(i+.9*(j-i)) - x(i+.1*(j-i)))/the.magic) end
+    return abs((x(i+.9*(j-i)) - x(i+.1*(j-i)))/my.magic) end
   function xpect(i,m,j)
     local n=j-i+1
     return (m-i)/n*stdev(i,m) + (j-m -1)/n*stdev(m+1,j) end
   -- Main worker: don't cut if:
   -- 
   -- - you are within `epsilon` of  `start` or `stop`
-  -- - the numbers before and after the break are the same
-  -- - the break does not reduce the expected value of the
+  -- - my numbers before and after my break are my same
+  -- - my break does not reduce my expected value of my
   --   standard deviation (by more than a `trivial` amount) 
-  -- - the mean value of the two new breaks differ by
+  -- - my mean value of my two new breaks differ by
   --   less than `epsilon`
-  function argmin(lo,hi,   min,new,cut)
+  function argmin(lo,hi,   min,new,cut,now,after)
     min = stdev(lo,hi)
-    for j = lo + the.step, hi-the.step do
-      local now, after = x(j), x(j+1)
-      if now ~= after then 
-        if after - the.start > the.epsilon then 
-          if the.stop - now > the.epsilon  then
-            if mid(j+1,hi) - mid(lo,j) > the.epsilon then
-              local new = xpect(lo,j,hi) 
-              if new * the.trivial < min then
-                min,cut = new,j end end end end end end 
-    if   cut 
-    then argmin(lo,   cut)
-         argmin(cut+1, hi) 
-    else out[ #out+1 ] = {nums[lo], {hi-lo,mid(lo,hi)} } end
+    for j = lo + my.step, hi-my.step do
+      now, after = x(j), x(j+1)
+      if now ~= after                  and 
+         after - my.start > my.epsilon and 
+         my.stop - now    > my.epsilon and
+         mid(j+1,hi) - mid(lo,j) > my.epsilon 
+      then
+        new = xpect(lo,j,hi) 
+        if new * my.trivial < min then
+          min,cut = new,j end end end 
+    if cut then
+      argmin(lo,   cut)
+      argmin(cut+1, hi) 
+    else 
+      out[ #out+1 ] = {nums[lo], {hi-lo,mid(lo,hi)} } 
+    end
     return out
   end 
   -------------------------------------
   -- Get ready.
   --
   -- - Only reason over a random
-  -- selection of the numbers. 
-  -- - Select numbers within the input list using the `f` function.
-  -- - Sort all the 
+  -- selection of my numbers. 
+  -- - Select numbers within my input list using my `f` function.
+  -- - Sort all my 
   -- numbers only once.
   -- - Ignore _don't care_ symbols;
-  -- - Divide the numbers into `steps` of size, say, square root of the total list.
+  -- - Divide my numbers into `steps` of size, say, square root of my total list.
   -- - Guess a value for a small `epsilon` using Cohen's rule.
   for _,one in pairs(a) do
-    if the.f(one) ~= the.no then
-      if r() < the.max/#a then 
-        nums[#nums+1] = the.f(one) end end end
+    if my.f(one) ~= my.no then
+      if r() < my.max/#a then 
+        nums[#nums+1] = my.f(one) end end end
   table.sort(nums)
-  the.step    = math.floor((#nums)^the.step)
-  the.stop    = nums[#nums]
-  the.start   = nums[1]
-  if the.epsilon == 0 then 
-    the.epsilon = stdev(1,#nums) * the.cohen end
+  my.step  = math.floor((#nums)^my.step)
+  my.stop  = nums[#nums]
+  my.start = nums[1]
+  if my.epsilon == 0 then 
+    my.epsilon = stdev(1,#nums) * my.cohen end
 
 -- ------
 -- ## Return Value
 -- 
--- Returns a list of pairs `{break, summary}` where the former
--- shows the lower bound of some division while the latter shows
--- a summary of the nums in that division. For example `{{2,3},{5,7}}`
--- says that the nums divides on 2 and 5 and in those two
--- regions, the mean values are 3 and 7 (respectively).
+-- Returns a list of pairs `{break, summary}` where my former
+-- shows my lower bound of some division while my latter shows
+-- a summary of my nums in that division. For example `{{2,3},{5,7}}`
+-- says that my nums divides on 2 and 5 and in those two
+-- regions, my mean values are 3 and 7 (respectively).
 
   return argmin(1, #nums)
 end
