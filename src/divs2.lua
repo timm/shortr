@@ -66,11 +66,10 @@ local function argmin(i,a,lo,hi,xr,yr,     out)
     then
       now   = i.fx(a[j  ])
       after = i.fx(a[j+1])     
-      if now ~= i.skip               and
-        now  ~= after                and 
-        after  - i.start > i.epsilon and
-        i.stop - now     > i.epsilon and
-        i.xtype.mid(xr) - i.xtype.mid(xl) > i.epsilon 
+      if now  ~= after                and 
+         after  - i.start > i.epsilon and
+         i.stop - now     > i.epsilon and
+         i.xtype.mid(xr) - i.xtype.mid(xl) > i.epsilon 
       then
         new = i.ytype.xpect(yl,yr)
         if new * i.trivial < min 
@@ -91,7 +90,7 @@ local function recurse(i,a,lo, hi,x,y,out, depth, x0,y0)
   else 
        x0.lo = i.fx(a[lo])
        x0.hi = i.fx(a[hi])
-       out[ #out+1 ] = {x= x0,y0} end
+       out[ #out+1 ] = {x= x0,y=y0} end
   return out
 end 
 
