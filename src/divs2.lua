@@ -32,21 +32,18 @@
 
 local THE  = require("the")
 local Lib  = require("lib")
-local Object = require("object")
 local Num  = require("num")
 local Sym  = require("Sym")
-local Divs = {is="Divs"}
 
 o,r,copy,same,has = Lib.o, Lib.r, Lib.copy,Lib.same,Lib.has
 
 local function some(i,a,      out)
   out = {}
   for _,one in pairs(a) do
-    if r() < i.most/#lst then
-      if i.fx(one) ~= i.skip then
-        out[#out+1] = one end end end
+    if i.fx(one) ~= i.skip and r() < i.most/#lst then 
+      out[#out+1] = one end end
   table.sort(out, function(y,z) 
-                     return i.fx(y) < i.fx(z) end)
+                    return i.fx(y) < i.fx(z) end)
   return out
 end
 
@@ -54,11 +51,13 @@ end
 -- incrementally add the current `x,y` values
 -- to the "left" lists `xl,yl`
 -- while decrementing the "right" lists `xr,yr`.
-local function argmin(i,a,lo,hi,xr,yr,     out)
-  local xl1,yl1,  xr1,yr1, min, xl, yl, now,after, new
-  min = i.ytype.var(yr)
-  xl  = i.xtype.new{key=i.fx}
-  yl  = i.ytype.new{key=i.fy}
+local function argmin(i,a,lo,hi,xall, yall,     out)
+  local xl1,yl1,xr1,yr1,out, now,after, new
+  local min = i.ytype.var(yall)
+  local xr  = xall
+  local yr  = yall
+  local xl  = i.xtype.new{key=i.fx}
+  local yl  = i.ytype.new{key=i.fy}
   for j = lo, hi do
     i.xtype.add(xl, a[j]); i.ytype.add(yl, a[j])
     i.xtype.sub(xr, a[j]); i.ytype.sub(yr, a[j])
@@ -80,9 +79,9 @@ local function argmin(i,a,lo,hi,xr,yr,     out)
   return out,xl1,yl1, xr1, yr1
 end
  
-local function recurse(i,a,lo, hi,x,y,out, depth, x0,y0)
-  x0 = copy(x); 
-  y0 = copy(y)
+local function recurse(i,a,lo, hi,x,y,out, depth, x0,y0var)
+  x0    = copy(x); 
+  y0var = i.ytpye.var(y)
   local cut,lx,ly, rx,ry = argmin(i,a,lo, hi,x,y)
   if   cut and depth > 0
   then recurse(i,a,lo,    cut, lx,ly, out, depth-1)
@@ -90,19 +89,19 @@ local function recurse(i,a,lo, hi,x,y,out, depth, x0,y0)
   else 
        x0.lo = i.fx(a[lo])
        x0.hi = i.fx(a[hi])
-       out[ #out+1 ] = {x= x0,y=y0} end
+       out[ #out+1 ] = {x=x0, y=y0var} end
   return out
 end 
 
-return function (a, i,           x,y) 
+return function (a, i) 
   i = has(i){THE.divs}
   i = has(i){xtype=Num, ytype=Num, fx=same, fy=same}
   a         = some(a)
   i.start   = i.fx( a[1] )
   i.stop    = i.fx( a[#a] )
   i.step    = math.floor(#a)^i.step
-  y         = i.ytype.all(a,i.fy)
-  x         = i.xtype.all(a,i.fx)
+  local y   = i.ytype.all(a,i.fy)
+  local x   = i.xtype.all(a,i.fx)
   i.epsilon = i.epsilon or i.xtype.var(x)*i.cohen
   return recurse(i,a, 1, #a, x, y, {}, i.depth or 1000)
 end 
