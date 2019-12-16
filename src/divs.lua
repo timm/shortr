@@ -62,7 +62,8 @@ return function(a, my)
       then
         new = xpect(lo,j,hi) 
         if new * my.trivial < min then
-          min,cut = new,j end end end 
+          min,cut = new,j end end 
+    end -- end for loop 
     if cut then
       argmin(lo,   cut)
       argmin(cut+1, hi) 

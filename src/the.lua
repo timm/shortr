@@ -9,6 +9,7 @@ return {
   divs = { step    = 0.5    ,
            most    = 128    ,
            skip    = "?"    ,
+           depth   - 1000   ,
            cohen   = 0.3    ,
            trivial = 1.05  }
 }
