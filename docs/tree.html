@@ -61,11 +61,14 @@ tree.lua</h1></div>
 <span class="kd">local</span> <span class="n">THE</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Some</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;some&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Num</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">divs2</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;divs&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Tree</span> <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Tree&quot;</span><span class="p">}</span>
 
-<span class="kr">function</span> <span class="nc">Tree</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="kr">function</span> <span class="nc">Tree</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span><span class="n">my</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Object</span><span class="p">.</span><span class="n">new</span><span class="p">()</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">me</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">tbl</span>  <span class="o">=</span> <span class="n">Tree</span><span class="p">,</span><span class="n">t</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">me</span> <span class="o">=</span> <span class="n">Tree</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">my</span><span class="o">=</span> <span class="n">has</span><span class="p">(</span><span class="n">my</span><span class="p">){</span><span class="n">minobs</span><span class="o">=</span><span class="mi">2</span><span class="p">}</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">tbl</span><span class="o">=</span> <span class="n">tbl</span>
   <span class="kr">return</span> <span class="n">i</span>
 <span class="kr">end</span>
 

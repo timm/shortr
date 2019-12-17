@@ -12,7 +12,20 @@ function Tree.new(tbl,my)
   i.me = Tree
   i.my= has(my){minobs=2}
   i.tbl= tbl
+  i.kids={}
+  i.here=nil
   return i
+end
+
+function Tree.show(i,pre)
+  pre = pre or ""
+  print(pre, i.here.n)
+  if not i.kids then
+  for _,k in pairs(i.kids) do
+    Tree.show(k,pre .. "|   ")
+  end
+  if   print(pre .. s, i.here.mid)
+  else 
 end
 
 local function num1(nums, n,   a) 

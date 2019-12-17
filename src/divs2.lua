@@ -1,17 +1,24 @@
 -- vim: ts=2 sw=2 sts=2 expandtab:cindent:
 --------- --------- --------- --------- --------- --------- 
- 
--- Discretization of list of variables
--- Generates splits that reduce the expected value of
--- the variability after the split.
--- (and "variance" is measured in terms of standard deviation
+
+-- <img  align=right width=250
+--   src= "http://raw.githubusercontent.com/timm/lua/master/etc/img/divs2.png">
+-- ## Synopsis
+-- Supervised descretization.
+-- ## Descriptions
+-- Given a list of list, split one column (called `x`)
+-- into order to most reduce
+-- the expected value of
+-- the another column (called `y`).
+-- Here,  "variance" refers to the
+-- standard deviation
 -- and entropy for numeric and symbolic columns).
 --
 -- - When passed a simple list of numbers, this
 -- discretizer divides according to that list's variability.
 -- - When passed a list of tables, the splits of one column
 -- are selected to minimize the variance a second column.
-
+-- ## Options
 -- This discretizer is passed the functions `fx,fy` to
 -- select for the first and  second column. 
 
@@ -28,6 +35,11 @@
 --                xtype = Num,
 --                ytype = Sym})                       
 
+-- Another interesting option is `depth`. To get only one
+-- split (with no subsequent recursion), use `{depth=1}`
+-- This is useful during  learning trees when you want
+-- to give subtrees as much data as possible.
+-- ## Code
 local THE  = require("the")
 local Lib  = require("lib")
 local Num  = require("num")

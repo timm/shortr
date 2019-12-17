@@ -66,10 +66,17 @@ divs2.lua</h1></div>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>Discretization of list of variables
-Generates splits that reduce the expected value of
-the variability after the split.
-(and &ldquo;variance&rdquo; is measured in terms of standard deviation
+      <p><img  align=right width=250
+  src= "http://raw.githubusercontent.com/timm/lua/master/etc/img/divs2.png"></p>
+<h2>Synopsis</h2>
+<p>Supervised descretization.</p>
+<h2>Descriptions</h2>
+<p>Given a list of list, split one column (called <code>x</code>)
+into order to most reduce
+the expected value of
+the another column (called <code>y</code>).
+Here,  &ldquo;variance&rdquo; refers to the
+standard deviation
 and entropy for numeric and symbolic columns).</p>
 <ul>
 <li>When passed a simple list of numbers, this
@@ -77,6 +84,9 @@ discretizer divides according to that list&rsquo;s variability.</li>
 <li>When passed a list of tables, the splits of one column
 are selected to minimize the variance a second column.</li>
 </ul>
+<h2>Options</h2>
+<p>This discretizer is passed the functions <code>fx,fy</code> to
+select for the first and  second column. </p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -88,8 +98,10 @@ are selected to minimize the variance a second column.</li>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
       </div>
-      <p>This discretizer is passed the functions <code>fx,fy</code> to
-select for the first and  second column. </p>
+      <p><code>fx</code> and <code>fy</code> can select for numeric or symbolic values.
+The optional <code>xtype</code> and <code>ytype</code> parameters control for
+how the data is collected (and their usual values
+are <code>Num</code> or <code>Sym</code>).</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -101,10 +113,8 @@ select for the first and  second column. </p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-3'>#</a>
       </div>
-      <p><code>fx</code> and <code>fy</code> can select for numeric or symbolic values.
-The optional <code>xtype</code> and <code>ytype</code> parameters control for
-how the data is collected (and their usual values
-are <code>Num</code> or <code>Sym</code>).</p>
+      <p>For example, to split the third numeric column to reduce the
+variance in the fifth symbolic column then</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -116,8 +126,11 @@ are <code>Num</code> or <code>Sym</code>).</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-4'>#</a>
       </div>
-      <p>For example, to split the third numeric column to reduce the
-variance in the fifth symbolic column then</p>
+      <pre><code> divs( a, {fx   = function(r) return r[3] end,
+           fy   = function(r) return r[5] end,
+           xtype = Num,
+           ytype = Sym})
+</code></pre>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -129,17 +142,16 @@ variance in the fifth symbolic column then</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-5'>#</a>
       </div>
-      <pre><code> divs( a, {fx   = function(r) return r[3] end,
-           fy   = function(r) return r[5] end,
-           xtype = Num,
-           ytype = Sym})
-</code></pre>
+      <p>Another interesting option is <code>depth</code>. To get only one
+split (with no subsequent recursion), use <code>{depth=1}</code>
+(this is useful when  learning trees).</p>
+<h2>Code</h2>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="kd">local</span> <span class="n">THE</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Lib</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;lib&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Num</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">Sym</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;Sym&quot;</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">Sym</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;sym&quot;</span><span class="p">)</span>
 
 <span class="kd">local</span> <span class="n">r</span><span class="p">,</span><span class="n">copy</span><span class="p">,</span><span class="n">same</span><span class="p">,</span><span class="n">has</span> <span class="o">=</span> <span class="n">Lib</span><span class="p">.</span><span class="n">r</span><span class="p">,</span> <span class="n">Lib</span><span class="p">.</span><span class="n">copy</span><span class="p">,</span><span class="n">Lib</span><span class="p">.</span><span class="n">same</span><span class="p">,</span><span class="n">Lib</span><span class="p">.</span><span class="n">has</span>
 
