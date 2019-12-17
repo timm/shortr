@@ -4,11 +4,14 @@
 local THE  = require("the")
 local Some = require("some")
 local Num  = require("num")
+local divs2  = require("divs")
 local Tree = {is="Tree"}
 
-function Tree.new(t)
+function Tree.new(tbl,my)
   local i = Object.new()
-  i.me, i.tbl  = Tree,t
+  i.me = Tree
+  i.my= has(my){minobs=2}
+  i.tbl= tbl
   return i
 end
 
