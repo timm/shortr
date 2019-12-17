@@ -8,6 +8,7 @@
 
 local Column = require("column")
 local THE   = require("the")
+local Lib   = require("lib")
 local Num   = {is="Num"}
 
 function Num.var(i) return i.sd end
@@ -20,7 +21,7 @@ end
 
 function Num.all(a,key,lo,hi,    i)
   i = Num.new{key=key}
-  for j = lo or 1,hi or #lst do Num.add(i, a[j]) end
+  for j = lo or 1,hi or #a do Num.add(i, a[j]) end
   return i
 end
 
@@ -34,7 +35,6 @@ function Num.new(t)
   i.m2  = 0
   i.sd  = 0
   t     = t or {}
-  i.key = t.key or function (z) return z end
   i.lo  = t.lo or math.maxinteger
   i.hi  = t.hi or math.mininteger
   return i

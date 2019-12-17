@@ -35,12 +35,12 @@ local Lib  = require("lib")
 local Num  = require("num")
 local Sym  = require("Sym")
 
-o,r,copy,same,has = Lib.o, Lib.r, Lib.copy,Lib.same,Lib.has
+local oo,o,r,copy,same,has = Lib.oo, Lib.o, Lib.r, Lib.copy,Lib.same,Lib.has
 
 local function some(i,a,      out)
   out = {}
   for _,one in pairs(a) do
-    if i.fx(one) ~= i.skip and r() < i.most/#lst then 
+    if i.fx(one) ~= i.skip and r() < i.most/#a then 
       out[#out+1] = one end end
   table.sort(out, function(y,z) 
                     return i.fx(y) < i.fx(z) end)
@@ -81,7 +81,7 @@ end
  
 local function recurse(i,a,lo, hi,x,y,out, depth, x0,y0var)
   x0    = copy(x); 
-  y0var = i.ytpye.var(y)
+  y0var = i.ytype.var(y)
   local cut,lx,ly, rx,ry = argmin(i,a,lo, hi,x,y)
   if   cut and depth > 0
   then recurse(i,a,lo,    cut, lx,ly, out, depth-1)
@@ -94,9 +94,9 @@ local function recurse(i,a,lo, hi,x,y,out, depth, x0,y0var)
 end 
 
 return function (a, i) 
-  i = has(i){THE.divs}
+  i = has(i)(THE.divs)
   i = has(i){xtype=Num, ytype=Num, fx=same, fy=same}
-  a         = some(a)
+  a         = some(i,a)
   i.start   = i.fx( a[1] )
   i.stop    = i.fx( a[#a] )
   i.step    = math.floor(#a)^i.step

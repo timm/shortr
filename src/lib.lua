@@ -4,7 +4,6 @@
 local THE=require("the").misc
 local Lib={}
 
-
 local function fillInDefaults(new, defaults)
   for k,v in pairs(defaults) do new[k] = new[k] or v end
   return new
@@ -70,7 +69,10 @@ function Lib.copy(t)
 
 function Lib.o(t) print(Lib.oo(t))  end
 
-function Lib.oo(t,     s,sep,keys, nums)
+function Lib.oo(t,     seen,s,sep,keys, nums)
+  seen = seen or {}
+  if seen[t] then return "..." end
+  seen[t] = true
   if type(t) ~= "table" then return tostring(t) end
   s, sep, keys, nums = '','', {}, true
   for k, v in pairs(t) do 
@@ -82,7 +84,7 @@ function Lib.oo(t,     s,sep,keys, nums)
   table.sort(keys)
   for _, k in pairs(keys) do
     local v = t[k]
-    v   = type(v) == 'table' and Lib.oo(v) or tostring(v) 
+    v   = type(v) == 'table' and Lib.oo(v,seen) or tostring(v) 
     if nums
     then s = s .. sep .. v
     else s = s .. sep .. tostring(k) .. '=' .. v
