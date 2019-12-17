@@ -31,7 +31,7 @@
 local THE  = require("the")
 local Lib  = require("lib")
 local Num  = require("num")
-local Sym  = require("Sym")
+local Sym  = require("sym")
 
 local r,copy,same,has = Lib.r, Lib.copy,Lib.same,Lib.has
 
