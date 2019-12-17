@@ -5,7 +5,7 @@ package.path = '../src/?.lua;' .. package.path
 
 local within=require("lib").within
 local Lib=require("lib")
-oo,same = Lib.oo, Lib.same
+local oo,same = Lib.oo, Lib.same
 local ok=require("ok")
 local Tbl=require("tbl")
 local Row=require("row")

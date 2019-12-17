@@ -2,7 +2,7 @@
 --------- --------- --------- --------- --------- --------- 
 
 package.path = '../src/?.lua;' .. package.path
-o=require("lib").o
+local o=require("lib").o
 local Object=require("object")
 
 o( Object.new() )

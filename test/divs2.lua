@@ -43,7 +43,6 @@ local function big(   a,s,m,d)
   assert(d[4].x.lo==0.572)
   assert(d[5].x.lo==0.857)
 end
-big()
 
 ok{big=big}
 ok{autos= function(  a,d)

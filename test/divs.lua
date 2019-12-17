@@ -17,7 +17,7 @@ local function big(   a,s,m,d)
   assert(within(0.495,d[5][1],0.505))
 end
 
-ok{big= big} 
+same{big= big} 
 
 ok{autos= function(  a,d)
   a={10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
