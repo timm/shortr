@@ -12,30 +12,28 @@
 -- - When passed a list of tables, the splits of one column
 -- are selected to minimize the variance a second column.
 
--- This discretizer is passed the functions `x,y` to
--- select for the first and  second column. If the
--- `y` function is not supplied, then `x` is used
--- for both columns.
+-- This discretizer is passed the functions `fx,fy` to
+-- select for the first and  second column. 
 
--- `x` and `y` can select for numeric or symbolic values.
--- The optional `xis` and `yis` parameters control for
+-- `fx` and `fy` can select for numeric or symbolic values.
+-- The optional `xtype` and `ytype` parameters control for
 -- how the data is collected (and their usual values
 -- are `Num` or `Sym`).
 
 -- For example, to split the third numeric column to reduce the
 -- variance in the fifth symbolic column then
 
---       Div.new( a, {x   = function(r) return r[3] end,
---                    y   = function(r) return r[5] end,
---                    xis = Num,
---                    yis = Sym})                       
+--      divs( a, {fx   = function(r) return r[3] end,
+--                fy   = function(r) return r[5] end,
+--                xtype = Num,
+--                ytype = Sym})                       
 
 local THE  = require("the")
 local Lib  = require("lib")
 local Num  = require("num")
 local Sym  = require("Sym")
 
-local oo,o,r,copy,same,has = Lib.oo, Lib.o, Lib.r, Lib.copy,Lib.same,Lib.has
+local r,copy,same,has = Lib.r, Lib.copy,Lib.same,Lib.has
 
 local function some(i,a,      out)
   out = {}
@@ -47,7 +45,9 @@ local function some(i,a,      out)
   return out
 end
 
--- Walk across our list from lo to hi,
+-- Look for some split between `lo` and `hi`
+-- that minimizes the `var` property of the `fy` variables.
+-- looking for the Walk across our list from lo to hi,
 -- incrementally add the current `x,y` values
 -- to the "left" lists `xl,yl`
 -- while decrementing the "right" lists `xr,yr`.
@@ -78,21 +78,28 @@ local function argmin(i,a,lo,hi,xall, yall,     out)
           end end end end 
   return out,xl1,yl1, xr1, yr1
 end
- 
-local function recurse(i,a,lo, hi,x,y,out, depth, x0,y0var)
-  x0    = copy(x); 
-  y0var = i.ytype.var(y)
-  local cut,lx,ly, rx,ry = argmin(i,a,lo, hi,x,y)
+
+-- As we recurse, take the stats the upper level
+-- and split those into `x,y` values, left and right 
+-- of the split (into the lsts `xl,yl, xr,yr`).
+-- For each split, create a record `{x=..,yvar=..}`
+-- showing a summary of the `x ` and `y` values in this split.
+local function recurse(i,a,lo,hi,xall,yall,out,depth,x0,yvar)
+  x0   = copy(xall) 
+  yvar = i.ytype.var(yall)
+  local cut,lx,ly, rx,ry = argmin(i,a,lo, hi,xall,yall)
   if   cut and depth > 0
   then recurse(i,a,lo,    cut, lx,ly, out, depth-1)
        recurse(i,a,cut+1, hi,  rx,ry, out, depth-1) 
   else 
        x0.lo = i.fx(a[lo])
        x0.hi = i.fx(a[hi])
-       out[ #out+1 ] = {x=x0, y=y0var} end
+       out[ #out+1 ] = {x=x0, yvar=yvar} end
   return out
 end 
 
+-- Main function. Set up lots of locals, the start
+-- `recurse`ing to find the splits.
 return function (a, i) 
   i = has(i)(THE.divs)
   i = has(i){xtype=Num, ytype=Num, fx=same, fy=same}
