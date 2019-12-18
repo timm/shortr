@@ -144,7 +144,8 @@ variance in the fifth symbolic column then</p>
       </div>
       <p>Another interesting option is <code>depth</code>. To get only one
 split (with no subsequent recursion), use <code>{depth=1}</code>
-(this is useful when  learning trees).</p>
+This is useful during  learning trees when you want
+to give subtrees as much data as possible.</p>
 <h2>Code</h2>
     </div>
     <div class='code'>
@@ -220,12 +221,12 @@ and split those into <code>x,y</code> values, left and right
 of the split (into the lsts <code>xl,yl, xr,yr</code>).</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span> <span class="kr">function</span> <span class="nf">recurse</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">,</span><span class="n">xall</span><span class="p">,</span><span class="n">yall</span><span class="p">,</span><span class="n">out</span><span class="p">,</span><span class="n">depth</span><span class="p">,</span><span class="n">x0</span><span class="p">,</span><span class="n">yvar</span><span class="p">)</span>
-  <span class="n">x0</span>   <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">xall</span><span class="p">)</span> 
+      <div class="highlight"><pre><span class="kd">local</span> <span class="kr">function</span> <span class="nf">recurse</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">,</span><span class="n">xall</span><span class="p">,</span><span class="n">yall</span><span class="p">,</span><span class="n">out</span><span class="p">,</span><span class="n">depth</span><span class="p">,</span><span class="n">yvar</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">cut</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span>
   <span class="n">yvar</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">ytype</span><span class="p">.</span><span class="n">var</span><span class="p">(</span><span class="n">yall</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">cut</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span> <span class="n">rx</span><span class="p">,</span><span class="n">ry</span> <span class="o">=</span> <span class="n">argmin</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span><span class="n">xall</span><span class="p">,</span><span class="n">yall</span><span class="p">)</span>
-  <span class="kr">if</span>   <span class="n">cut</span> <span class="ow">and</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">0</span>
-  <span class="kr">then</span></pre></div>
+  <span class="kr">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="kr">then</span>
+    <span class="n">cut</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span> <span class="n">rx</span><span class="p">,</span><span class="n">ry</span> <span class="o">=</span> <span class="n">argmin</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span><span class="n">xall</span><span class="p">,</span><span class="n">yall</span><span class="p">)</span>
+    <span class="kr">if</span> <span class="n">cut</span> <span class="kr">then</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -237,9 +238,9 @@ of the split (into the lsts <code>xl,yl, xr,yr</code>).</p>
       <p>If we can find somewhere to split, then recurse.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>       <span class="n">recurse</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span>    <span class="n">cut</span><span class="p">,</span> <span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">depth</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-       <span class="n">recurse</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">cut</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span>  <span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">depth</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> 
-  <span class="kr">else</span></pre></div>
+      <div class="highlight"><pre>      <span class="n">recurse</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span>    <span class="n">cut</span><span class="p">,</span> <span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">depth</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+      <span class="n">recurse</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">cut</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span>  <span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">depth</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span>
+  <span class="kr">if</span> <span class="ow">not</span> <span class="n">cut</span> <span class="kr">then</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -253,9 +254,12 @@ into the <code>out</code> list. Create a record <code>{x=..,yvar=..}</code>
 showing a summary of the <code>x</code> and <code>y</code> values in this region.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>       <span class="n">x0</span><span class="p">.</span><span class="n">lo</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">fx</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">lo</span><span class="p">])</span>
-       <span class="n">x0</span><span class="p">.</span><span class="n">hi</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">fx</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">hi</span><span class="p">])</span>
-       <span class="n">out</span><span class="p">[</span> <span class="o">#</span><span class="n">out</span><span class="o">+</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">yvar</span><span class="o">=</span><span class="n">yvar</span><span class="p">}</span> <span class="kr">end</span>
+      <div class="highlight"><pre>    <span class="n">x0</span><span class="p">.</span><span class="n">lo</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">fx</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">lo</span><span class="p">])</span>
+    <span class="n">x0</span><span class="p">.</span><span class="n">hi</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">fx</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">hi</span><span class="p">])</span>
+    <span class="n">out</span><span class="p">[</span> <span class="o">#</span><span class="n">out</span><span class="o">+</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">lo</span><span class="o">=</span><span class="n">i</span><span class="p">.</span><span class="n">fx</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">lo</span><span class="p">]),</span>
+                     <span class="n">hi</span><span class="o">=</span><span class="n">i</span><span class="p">.</span><span class="n">fx</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">hi</span><span class="p">]),</span>
+                     <span class="n">yvar</span><span class="o">=</span><span class="n">yvar</span><span class="p">,</span>
+                     <span class="n">n</span> <span class="o">=</span> <span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span> <span class="o">+</span> <span class="mi">1</span><span class="p">}</span> <span class="kr">end</span>
   <span class="kr">return</span> <span class="n">out</span>
 <span class="kr">end</span></pre></div>
     </div>

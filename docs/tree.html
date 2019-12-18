@@ -59,150 +59,73 @@ tree.lua</h1></div>
     <div class='code'>
       <div class="highlight"><pre><span></span> 
 <span class="kd">local</span> <span class="n">THE</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">Lib</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;lib&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Some</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;some&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Num</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">divs2</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;divs&quot;</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">divs2</span><span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;divs&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">Tree</span> <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Tree&quot;</span><span class="p">}</span>
+<span class="kd">local</span> <span class="n">sprintf</span><span class="p">,</span> <span class="n">has</span><span class="p">,</span> <span class="n">same</span> <span class="o">=</span> <span class="n">Lib</span><span class="p">.</span><span class="n">sprintf</span><span class="p">,</span> <span class="n">Lib</span><span class="p">.</span><span class="n">has</span><span class="p">,</span> <span class="n">Lib</span><span class="p">.</span><span class="n">same</span>
 
 <span class="kr">function</span> <span class="nc">Tree</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span><span class="n">my</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Object</span><span class="p">.</span><span class="n">new</span><span class="p">()</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">me</span> <span class="o">=</span> <span class="n">Tree</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">my</span><span class="o">=</span> <span class="n">has</span><span class="p">(</span><span class="n">my</span><span class="p">){</span><span class="n">minobs</span><span class="o">=</span><span class="mi">2</span><span class="p">}</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">tbl</span><span class="o">=</span> <span class="n">tbl</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">me</span>  <span class="o">=</span> <span class="n">Tree</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">my</span>  <span class="o">=</span> <span class="n">has</span><span class="p">(</span><span class="n">my</span><span class="p">){</span><span class="n">minobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">fy</span><span class="o">=</span><span class="n">same</span><span class="p">,</span><span class="n">ytype</span><span class="o">=</span><span class="n">Num</span><span class="p">}</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">tbl</span> <span class="o">=</span> <span class="n">tbl</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">kids</span><span class="o">=</span> <span class="p">{}</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">here</span><span class="o">=</span> <span class="kc">nil</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">fx</span>  <span class="o">=</span> <span class="kc">nil</span>
+  <span class="n">Tree</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">tbl</span><span class="p">.</span><span class="n">rows</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
   <span class="kr">return</span> <span class="n">i</span>
 <span class="kr">end</span>
 
-<span class="kd">local</span> <span class="kr">function</span> <span class="nf">num1</span><span class="p">(</span><span class="n">nums</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>   <span class="n">a</span><span class="p">)</span> 
-  <span class="kr">for</span> <span class="n">j</span><span class="p">,</span><span class="n">b</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span> <span class="kr">do</span>
-    <span class="kr">if</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="n">a</span><span class="p">.</span><span class="n">lo</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">b</span><span class="p">.</span><span class="n">lo</span> <span class="kr">then</span> <span class="kr">return</span> <span class="n">b</span> <span class="kr">end</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">b</span>
-  <span class="kr">end</span> 
-  <span class="kr">return</span> <span class="n">a</span>
+<span class="kr">function</span> <span class="nc">Tree</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">lst</span><span class="p">,</span><span class="n">lvl</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">getter</span><span class="p">,</span> <span class="n">argmin</span><span class="p">,</span> <span class="n">which</span> 
+  <span class="n">lvl</span> <span class="o">=</span> <span class="n">lvl</span> <span class="ow">or</span> <span class="mi">0</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">here</span> <span class="o">=</span> <span class="n">ytype</span><span class="p">.</span><span class="n">all</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span><span class="n">fy</span><span class="p">)</span>
+  <span class="kr">function</span> <span class="nf">getter</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> 
+    <span class="kr">return</span> <span class="kr">function</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="kr">return</span> <span class="n">row</span><span class="p">.</span><span class="n">cells</span><span class="p">[</span><span class="n">col</span><span class="p">.</span><span class="n">pos</span><span class="p">]</span> <span class="kr">end</span> <span class="kr">end</span>
+  <span class="kr">function</span> <span class="nf">argmin</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">lo</span><span class="p">,</span> <span class="n">cuts</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="mi">10</span><span class="o">^</span><span class="mi">32</span><span class="p">,{},</span><span class="kc">nil</span>
+    <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">col1</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">tbl</span><span class="p">.</span><span class="n">cols</span><span class="p">.</span><span class="n">indep</span><span class="p">)</span> <span class="kr">do</span>
+      <span class="kd">local</span> <span class="n">fx</span> <span class="o">=</span> <span class="n">getter</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+      <span class="kd">local</span> <span class="n">lo1</span><span class="p">,</span><span class="n">cuts1</span> <span class="o">=</span> <span class="n">col1</span><span class="p">.</span><span class="n">me</span><span class="p">.</span><span class="n">div</span><span class="p">(</span><span class="n">col1</span><span class="p">,</span><span class="n">lst</span><span class="p">,</span><span class="n">fx</span><span class="p">,</span><span class="n">i</span><span class="p">.</span><span class="n">fy</span><span class="p">,</span><span class="n">i</span><span class="p">.</span><span class="n">ytype</span><span class="p">)</span>
+      <span class="kr">if</span> <span class="n">lo1</span> <span class="o">&lt;</span> <span class="n">lo</span> <span class="kr">then</span>
+        <span class="n">cuts</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">lo</span>  <span class="o">=</span> <span class="n">cuts1</span><span class="p">,</span> <span class="n">col1</span><span class="p">,</span> <span class="n">lo1</span>  <span class="kr">end</span> <span class="kr">end</span>
+    <span class="kr">return</span> <span class="n">col</span><span class="p">,</span><span class="n">cuts</span>
+  <span class="kr">end</span>
+  <span class="kr">function</span> <span class="nf">which</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="kr">for</span> <span class="n">n</span><span class="p">,</span><span class="n">cut</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">cuts</span><span class="p">)</span> <span class="kr">do</span>
+      <span class="kr">if</span> <span class="n">i</span><span class="p">.</span><span class="n">fx</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">cut</span><span class="p">.</span><span class="n">lo</span> <span class="ow">and</span> <span class="n">i</span><span class="p">.</span><span class="n">fx</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">cut</span><span class="p">.</span><span class="n">hi</span> <span class="kr">then</span>
+        <span class="kr">return</span> <span class="n">n</span> <span class="kr">end</span> <span class="kr">end</span>
+  <span class="kr">end</span>
+  <span class="kr">if</span> <span class="o">#</span><span class="n">lst</span> <span class="o">&gt;=</span> <span class="n">THE</span><span class="p">.</span><span class="n">tree</span><span class="p">.</span><span class="n">minObs</span> <span class="kr">then</span>
+    <span class="kd">local</span> <span class="n">col</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">cuts</span> <span class="o">=</span> <span class="n">argmin</span><span class="p">()</span>
+    <span class="kr">if</span> <span class="n">col</span> <span class="kr">then</span>
+      <span class="n">i</span><span class="p">.</span><span class="n">fx</span> <span class="o">=</span> <span class="n">getter</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+      <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">row</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="kr">do</span>
+        <span class="kd">local</span> <span class="n">n</span>   <span class="o">=</span> <span class="n">which</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">1</span>
+        <span class="n">i</span><span class="p">.</span><span class="n">kids</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">kids</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="ow">or</span> <span class="p">{</span><span class="n">kid</span><span class="o">=</span><span class="p">{},</span> <span class="n">test</span><span class="o">=</span><span class="n">i</span><span class="p">.</span><span class="n">cuts</span><span class="p">[</span><span class="n">n</span><span class="p">]}</span>
+        <span class="kd">local</span> <span class="n">go</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">kids</span><span class="p">[</span><span class="n">n</span><span class="p">].</span><span class="n">kid</span>
+        <span class="n">kid</span><span class="p">[</span> <span class="o">#</span><span class="n">kid</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="n">row</span>
+      <span class="kr">end</span>
+      <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">one</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">kids</span><span class="p">)</span> <span class="kr">do</span>
+        <span class="n">one</span><span class="p">.</span><span class="n">kid</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">one</span><span class="p">.</span><span class="n">kid</span><span class="p">,</span> <span class="n">lvl</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span> 
+  <span class="kr">return</span> <span class="n">i</span>
 <span class="kr">end</span>
 
-<span class="kr">function</span> <span class="nc">Tree</span><span class="p">.</span><span class="nf">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">xis</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">yis</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">x</span>   <span class="o">=</span> <span class="n">x</span> <span class="ow">or</span> <span class="kr">function</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="kr">return</span> <span class="n">r</span><span class="p">.</span><span class="n">cells</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="kr">end</span>
-  <span class="kd">local</span> <span class="n">xis</span><span class="p">,</span> <span class="n">yis</span> <span class="o">=</span> <span class="n">xis</span> <span class="ow">or</span> <span class="n">Some</span><span class="p">,</span> <span class="n">yis</span> <span class="ow">or</span> <span class="n">Sym</span>
-  <span class="kd">local</span> <span class="n">xs</span>  <span class="o">=</span> <span class="n">xis</span><span class="p">.</span><span class="n">new</span><span class="p">()</span>
-  <span class="kd">local</span> <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-1'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-1'>#</a>
-      </div>
-      <p>Sample the data in this column.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">row</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">tbl</span><span class="p">.</span><span class="n">rows</span><span class="p">)</span> <span class="kr">do</span> <span class="n">xis</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">x</span><span class="p">(</span><span class="n">row</span><span class="p">))</span> <span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-2'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-2'>#</a>
-      </div>
-      <p>Make one <code>Num</code> per division of that sample.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">lo</span>  <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span> <span class="n">xis</span><span class="p">.</span><span class="n">divs</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">)</span> <span class="kr">do</span> 
-    <span class="n">num</span> <span class="o">=</span> <span class="n">Num</span><span class="p">.</span><span class="n">new</span><span class="p">{</span><span class="n">lo</span><span class="o">=</span><span class="n">lo</span><span class="p">}</span> 
-    <span class="n">num</span><span class="p">.</span><span class="n">ys</span> <span class="o">=</span> <span class="n">yis</span><span class="p">.</span><span class="n">new</span><span class="p">()</span>
-    <span class="n">out</span><span class="p">[</span> <span class="o">#</span><span class="n">out</span><span class="o">+</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="n">num</span>
-  <span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-3'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
-      </div>
-      <p>Tag each value with its associated <code>Num</code>.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">row</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="n">rows</span><span class="p">)</span> <span class="kr">do</span> 
-    <span class="kd">local</span> <span class="n">xval</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-    <span class="kr">if</span> <span class="n">xval</span> <span class="o">~=</span> <span class="n">THE</span><span class="p">.</span><span class="n">char</span><span class="p">.</span><span class="n">skip</span> <span class="kr">then</span> 
-      <span class="kd">local</span> <span class="n">one</span> <span class="o">=</span> <span class="n">num1</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">xval</span><span class="p">)</span> 
-      <span class="n">r</span><span class="p">.</span><span class="n">cooked</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">one</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-4'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
-      </div>
-      <p>If the <code>klass</code> has already been discredited,
-then remember which range we say there</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>      <span class="kr">if</span> <span class="n">y</span> <span class="kr">then</span>
-        <span class="n">yis</span><span class="p">.</span><span class="n">add</span><span class="p">(</span> <span class="n">one</span><span class="p">.</span><span class="n">ys</span><span class="p">,</span> <span class="n">y</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>
-  <span class="kr">return</span> <span class="n">y</span> <span class="ow">and</span> <span class="n">Tree</span><span class="p">.</span><span class="n">combine</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="ow">or</span> <span class="n">out</span>
+<span class="kr">function</span> <span class="nc">Tree</span><span class="p">.</span><span class="nf">show</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">pre</span><span class="p">)</span>
+  <span class="n">pre</span> <span class="o">=</span> <span class="n">pre</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;%s: %s&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="p">,</span><span class="n">i</span><span class="p">.</span><span class="n">here</span><span class="p">.</span><span class="n">n</span><span class="p">)</span>
+  <span class="kr">if</span>   <span class="o">#</span><span class="n">i</span><span class="p">.</span><span class="n">kids</span> <span class="o">==</span> <span class="mi">0</span> 
+  <span class="kr">then</span> <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">me</span><span class="p">.</span><span class="n">mid</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">here</span><span class="p">),</span> <span class="n">i</span><span class="p">.</span><span class="n">me</span><span class="p">.</span><span class="n">var</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">here</span><span class="p">))</span>
+  <span class="kr">else</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+  <span class="kr">end</span>   
+  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">one</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">kids</span><span class="p">)</span> <span class="kr">do</span> 
+    <span class="n">pre</span><span class="o">=</span><span class="n">pre</span> <span class="o">..</span> <span class="s2">&quot;|   &quot;</span>
+    <span class="n">Tree</span><span class="p">.</span><span class="n">show</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">pre</span><span class="p">)</span> <span class="kr">end</span>
 <span class="kr">end</span>
 
-<span class="kr">function</span> <span class="nc">Tree</span><span class="p">.</span><span class="nf">combine</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-  <span class="n">right</span><span class="o">=</span><span class="p">{}</span>
-  <span class="kr">for</span> <span class="n">j</span><span class="o">=#</span><span class="n">a</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span> <span class="kr">do</span>
-    <span class="n">right</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">=</span> <span class="n">Sym</span><span class="p">.</span><span class="n">new</span><span class="p">()</span>
-    <span class="n">Sym</span><span class="p">.</span><span class="n">adds</span><span class="p">(</span><span class="n">right</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">syms</span><span class="p">)</span>
-    <span class="kr">if</span> <span class="n">j</span><span class="o">&lt;#</span><span class="n">a</span> <span class="kr">then</span>
-      <span class="n">Sym</span><span class="p">.</span><span class="n">adds</span><span class="p">(</span><span class="n">right</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">right</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">].</span><span class="n">counts</span><span class="p">)</span> <span class="kr">end</span>
-  <span class="n">left</span><span class="o">=</span><span class="n">copy</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">syms</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-5'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-5'>#</a>
-      </div>
-      <p>walk right</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">end</span>
-<span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-6'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-6'>#</a>
-      </div>
-      <p>add in the rows. work that way
-how to do klass, now to combines:</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Tree</span><span class="p">.</span><span class="nf">ranges</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">klass</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">tbl</span><span class="p">.</span><span class="n">cols</span><span class="p">.</span><span class="n">y</span><span class="p">.</span><span class="n">klass</span>
-  <span class="kd">local</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="ow">or</span> <span class="kr">function</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="kr">return</span> <span class="n">r</span><span class="p">.</span><span class="n">cooked</span><span class="p">[</span><span class="n">klass</span><span class="p">.</span><span class="n">pos</span><span class="p">]</span> <span class="kr">end</span>
-  <span class="kd">local</span> <span class="n">goal</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">.</span><span class="n">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">klass</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">all</span> <span class="o">=</span> <span class="p">{}</span>
-  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">col</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">tbl</span><span class="p">.</span><span class="n">cols</span><span class="p">.</span><span class="n">nums</span><span class="p">)</span> <span class="kr">do</span>
-    <span class="kr">if</span> <span class="n">col</span><span class="p">.</span><span class="n">pos</span> <span class="o">~=</span> <span class="n">klass</span><span class="p">.</span><span class="n">pos</span> <span class="kr">then</span>
-      <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="ow">or</span> <span class="kr">function</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="kr">return</span> <span class="n">r</span><span class="p">.</span><span class="n">cooked</span><span class="p">[</span><span class="n">klass</span><span class="p">.</span><span class="n">pos</span><span class="p">]</span> <span class="kr">end</span>
-      <span class="n">all</span><span class="p">[</span><span class="n">col</span><span class="p">.</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">.</span><span class="n">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span>  <span class="n">y</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span>
-<span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-7'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-7'>#</a>
-      </div>
-      <ul>
-<li>how to combine  </li>
-</ul>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
+</pre></div>
     </div>
   </div>
   <div class='clearall'></div>
