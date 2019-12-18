@@ -123,6 +123,7 @@ function Num.div(i,rows,fx,fy,ytype, tmp)
           ftype.add(cut.stats, fy(row)) end end end end
   for _,cut in pairs(cuts) do
     out = out + cut.stats.n/n * ftype.var(cut.stats) end
+  table.sort(cuts,function(a,b) return a.n > b.n end)
   return out,cuts      
 end
 
