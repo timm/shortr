@@ -70,7 +70,23 @@ function Sym.dist(i,x,y)
   else return  x==y  and 0 or 1
   end
 end
-  
+ 
+function Sym.div(i,rows,fx,fy,ytype)
+  local n,out,all,cuts = 0,0,{},{}
+  for _,row in pairs(rows) do
+    local x = fx(row)
+    if x ~= THE.chars.skip then
+      n = n + 1 -- unify with num
+      local one = all[x] or ytype.new(txt=x)
+      ytype.add(one, fy(row)) end end
+  cuts = {}
+  for n,one in pairs(all) do
+    cuts[n] = {lo=one.txt, hi=one.txt, n=one.n}
+    out = out + one.all.n / n * ytype.var(one) end 
+  table.sort(cuts,function(a,b) return a.n > b.n end)
+  return out,cuts
+end
+
 -- ----------
 -- And finally...
 

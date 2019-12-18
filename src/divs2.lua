@@ -94,22 +94,25 @@ end
 -- As we recurse, take the stats the upper level
 -- and split those into `x,y` values, left and right 
 -- of the split (into the lsts `xl,yl, xr,yr`).
-local function recurse(i,a,lo,hi,xall,yall,out,depth,x0,yvar)
-  x0   = copy(xall) 
+local function recurse(i,a,lo,hi,xall,yall,out,depth,yvar)
+  local cut,lx,ly,rx,ry
   yvar = i.ytype.var(yall)
-  local cut,lx,ly, rx,ry = argmin(i,a,lo, hi,xall,yall)
-  if   cut and depth > 0
-  then 
-       -- If we can find somewhere to split, then recurse.
-       recurse(i,a,lo,    cut, lx,ly, out, depth-1)
-       recurse(i,a,cut+1, hi,  rx,ry, out, depth-1) 
-  else 
-       -- If no new split, then add all of `lo` to `hi`
-       -- into the `out` list. Create a record `{x=..,yvar=..}`
-       -- showing a summary of the `x ` and `y` values in this region.
-       x0.lo = i.fx(a[lo])
-       x0.hi = i.fx(a[hi])
-       out[ #out+1 ] = {x=x0, yvar=yvar} end
+  if depth > 0 then
+    cut,lx,ly, rx,ry = argmin(i,a,lo, hi,xall,yall)
+    if cut then
+      -- If we can find somewhere to split, then recurse.
+      recurse(i,a,lo,    cut, lx,ly, out, depth-1)
+      recurse(i,a,cut+1, hi,  rx,ry, out, depth-1) end end
+  if not cut then
+    -- If no new split, then add all of `lo` to `hi`
+    -- into the `out` list. Create a record `{x=..,yvar=..}`
+    -- showing a summary of the `x ` and `y` values in this region.
+    x0.lo = i.fx(a[lo])
+    x0.hi = i.fx(a[hi])
+    out[ #out+1 ] = {lo=i.fx(a[lo]),
+                     hi=i.fx(a[hi]),
+                     yvar=yvar,
+                     n = hi - lo + 1} end
   return out
 end 
 

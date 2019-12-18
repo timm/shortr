@@ -100,7 +100,33 @@ function Num.dist(i,x,y,   nox,noy,z)
   return x>y and x-y or y-x
 end
 
--- ----------
+function Num.div(i,rows,fx,fy,ytype, tmp)
+  local out=0
+  local n,tmp,last,lo,hi,last
+  tmp = divs2(rows,{depth=1,fx=fx,fy=fy,ftype=ytype})
+  tmp[1].lo    = math.mininteger
+  tmp[#tmp].hi = math.maxinteger
+  last = tmp[1].lo
+  for _,one in pairs(tmp) do
+    local stats = ytype.new{txt={last,one.hi}, key=fy}
+    cuts[#cuts+1] = {lo=last, hi=one.hi, n=0, stats=stats}
+    last = one.hi
+  end
+  out,n = 0,0
+  for _,row in pairs(rows) do
+    local x = fx(row)
+    if x ~= THE.char.skip then
+      n = n + 1
+      for _,cut in pairs(cuts) do
+        if x  >= cut.lo and x <= cut.hi then 
+          cut.n = cut.n + 1
+          ftype.add(cut.stats, fy(row)) end end end end
+  for _,cut in pairs(cuts) do
+    out = out + cut.stats.n/n * ftype.var(cut.stats) end
+  return out,cuts      
+end
+
+-- ----------:
 -- And finally...
 
 
