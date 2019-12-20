@@ -60,6 +60,16 @@ end
 function Lib.copy(t) 
   return type(t) ~= 'table' and t or Lib.map(t,Lib.copy) end
 
+function Lib.binChop(a,x,           lo, hi,mid) 
+  lo,hi = 1,#a
+	while (lo <= hi) do
+		mid = math.floor((hi + lo) / 2)
+		if (x == a[mid]) then break end
+		if (x <  a[mid]) then hi = mid - 1 else lo = mid + 1 end
+  end
+  return mid
+end
+
 -- -------------------------
 -- Print tables.
 -- 

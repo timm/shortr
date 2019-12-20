@@ -1,3 +1,6 @@
+-- vim: ts=2 sw=2 sts=2 expandtab:cindent:
+--------- --------- --------- --------- --------- --------- 
+
 -- from https://luapower.com/heap
 -- 
 -- Package:	heap
@@ -11,30 +14,29 @@
 local floor=math.floor
 
 local function heap(add, remove, swap, length, cmp)
-
-	local function moveup(child)
-		local parent = floor(child / 2)
-		while child > 1 and cmp(child, parent) do
-			swap(child, parent)
-			child = parent
-			parent = floor(child / 2)
+	local function moveup(kid)
+		local mum = floor(kid / 2)
+		while kid > 1 and cmp(kid, mum) do
+			swap(kid, mum)
+			kid = mum
+			mum = floor(kid / 2)
 		end
-		return child
+		return kid
 	end
 
-	local function movedown(parent)
+	local function movedown(mum)
 		local last = length()
-		local child = parent * 2
-		while child <= last do
-			if child + 1 <= last and cmp(child + 1, child) then
-				child = child + 1 --sibling is smaller
+		local kid = mum * 2
+		while kid <= last do
+			if kid + 1 <= last and cmp(kid + 1, kid) then
+				kid = kid + 1 --sibling is smaller
 			end
-			if not cmp(child, parent) then break end
-			swap(parent, child)
-			parent = child
-			child = parent * 2
+			if not cmp(kid, mum) then break end
+			swap(mum, kid)
+			mum = kid
+			kid = mum * 2
 		end
-		return parent
+		return mum
 	end
 
 	local function push(...)
@@ -49,9 +51,7 @@ local function heap(add, remove, swap, length, cmp)
 	end
 
 	local function rebalance(i)
-		if moveup(i) == i then
-			movedown(i)
-		end
+		if moveup(i) == i then movedown(i) end
 	end
 
 	return push, pop, rebalance
@@ -93,7 +93,7 @@ return function(h)
 		rebalance(i)
 	end
 	h.length = length
-
+  function h:has() return t end
 	return h
 end
 
