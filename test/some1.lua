@@ -22,7 +22,7 @@ local function w4(   k1,k2,k3,k4)
   k3=0.5+r()*4.5
   k4=0.5+r()*4.5
   return function(x) 
-     return w(x,1,k1) + w(x,1,k2) + w(x,1,k3) + w(x,1,k4) end 
+     return w(x,1,k1) end -- w(x,1,k2) + w(x,1,k3) + w(x,1,k4) end 
 end
 
 all = {}
