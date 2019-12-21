@@ -30,6 +30,7 @@ function r4(x) local n=10^4; return math.floor(n*x)/n end
 function p4(x) return 100 *r4(x) end
 
 function go(ii,m)
+  print("")
   local all = {}
   m   = m or 256 -- keep this above 255. but it doesn't seem to matter how high we go
   local s0  = Some0.new{most=m}
@@ -53,20 +54,20 @@ function go(ii,m)
         e0s = e0s+e0
         e1s = e1s+e1
         r=r+1
-        --print(j, r4(p(j,all)), r4(p(j,s0.has)), r4(p(j,Some1.has(s1))), p4(e0), p4(e1))
+        print(j, r4(p(j,all)), r4(p(j,s0.has)), r4(p(j,Some1.has(s1))), p4(e0), p4(e1))
   end
-  print(ii,m, p4(e0s/r), p4(e1s/r))
+  print(ii,m,"","", p4(e0s/r), p4(e1s/r))
 end
 
-for ii =1.1,10 do
+--for ii =1.1,10 do
+ii=5
 print("")
-go(ii,32)
-go(ii,64)
-go(ii,128)
+--go(ii,32)
+--go(ii,64)
+--go(ii,128)
 go(ii,256)
-go(ii,512)
-go(ii,1024)
-end
+--go(ii,512)
+--go(ii,1024)
 
 same{adds100=function(   s,d)
   s = Some.new{most=128}
