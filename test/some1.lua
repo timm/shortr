@@ -3,10 +3,11 @@
 
 package.path = '../src/?.lua;' .. package.path
 local Lib = require("lib")
-local o, r, round, same = Lib.o, Lib.r, Lib.round,Lib.same
+local abs,o, r, round, same = Lib.abs, Lib.o, Lib.r, Lib.round,Lib.same
 
 local ok=require("ok")
-local Some=require("some1")
+local Some0=require("some")
+local Some1=require("some1")
 local Divs=require("divs")
 
 local function w(x,lamb,k,  e)
@@ -25,24 +26,32 @@ local function w4(   k1,k2,k3,k4)
 end
 
 all = {}
-s   = Some.new{most=32}
+m   = 128
+s0  = Some0.new{most=m}
+s1  = Some1.new{most=m}
 f   = w4()
-for i=1,80 do
-  for x=0,2.5,.5 do 
+for i=1,100 do
+  for x=0,2.5,.01 do 
     local z = f(x) 
-    Some.add(s,z)
+    Some0.add(s0,z)
+    Some1.add(s1,z)
     all[#all+1] = z end end
 
 function p(n,a) return a[math.floor(#a*n)] end
 
-function r3(x) return math.floor(1000*x)/1000 end
+function r4(x) local n=10^4; return math.floor(n*x)/n end
+function p4(x) return 100 *r4(x) end
 
 table.sort(all)
-print(s.n, #(s._has))
-for _,j in pairs{.2,.4,.6,.8,1} do 
-  print(j, r3(p(j,all)), 
-           r3(p(j,Some.has(s))),
-           r3(p(j,all)/ p(j,Some.has(s))))
+print(0,s0.n, #(s0.has))
+print(1,s1.n, #(s1._has))
+table.sort(s0.has)
+for _,j in pairs{.1,.2,.3,.4,.5,.6,.7,.8,.9,1} do 
+  print(j, r4(p(j,all)), 
+           r4(p(j,s0.has)),
+           r4(p(j,s1._has)),
+           p4(abs(p(j,s0.has)-p(j,all))/ p(j,all)),
+           p4(abs(p(j,Some1.has(s1))-p(j,all))/ p(j,all)))
 end
 
 same{adds100=function(   s,d)
