@@ -22,7 +22,7 @@ local function w4(   k1,k2,k3,k4)
   k3=0.5+r()*4.5
   k4=0.5+r()*4.5
   return function(x) 
-     return w(x,1,k1) end -- w(x,1,k2) + w(x,1,k3) + w(x,1,k4) end 
+     return w(x,1,k1) + w(x,1,k2) + w(x,1,k3) + w(x,1,k4) end 
 end
 
 all = {}
@@ -49,7 +49,7 @@ table.sort(s0.has)
 for _,j in pairs{.1,.2,.3,.4,.5,.6,.7,.8,.9,1} do 
   print(j, r4(p(j,all)), 
            r4(p(j,s0.has)),
-           r4(p(j,s1._has)),
+           r4(p(j,Some1.has(s1))),
            p4(abs(p(j,s0.has)-p(j,all))/ p(j,all)),
            p4(abs(p(j,Some1.has(s1))-p(j,all))/ p(j,all)))
 end
