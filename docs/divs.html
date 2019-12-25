@@ -84,7 +84,8 @@ the expected value of the standard deviation (after the splits) is minimized.</p
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
       </div>
-      <p>Standard deviation of a sub range is estimated using the 90th-10th percentile difference within
+      <p>Standard deviation of a sub range is estimated using the 
+90th-10th percentile difference within
 that sub-range. That exact calculation is (90th=10th)/2.56,
 where 2.56 is a magic number derived from 
 <a href="https://gist.github.com/timm/934d4664de105544e51cc67444aa8c60">this code</a>.</p>
@@ -99,23 +100,21 @@ where 2.56 is a magic number derived from
       <div class='octowrap'>
         <a class='octothorpe' href='#section-3'>#</a>
       </div>
-      <h2>Options</h2>
+      <h2>Return Value</h2>
+<p>Returns a list of <code>range</code> of the form
+{lo=lo, hi=hi,estimate=Num, actual=Num}
+where a numbers <code>x</code>  is in a range if 
+<code>lo &lt; x &lt;= hi</code>. This code sets the <code>lo</code>
+of the first range to <code>math.mininteger</code>
+and the <code>hi</code> of the last range to <code>math.maxinteger</code>.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="kd">local</span> <span class="n">Lib</span><span class="o">=</span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;lib&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">r</span><span class="p">,</span><span class="n">abs</span><span class="p">,</span><span class="n">has</span> <span class="o">=</span> <span class="n">Lib</span><span class="p">.</span><span class="n">r</span><span class="p">,</span><span class="n">Lib</span><span class="p">.</span><span class="n">abs</span><span class="p">,</span> <span class="n">Lib</span><span class="p">.</span><span class="n">has</span>
 
-<span class="kr">return</span> <span class="kr">function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">my</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">stdev</span><span class="p">,</span><span class="n">xpect</span><span class="p">,</span><span class="n">argmin</span> <span class="c1">-- local functions</span>
-  <span class="kd">local</span> <span class="n">out</span><span class="p">,</span><span class="n">nums</span> <span class="o">=</span> <span class="p">{},{}</span> <span class="c1">-- local vars</span>
-  <span class="n">my</span><span class="o">=</span> <span class="n">has</span><span class="p">(</span><span class="n">my</span><span class="p">){</span>    <span class="n">no</span>     <span class="o">=</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span>
-                  <span class="n">max</span>    <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>
-                  <span class="n">magic</span>  <span class="o">=</span> <span class="mf">2.6</span><span class="p">,</span>
-                  <span class="n">f</span>      <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="kr">return</span> <span class="n">z</span> <span class="kr">end</span><span class="p">,</span>
-                  <span class="n">trivial</span><span class="o">=</span> <span class="mf">1.05</span><span class="p">,</span>
-                  <span class="n">cohen</span>  <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
-                  <span class="n">epsilon</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-                  <span class="n">step</span>   <span class="o">=</span> <span class="mf">0.5</span><span class="p">}</span></pre></div>
+<span class="kd">local</span>  <span class="kr">function</span> <span class="nf">div</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">my</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">stdev</span><span class="p">,</span><span class="n">xpect</span><span class="p">,</span><span class="n">argmin</span><span class="p">,</span><span class="n">out</span><span class="c1">-- local functions</span>
+  <span class="n">my</span> <span class="o">=</span> <span class="n">has</span><span class="p">(</span><span class="n">THE</span><span class="p">.</span><span class="n">divs</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -124,12 +123,12 @@ where 2.56 is a magic number derived from
       <div class='octowrap'>
         <a class='octothorpe' href='#section-4'>#</a>
       </div>
-      <hr />
-<p>Support code.</p>
+      <p>Some details.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">function</span> <span class="nf">x</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>      <span class="kr">return</span> <span class="n">nums</span><span class="p">[</span><span class="nb">math.floor</span><span class="p">(</span><span class="n">z</span><span class="p">)]</span> <span class="kr">end</span>
-  <span class="kr">function</span> <span class="nf">p</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>      <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">z</span><span class="o">*#</span><span class="n">nums</span> <span class="p">)</span> <span class="kr">end</span>
+      <div class="highlight"><pre>  <span class="n">lo</span> <span class="o">=</span> <span class="nb">math.mininteger</span>
+  <span class="kr">function</span> <span class="nf">x</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>      <span class="kr">return</span> <span class="n">my</span><span class="p">.</span><span class="n">fx</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="nb">math.floor</span><span class="p">(</span><span class="n">z</span><span class="p">)])</span> <span class="kr">end</span>
+  <span class="kr">function</span> <span class="nf">p</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>      <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">z</span><span class="o">*#</span><span class="n">a</span> <span class="p">)</span> <span class="kr">end</span>
   <span class="kr">function</span> <span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>  <span class="kr">return</span> <span class="n">x</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mf">.5</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">)</span> <span class="p">)</span> <span class="kr">end</span>
   <span class="kr">function</span> <span class="nf">stdev</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>  
     <span class="kr">return</span> <span class="n">abs</span><span class="p">((</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mf">.9</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">-</span> <span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mf">.1</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">)))</span><span class="o">/</span><span class="n">my</span><span class="p">.</span><span class="n">magic</span><span class="p">)</span> <span class="kr">end</span>
@@ -144,37 +143,34 @@ where 2.56 is a magic number derived from
       <div class='octowrap'>
         <a class='octothorpe' href='#section-5'>#</a>
       </div>
-      <p>Main worker: don&rsquo;t cut if:</p>
-<ul>
-<li>you are within <code>epsilon</code> of  <code>start</code> or <code>stop</code></li>
-<li>my numbers before and after my break are my same</li>
-<li>my break does not reduce my expected value of my
-  standard deviation (by more than a <code>trivial</code> amount) </li>
-<li>my mean value of my two new breaks differ by
-  less than <code>epsilon</code></li>
-</ul>
+      <p>A good break does <em>not</em> 
+(a) fall <code>epsilon</code> of  <code>start</code> or <code>stop</code>;
+(b) have the same number before and after each break;
+(c) reduce the expected value of the variability by less than
+    a <code>trivial</code> mount.
+(d) divide the ranges by more than <code>depth</code> levels.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">function</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">,</span>   <span class="n">min</span><span class="p">,</span><span class="n">new</span><span class="p">,</span><span class="n">cut</span><span class="p">,</span><span class="n">now</span><span class="p">,</span><span class="n">after</span><span class="p">)</span>
-    <span class="n">min</span> <span class="o">=</span> <span class="n">stdev</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
-    <span class="kr">for</span> <span class="n">j</span> <span class="o">=</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">my</span><span class="p">.</span><span class="n">step</span><span class="p">,</span> <span class="n">hi</span><span class="o">-</span><span class="n">my</span><span class="p">.</span><span class="n">step</span> <span class="kr">do</span>
-      <span class="n">now</span><span class="p">,</span> <span class="n">after</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-      <span class="kr">if</span> <span class="n">now</span> <span class="o">~=</span> <span class="n">after</span>                  <span class="ow">and</span> 
-         <span class="n">after</span> <span class="o">-</span> <span class="n">my</span><span class="p">.</span><span class="n">start</span> <span class="o">&gt;</span> <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> <span class="ow">and</span> 
-         <span class="n">my</span><span class="p">.</span><span class="n">stop</span> <span class="o">-</span> <span class="n">now</span>    <span class="o">&gt;</span> <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> <span class="ow">and</span>
-         <span class="n">mid</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="o">-</span> <span class="n">mid</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> 
-      <span class="kr">then</span>
-        <span class="n">new</span> <span class="o">=</span> <span class="n">xpect</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> 
-        <span class="kr">if</span> <span class="n">new</span> <span class="o">*</span> <span class="n">my</span><span class="p">.</span><span class="n">trivial</span> <span class="o">&lt;</span> <span class="n">min</span> <span class="kr">then</span>
-          <span class="n">min</span><span class="p">,</span><span class="n">cut</span> <span class="o">=</span> <span class="n">new</span><span class="p">,</span><span class="n">j</span> <span class="kr">end</span> <span class="kr">end</span> 
-    <span class="kr">end</span> <span class="c1">-- end for loop </span>
+      <div class="highlight"><pre>  <span class="kr">function</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">,</span><span class="n">lvl</span><span class="p">,</span>       <span class="n">cut</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">min</span>  <span class="o">=</span> <span class="n">stdev</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span>
+    <span class="kr">if</span> <span class="n">lvl</span> <span class="o">&lt;</span> <span class="n">depth</span> <span class="kr">then</span>
+      <span class="kr">for</span> <span class="n">j</span> <span class="o">=</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">my</span><span class="p">.</span><span class="n">step</span><span class="p">,</span> <span class="n">hi</span><span class="o">-</span><span class="n">my</span><span class="p">.</span><span class="n">step</span> <span class="kr">do</span>
+        <span class="kd">local</span> <span class="n">now</span><span class="p">,</span> <span class="n">after</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="kr">if</span> <span class="n">now</span> <span class="o">~=</span> <span class="n">after</span>                  <span class="ow">and</span> 
+           <span class="n">after</span> <span class="o">-</span> <span class="n">my</span><span class="p">.</span><span class="n">start</span> <span class="o">&gt;</span> <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> <span class="ow">and</span> 
+           <span class="n">my</span><span class="p">.</span><span class="n">stop</span> <span class="o">-</span> <span class="n">now</span>    <span class="o">&gt;</span> <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> <span class="ow">and</span>
+           <span class="n">mid</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> <span class="o">-</span> <span class="n">mid</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> 
+        <span class="kr">then</span>
+           <span class="kd">local</span> <span class="n">new</span> <span class="o">=</span> <span class="n">xpect</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">hi</span><span class="p">)</span> 
+           <span class="kr">if</span> <span class="n">new</span> <span class="o">*</span> <span class="n">my</span><span class="p">.</span><span class="n">trivial</span> <span class="o">&lt;</span> <span class="n">min</span> <span class="kr">then</span>
+             <span class="n">min</span><span class="p">,</span><span class="n">cut</span> <span class="o">=</span> <span class="n">new</span><span class="p">,</span><span class="n">j</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>
+    <span class="kr">end</span> <span class="c1">-- end if </span>
     <span class="kr">if</span> <span class="n">cut</span> <span class="kr">then</span>
-      <span class="n">argmin</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span>   <span class="n">cut</span><span class="p">)</span>
-      <span class="n">argmin</span><span class="p">(</span><span class="n">cut</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span> 
-    <span class="kr">else</span> 
-      <span class="n">out</span><span class="p">[</span> <span class="o">#</span><span class="n">out</span><span class="o">+</span><span class="mi">1</span> <span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">nums</span><span class="p">[</span><span class="n">lo</span><span class="p">],</span> <span class="p">{</span><span class="n">hi</span><span class="o">-</span><span class="n">lo</span><span class="p">,</span><span class="n">mid</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)}</span> <span class="p">}</span> 
-    <span class="kr">end</span>
-    <span class="kr">return</span> <span class="n">out</span>
+      <span class="n">argmin</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span>    <span class="n">cut</span><span class="p">,</span> <span class="n">lvl</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+      <span class="n">argmin</span><span class="p">(</span><span class="n">cut</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span>  <span class="n">lvl</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="kr">else</span>
+      <span class="n">out</span><span class="p">[</span><span class="o">#</span><span class="n">out</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">fx</span><span class="o">=</span><span class="n">fx</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="o">=</span><span class="n">x</span><span class="p">(</span><span class="n">hi</span><span class="p">),</span> <span class="n">mid</span><span class="o">=</span><span class="n">mid</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">)}</span>
+      <span class="n">lo</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="n">hi</span><span class="p">)</span> <span class="kr">end</span>
   <span class="kr">end</span></pre></div>
     </div>
   </div>
@@ -187,27 +183,16 @@ where 2.56 is a magic number derived from
       <hr />
 <p>Get ready.</p>
 <ul>
-<li>Only reason over a random
-selection of my numbers. </li>
-<li>Select numbers within my input list using my <code>f</code> function.</li>
-<li>Sort all my 
-numbers only once.</li>
-<li>Ignore <em>don&rsquo;t care</em> symbols;</li>
 <li>Divide my numbers into <code>steps</code> of size, say, square root of my total list.</li>
 <li>Guess a value for a small <code>epsilon</code> using Cohen&rsquo;s rule.</li>
 </ul>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">one</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">do</span>
-    <span class="kr">if</span> <span class="n">my</span><span class="p">.</span><span class="n">f</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="o">~=</span> <span class="n">my</span><span class="p">.</span><span class="n">no</span> <span class="kr">then</span>
-      <span class="kr">if</span> <span class="n">r</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">my</span><span class="p">.</span><span class="n">max</span><span class="o">/#</span><span class="n">a</span> <span class="kr">then</span> 
-        <span class="n">nums</span><span class="p">[</span><span class="o">#</span><span class="n">nums</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">my</span><span class="p">.</span><span class="n">f</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span> <span class="kr">end</span>
-  <span class="nb">table.sort</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
-  <span class="n">my</span><span class="p">.</span><span class="n">step</span>  <span class="o">=</span> <span class="nb">math.floor</span><span class="p">((</span><span class="o">#</span><span class="n">nums</span><span class="p">)</span><span class="o">^</span><span class="n">my</span><span class="p">.</span><span class="n">step</span><span class="p">)</span>
-  <span class="n">my</span><span class="p">.</span><span class="n">stop</span>  <span class="o">=</span> <span class="n">nums</span><span class="p">[</span><span class="o">#</span><span class="n">nums</span><span class="p">]</span>
-  <span class="n">my</span><span class="p">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">nums</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+      <div class="highlight"><pre>  <span class="n">my</span><span class="p">.</span><span class="n">start</span><span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>     <span class="c1">-- smallest value</span>
+  <span class="n">my</span><span class="p">.</span><span class="n">stop</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="o">#</span><span class="n">a</span><span class="p">)</span> <span class="c1">-- largest value</span>
+  <span class="n">my</span><span class="p">.</span><span class="n">step</span> <span class="o">=</span> <span class="nb">math.floor</span><span class="p">((</span><span class="o">#</span><span class="n">a</span><span class="p">)</span><span class="o">^</span><span class="n">my</span><span class="p">.</span><span class="n">step</span><span class="p">)</span><span class="c1">-- need at least &quot;step&quot; items</span>
   <span class="kr">if</span> <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">==</span> <span class="mi">0</span> <span class="kr">then</span> 
-    <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">stdev</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">#</span><span class="n">nums</span><span class="p">)</span> <span class="o">*</span> <span class="n">my</span><span class="p">.</span><span class="n">cohen</span> <span class="kr">end</span></pre></div>
+    <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">stdev</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">#</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">my</span><span class="p">.</span><span class="n">cohen</span> <span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -217,15 +202,12 @@ numbers only once.</li>
         <a class='octothorpe' href='#section-7'>#</a>
       </div>
       <hr />
-<h2>Return Value</h2>
-<p>Returns a list of pairs <code>{break, summary}</code> where my former
-shows my lower bound of some division while my latter shows
-a summary of my nums in that division. For example <code>{{2,3},{5,7}}</code>
-says that my nums divides on 2 and 5 and in those two
-regions, my mean values are 3 and 7 (respectively).</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">return</span> <span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">nums</span><span class="p">)</span>
+      <div class="highlight"><pre>  <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+  <span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">a</span><span class="p">,</span><span class="n">lvl</span><span class="p">)</span>
+  <span class="n">out</span><span class="p">[</span><span class="o">#</span><span class="n">out</span><span class="p">].</span><span class="n">hi</span> <span class="o">=</span> <span class="nb">math.maxinteger</span>
+  <span class="kr">return</span> <span class="n">out</span>
 <span class="kr">end</span></pre></div>
     </div>
   </div>
@@ -235,10 +217,29 @@ regions, my mean values are 3 and 7 (respectively).</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-8'>#</a>
       </div>
-      <h2>Author</h2>
+      <ul>
+<li>Only reason over a random &ndash; selection of my numbers. </li>
+<li>Select numbers within my input list using my <code>f</code> function.</li>
+<li>Sort all my 
+numbers only once.</li>
+<li>Ignore <em>don&rsquo;t care</em> symbols;</li>
+</ul>
     </div>
     <div class='code'>
-      <div class="highlight"><pre></pre></div>
+      <div class="highlight"><pre><span class="kd">local</span> <span class="kr">function</span> <span class="nf">divSome</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">my</span><span class="p">)</span>
+  <span class="n">my</span> <span class="o">=</span> <span class="n">has</span><span class="p">(</span><span class="n">my</span><span class="p">){</span><span class="n">THE</span><span class="p">.</span><span class="n">divs</span><span class="p">}</span>
+  <span class="kd">local</span> <span class="n">a1</span><span class="o">=</span><span class="p">{}</span>
+  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">one</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">do</span>
+    <span class="kr">if</span> <span class="n">my</span><span class="p">.</span><span class="n">fx</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="o">~=</span> <span class="n">my</span><span class="p">.</span><span class="n">skip</span> <span class="kr">then</span>
+      <span class="kr">if</span> <span class="n">r</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">my</span><span class="p">.</span><span class="n">most</span><span class="o">/#</span><span class="n">a</span> <span class="kr">then</span> 
+        <span class="n">a1</span><span class="p">[</span><span class="o">#</span><span class="n">a1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">one</span> <span class="kr">end</span> <span class="kr">end</span> 
+  <span class="kr">end</span>
+  <span class="kd">local</span> <span class="kr">function</span> <span class="nf">order</span><span class="p">(</span><span class="n">z1</span><span class="p">,</span><span class="n">z2</span><span class="p">)</span> <span class="kr">return</span> <span class="n">my</span><span class="p">.</span><span class="n">fx</span><span class="p">(</span><span class="n">z1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">my</span><span class="p">.</span><span class="n">fx</span><span class="p">(</span><span class="n">z2</span><span class="p">)</span> <span class="kr">end</span>
+  <span class="nb">table.sort</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+  <span class="kr">return</span> <span class="n">divl</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span><span class="n">my</span><span class="p">)</span>
+<span class="kr">end</span>
+
+<span class="kr">return</span> <span class="n">div</span><span class="p">,</span><span class="n">divSome</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -246,6 +247,18 @@ regions, my mean values are 3 and 7 (respectively).</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <h2>Author</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
       </div>
       <p>Written by  Tim Menzies.</p>
     </div>

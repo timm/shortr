@@ -47,86 +47,87 @@ local Sym  = require("sym")
 
 local r,copy,same,has = Lib.r, Lib.copy,Lib.same,Lib.has
 
-local function some(i,a,      out)
-  out = {}
-  for _,one in pairs(a) do
-    if i.fx(one) ~= i.skip and r() < i.most/#a then 
-      out[#out+1] = one end end
-  table.sort(out, function(y,z) 
-                    return i.fx(y) < i.fx(z) end)
-  return out
-end
-
--- Look for some split between `lo` and `hi`
--- that minimizes the `var` property of the `fy` variables.
--- looking for the Walk across our list from lo to hi,
--- incrementally add the current `x,y` values
--- to the "left" lists `xl,yl`
--- while decrementing the "right" lists `xr,yr`.
-local function argmin(i,a,lo,hi,xall, yall,     out)
-  local xl1,yl1,xr1,yr1,out, now,after, new
-  local min = i.ytype.var(yall)
-  local xr  = xall
-  local yr  = yall
-  local xl  = i.xtype.new{key=i.fx}
-  local yl  = i.ytype.new{key=i.fy}
-  for j = lo, hi do
-    i.xtype.add(xl, a[j]); i.ytype.add(yl, a[j])
-    i.xtype.sub(xr, a[j]); i.ytype.sub(yr, a[j])
-    if j > lo + i.step and j < hi - i.step 
-    then
-      now   = i.fx(a[j  ])
-      after = i.fx(a[j+1])     
-      if now  ~= after                and 
-         after  - i.start > i.epsilon and
-         i.stop - now     > i.epsilon and
-         i.xtype.mid(xr) - i.xtype.mid(xl) > i.epsilon 
-      then
-        new = i.ytype.xpect(yl,yr)
-        if new * i.trivial < min 
+local function all(a, my) 
+  local out = {}
+  my = has(my)(THE.divs)
+  my = has(my){xtype=Num, ytype=Num, fx=same, fy=same}
+   -- Look for some split between `lo` and `hi`
+  -- that minimizes the `var` property of the `fy` variables.
+  -- looking for the Walk across our list from lo to hi,
+  -- incrementally add the current `x,y` values
+  -- to the "left" lists `xl,yl`
+  -- while decrementing the "right" lists `xr,yr`.
+  local function argmin(lo,hi,lvl, xall, yall)
+    local xl1,yl1,xr1,yr1,out, now,after, new
+    local min = my.ytype.var(yall)
+    local yvar = min
+    local ymid = my.ytype.mid(yall)
+    local xr  = xall
+    local yr  = yall
+    local xl  = my.xtype.new{key=i.fx}
+    local yl  = my.ytype.new{key=i.fy}
+    if lvl < my.depth then
+      for j = lo, hi do
+        my.xtype.add(xl, a[j]); my.ytype.add(yl, a[j])
+        my.xtype.sub(xr, a[j]); my.ytype.sub(yr, a[j])
+        if j > lo + my.step and j < hi - my.step 
         then
-          min, out = new, j
-          xl1,yl1,xr1,yr1 = copy(xl),copy(yl),copy(xr),copy(yr) 
-          end end end end 
-  return out,xl1,yl1, xr1, yr1
+          now   = my.fx(a[j  ])
+          after = my.fx(a[j+1])     
+          if now  ~= after                and 
+             after  - my.start > my.epsilon and
+             my.stop - now     > my.epsilon and
+             my.xtype.mid(xr) - my.xtype.mid(xl) > i.epsilon 
+          then
+            new = my.ytype.xpect(yl,yr)
+            if new * my.trivial < min 
+            then
+              min, out = new, j
+              xl1,yl1,xr1,yr1 = copy(xl),copy(yl),copy(xr),copy(yr) 
+              end end end end 
+    if cut then
+        -- If we can find somewhere to split, then recurse.
+      argmin(lo,    cut, lvl+1, lx,ly)
+      argmin(cut+1, hi,  lvl+1, rx,ry) 
+    else
+      -- If no new split, then add all of `lo` to `hi`
+      -- into the `out` list. Create a record `{x=..,yvar=..}`
+      -- showing a summary of the `x ` and `y` values in this region.
+      out[#out+1] = {fx=fx. lo=b4, n= hi-lo+1, hi=my.fx(h1), 
+                     var=yvar, mid=ymid}
+      b4 = my.fx(hi)
+  end 
+  
+  -- Main function. Set up lots of locals, the start
+  -- `recurse`ing to find the splits.
+  my.start   = my.fx( a[1] )
+  my.stop    = my.fx( a[#a] )
+  my.step    = math.floor(#a)^my.step
+  local yall = my.ytype.all(a,my.fy)
+  local xall = my.xtype.all(a,my.fx)
+  if my.epsilon == 0 then
+    my.epsilon = i.xtype.var(xall)*i.cohen
+  end
+  out = {}
+  b4  = math.mininteger
+  argmin(1, #a,1, xall, yall)
+  out[#out].hi = math.maxinteger
+  return out
 end
 
--- As we recurse, take the stats the upper level
--- and split those into `x,y` values, left and right 
--- of the split (into the lsts `xl,yl, xr,yr`).
-local function recurse(i,a,lo,hi,xall,yall,out,depth,yvar)
-  local cut,lx,ly,rx,ry
-  yvar = i.ytype.var(yall)
-  if depth > 0 then
-    cut,lx,ly, rx,ry = argmin(i,a,lo, hi,xall,yall)
-    if cut then
-      -- If we can find somewhere to split, then recurse.
-      recurse(i,a,lo,    cut, lx,ly, out, depth-1)
-      recurse(i,a,cut+1, hi,  rx,ry, out, depth-1) end end
-  if not cut then
-    -- If no new split, then add all of `lo` to `hi`
-    -- into the `out` list. Create a record `{x=..,yvar=..}`
-    -- showing a summary of the `x ` and `y` values in this region.
-    x0.lo = i.fx(a[lo])
-    x0.hi = i.fx(a[hi])
-    out[ #out+1 ] = {lo=i.fx(a[lo]),
-                     hi=i.fx(a[hi]),
-                     yvar=yvar,
-                     n = hi - lo + 1} end
-  return out
-end 
+local function some(a,my)
+  my = has(my){THE.divs}
+  local a1={}
+  for _,one in pairs(a) do
+    if my.fx(one) ~= my.skip then
+      if r() < my.most/#a then 
+        a1[#a1+1] = one end end 
+  end
+  local function order(z1,z2) return my.fx(z1) < my.fx(z2) end
+  table.sort(a1, order)
+  return all(a1,my)
+end
 
--- Main function. Set up lots of locals, the start
--- `recurse`ing to find the splits.
-return function (a, i) 
-  i = has(i)(THE.divs)
-  i = has(i){xtype=Num, ytype=Num, fx=same, fy=same}
-  a         = some(i,a)
-  i.start   = i.fx( a[1] )
-  i.stop    = i.fx( a[#a] )
-  i.step    = math.floor(#a)^i.step
-  local y   = i.ytype.all(a,i.fy)
-  local x   = i.xtype.all(a,i.fx)
-  i.epsilon = i.epsilon or i.xtype.var(x)*i.cohen
-  return recurse(i,a, 1, #a, x, y, {}, i.depth or 1000)
-end 
+return {all=all,some=some}
+
+

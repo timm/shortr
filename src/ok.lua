@@ -28,7 +28,7 @@ local function s()
 return function(t,  score)
   for x,f in pairs(t) do
     y = y + 1
-    print("-- Test #" .. y ..
+    print("\n-- Test #" .. y ..
           " (oops= ".. n .. " =" .. s() .."%) : " .. x )
     Rand.seed()
     local passed,err = pcall(f)

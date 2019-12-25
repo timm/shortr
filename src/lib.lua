@@ -13,7 +13,7 @@ local function fillInDefaults(new, defaults)
 end
 
 function Lib.has(t)
-  t=t or {}
+  t=Lib.copy(t) or {}
   setmetatable(t or {}, {__call=fillInDefaults}) 
   return t
 end

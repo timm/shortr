@@ -7,10 +7,12 @@
 -- This is a very useful when streaming over a large data space.
 
 local Column = require("column")
-local r      = require("lib").r
-local divs   = require("divs")
+local Lib    = require("lib")
 local THE    = require("the")
+local Divs   = require("divs")
 local Some   = {is="Some"}
+
+local r,binChop = Lib.r, Lib.binChop
 
 function Some.all(lst, out)
   out = out or Some.new()
@@ -21,8 +23,9 @@ end
 function Some.new(t)
   local i = Column.new(t)
   i.me    = Some
-  i.has   = {}
+  i._has   = {}
   i.divs  = nil
+  i.sorted= false
   t = t or {}
   i.most  = t.most or THE.some.most or 256
   return i
@@ -34,25 +37,34 @@ end
 -- `i.n` items, keep the next item at probability of `i.most/i.n`. 
 -- And by "keeping", we mean "replace anything at random with the new item".
 
+function Some.has(i)
+  if not i.sorted then table.sort(i._has) end
+  i.sorted=true 
+  return i._has
+end
+
+function Some.ptile(i,x) 
+  return binChop(Some.has(i),x)/#i._has end
+
 function Some.add(i,x) 
   if x == "?" then return x end
   x = i.key(x)
   i.n  = i.n + 1
-  if #i.has < i.most then 
-    i.divs = nil
-    i.has[#i.has+1] = x 
+  if #i._has < i.most then 
+    i._has[#i._has+1] = x 
+    i.sorted= false
+    i._divs=  nil
   elseif r() < i.most/i.n then
-    i.divs = nil
-    i.has[ math.floor(#i.has*r()) + 1 ] = x end
+    Some.has(i)[ binChop(i._has,x) ] = x end
 end
 
 -- Also supported is a hook into an unsupervised discretization function
 -- that divides the kept numbers in a manner that minimizing the standard
 -- deviation of the divided bins.
 
-function Some.divs(i) 
-  i.divs = i.divs and i.divs or divs(i.has) 
-  return i.divs
+function Some.divs(i)
+  if not i._divs then i._divs= Divs.all(Some.has(i)) end
+  return i._divs
 end
 
 -- ----------
