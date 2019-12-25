@@ -77,7 +77,7 @@ function Sym.div(i,rows,fx,fy,ytype)
     local x = fx(row)
     if x ~= THE.chars.skip then
       n = n + 1 -- unify with num
-      local one = all[x] or ytype.new(txt=x)
+      local one = all[x] or ytype.new{txt=x}
       ytype.add(one, fy(row)) end end
   cuts = {}
   for n,one in pairs(all) do

@@ -13,7 +13,7 @@ return {
            epsilon = 0      ,
            skip    = "?"    ,
            fx      = function(z) return z end,
-           depth   = 1000   ,
+           depth   = math.maxinteger,
            cohen   = 0.3    ,
            trivial = 1.05  }
 }

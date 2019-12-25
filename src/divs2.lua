@@ -47,55 +47,57 @@ local Sym  = require("sym")
 
 local r,copy,same,has = Lib.r, Lib.copy,Lib.same,Lib.has
 
-local function all(a, my) 
-  local out = {}
-  my = has(my)(THE.divs)
-  my = has(my){xtype=Num, ytype=Num, fx=same, fy=same}
+local function all(a, my,     out) 
+  my = has(my)(THE.divs){xtype=Num, ytype=Num, fx=same, fy=same}
    -- Look for some split between `lo` and `hi`
   -- that minimizes the `var` property of the `fy` variables.
-  -- looking for the Walk across our list from lo to hi,
+  -- To do that, walk across our list from lo to hi,
   -- incrementally add the current `x,y` values
   -- to the "left" lists `xl,yl`
   -- while decrementing the "right" lists `xr,yr`.
   local function argmin(lo,hi,lvl, xall, yall)
-    local xl1,yl1,xr1,yr1,out, now,after, new
-    local min = my.ytype.var(yall)
-    local yvar = min
-    local ymid = my.ytype.mid(yall)
-    local xr  = xall
-    local yr  = yall
-    local xl  = my.xtype.new{key=i.fx}
-    local yl  = my.ytype.new{key=i.fy}
+    local xlmin,ylmin,xrmin,yrmin,here,cut
+    here= { fx   = my.fx, 
+            hi   = my.fx(h1), 
+            lo   = out[#out] and out[#out].hi 
+                   or math.mininteger, 
+             n   = hi-lo+1, 
+             var = my.ytpye.var(yall),
+             min = my.ytpye.mid(yall)}
+     -- Start hunting for a cut
     if lvl < my.depth then
-      for j = lo, hi do
-        my.xtype.add(xl, a[j]); my.ytype.add(yl, a[j])
-        my.xtype.sub(xr, a[j]); my.ytype.sub(yr, a[j])
-        if j > lo + my.step and j < hi - my.step 
-        then
-          now   = my.fx(a[j  ])
-          after = my.fx(a[j+1])     
-          if now  ~= after                and 
-             after  - my.start > my.epsilon and
-             my.stop - now     > my.epsilon and
-             my.xtype.mid(xr) - my.xtype.mid(xl) > i.epsilon 
+      if hi - lo > my.step then
+        local min   = here.min
+        local xr,yr = xall, yalll
+        local xl    = my.xtype.new{key=my.fx}
+        local yl    = my.ytype.new{key=my.fy}
+        for j = lo, hi do
+          my.xtype.add(xl, a[j]); my.ytype.add(yl, a[j])
+          my.xtype.sub(xr, a[j]); my.ytype.sub(yr, a[j])
+          if j > lo + my.step and j < hi - my.step 
           then
-            new = my.ytype.xpect(yl,yr)
-            if new * my.trivial < min 
+            local now   = my.fx(a[j  ])
+            local after = my.fx(a[j+1])     
+            if now  ~= after                and 
+               after  - my.start > my.epsilon and
+               my.stop - now     > my.epsilon and
+               my.xtype.mid(xr) - my.xtype.mid(xl) > my.epsilon 
             then
-              min, out = new, j
-              xl1,yl1,xr1,yr1 = copy(xl),copy(yl),copy(xr),copy(yr) 
-              end end end end 
+              local new = my.ytype.xpect(yl,yr)
+              if new * my.trivial < min 
+              then
+                min, cut = new, j
+                xlmin, ylmin = copy(xl), copy(yl)
+                xrmin, yrmin = copy(xr), copy(yr) 
+              end end end end end 
+    end  
+    -- If a cut is found, use it to divide the data.
     if cut then
-        -- If we can find somewhere to split, then recurse.
-      argmin(lo,    cut, lvl+1, lx,ly)
-      argmin(cut+1, hi,  lvl+1, rx,ry) 
+      argmin(lo,    cut, lvl+1, xlmin,ylmin)
+      argmin(cut+1, hi,  lvl+1, xrmin,yrmin) 
     else
-      -- If no new split, then add all of `lo` to `hi`
-      -- into the `out` list. Create a record `{x=..,yvar=..}`
-      -- showing a summary of the `x ` and `y` values in this region.
-      out[#out+1] = {fx=fx. lo=b4, n= hi-lo+1, hi=my.fx(h1), 
-                     var=yvar, mid=ymid}
-      b4 = my.fx(hi)
+      out[#out+1] = here
+    end
   end 
   
   -- Main function. Set up lots of locals, the start
@@ -106,11 +108,11 @@ local function all(a, my)
   local yall = my.ytype.all(a,my.fy)
   local xall = my.xtype.all(a,my.fx)
   if my.epsilon == 0 then
-    my.epsilon = i.xtype.var(xall)*i.cohen
+    my.epsilon = my.xtype.var(xall)*my.cohen
   end
   out = {}
-  b4  = math.mininteger
   argmin(1, #a,1, xall, yall)
+  out[1].lo    = math.mininteger
   out[#out].hi = math.maxinteger
   return out
 end

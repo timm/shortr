@@ -28,11 +28,11 @@
 local THE=require("the")
 local Lib=require("lib")
 local r,abs,has = Lib.r,Lib.abs, Lib.has
-local all, some
+
 -- -----------------------------------
 -- Use all the data in `a`, return `ranges`.
 -- Assumes `a` is sorted.
-local  function all(a, my,  b4)
+local  function all(a, my)
   local x,p,mid,stdev,xpect,argmin,out-- local functions
   my = has(my)(THE.divs)
     -- A good break does *not* 
@@ -42,26 +42,33 @@ local  function all(a, my,  b4)
   --     a `trivial` mount.
   -- (d) divide the ranges by more than `depth` levels.
   function argmin(lo,hi,lvl,       cut)
-    local min  = stdev(lo,hi)
+    local here={fx = fx,  
+                lo = out[#out] and out[#out].hi 
+                     or math.mininteger, 
+                hi = x(hi), 
+                n  = hi-lo+1, 
+                mid= mid(lo,hi),
+                var= stdev(lo,hi)}
     if lvl < my.depth then
-      for j = lo + my.step, hi-my.step do
-        local now, after = x(j), x(j+1)
-        if now ~= after                  and 
-           after - my.start > my.epsilon and 
-           my.stop - now    > my.epsilon and
-           mid(j+1,hi) - mid(lo,j) > my.epsilon 
-        then
-           local new = xpect(lo,j,hi) 
-           if new * my.trivial < min then
-             min,cut = new,j end end end
+      if hi - lo > my.step then
+        local min  = here.var
+        for j = lo + my.step, hi-my.step do
+          local now, after = x(j), x(j+1)
+          if now ~= after                  and 
+             after - my.start > my.epsilon and 
+             my.stop - now    > my.epsilon and
+             mid(j+1,hi) - mid(lo,j) > my.epsilon 
+          then
+             local new = xpect(lo,j,hi) 
+             if new * my.trivial < min then
+               min,cut = new,j end end end end
     end -- end if 
     if cut then
       argmin(lo,    cut, lvl+1)
       argmin(cut+1, hi,  lvl+1)
     else
-      out[#out+1] = {fx=fx, lo=b4, n=hi-lo+1, 
-                     hi=x(hi), mid=mid(lo,hi)}
-      b4 = x(hi) end
+      out[#out+1] = here 
+    end
   end 
   -- Some details
   function x(z)      return my.fx(a[math.floor(z)]) end
@@ -81,8 +88,8 @@ local  function all(a, my,  b4)
     my.epsilon = stdev(1,#a) * my.cohen 
   end
   out = {}
-  b4 = math.mininteger
   argmin(1, #a,1)
+  out[1].lo    = math.mininteger
   out[#out].hi = math.maxinteger
   return out
 end
@@ -104,7 +111,8 @@ local function some(a,my)
       if r() < my.most/#a then 
         a1[#a1+1] = one end end 
   end
-  local function order(z1,z2) return my.fx(z1) < my.fx(z2) end
+  local function order(z1,z2) 
+          return my.fx(z1) < my.fx(z2) end
   table.sort(a1, order)
   return all(a1,my)
 end
