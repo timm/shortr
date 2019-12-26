@@ -13,7 +13,7 @@ local within= Lib.within
 local function big(   a,s,m,d)
   a,m = {},1001
   for i=1,m do a[#a+1] = round(i/m,3) end
-  d= divs(a)
+  d= divs.some(a)
   assert(within(0.495,d[5][1],0.505))
 end
 
@@ -56,9 +56,10 @@ ok{autos= function(  a,d)
   40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40 ,
   40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40 ,
   40, 50 }
-  d= divs(a)
-  assert(d[1][1]==10)
-  assert(d[2][1]==20)
-  assert(d[3][1]==30)
-  assert(d[4][1]==40)
+  d= divs.some(a)
+  Lib.map(d,o)
+  assert(d[1].hi==10)
+  assert(d[2].hi==20)
+  assert(d[3].hi==30)
+  assert(d[4].hi==math.maxinteger)
 end}

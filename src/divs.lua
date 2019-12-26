@@ -104,7 +104,7 @@ end
 -- and ignoring all the entries with `fx="?"`,
 -- first sort the sample,  then return the `ranges`. 
 local function some(a,my)
-  my = has(my){THE.divs}
+  my = has(my)(THE.divs)
   local a1={}
   for _,one in pairs(a) do
     if my.fx(one) ~= my.skip then

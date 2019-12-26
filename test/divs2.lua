@@ -7,16 +7,17 @@ local ok   = require("ok")
 
 local Object=require("object")
 local Some=require("some")
-local divs2 = require("divs2")
+local divs = require("divs")
 local Tbl = require("tbl")
 
-local r, o, same, round = Lib.r, Lib.o, Lib.same, Lib.round
+local r, o, same = Lib.r, Lib.o, Lib.same
+local round , within= Lib.round, Lib.within
 
 local function y1(x)
   x = round(x,3)
   if     x <= 0.15 then return {x,1}
-  elseif x <= 0.35  then return {x,2}
-  elseif x <= 0.55 then return {x,4}
+  elseif x <= 0.35  then return {x,1}
+  elseif x <= 0.55 then return {x,1}
   elseif x <= 0.85 then return {x,5}
   else                  return {x,6} end end
 
@@ -30,21 +31,15 @@ local function y2(x)
 local function first(a) return a[1] end
 local function second(a) return a[2] end
 
-local function big(   a,s,m,d)
-  a,m = {},10^2
+ok{big =  function(   a,s,m,d)
+  a,m = {},10^3
   for i=1,m do a[#a+1] = y1(r()) end
-  d= divs2(a,{fx=first,fy=second})
-  for n,v in pairs(d) do
-     print(n,v.x.lo)
-  end
-  assert(d[1].x.lo==0.006)
-  assert(d[2].x.lo==0.165)
-  assert(d[3].x.lo==0.352)
-  assert(d[4].x.lo==0.572)
-  assert(d[5].x.lo==0.857)
-end
+  d= divs.some(a,{fx=first,fy=second})
+  assert(within(0.248,d[2].hi,0.252))
+  assert(within(0.32,d[3].hi, 0.36))
+  assert(within(0.5,d[4].hi,0.55))
+end}
 
-ok{big=big}
 ok{autos= function(  a,d)
   a={10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
   10, 10, 10, 10, 10, 10, 10, 10, 10, 10 , 10, 10,
@@ -80,9 +75,10 @@ ok{autos= function(  a,d)
   40, 40 , 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
   40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40 ,
   40, 50 }
-  d= divs2(a,{x=same})
-  assert(d[1].x.lo==10) assert(d[1].x.hi==10)
-  assert(d[2].x.lo==20) assert(d[2].x.hi==20)
-  assert(d[3].x.lo==30) assert(d[3].x.hi==30)
-  assert(d[4].x.lo==40) assert(d[4].x.hi==40)
+  d= divs.some(a,{x=same})
+  Lib.map(d,o)
+  assert(d[1].hi==10)
+  assert(d[2].hi==20)
+  assert(d[3].hi==30)
+  assert(d[4].hi==math.maxinteger)
 end}

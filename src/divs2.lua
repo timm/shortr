@@ -49,8 +49,14 @@ local r,copy,same,has = Lib.r, Lib.copy,Lib.same,Lib.has
 
 local function all(a, my,     out) 
   my = has(my)(THE.divs){xtype=Num, ytype=Num, fx=same, fy=same}
-   -- Look for some split between `lo` and `hi`
-  -- that minimizes the `var` property of the `fy` variables.
+   -- A good break does *not* 
+  -- (a) fall `epsilon` of  `start` or `stop`;
+  -- (b) have the same number before and after each break;
+  -- (c) reduce the expected value of the 
+  --     y-value variability by less than
+  --     a `trivial` mount.
+  -- (d) divide the ranges by more than `depth` levels.
+  
   -- To do that, walk across our list from lo to hi,
   -- incrementally add the current `x,y` values
   -- to the "left" lists `xl,yl`
@@ -102,9 +108,10 @@ local function all(a, my,     out)
   
   -- Main function. Set up lots of locals, the start
   -- `recurse`ing to find the splits.
-  my.start   = my.fx( a[1] )
-  my.stop    = my.fx( a[#a] )
-  my.step    = math.floor(#a)^my.step
+  my.start   = my.fx( a[1] )  -- smallest value
+  my.stop    = my.fx( a[#a] ) -- largest value
+  my.step    = math.floor(#a)^my.step-- need at least "step" items
+  -- Guess a value for a small `epsilon` using Cohen's rule.
   local yall = my.ytype.all(a,my.fy)
   local xall = my.xtype.all(a,my.fx)
   if my.epsilon == 0 then
@@ -117,6 +124,15 @@ local function all(a, my,     out)
   return out
 end
 
+-- - Only reason over a random -- selection of my numbers. 
+-- - Select numbers within my input list using my `f` function.
+-- - Sort all my 
+-- numbers only once.
+-- - Ignore _don't care_ symbols;
+
+-- Using a random sample of data from `a`,
+-- and ignoring all the entries with `fx="?"`,
+-- first sort the sample,  then return the `ranges`. 
 local function some(a,my)
   my = has(my){THE.divs}
   local a1={}
@@ -132,4 +148,6 @@ end
 
 return {all=all,some=some}
 
+-- ## Author
 
+-- Written by  Tim Menzies.

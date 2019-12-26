@@ -13,7 +13,7 @@ local function fillInDefaults(new, defaults)
 end
 
 function Lib.has(t)
-  t=Lib.copy(t) or {}
+  t=Lib.copy(t or {})
   setmetatable(t or {}, {__call=fillInDefaults}) 
   return t
 end
@@ -80,11 +80,12 @@ end
 -- If all the indexes are numeric,
 -- then do not show the keys. 
 
-function Lib.o(t) print(Lib.oo(t))  end
+function Lib.o(t,pre) print(Lib.oo(t,pre))  end
 
-function Lib.oo(t,     seen,s,sep,keys, nums)
+function Lib.oo(t,pre,     seen,s,sep,keys, nums)
   seen = seen or {}
   if seen[t] then return "..." end
+  pre=pre or ""
   seen[t] = true
   if type(t) ~= "table" then return tostring(t) end
   s, sep, keys, nums = '','', {}, true
@@ -97,14 +98,14 @@ function Lib.oo(t,     seen,s,sep,keys, nums)
   table.sort(keys)
   for _, k in pairs(keys) do
     local v = t[k]
-    v   = type(v) == 'table' and Lib.oo(v,seen) or tostring(v) 
+    v   = type(v) == 'table' and Lib.oo(v,pre,seen) or tostring(v) 
     if nums
     then s = s .. sep .. v
     else s = s .. sep .. tostring(k) .. '=' .. v
     end
     sep = ', ' 
   end 
-  return  '{' .. s ..'}'
+  return tostring(pre) .. '{' .. s ..'}'
 end
 
 -- -----------------
