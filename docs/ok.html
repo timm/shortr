@@ -84,7 +84,7 @@ ok.lua</h1></div>
 <span class="kr">return</span> <span class="kr">function</span><span class="p">(</span><span class="n">t</span><span class="p">,</span>  <span class="n">score</span><span class="p">)</span>
   <span class="kr">for</span> <span class="n">x</span><span class="p">,</span><span class="n">f</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="kr">do</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Test #&quot;</span> <span class="o">..</span> <span class="n">y</span> <span class="o">..</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">-- Test #&quot;</span> <span class="o">..</span> <span class="n">y</span> <span class="o">..</span>
           <span class="s2">&quot; (oops= &quot;</span><span class="o">..</span> <span class="n">n</span> <span class="o">..</span> <span class="s2">&quot; =&quot;</span> <span class="o">..</span> <span class="n">s</span><span class="p">()</span> <span class="o">..</span><span class="s2">&quot;%) : &quot;</span> <span class="o">..</span> <span class="n">x</span> <span class="p">)</span>
     <span class="n">Rand</span><span class="p">.</span><span class="n">seed</span><span class="p">()</span>
     <span class="kd">local</span> <span class="n">passed</span><span class="p">,</span><span class="n">err</span> <span class="o">=</span> <span class="nb">pcall</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
