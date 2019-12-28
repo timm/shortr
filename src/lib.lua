@@ -39,15 +39,19 @@ function Lib.same(x) return x end
 -- Lists
 function Lib.last(a) return a[#a] end
 
+function Lib.push(x,a) a=a or {}; a[#a+1]=x; return a end
+function Lib.pop(x, x) x=last(a); a[#a]=nil; return x end
+
 function Lib.sort(a,f) 
   f = f or function(x,y) return x<y end
   table.sort(a,f) 
   return a 
 end
 
-function Lib.mean(a,       n,sum) 
+function Lib.mean(a,f,     n,sum) 
   n,sum=0,0
-  for _,one in pairs(a) do n=n+1; sum= sum+ one end 
+  f=f or Lib.same
+  for _,one in pairs(a) do n=n+1; sum= sum+ f(one) end 
   return sum/n
 end
 
@@ -62,10 +66,10 @@ function Lib.copy(t)
 
 function Lib.binChop(a,x,           lo, hi,mid) 
   lo,hi = 1,#a
-	while (lo <= hi) do
-		mid = math.floor((hi + lo) / 2)
-		if (x == a[mid]) then break end
-		if (x <  a[mid]) then hi = mid - 1 else lo = mid + 1 end
+  while (lo <= hi) do
+    mid = math.floor((hi + lo) / 2)
+    if (x == a[mid]) then break end
+    if (x <  a[mid]) then hi = mid - 1 else lo = mid + 1 end
   end
   return mid
 end

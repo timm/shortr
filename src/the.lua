@@ -7,6 +7,8 @@ return {
   rand = { seed    = 10013 },
   some = { key     = function(z) return z end,
            most    = 256   },
+  tree = { step    = 0.5   ,
+           trivial = 1.05  },
   divs = { step    = 0.5    ,
            most    = 256    ,
            magic   = 2.56   ,

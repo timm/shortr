@@ -121,7 +121,9 @@ and the <code>hi</code> of the last range to <code>math.maxinteger</code>.</p>
         <a class='octothorpe' href='#section-4'>#</a>
       </div>
       <hr />
-<p>Use all the data in <code>a</code>, return <code>ranges</code>.
+<h2>all</h2>
+<p>Divide all the data.
+Use all the data in <code>a</code>, return <code>ranges</code>.
 Assumes <code>a</code> is sorted.</p>
     </div>
     <div class='code'>
@@ -191,7 +193,11 @@ Assumes <code>a</code> is sorted.</p>
     <span class="kr">return</span> <span class="n">abs</span><span class="p">((</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mf">.9</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">-</span> <span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mf">.1</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">)))</span><span class="o">/</span><span class="n">my</span><span class="p">.</span><span class="n">magic</span><span class="p">)</span> <span class="kr">end</span>
   <span class="kr">function</span> <span class="nf">xpect</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
     <span class="kd">local</span> <span class="n">n</span><span class="o">=</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
-    <span class="kr">return</span> <span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="n">n</span><span class="o">*</span><span class="n">stdev</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">m</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">m</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">n</span><span class="o">*</span><span class="n">stdev</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="kr">end</span></pre></div>
+    <span class="kr">return</span> <span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="n">n</span><span class="o">*</span><span class="n">stdev</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">m</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">m</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">n</span><span class="o">*</span><span class="n">stdev</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="kr">end</span>
+
+  <span class="n">my</span><span class="p">.</span><span class="n">start</span><span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1">-- smallest value</span>
+  <span class="n">my</span><span class="p">.</span><span class="n">stop</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="o">#</span><span class="n">a</span><span class="p">)</span> <span class="c1">-- largest value</span>
+  <span class="n">my</span><span class="p">.</span><span class="n">step</span> <span class="o">=</span> <span class="nb">math.floor</span><span class="p">((</span><span class="o">#</span><span class="n">a</span><span class="p">)</span><span class="o">^</span><span class="n">my</span><span class="p">.</span><span class="n">step</span><span class="p">)</span><span class="c1">-- need at least &quot;step&quot; items</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -200,12 +206,12 @@ Assumes <code>a</code> is sorted.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-7'>#</a>
       </div>
-      <p>Go to work</p>
+      <p>Guess a value for a small <code>epsilon</code> using Cohen&rsquo;s rule.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="n">my</span><span class="p">.</span><span class="n">start</span><span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1">-- smallest value</span>
-  <span class="n">my</span><span class="p">.</span><span class="n">stop</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="o">#</span><span class="n">a</span><span class="p">)</span> <span class="c1">-- largest value</span>
-  <span class="n">my</span><span class="p">.</span><span class="n">step</span> <span class="o">=</span> <span class="nb">math.floor</span><span class="p">((</span><span class="o">#</span><span class="n">a</span><span class="p">)</span><span class="o">^</span><span class="n">my</span><span class="p">.</span><span class="n">step</span><span class="p">)</span><span class="c1">-- need at least &quot;step&quot; items</span></pre></div>
+      <div class="highlight"><pre>  <span class="kr">if</span> <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">==</span> <span class="mi">0</span> <span class="kr">then</span> 
+    <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">stdev</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">#</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">my</span><span class="p">.</span><span class="n">cohen</span> 
+  <span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -214,13 +220,10 @@ Assumes <code>a</code> is sorted.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-8'>#</a>
       </div>
-      <p>Guess a value for a small <code>epsilon</code> using Cohen&rsquo;s rule.</p>
+      <p>Go to work</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="kr">if</span> <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">==</span> <span class="mi">0</span> <span class="kr">then</span> 
-    <span class="n">my</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">stdev</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">#</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">my</span><span class="p">.</span><span class="n">cohen</span> 
-  <span class="kr">end</span>
-  <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+      <div class="highlight"><pre>  <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
   <span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">a</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
   <span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">lo</span>    <span class="o">=</span> <span class="nb">math.mininteger</span>
   <span class="n">out</span><span class="p">[</span><span class="o">#</span><span class="n">out</span><span class="p">].</span><span class="n">hi</span> <span class="o">=</span> <span class="nb">math.maxinteger</span>
@@ -234,7 +237,8 @@ Assumes <code>a</code> is sorted.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-9'>#</a>
       </div>
-      <ul>
+      <h2>some</h2>
+<ul>
 <li>Only reason over a random &ndash; selection of my numbers. </li>
 <li>Select numbers within my input list using my <code>f</code> function.</li>
 <li>Sort all my 

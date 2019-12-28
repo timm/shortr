@@ -7,11 +7,11 @@ local ok   = require("ok")
 
 local Object=require("object")
 local Some=require("some")
-local divs = require("divs")
+local divs = require("divs2")
 local Tbl = require("tbl")
 
-local r, o, same = Lib.r, Lib.o, Lib.same
-local round , within= Lib.round, Lib.within
+local r, o, map, same = Lib.r, Lib.o, Lib.map, Lib.same
+local round , within  = Lib.round, Lib.within
 
 local function y1(x)
   x = round(x,3)
@@ -31,14 +31,16 @@ local function y2(x)
 local function first(a) return a[1] end
 local function second(a) return a[2] end
 
-ok{big =  function(   a,s,m,d)
-  a,m = {},10^3
+local function big(   a,s,m,d)
+  a,m = {},1000
   for i=1,m do a[#a+1] = y1(r()) end
+  --map(a,o)
   d= divs.some(a,{fx=first,fy=second})
-  assert(within(0.248,d[2].hi,0.252))
-  assert(within(0.32,d[3].hi, 0.36))
-  assert(within(0.5,d[4].hi,0.55))
-end}
+  map(d,o)
+  assert(within(0.549,d[1].hi,0.551))
+end
+
+ok{big=big}
 
 ok{autos= function(  a,d)
   a={10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,

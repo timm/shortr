@@ -46,8 +46,9 @@ local Num  = require("num")
 local Sym  = require("sym")
 
 local r,copy,same,has = Lib.r, Lib.copy,Lib.same,Lib.has
+local map,o = Lib.map, Lib.o
 
-local function all(a, my,     out) 
+local function all(a, my,     splits) 
   my = has(my)(THE.divs){xtype=Num, ytype=Num, fx=same, fy=same}
    -- A good break does *not* 
   -- (a) fall `epsilon` of  `start` or `stop`;
@@ -55,26 +56,20 @@ local function all(a, my,     out)
   -- (c) reduce the expected value of the 
   --     y-value variability by less than
   --     a `trivial` mount.
-  -- (d) divide the ranges by more than `depth` levels.
+  -- (d) divide the splits by more than `depth` levels.
   
   -- To do that, walk across our list from lo to hi,
   -- incrementally add the current `x,y` values
   -- to the "left" lists `xl,yl`
   -- while decrementing the "right" lists `xr,yr`.
   local function argmin(lo,hi,lvl, xall, yall)
-    local xlmin,ylmin,xrmin,yrmin,here,cut
-    here= { fx   = my.fx, 
-            hi   = my.fx(h1), 
-            lo   = out[#out] and out[#out].hi 
-                   or math.mininteger, 
-             n   = hi-lo+1, 
-             var = my.ytpye.var(yall),
-             min = my.ytpye.mid(yall)}
-     -- Start hunting for a cut
+    local xlmin,ylmin,xrmin,yrmin,cut
+        -- Start hunting for a cut
+    local yall1=copy(yall)
     if lvl < my.depth then
       if hi - lo > my.step then
-        local min   = here.min
-        local xr,yr = xall, yalll
+        local min   = my.ytype.var(yall)
+        local xr,yr = xall, yall
         local xl    = my.xtype.new{key=my.fx}
         local yl    = my.ytype.new{key=my.fy}
         for j = lo, hi do
@@ -82,9 +77,10 @@ local function all(a, my,     out)
           my.xtype.sub(xr, a[j]); my.ytype.sub(yr, a[j])
           if j > lo + my.step and j < hi - my.step 
           then
-            local now   = my.fx(a[j  ])
             local after = my.fx(a[j+1])     
-            if now  ~= after                and 
+            local now   = my.fx(a[j  ])
+            if now ~= THE.char.skip         and 
+               now  ~= after                and 
                after  - my.start > my.epsilon and
                my.stop - now     > my.epsilon and
                my.xtype.mid(xr) - my.xtype.mid(xl) > my.epsilon 
@@ -95,14 +91,24 @@ local function all(a, my,     out)
                 min, cut = new, j
                 xlmin, ylmin = copy(xl), copy(yl)
                 xrmin, yrmin = copy(xr), copy(yr) 
-              end end end end end 
+              end end end end end  
     end  
     -- If a cut is found, use it to divide the data.
     if cut then
       argmin(lo,    cut, lvl+1, xlmin,ylmin)
       argmin(cut+1, hi,  lvl+1, xrmin,yrmin) 
     else
-      out[#out+1] = here
+      local here= {fx= my.fx, 
+                   hi= my.fx(a[hi]), 
+                   lo= splits[#splits] and splits[#splits].hi 
+                       or math.mininteger,
+                   _all={},
+                   stats=yall1}
+      here.use = function(r,  x) x = here.fx(r)
+                     return here.lo < x and x <= here.hi end
+      here.show= string.format("(%s..%s]", here.lo, here.hi)
+      for j=lo,hi do here._all[#(here._all)+1] = row end
+      splits[#splits+1] = here
     end
   end 
   
@@ -117,13 +123,38 @@ local function all(a, my,     out)
   if my.epsilon == 0 then
     my.epsilon = my.xtype.var(xall)*my.cohen
   end
-  out = {}
+  splits = {}
   argmin(1, #a,1, xall, yall)
-  out[1].lo    = math.mininteger
-  out[#out].hi = math.maxinteger
-  return out
+  splits[1].lo       = math.mininteger
+  splits[#splits].hi = math.maxinteger
+  return splits
 end
 
+-- ------
+-- ## Complete
+-- If the splits are computed via `some` then only some
+-- the entries in `a` will be used to find splits. If so,
+-- then we need a little post-processor to `some` to `complete`
+-- in the stats using all the y values from `a`.
+
+local function complete(a, my, splits)
+  for _,r in pairs(splits) do
+    r.stats = my.ytype.new{key=my.fy}
+    r._all ={}
+  end
+  for _,one in pairs(a) do
+    for _,r in pairs(splits) do
+      if r.use(one) then
+        r._all[#(r._all) + 1] = one
+        my.ytype.add(r.stats, one) 
+        break
+        end end end
+  return splits
+end
+
+-- --------
+-- ## Some
+-- Run the discretizer using some subset of the data.
 -- - Only reason over a random -- selection of my numbers. 
 -- - Select numbers within my input list using my `f` function.
 -- - Sort all my 
@@ -132,9 +163,9 @@ end
 
 -- Using a random sample of data from `a`,
 -- and ignoring all the entries with `fx="?"`,
--- first sort the sample,  then return the `ranges`. 
+-- first sort the sample,  then return the `splits`. 
 local function some(a,my)
-  my = has(my){THE.divs}
+  my = has(my)(THE.divs){xtype=Num, ytype=Num, fx=same, fy=same}
   local a1={}
   for _,one in pairs(a) do
     if my.fx(one) ~= my.skip then
@@ -143,7 +174,7 @@ local function some(a,my)
   end
   local function order(z1,z2) return my.fx(z1) < my.fx(z2) end
   table.sort(a1, order)
-  return all(a1,my)
+  return complete(a, my, all(a1,my))
 end
 
 return {all=all,some=some}
