@@ -98,16 +98,15 @@ local function all(a, my,     splits)
       argmin(lo,    cut, lvl+1, xlmin,ylmin)
       argmin(cut+1, hi,  lvl+1, xrmin,yrmin) 
     else
-      local here= {fx= my.fx, 
-                   hi= my.fx(a[hi]), 
+      local here= {hi= my.fx(a[hi]), 
                    lo= splits[#splits] and splits[#splits].hi 
                        or math.mininteger,
-                   _all={},
+                   has={},
                    stats=yall1}
       here.use = function(r,  x) x = here.fx(r)
                      return here.lo < x and x <= here.hi end
       here.show= string.format("(%s..%s]", here.lo, here.hi)
-      for j=lo,hi do here._all[#(here._all)+1] = row end
+      for j=lo,hi do here.has[#(here.has)+1] = row end
       splits[#splits+1] = here
     end
   end 
@@ -140,12 +139,12 @@ end
 local function complete(a, my, splits)
   for _,r in pairs(splits) do
     r.stats = my.ytype.new{key=my.fy}
-    r._all ={}
+    r.has ={}
   end
   for _,one in pairs(a) do
     for _,r in pairs(splits) do
       if r.use(one) then
-        r._all[#(r._all) + 1] = one
+        r.has[#(r.has) + 1] = one
         my.ytype.add(r.stats, one) 
         break
         end end end

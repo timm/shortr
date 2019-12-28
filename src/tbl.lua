@@ -65,6 +65,7 @@ function Tbl.clone(i, rows)
   return i
 end
 
+function Tbl.class(i,row) return row.cells[i.cols.y.klass] end
 -- ---------------------
 -- And finally...
 

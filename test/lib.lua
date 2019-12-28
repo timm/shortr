@@ -5,6 +5,11 @@ package.path = '../src/?.lua;' .. package.path
 local Lib=require("lib")
 
 local ok   = require("ok")
+local o=Lib.o
+
+ok{oo=function()
+ o{aa=1,bb=3,xx=Lib.o}  
+end}
 
 ok{lib = function()
   Lib.sort{10,20,5,1,30}

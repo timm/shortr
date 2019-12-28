@@ -174,7 +174,9 @@ some old data.</p>
     <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">row</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="kr">do</span> 
       <span class="n">Tbl</span><span class="p">.</span><span class="n">row</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">row</span><span class="p">.</span><span class="n">cells</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span>
   <span class="kr">return</span> <span class="n">i</span>
-<span class="kr">end</span></pre></div>
+<span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nc">Tbl</span><span class="p">.</span><span class="nf">class</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">row</span><span class="p">)</span> <span class="kr">return</span> <span class="n">row</span><span class="p">.</span><span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="p">.</span><span class="n">cols</span><span class="p">.</span><span class="n">y</span><span class="p">.</span><span class="n">klass</span><span class="p">]</span> <span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>

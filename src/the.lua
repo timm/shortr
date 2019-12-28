@@ -8,6 +8,8 @@ return {
   some = { key     = function(z) return z end,
            most    = 256   },
   tree = { step    = 0.5   ,
+           minObs  = 4,
+           depth   = math.maxinteger,
            trivial = 1.05  },
   divs = { step    = 0.5    ,
            most    = 256    ,

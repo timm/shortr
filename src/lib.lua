@@ -4,8 +4,8 @@
 local THE=require("the").misc
 local Lib={}
 
-function Lib.printf(s,...)  io.write(s:format(...)) end
-function Lib.sprintf(s,...) return s:format(...) end
+function Lib.printf(s,...)  print("pf",type(s)); io.write(s:format(...)) end
+function Lib.sprintf(s,...) print("sp",type(s)); return s:format(...) end
 
 local function fillInDefaults(new, defaults)
   for k,v in pairs(defaults) do new[k] = new[k] or v end
@@ -94,7 +94,7 @@ function Lib.oo(t,pre,     seen,s,sep,keys, nums)
   if type(t) ~= "table" then return tostring(t) end
   s, sep, keys, nums = '','', {}, true
   for k, v in pairs(t) do 
-    if type(v) ~= 'function' then
+    if not (type(v) == 'function') then
       if not (type(k)=='string' and k:match("^_")) then
         nums = nums and type(k) == 'number'
         keys[#keys+1] = k  end end
@@ -102,7 +102,10 @@ function Lib.oo(t,pre,     seen,s,sep,keys, nums)
   table.sort(keys)
   for _, k in pairs(keys) do
     local v = t[k]
-    v   = type(v) == 'table' and Lib.oo(v,pre,seen) or tostring(v) 
+    if      type(v) == 'table'    then v= Lib.oo(v,pre,seen) 
+    elseif  type(v) == 'function' then v= "function"
+    else v= tostring(v) 
+    end
     if nums
     then s = s .. sep .. v
     else s = s .. sep .. tostring(k) .. '=' .. v
