@@ -8,7 +8,8 @@ local Sym  = require("sym")
 local Num  = require("num")
 local divs = require("divs2")
 local Tree = {is="Tree"}
-local o,has,same = Lib.o,Lib.has,Lib.same
+local o,has,same,push = Lib.o,Lib.has,Lib.same,Lib.push
+local map,printf = Lib.map, Lib.printf
 local splitter
 
 -- Operates over `splits`. `Num`eric and `Sym`bolic
@@ -30,9 +31,8 @@ function Tree.classify(t)   return Tree.grow(t, Sym) end
 -- To `grow` a tree, create a `new` root node.
 function Tree.grow(t,ytype,fy)
   fy = fy or function(r) return r.cells[t.cols.y.klass.pos] end
-  Lib.o(t.cols.y.klass)
   return Tree.new( {ytype=ytype, fy=fy},
-                    t.cols.x.all, t.cols.y.klass)
+                    t.cols.x.all, t.rows,t.cols.y.klass)
 end
 
 -- -----
@@ -40,12 +40,13 @@ end
 --  as a side-effect of initialization (using the `split`
 -- function).
 function Tree.new(my,cols,rows,stats,lvl,up)
+  lvl = lvl or 0
   my = has(my)(THE.tree){fx=same, fy=same, ytype=Num}
   local i = Object.new()
   i.me    = Tree
   i.stats = stats
   i._up   = up
-  i.lvl   = lvl or 0
+  i.lvl   = lvl 
   if  i.lvl  >  my.depth  then return i end
   if  #rows <= my.minObs then return i end
   local col,splits,all = splitter(cols, rows, my)
@@ -53,6 +54,7 @@ function Tree.new(my,cols,rows,stats,lvl,up)
   i.kids = splits
   for _,kid in pairs(i.kids) do
     kid.has = Tree.new(my,cols,kid.has,kid.stats, lvl+1,i) 
+    kid.what = col.txt
   end 
   return i
 end
@@ -62,19 +64,21 @@ end
 -- columns, then find the best split over all columns.
 function splitter(cols,rows, my)
   -- Split a numeric column.
-  local function splitNum(col) return divs.some(rows,my) end
+  local function splitNum(col) 
+     return  divs.some(rows,my) end
 
   -- For symbolic columns, report the variability of the
   -- y value associated with each symbolic value.
   local function splitSym(col)
     local splits={}
     for _,row in pairs(rows) do
-      local x = my.fx(row)
+      local f = my.fx
+      local x = f(row)
       if x ~= THE.char.skip then
         splits[x] = splits[x] or {
                         lo=x, hi=x, 
                         has=  {}, 
-                        use =  function(z) return my.fx(z)==x end,
+                        use =  function(z) return f(z)==x end,
                         show=  string.format("%s",x),
                         stats= my.ytype.new{key=my.fy}} 
         my.ytype.add(splits[x].stats, row)
@@ -88,7 +92,7 @@ function splitter(cols,rows, my)
     my.fx = function(row) return row.cells[col.pos] end
     local f = col.me==Sym and splitSym or splitNum
     local splits= f(col)
-    local n,xpect=0,0
+    local xpect,n = 0, 0.0000000001
     for _,split1 in pairs(splits) do
       n = n + split1.stats.n
       xpect = xpect + 
@@ -102,31 +106,26 @@ function splitter(cols,rows, my)
   local all={}
   for _,col1 in pairs(cols) do
     local xpect, splits1 = splitter1(col1)
-    all[col] = xpect -- hook 4 future work (feature selection)
+    all[col1] = xpect -- hook 4 future work (feature selection)
     if not col then
       min,col,splits = xpect,col1,splits1
     else
-      if xpect*my.trvial < min then
+      if xpect*my.trivial < min then
         min,col,splits = xpect, col1,splits1 end end end
   return col,splits,all
 end
 
 -- -----
 -- Print a tree
-function Tree.show(i,pre)
-  pre = pre or ""
-  printf("%s: %s : ", pre,i.stats.n)
-  local kids = i.kids or {}
-  if   #kids == 0 
-  then 
-    print(i.stats.me.mid(i.stats), i.stats.me.var(i.stats))
-    --printf("%5.2f %5.2f\n", i.me.mid(i.stats), i.me.var(i.stats))
-  end   
-  for _,kid in pairs(kids) do 
-    print(kid.show) 
-    Tree.show(k,pre .. "|   ") end
+function Tree.show(i,lvl)
+  lvl = lvl or 0
+  pre = string.rep("|  ",lvl)
+  for _,kid in pairs(i.kids or {}) do 
+    print(pre.. kid.what .. " " .. kid.show) 
+    Tree.show(kid.has,lvl+1) end
 end
 
 -- -----
 -- And finally...
 return Tree
+

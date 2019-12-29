@@ -4,8 +4,8 @@
 local THE=require("the").misc
 local Lib={}
 
-function Lib.printf(s,...)  print("pf",type(s)); io.write(s:format(...)) end
-function Lib.sprintf(s,...) print("sp",type(s)); return s:format(...) end
+function Lib.printf(s,...)  io.write(s:format(...)) end
+function Lib.sprintf(s,...) return s:format(...) end
 
 local function fillInDefaults(new, defaults)
   for k,v in pairs(defaults) do new[k] = new[k] or v end

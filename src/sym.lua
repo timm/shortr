@@ -2,11 +2,18 @@
 --------- --------- --------- --------- --------- --------- 
 
 local Column = require("column")
+local Lib   = require("lib")
 local THE   = require("the")
 local Sym   = {is="Sym"}
 
-function Sym.var(i) return i.sd end
+function Sym.var(i) return Sym.ent(i) end
 function Sym.mid(i) return i.mode end
+function Sym.summary(i) 
+  return Lib.sprintf("%s %5.2f",
+          Sym.mid(i), 
+          Sym.var(i))
+end
+
 function Sym.xpect(i,j,  n)  
   n = i.n + j.n +0.0001
   return i.n/n * Sym.ent(i) + j.n/n * Sym.ent(j) 
@@ -34,7 +41,7 @@ end
 -- Bulk addition to a `Num`.
 function Sym.all(a,key,lo,hi,    i)
   i = Sym.new{key=key}
-  for j = lo or 1, hi or #lst do Sym.add(i, a[j]) end
+  for j = lo or 1, hi or #a do Sym.add(i, a[j]) end
   return i
 end
 
@@ -49,7 +56,7 @@ function Sym.add(i,x,   d)
   if d > i.most then i.most, i.mode = d, x end
 end
 
-function Sym.dec(i,x,   d)
+function Sym.sub(i,x,   d)
   if x=="?" then return x end
   x = i.key(x)
   i.ent= nil

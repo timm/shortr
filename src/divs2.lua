@@ -48,8 +48,24 @@ local Sym  = require("sym")
 local r,copy,same,has = Lib.r, Lib.copy,Lib.same,Lib.has
 local map,o = Lib.map, Lib.o
 
+local function show(a,b,   as,bs, abs) 
+  local f=string.format
+  bs=  math.floor(b)==b and "%s" or "%5.2f"
+  as=  math.floor(a)==a and "%s" or "%5.2f"
+  if a == math.mininteger then 
+     bs="<="..bs 
+     return f(bs,b)
+  end
+  if b == math.maxinteger then 
+     as=">="..as 
+     return f(as,a)
+  end
+  return f("(" .. as .. ".." .. bs .. "]", a,b)
+end
+
 local function all(a, my,     splits) 
-  my = has(my)(THE.divs){xtype=Num, ytype=Num, fx=same, fy=same}
+  my = has(my)(THE.divs){xtype=Num, ytype=Num, 
+                         fx=same, fy=same}
    -- A good break does *not* 
   -- (a) fall `epsilon` of  `start` or `stop`;
   -- (b) have the same number before and after each break;
@@ -103,9 +119,10 @@ local function all(a, my,     splits)
                        or math.mininteger,
                    has={},
                    stats=yall1}
-      here.use = function(r,  x) x = here.fx(r)
+      local f = my.fx
+      here.use = function(r,  x) x = f(r)
                      return here.lo < x and x <= here.hi end
-      here.show= string.format("(%s..%s]", here.lo, here.hi)
+      here.show= show(here.lo, here.hi)
       for j=lo,hi do here.has[#(here.has)+1] = row end
       splits[#splits+1] = here
     end
@@ -142,12 +159,14 @@ local function complete(a, my, splits)
     r.has ={}
   end
   for _,one in pairs(a) do
-    for _,r in pairs(splits) do
-      if r.use(one) then
-        r.has[#(r.has) + 1] = one
-        my.ytype.add(r.stats, one) 
-        break
-        end end end
+    local x= my.fx(one)
+    if x ~= THE.char.skip then
+      for _,r in pairs(splits) do
+        if r.use(one) then
+          r.has[#(r.has) + 1] = one
+          my.ytype.add(r.stats, one) 
+          break
+          end end end end
   return splits
 end
 

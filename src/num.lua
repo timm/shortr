@@ -13,6 +13,13 @@ local Num   = {is="Num"}
 
 function Num.var(i) return i.sd end
 function Num.mid(i) return i.mu end
+function Num.summary(i) 
+  local m = Num.mid(i)
+  local ms = math.floor(m) == m and "%s" or "%5.2f"
+  return Lib.sprintf(ms .. " %5.2f",
+            m,
+            Num.var(i))
+end
 
 function Num.xpect(i,j,  n)  
   n = i.n + j.n +0.0001
