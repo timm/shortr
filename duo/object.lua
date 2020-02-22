@@ -4,13 +4,12 @@
 local Object=require("30log")("Object")
 
 function Object:init(t) 
-  self:inits(t or {})
-  return self
+  for k,v in self:has()      do self[k] = v end
+  for k,v in pairs(t or {})  do self[k] = v end
+  return self:inits()
 end
 
-function Object:inits(t) 
-  return self 
-end
+function Object:has(t) return {} end
 
 function Object.__tostring(self)
   local s, sep, lst, t = "", "", {}, self or {}

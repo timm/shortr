@@ -2,29 +2,32 @@
 --------- --------- --------- --------- --------- ---------
 
 local Ranges=require("30log")("Object")
+function Range:has() return {
+  lst     = {},
+  cohen   = 0.2, 
+  jump    = 0.5, 
+  trivial = 1.01,
+  epsilon = nil,
+  fx      = Num, 
+  fy      = Num, 
+  x       = function(a) return a[1] end,
+  y       = function(a) return a[#a] end,
+  sort    = function (a,b) 
+              return self.x(a) < self.x(b) end}
+end
 
-function Range:inits(t) 
-  self.lst   = t.lst
-  self.fx    = t.fx
-  self.fy    = t.fy
-  self.xs    = t.fx()
-  self.ys    = t.fx()
-  self.cohen = t.cohen or 0.2
-  self.jump  = t.jump  or 0.5
-  self.jump  = #(self.lst)^(t.jump)
-  self.x     = t.x   or function (a) return a[1] end
-  self.y     = t.y   or function (a) return a[#a] end
-  table.sort(self.lst, (t.sort or 
-                         function (a,b) 
-		           return self.x(a) < self.x(b) end))
+function Range:inits() 
+  table.sort(self.lst, self.sort)
   self.first = self.x( self.lst[1] )
   self.last  = self.x( self.lst[ #(self.lst) ] )
+  self.jump  = #(self.lst)^(t.jump)
+  self.xs    = self.fx()
+  self.ys    = self.fy()
   for _,v in pairs(self.lst) do
     xs:add( self.x(v) )
     ys:add( self.y(v) )
   end
   self.epsilon = t.epsilon or self.cohen * ys:var()
-  self.trivial = t.trival  or 1.01
   return self:div(1, #(self.lst), xs, ys, {})
 end
 
@@ -47,7 +50,7 @@ function Range:div(lo,hi, xrhs,yrhs,cuts,
        self.epsilon < xnext      - self.first and
        self.epsilon < xrhs:mid() - xlhs:mid() and
        self.trivial < xrhs:mid() / xlhs:mid() and
-       self.trivial < min / ylhs:xpect(yrhs)
+       self.trivial < min        / ylhs:xpect(yrhs)
     then
        cut, min     = i, ylhs:xpect(yrhs)
        xrhs1, xlhs1 = copy(xrhs), copy(xlhs)
