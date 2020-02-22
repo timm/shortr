@@ -1,4 +1,4 @@
--- vim: ts=2 sw=2 sts=2 expandtab:cindent:
+-- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
 local Thing=require("object"):extend()
@@ -10,23 +10,23 @@ function Thing:inits(t)
   return self
 end
 
-function Thing:__add(x)
+function Thing:add(x)
   if x=="?" then return x end
   self.n = self.n + 1
-  self:add(x)
+  self:add1(x)
   return self
 end
 
-function Thing:__sub(x)
+function Thing:sub(x)
   if x=="?"     then return x end
   if self.n < 1 then return x end
   self.n = self.n - 1
-  self:sub(x)
+  self:sub1(x)
   return self
 end
 
 function Thing:adds(lst)
-  for _,v in pairs(lst) do self:__add(v) end
+  for _,v in pairs(lst) do self:add(v) end
   return self
 end  
 

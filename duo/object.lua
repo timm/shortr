@@ -1,4 +1,4 @@
--- vim: ts=2 sw=2 sts=2 expandtab:cindent:
+-- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
 local Object=require("30log")("Object")

@@ -1,4 +1,4 @@
--- vim: ts=2 sw=2 sts=2 expandtab:cindent:paste:
+-- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
 local Sym = require("thing"):extend()
@@ -14,15 +14,14 @@ end
 function Sym:mid() return self.mu    end
 function Sym:var() return self.ent() end
 
-function Sym:add(x)
-function Sym:add(x)
+function Sym:add1(x)
   self.ent= nil
   local d = (self.counts[x] or 0) + 1
   self.counts[x] = d
   if d > self.most then self.most, self.mode = d, x end
 end
 
-function Sym:sub(x)
+function Sym:sub1(x)
   self.ent = nil
   if self.n > 0 then
     self.n = self.n - 1

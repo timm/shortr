@@ -1,4 +1,4 @@
--- vim: ts=2 sw=2 sts=2 expandtab:cindent:
+-- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
 local Num=require("thing"):extend()
@@ -14,7 +14,7 @@ end
 function Num:mid() return self.mu end
 function Num:var() return self.sd end
 
-function Num:add(x) 
+function Num:add1(x) 
   local d       = x - self.mu
   self.mu = self.mu + d/self.n
   self.m2 = self.m2 + d*(x - self.mu)
@@ -23,7 +23,7 @@ function Num:add(x)
   if x < self.lo then self.lo = x end
 end
 
-function Num:sub(x)
+function Num:sub1(x)
   local d = x - self.mu
   self.mu = self.mu - d/i.n
   self.m2 = self.m2 - d*(x- self.mu)
