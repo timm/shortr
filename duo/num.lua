@@ -1,14 +1,13 @@
 -- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
-local Num=require("thing"):extend()
+local Num = require("thing"):extend()
 
-function Num:inits(t)
-  Num.super.inits(self,t)
-  self.mu, self.m2, self.sd= 0,0,0
-  self.lo  = math.maxinteger
-  self.hi  = math.mininteger
-  return self
+function Num:has() return {
+  pos=0, txt="",
+  mu=0, m2=0, n=0, sd=0,
+  lo= math.maxinteger,
+  hi= math.mininteger}
 end
 
 function Num:mid() return self.mu end

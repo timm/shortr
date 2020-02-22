@@ -1,14 +1,7 @@
 -- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
-local Thing=require("object"):extend()
-
-function Thing:inits(t)
-  self.n   = 0
-  self.pos = t.pos or 0
-  self.txt = t.txt or ""
-  return self
-end
+local Thing = require("object"):extend()
 
 function Thing:add(x)
   if x=="?" then return x end

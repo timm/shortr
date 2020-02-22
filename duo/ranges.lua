@@ -1,6 +1,8 @@
 -- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
+local copy=require("lib").copy
+
 local Ranges=require("30log")("Object")
 function Range:has() return {
   lst     = {},
@@ -10,19 +12,18 @@ function Range:has() return {
   epsilon = nil,
   fx      = Num, 
   fy      = Num, 
-  x       = function(a) return a[1] end,
+  x       = function(a) return a[1]  end,
   y       = function(a) return a[#a] end,
   sort    = function (a,b) 
               return self.x(a) < self.x(b) end}
 end
 
-function Range:inits() 
+function Range:setup() 
   table.sort(self.lst, self.sort)
-  self.first = self.x( self.lst[1] )
-  self.last  = self.x( self.lst[ #(self.lst) ] )
-  self.jump  = #(self.lst)^(t.jump)
-  self.xs    = self.fx()
-  self.ys    = self.fy()
+  self.first  = self.x( self.lst[1] )
+  self.last   = self.x( self.lst[ #(self.lst) ] )
+  self.jump   = #(self.lst)^(t.jump)
+  local xs,ys = self.fx(), self.fy()
   for _,v in pairs(self.lst) do
     xs:add( self.x(v) )
     ys:add( self.y(v) )
@@ -35,9 +36,9 @@ function Range:div(lo,hi, xrhs,yrhs,cuts,
                    yrhs1, xlhs1, ylsh1, cut)
   local min, xlhs, ylhs = yrhs:var(), self.fx(), self.fy()
   for i=lo,hi-1 do
+    local y     = self.y( self.lst[i]   )
     local x     = self.x( self.lst[i]   )
     local xnext = self.x( self.lst[i+1] )
-    local y     = self.y( self.lst[i]   )
     xlhs:add(x)
     xrhs:sub(x)
     ylhs:add(y)

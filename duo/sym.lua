@@ -1,14 +1,15 @@
 -- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
-local Sym = require("thing"):extend()
+local list = require("lib").list
+local Sym  = require("thing"):extend()
 
-function Sym:inits(t)
-  Sym.super.inits(self,t)
-  self.counts = {}
-  self.most   = 0
-  self.mode   = nil
-  self.ent    = nil
+function Sym:has(t) return {
+  counts = list(),
+  most   = 0,
+  mode   = '', 
+  ent    = 0,
+  n=0, pos=0, txt=0, w=1 }
 end
 
 function Sym:mid() return self.mu    end
