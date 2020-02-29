@@ -1,10 +1,9 @@
 -- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
-local Num = require("thing"):extend{"NN"}
+local Num = require("thing"):extend("Num")
 
-function Num:has() 
-  return {
+function Num:has() return {
   pos=0, txt="",
   mu=0, m2=0, n=0, sd=0,
   lo= math.maxinteger,

@@ -2,11 +2,9 @@
 --------- --------- --------- --------- --------- ---------
 
 local list = require("lib").list
-local Sym  = require("thing"):extend()
+local Sym  = require("thing"):extend("Sym")
 
-function Sym:has(t) 
-  self.class.name = "Sym"
-  return {
+function Sym:has(t) return {
   counts = list(),
   most   = 0,
   mode   = '', 

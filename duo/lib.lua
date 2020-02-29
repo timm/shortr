@@ -27,10 +27,6 @@ local function is_array(t)
   return true
 end
 
-local function string:fmt(x)
-  return string.format("%%%s.%sf",self)
-end
-
 function Lib.oo(x,t)
   local pre      = t.pre or ""
   local width    = t.width or 5

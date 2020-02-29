@@ -1,7 +1,7 @@
 -- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
-local Thing = require("object"):extend()
+local Thing = require("object"):extend("Thing")
 
 function Thing:add(x)
   if x=="?" then return x end

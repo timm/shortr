@@ -1,14 +1,12 @@
 -- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
-local Ranges= require("thing"):extend("r")
+local Ranges= require("thing"):extend("Ranges")
 local copy  = require("lib").copy
 local Num   = require("num")
 local Sym   = require("sym")
 
-function Ranges:has() 
-  self.class.name="Ranges"
-  return {
+function Ranges:has() return {
   lst     = {},
   cuts    = {},
   cohen   = 0.2, 
