@@ -1,15 +1,20 @@
 -- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
-local copy=require("lib").copy
+local Ranges= require("thing"):extend("r")
+local copy  = require("lib").copy
+local Num   = require("num")
+local Sym   = require("sym")
 
-local Ranges=require("30log")("Object")
-function Range:has() return {
+function Ranges:has() 
+  self.class.name="Ranges"
+  return {
   lst     = {},
+  cuts    = {},
   cohen   = 0.2, 
   jump    = 0.5, 
   trivial = 1.01,
-  epsilon = nil,
+  epsilon = 0,
   fx      = Num, 
   fy      = Num, 
   x       = function(a) return a[1]  end,
@@ -18,21 +23,23 @@ function Range:has() return {
               return self.x(a) < self.x(b) end}
 end
 
-function Range:setup() 
+function Ranges:make() 
   table.sort(self.lst, self.sort)
   self.first  = self.x( self.lst[1] )
   self.last   = self.x( self.lst[ #(self.lst) ] )
-  self.jump   = #(self.lst)^(t.jump)
+  self.jump   = (#self.lst)^self.jump
   local xs,ys = self.fx(), self.fy()
   for _,v in pairs(self.lst) do
     xs:add( self.x(v) )
     ys:add( self.y(v) )
   end
-  self.epsilon = t.epsilon or self.cohen * ys:var()
-  return self:div(1, #(self.lst), xs, ys, {})
+  self.epsilon = self.epsilon > 0 and self.epsilon 
+                 or self.cohen * ys:var()
+  self:div(1, #(self.lst), xs, ys)
+  return self
 end
 
-function Range:div(lo,hi, xrhs,yrhs,cuts,   
+function Ranges:div(lo,hi, xrhs,yrhs,   
                    yrhs1, xlhs1, ylsh1, cut)
   local min, xlhs, ylhs = yrhs:var(), self.fx(), self.fy()
   for i=lo,hi-1 do
@@ -59,11 +66,10 @@ function Range:div(lo,hi, xrhs,yrhs,cuts,
     end 
   end
   if    cut 
-  then  div(lo,    cut, xrhs1, yrhs1, cuts)
-        div(cut+1, hi,  xlhs1, ylhs1, cuts)
-  else  cuts[#(cuts)+1] = self.x( self.lst[lo] )
+  then  div(lo,    cut, xrhs1, yrhs1)
+        div(cut+1, hi,  xlhs1, ylhs1)
+  else  self.cuts[#(self.cuts)+1] = self.x( self.lst[lo] )
   end
-  return cuts
 end
 
-return Range
+return Ranges

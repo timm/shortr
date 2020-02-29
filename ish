@@ -176,12 +176,16 @@ vimrc() { cat<<-'EOF'
 	Plugin 'nequo/vim-allomancer'
 	Plugin 'nanotech/jellybeans.vim'
 	Plugin 'vimwiki/vimwiki'
+	Plugin 'jpalardy/vim-slime'
         " All of your Plugins must be added before the following line
 	call vundle#end()            " required
 	filetype plugin indent on    " required
 	" To ignore plugin indent changes, instead use:
 	"filetype plugin on
 	colorscheme jellybeans
+	let g:slime_target = "tmux"
+	let g:slime_paste_file = "$HOME/tmp/ish/.slime_paste"
+	let g:slime_default_config = {"socket_name": "default", "target_pane": "{right-of}"}
 	map <C-o> :NERDTreeToggle<CR>
 	autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 	hi Normal guibg=NONE ctermbg=NONE
@@ -286,7 +290,7 @@ bashrc() { cat<<-'EOF'
 AFTER=1
 #brew install bsdgames-osx
 
-for c in lua pycco git tmux vim mc tree cmatrix rain; do
+for c in lua pycco git tmux vim mc tree cmatrix rain rlwrap sbcl; do
   if [ -z "$(which $c)" ]; then
     AFTER=""
     echo "#E> missing: $c"

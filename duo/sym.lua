@@ -4,7 +4,9 @@
 local list = require("lib").list
 local Sym  = require("thing"):extend()
 
-function Sym:has(t) return {
+function Sym:has(t) 
+  self.class.name = "Sym"
+  return {
   counts = list(),
   most   = 0,
   mode   = '', 
@@ -13,7 +15,7 @@ function Sym:has(t) return {
 end
 
 function Sym:mid() return self.mu    end
-function Sym:var() return self.ent() end
+function Sym:var() return self:ent0() end
 
 function Sym:add1(x)
   self.ent= nil
@@ -29,14 +31,13 @@ function Sym:sub1(x)
     self.counts[x] = self.counts[x] - 1 end
 end
 
-function Sym.ent0(i)
-  if i.ent == nil then
-    i.ent = 0
-    for k,v in pairs(i.counts) do
-      local p = v/i.n
-      i.ent = i.ent - p*math.log(p,2) end end
-  return i.ent
+function Sym:ent0(i)
+  if self.ent == nil then
+    self.ent = 0
+    for k,v in pairs(self.counts) do
+      local p = v/self.n
+      self.ent = self.ent - p*math.log(p,2) end end
+  return self.ent
 end
-
 
 return Sym

@@ -1,9 +1,10 @@
 -- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
-local Num = require("thing"):extend()
+local Num = require("thing"):extend{"NN"}
 
-function Num:has() return {
+function Num:has() 
+  return {
   pos=0, txt="",
   mu=0, m2=0, n=0, sd=0,
   lo= math.maxinteger,
@@ -24,7 +25,7 @@ end
 
 function Num:sub1(x)
   local d = x - self.mu
-  self.mu = self.mu - d/i.n
+  self.mu = self.mu - d/self.n
   self.m2 = self.m2 - d*(x- self.mu)
   self.sd = self:sd0()
 end
