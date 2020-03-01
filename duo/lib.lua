@@ -22,38 +22,40 @@ local function is_array(t)
   local i = 0
   for _ in pairs(t) do
     i = i + 1
-    if t[i] == nil then return false end
-  end
+    if t[i] == nil then return false end end
   return true
 end
 
-function Lib.oo(x,t)
-  local pre      = t.pre or ""
-  local width    = t.width or 5
-  local decimals = t.decimals or 3
-  local fmt      = t.fmt or string.format("%%%s.%sf",width,decimals)
-  local trim     = function (s) return s:match "^%s*(.-)%s*$" end
-  if type(x) == 'function' then return 'FUN' end
-  if type(x) == 'number'   then 
-     local s1=trim(string.format(fmt,x))
-     local s2=trim(string.format("%s",x))
-     return #s2 <= #s1 and s2 or s1
-  end
-  if type(x) ~= 'table'    then return tostring(x) end
-  local sep,s="",(pre .. "{")
-  t.pre=""
-  if is_array(x) then
-    for k,v in pairs(x) do
-      s   = s .. sep ..  Lib.oo(v,t)
-      sep = ", "
-    end 
-  else
-    for k,v in pairs(x) do
-      s   = s .. sep .. tostring(k) .. ":" .. Lib.oo(v,t)
-      sep = ", "
+function Lib.oo(t,     seen,s,sep,keys, nums)
+  seen = seen or {}
+  if seen[t] then return "..." end
+  local pre=pre or (t.class and t.class.name or "")
+  seen[t] = true
+  if type(t) ~= "table" then return tostring(t) end
+  s, sep, keys, nums = '','', {}, true
+  for k, v in pairs(t) do 
+    if k ~= "class" then
+    if k ~= "super" then
+    if not (type(v) == 'function') then
+				if not (type(k)=='string' and k:match("^_")) then
+          --if not v.class then
+						nums = nums and type(k) == 'number'
+						keys[#keys+1] = k  end end end end
+  end 
+  table.sort(keys)
+  for _, k in pairs(keys) do
+    local v = t[k]
+    if      type(v) == 'table'    then v= Lib.oo(v, seen) 
+    elseif  type(v) == 'function' then v= "function"
+    else v= tostring(v) 
     end
-  end
-  return s .."}"
+    if nums
+    then s = s .. sep .. v
+    else s = s .. sep .. tostring(k) .. '=' .. v
+    end
+    sep = ', ' 
+  end 
+  return tostring(pre) .. '{' .. s ..'}'
 end
 
 return Lib

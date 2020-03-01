@@ -5,7 +5,8 @@ local list = require("lib").list
 local Sym  = require("thing"):extend("Sym")
 
 function Sym:has(t) return {
-  counts = list(),
+  w=1,
+  counts = {},
   most   = 0,
   mode   = '', 
   ent    = 0,
