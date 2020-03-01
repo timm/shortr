@@ -1,8 +1,9 @@
 -- vim: ts=2 sw=2 sts=2 et:
 --------- --------- --------- --------- --------- ---------
 
-local Data = require("object"):extend("Data")
-local csv  = require("csv")
+local Data    = require("object"):extend("Data")
+local Columns = require("columns")
+local csv     = require("csv")
 
 function Data:has() return {
   rows   = {},  
@@ -18,8 +19,10 @@ function Data:make()
   end
 end                                                                                                                         
 function Data:add(a) 
-  if #self.col > 0 then
-    ifs  #self.cols.all == 0 and self:header(a) or self:row(a)
+  if self.cols and self.cols.all then
+    self:row(a) 
+  else
+    self:header(a) end
 end
 
 function Data:header(a)
