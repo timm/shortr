@@ -24,7 +24,7 @@ local function atoms(str,  a)
   return a
 end
 
-local function csv(file,      todo,line,first)
+local function (file,      todo,line,first)
   if file then io.input(file) else stream=io.input() end
   first, line =  true, io.read()
   return function (    a)
@@ -37,5 +37,3 @@ local function csv(file,      todo,line,first)
     return a
   end
 end
-
-return csv

@@ -37,10 +37,9 @@ function Lib.oo(t,     seen,s,sep,keys, nums)
     if k ~= "class" then
     if k ~= "super" then
     if not (type(v) == 'function') then
-				if not (type(k)=='string' and k:match("^_")) then
-          --if not v.class then
-						nums = nums and type(k) == 'number'
-						keys[#keys+1] = k  end end end end
+        if not (type(k)=='string' and k:match("^_")) then
+            nums = nums and type(k) == 'number'
+            keys[#keys+1] = k  end end end end
   end 
   table.sort(keys)
   for _, k in pairs(keys) do
