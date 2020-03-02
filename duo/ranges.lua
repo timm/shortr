@@ -65,7 +65,9 @@ function Ranges:div(lo,hi, xrhs,yrhs,
   if    cut 
   then  div(lo,    cut, xrhs1, yrhs1)
         div(cut+1, hi,  xlhs1, ylhs1)
-  else  self.cuts[#(self.cuts)+1] = self.x( self.lst[lo] )
+  else  for i=lo,hi do
+          self.cuts[#(self.cuts)+1] = self.x( self.lst[lo] )
+        end
   end
 end
 
