@@ -220,7 +220,7 @@ bashrc() { cat<<-'EOF'
 	  fi
 	}
 	htmls() {
-	    ( cd $root/src
+	    ( cd $root/duo
               pycco -d ../docs  *.lua
               patches
             )

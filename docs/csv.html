@@ -57,89 +57,39 @@ csv.lua</h1></div>
       <hr>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span></span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-1'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-1'>#</a>
-      </div>
-      <p>Returns a function that reads a csv file.  Coerce string 
-to numbers (or strings) as appropriate. If a line one 
-word holds the skip character <code>?</code>, then ignore that column.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-2'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-2'>#</a>
-      </div>
-      <hr />
-<p>The <code>usable</code> function works out what <code>todo</code> with the columns
-and <code>use</code> applies that <code>todo</code> list.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span> <span class="kr">function</span> <span class="nf">usable</span><span class="p">(</span><span class="n">a</span><span class="p">,</span>    <span class="n">b</span><span class="p">,</span><span class="n">todo</span><span class="p">)</span>
+      <div class="highlight"><pre><span></span><span class="kd">local</span> <span class="kr">function</span> <span class="nf">usable</span><span class="p">(</span><span class="n">a</span><span class="p">,</span>    <span class="n">b</span><span class="p">,</span><span class="n">todo</span><span class="p">)</span>
   <span class="n">b</span><span class="p">,</span><span class="n">todo</span> <span class="o">=</span> <span class="p">{},{}</span>
   <span class="kr">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">do</span>
-    <span class="kr">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;%?&#39;</span><span class="p">)</span> <span class="kr">then</span> 
-      <span class="n">b</span><span class="p">[</span><span class="o">#</span><span class="n">b</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span><span class="p">;</span> <span class="n">todo</span><span class="p">[</span><span class="o">#</span><span class="n">todo</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">v</span> <span class="kr">end</span> <span class="kr">end</span> 
+    <span class="kr">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;%?&#39;</span><span class="p">)</span> <span class="kr">then</span>
+      <span class="n">b</span><span class="p">[</span><span class="o">#</span><span class="n">b</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+      <span class="n">todo</span><span class="p">[</span><span class="o">#</span><span class="n">todo</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">v</span> <span class="kr">end</span> <span class="kr">end</span>
   <span class="kr">return</span> <span class="n">b</span><span class="p">,</span><span class="n">todo</span>
 <span class="kr">end</span>
 
 <span class="kd">local</span> <span class="kr">function</span> <span class="nf">use</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">todo</span><span class="p">,</span>     <span class="n">b</span><span class="p">)</span>
   <span class="n">b</span> <span class="o">=</span> <span class="p">{}</span>
-  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">v</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span> <span class="kr">do</span> <span class="n">b</span><span class="p">[</span><span class="o">#</span><span class="n">b</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="kr">end</span> 
+  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">v</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span> <span class="kr">do</span> <span class="n">b</span><span class="p">[</span><span class="o">#</span><span class="n">b</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="kr">end</span>
   <span class="kr">return</span> <span class="n">b</span>
-<span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-3'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
-      </div>
-      <hr />
-<p>Split a line on comma, trim leading/training whitespace, 
-coerce strings to numbers (or strings) as appropriate.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span> <span class="kr">function</span> <span class="nf">atoms</span><span class="p">(</span><span class="n">str</span><span class="p">,</span>  <span class="n">a</span><span class="p">)</span>
+<span class="kr">end</span>
+
+<span class="kd">local</span> <span class="kr">function</span> <span class="nf">atoms</span><span class="p">(</span><span class="n">str</span><span class="p">,</span>  <span class="n">a</span><span class="p">)</span>
   <span class="kd">local</span> <span class="kr">function</span> <span class="nf">trim</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="kr">return</span> <span class="n">s</span><span class="p">:</span><span class="n">gsub</span><span class="p">(</span><span class="s2">&quot;^%s*(.-)%s*$&quot;</span><span class="p">,</span><span class="s2">&quot;%1&quot;</span><span class="p">)</span> <span class="kr">end</span>
   <span class="kd">local</span> <span class="kr">function</span> <span class="nf">atom</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="kr">return</span> <span class="nb">tonumber</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">or</span> <span class="n">s</span> <span class="kr">end</span>
   <span class="n">a</span> <span class="o">=</span> <span class="p">{}</span>
   <span class="kr">for</span> <span class="n">x</span> <span class="kr">in</span> <span class="n">str</span><span class="p">:</span><span class="n">gmatch</span><span class="p">(</span><span class="s1">&#39;([^,]+)&#39;</span><span class="p">)</span> <span class="kr">do</span> <span class="n">a</span><span class="p">[</span><span class="o">#</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom</span><span class="p">(</span><span class="n">trim</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="kr">end</span>
   <span class="kr">return</span> <span class="n">a</span>
-<span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-4'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
-      </div>
-      <hr />
-<p>Finally, return the iterator that handles all the above.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="kr">return</span> <span class="kr">function</span> <span class="p">(</span><span class="n">file</span><span class="p">,</span>      <span class="n">todo</span><span class="p">,</span><span class="n">line</span><span class="p">,</span><span class="n">first</span><span class="p">)</span>
+<span class="kr">end</span>
+
+<span class="kd">local</span> <span class="kr">function</span> <span class="p">(</span><span class="n">file</span><span class="p">,</span>      <span class="n">todo</span><span class="p">,</span><span class="n">line</span><span class="p">,</span><span class="n">first</span><span class="p">)</span>
   <span class="kr">if</span> <span class="n">file</span> <span class="kr">then</span> <span class="nb">io.input</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="kr">else</span> <span class="n">stream</span><span class="o">=</span><span class="nb">io.input</span><span class="p">()</span> <span class="kr">end</span>
   <span class="n">first</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span>  <span class="kc">true</span><span class="p">,</span> <span class="nb">io.read</span><span class="p">()</span>
   <span class="kr">return</span> <span class="kr">function</span> <span class="p">(</span>    <span class="n">a</span><span class="p">)</span>
-    <span class="kr">if</span> <span class="n">line</span> <span class="kr">then</span> 
+    <span class="kr">if</span> <span class="n">line</span> <span class="kr">then</span>
       <span class="n">a</span> <span class="o">=</span> <span class="n">atoms</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
       <span class="kr">if</span> <span class="n">first</span> <span class="kr">then</span> <span class="n">todo</span><span class="p">,</span><span class="n">a</span> <span class="o">=</span> <span class="n">usable</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="kr">else</span> <span class="n">a</span> <span class="o">=</span> <span class="n">use</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">todo</span><span class="p">)</span> <span class="kr">end</span>
       <span class="n">first</span><span class="p">,</span><span class="n">line</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span><span class="nb">io.read</span><span class="p">()</span>
     <span class="kr">else</span>
-      <span class="kr">if</span> <span class="n">stream</span> <span class="kr">then</span> <span class="nb">io.close</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span> 
+      <span class="kr">if</span> <span class="n">stream</span> <span class="kr">then</span> <span class="nb">io.close</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span>
     <span class="kr">return</span> <span class="n">a</span>
   <span class="kr">end</span>
 <span class="kr">end</span>

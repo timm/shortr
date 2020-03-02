@@ -57,131 +57,45 @@ sym.lua</h1></div>
       <hr>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span></span><span class="kd">local</span> <span class="n">Column</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;column&quot;</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">THE</span>   <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">Sym</span>   <span class="o">=</span> <span class="p">{</span><span class="n">is</span><span class="o">=</span><span class="s2">&quot;Sym&quot;</span><span class="p">}</span>
+      <div class="highlight"><pre><span></span><span class="kd">local</span> <span class="n">list</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;lib&quot;</span><span class="p">).</span><span class="n">list</span>
+<span class="kd">local</span> <span class="n">Sym</span>  <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;thing&quot;</span><span class="p">):</span><span class="n">extend</span><span class="p">(</span><span class="s2">&quot;Sym&quot;</span><span class="p">)</span>
 
-<span class="kr">function</span> <span class="nc">Sym</span><span class="p">.</span><span class="nf">var</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="kr">return</span> <span class="n">i</span><span class="p">.</span><span class="n">sd</span> <span class="kr">end</span>
-<span class="kr">function</span> <span class="nc">Sym</span><span class="p">.</span><span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="kr">return</span> <span class="n">i</span><span class="p">.</span><span class="n">mode</span> <span class="kr">end</span>
-<span class="kr">function</span> <span class="nc">Sym</span><span class="p">.</span><span class="nf">xpect</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span>  <span class="n">n</span><span class="p">)</span>  
-  <span class="n">n</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span> <span class="n">j</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span><span class="mf">0.0001</span>
-  <span class="kr">return</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">Sym</span><span class="p">.</span><span class="n">ent</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="n">j</span><span class="p">.</span><span class="n">n</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">Sym</span><span class="p">.</span><span class="n">ent</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> 
+<span class="kr">function</span> <span class="nc">Sym</span><span class="p">:</span><span class="nf">has</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="kr">return</span> <span class="p">{</span>
+  <span class="n">w</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+  <span class="n">counts</span> <span class="o">=</span> <span class="p">{},</span>
+  <span class="n">most</span>   <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="n">mode</span>   <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> 
+  <span class="n">ent</span>    <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">1</span> <span class="p">}</span>
 <span class="kr">end</span>
 
-<span class="kr">function</span> <span class="nc">Sym</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">i</span>  <span class="o">=</span> <span class="n">Column</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">me</span>     <span class="o">=</span> <span class="n">Sym</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">counts</span> <span class="o">=</span> <span class="p">{}</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">most</span>   <span class="o">=</span> <span class="mi">0</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">mode</span>   <span class="o">=</span> <span class="kc">nil</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">ent</span>   <span class="o">=</span> <span class="kc">nil</span>
-  <span class="kr">return</span> <span class="n">i</span>
+<span class="kr">function</span> <span class="nc">Sym</span><span class="p">:</span><span class="nf">mid</span><span class="p">()</span> <span class="kr">return</span> <span class="n">self</span><span class="p">.</span><span class="n">mu</span>    <span class="kr">end</span>
+<span class="kr">function</span> <span class="nc">Sym</span><span class="p">:</span><span class="nf">var</span><span class="p">()</span> <span class="kr">return</span> <span class="n">self</span><span class="p">:</span><span class="n">ent0</span><span class="p">()</span> <span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nc">Sym</span><span class="p">:</span><span class="nf">add1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">self</span><span class="p">.</span><span class="n">ent</span><span class="o">=</span> <span class="kc">nil</span>
+  <span class="kd">local</span> <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">counts</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="n">self</span><span class="p">.</span><span class="n">counts</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+  <span class="kr">if</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="n">self</span><span class="p">.</span><span class="n">most</span> <span class="kr">then</span> <span class="n">self</span><span class="p">.</span><span class="n">most</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">d</span><span class="p">,</span> <span class="n">x</span> <span class="kr">end</span>
 <span class="kr">end</span>
 
-<span class="kr">function</span> <span class="nc">Sym</span><span class="p">.</span><span class="nf">ent</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-  <span class="kr">if</span> <span class="n">i</span><span class="p">.</span><span class="n">ent</span> <span class="o">==</span> <span class="kc">nil</span> <span class="kr">then</span>
-    <span class="n">i</span><span class="p">.</span><span class="n">ent</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="kr">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">counts</span><span class="p">)</span> <span class="kr">do</span>
-      <span class="kd">local</span> <span class="n">p</span> <span class="o">=</span> <span class="n">v</span><span class="o">/</span><span class="n">i</span><span class="p">.</span><span class="n">n</span>
-      <span class="n">i</span><span class="p">.</span><span class="n">ent</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">ent</span> <span class="o">-</span> <span class="n">p</span><span class="o">*</span><span class="nb">math.log</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span>
-  <span class="kr">return</span> <span class="n">i</span><span class="p">.</span><span class="n">ent</span>
-<span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-1'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-1'>#</a>
-      </div>
-      <p>Bulk addition to a <code>Num</code>.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Sym</span><span class="p">.</span><span class="nf">all</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">lo</span><span class="p">,</span><span class="n">hi</span><span class="p">,</span>    <span class="n">i</span><span class="p">)</span>
-  <span class="n">i</span> <span class="o">=</span> <span class="n">Sym</span><span class="p">.</span><span class="n">new</span><span class="p">{</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">}</span>
-  <span class="kr">for</span> <span class="n">j</span> <span class="o">=</span> <span class="n">lo</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">,</span> <span class="n">hi</span> <span class="ow">or</span> <span class="o">#</span><span class="n">lst</span> <span class="kr">do</span> <span class="n">Sym</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="kr">end</span>
-  <span class="kr">return</span> <span class="n">i</span>
-<span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-2'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-2'>#</a>
-      </div>
-      <p>Add one item to a <code>Num</code>.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Sym</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span>   <span class="n">d</span><span class="p">)</span>
-  <span class="kr">if</span> <span class="n">x</span><span class="o">==</span><span class="s2">&quot;?&quot;</span> <span class="kr">then</span> <span class="kr">return</span> <span class="n">x</span> <span class="kr">end</span>
-  <span class="n">x</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">key</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">ent</span><span class="o">=</span> <span class="kc">nil</span>
-  <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">counts</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">counts</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
-  <span class="kr">if</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">.</span><span class="n">most</span> <span class="kr">then</span> <span class="n">i</span><span class="p">.</span><span class="n">most</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">d</span><span class="p">,</span> <span class="n">x</span> <span class="kr">end</span>
+<span class="kr">function</span> <span class="nc">Sym</span><span class="p">:</span><span class="nf">sub1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">self</span><span class="p">.</span><span class="n">ent</span> <span class="o">=</span> <span class="kc">nil</span>
+  <span class="kr">if</span> <span class="n">self</span><span class="p">.</span><span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="kr">then</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">counts</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">counts</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="kr">end</span>
 <span class="kr">end</span>
 
-<span class="kr">function</span> <span class="nc">Sym</span><span class="p">.</span><span class="nf">dec</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span>   <span class="n">d</span><span class="p">)</span>
-  <span class="kr">if</span> <span class="n">x</span><span class="o">==</span><span class="s2">&quot;?&quot;</span> <span class="kr">then</span> <span class="kr">return</span> <span class="n">x</span> <span class="kr">end</span>
-  <span class="n">x</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">key</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">ent</span><span class="o">=</span> <span class="kc">nil</span>
-  <span class="kr">if</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="kr">then</span>
-    <span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">i</span><span class="p">.</span><span class="n">counts</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">counts</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="kr">end</span>
+<span class="kr">function</span> <span class="nc">Sym</span><span class="p">:</span><span class="nf">ent0</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+  <span class="kr">if</span> <span class="n">self</span><span class="p">.</span><span class="n">ent</span> <span class="o">==</span> <span class="kc">nil</span> <span class="kr">then</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">ent</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="kr">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">counts</span><span class="p">)</span> <span class="kr">do</span>
+      <span class="kd">local</span> <span class="n">p</span> <span class="o">=</span> <span class="n">v</span><span class="o">/</span><span class="n">self</span><span class="p">.</span><span class="n">n</span>
+      <span class="n">self</span><span class="p">.</span><span class="n">ent</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">ent</span> <span class="o">-</span> <span class="n">p</span><span class="o">*</span><span class="nb">math.log</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="kr">end</span> <span class="kr">end</span>
+  <span class="kr">return</span> <span class="n">self</span><span class="p">.</span><span class="n">ent</span>
 <span class="kr">end</span>
 
-<span class="kr">function</span> <span class="nc">Sym</span><span class="p">.</span><span class="nf">xpect</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span>   <span class="n">n</span><span class="p">)</span>  
-  <span class="n">n</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span> <span class="n">j</span><span class="p">.</span><span class="n">n</span> <span class="o">+</span> <span class="mf">0.0001</span>
-  <span class="kr">return</span> <span class="n">i</span><span class="p">.</span><span class="n">n</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">Sym</span><span class="p">.</span><span class="n">ent</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="n">j</span><span class="p">.</span><span class="n">n</span><span class="o">/</span><span class="n">n</span> <span class="o">*</span> <span class="n">Sym</span><span class="p">.</span><span class="n">ent</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
-<span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-3'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
-      </div>
-      <hr />
-<p>Distance between rows</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="kr">function</span> <span class="nc">Sym</span><span class="p">.</span><span class="nf">dist</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
-  <span class="kr">if</span>   <span class="n">x</span> <span class="o">==</span> <span class="n">THE</span><span class="p">.</span><span class="n">char</span><span class="p">.</span><span class="n">skip</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">==</span> <span class="n">THE</span><span class="p">.</span><span class="n">char</span><span class="p">.</span><span class="n">skip</span> <span class="kr">then</span> <span class="kr">return</span> <span class="mi">1</span>
-  <span class="kr">else</span> <span class="kr">return</span>  <span class="n">x</span><span class="o">==</span><span class="n">y</span>  <span class="ow">and</span> <span class="mi">0</span> <span class="ow">or</span> <span class="mi">1</span>
-  <span class="kr">end</span>
-<span class="kr">end</span>
- 
-<span class="kr">function</span> <span class="nc">Sym</span><span class="p">.</span><span class="nf">div</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">rows</span><span class="p">,</span><span class="n">fx</span><span class="p">,</span><span class="n">fy</span><span class="p">,</span><span class="n">ytype</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">n</span><span class="p">,</span><span class="n">out</span><span class="p">,</span><span class="n">all</span><span class="p">,</span><span class="n">cuts</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,{},{}</span>
-  <span class="kr">for</span> <span class="n">_</span><span class="p">,</span><span class="n">row</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="kr">do</span>
-    <span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="n">fx</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-    <span class="kr">if</span> <span class="n">x</span> <span class="o">~=</span> <span class="n">THE</span><span class="p">.</span><span class="n">chars</span><span class="p">.</span><span class="n">skip</span> <span class="kr">then</span>
-      <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span> <span class="c1">-- unify with num</span>
-      <span class="kd">local</span> <span class="n">one</span> <span class="o">=</span> <span class="n">all</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="ow">or</span> <span class="n">ytype</span><span class="p">.</span><span class="n">new</span><span class="p">{</span><span class="n">txt</span><span class="o">=</span><span class="n">x</span><span class="p">}</span>
-      <span class="n">ytype</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="n">fy</span><span class="p">(</span><span class="n">row</span><span class="p">))</span> <span class="kr">end</span> <span class="kr">end</span>
-  <span class="n">cuts</span> <span class="o">=</span> <span class="p">{}</span>
-  <span class="kr">for</span> <span class="n">n</span><span class="p">,</span><span class="n">one</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">all</span><span class="p">)</span> <span class="kr">do</span>
-    <span class="n">cuts</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">lo</span><span class="o">=</span><span class="n">one</span><span class="p">.</span><span class="n">txt</span><span class="p">,</span> <span class="n">hi</span><span class="o">=</span><span class="n">one</span><span class="p">.</span><span class="n">txt</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">one</span><span class="p">.</span><span class="n">n</span><span class="p">}</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">out</span> <span class="o">+</span> <span class="n">one</span><span class="p">.</span><span class="n">all</span><span class="p">.</span><span class="n">n</span> <span class="o">/</span> <span class="n">n</span> <span class="o">*</span> <span class="n">ytype</span><span class="p">.</span><span class="n">var</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="kr">end</span> 
-  <span class="nb">table.sort</span><span class="p">(</span><span class="n">cuts</span><span class="p">,</span><span class="kr">function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="kr">return</span> <span class="n">a</span><span class="p">.</span><span class="n">n</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">n</span> <span class="kr">end</span><span class="p">)</span>
-  <span class="kr">return</span> <span class="n">out</span><span class="p">,</span><span class="n">cuts</span>
-<span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-4'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
-      </div>
-      <hr />
-<p>And finally&hellip;</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="kr">return</span> <span class="n">Sym</span>
+<span class="kr">return</span> <span class="n">Sym</span>
 
 </pre></div>
     </div>
