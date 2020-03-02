@@ -34,7 +34,6 @@ function Ranges:make()
   self.epsilon = self.epsilon > 0 and self.epsilon 
                  or self.cohen * ys:var()
   self:div(1, #(self.lst), xs, ys)
-  return self
 end
 
 function Ranges:div(lo,hi, xrhs,yrhs,   
