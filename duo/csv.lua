@@ -1,4 +1,4 @@
--- vim: ts=2 sw=2 sts=2 et:
+-- vim: ts=2 sw=2 sts=2 et:cindent:
 --------- --------- --------- --------- --------- ---------
 
 local function usable(a,    b,todo)
@@ -24,7 +24,7 @@ local function atoms(str,  a)
   return a
 end
 
-local function (file,      todo,line,first)
+return function(file,      todo,line,first)
   if file then io.input(file) else stream=io.input() end
   first, line =  true, io.read()
   return function (    a)
