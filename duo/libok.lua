@@ -21,4 +21,4 @@ end
 
 a[#a+1]=b
 a.fred="jane"
-Lib.o(a,{fmt="%5.1f"})
+Lib.o(a)

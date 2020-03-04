@@ -3,7 +3,8 @@
 --------- --------- --------- --------- --------- ---------
 
 local Ranges = require("ranges")
-local Sym = require("sym")
+local Sym    = require("sym")
+local Lib    = require("lib")
 
 local function trio(a)
   if(a) < 0.6 then return 'a' end
@@ -18,4 +19,4 @@ end
 
 r = Ranges {lst=a,fy=Sym}
 r:make()
-print(r.cuts)
+Lib.o(r)

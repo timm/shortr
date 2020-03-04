@@ -16,7 +16,7 @@ function Lib.copy(t)
   return type(t) ~= 'table' and t or Lib.map(t,Lib.copy) 
 end
 
-function Lib.o(x,pre) print(Lib.oo(x,pre)) end
+function Lib.o(x) print(Lib.oo(x)) end
 
 local function is_array(t)
   local i = 0
@@ -24,6 +24,13 @@ local function is_array(t)
     i = i + 1
     if t[i] == nil then return false end end
   return true
+end
+
+local function sortAnything(x,y)
+  if   type(x)=="number" and type(y)=="number" 
+  then return x < y
+  end
+  return tostring(x) < tostring(y)
 end
 
 function Lib.oo(t,     seen,s,sep,keys, nums)
@@ -34,14 +41,16 @@ function Lib.oo(t,     seen,s,sep,keys, nums)
   if type(t) ~= "table" then return tostring(t) end
   s, sep, keys, nums = '','', {}, true
   for k, v in pairs(t) do 
-    if k ~= "class" then
-    if k ~= "super" then
-    if not (type(v) == 'function') then
-        if not (type(k)=='string' and k:match("^_")) then
-            nums = nums and type(k) == 'number'
-            keys[#keys+1] = k  end end end end
-  end 
-  table.sort(keys)
+    if k            ~= 'class' and
+       k            ~= 'super' and
+       not (type(v) == 'function') and
+       not (type(k) == 'string' and k:match("^_")) 
+    then
+       nums = nums and type(k) == 'number'
+       keys[#keys+1] = k 
+    end 
+  end
+  table.sort(keys,sortAnything)
   for _, k in pairs(keys) do
     local v = t[k]
     if      type(v) == 'table'    then v= Lib.oo(v, seen) 
