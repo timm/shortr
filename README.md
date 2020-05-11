@@ -27,6 +27,11 @@ When used, every soruce file `X.lua` can be tested used the code in `Xok.lua`.
 
 Also, soooo many cool shell and editting tricks:
 
-<a href="etc/img/screen.png"><img width=500 src="etc/img/screen.png"> Click to zoom.</a> 
+- Syntax highlights
+- Tabs
+- Git gtters
+- and so much more
+
+<a href="etc/img/screen-vim.png"><img width=500 src="etc/img/screen-vim.png"> Click to zoom.</a> 
 
 
