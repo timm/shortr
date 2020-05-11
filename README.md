@@ -32,6 +32,6 @@ Also, soooo many cool shell and editting tricks:
 - Git gtters
 - and so much more
 
-<a href="etc/img/screen-vim.png"><img width=500 src="etc/img/screen-vim.png"> Click to zoom.</a> 
+<a href="etc/img/screen-vim.png">Click&nbsp;to&nbsp;zoom:&nbsp;<img width=700 src="etc/img/screen-vim.png"> </a> 
 
 
