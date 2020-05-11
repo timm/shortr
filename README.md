@@ -21,3 +21,12 @@ href="CONTACT.md">Contact</a> <hr></p>
 
 Share and enjoy. For details, see [website](http://menzies.us/lua). 
 
+This code shows all my lua triks.
+
+When used, every soruce file `X.lua` can be tested used the code in `Xok.lua`.
+
+Also, soooo many cool shell and editting tricks:
+
+<a href="etc/img/screen.png"><img width=500 src="eetc/img/screen.png"> Click to zoom.</a> 
+
+
