@@ -15,7 +15,8 @@ href="INSTALL.md">Install</a> :: <a
 href="CODE_OF_CONDUCT.md">Contribute</a> :: <a 
 href="CONTACT.md">Contact</a> <hr></p>
 
-<img src="https://i.kinja-img.com/gawker-media/image/upload/c_fit,f_auto,fl_progressive,q_80,w_470/mfi4b9mekjgkymxtl0ns.jpg" align=right width=400>
+<img src="https://i.kinja-img.com/gawker-media/image/upload/c_fit,f_auto,fl_progressive,q_80,w_470/mfi4b9mekjgkymxtl0ns.jpg" align=right width=500>
+
 # Sample lua code. 
 
 Share and enjoy. For details, see [website](http://menzies.us/lua). 
