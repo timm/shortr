@@ -7,7 +7,8 @@
 href="LICENSE.md">License</a> :: <a 
 href="INSTALL.md">Install</a> :: <a
 href="CODE_OF_CONDUCT.md">Contribute</a> :: <a 
-href="CONTACT.md">Contact</a> </p> <p align=center><img 
+href="CONTACT.md">Contact</a> 
+<hr>img 
 src="https://img.shields.io/badge/language-lua-orange">&nbsp;<img 
 src="https://img.shields.io/badge/purpose-ai,se-blueviolet">&nbsp;<img 
 src="https://img.shields.io/badge/platform-mac,*nux-informational">&nbsp;<img 
