@@ -27,6 +27,6 @@ When used, every soruce file `X.lua` can be tested used the code in `Xok.lua`.
 
 Also, soooo many cool shell and editting tricks:
 
-<a href="etc/img/screen.png"><img width=500 src="eetc/img/screen.png"> Click to zoom.</a> 
+<a href="etc/img/screen.png"><img width=500 src="etc/img/screen.png"> Click to zoom.</a> 
 
 
