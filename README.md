@@ -5,7 +5,8 @@ src="https://img.shields.io/badge/license-Bsd2-informational">&nbsp;<img
 src="https://travis-ci.org/timm/lua.svg?branch=master"> 
 
 
-
+<center>
 Sample lua code. Share and enjoy.
 
 For details, see [website](http://menzies.us/lua).
+</center>
