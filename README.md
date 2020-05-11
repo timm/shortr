@@ -6,3 +6,9 @@ src="https://travis-ci.org/timm/lua.svg?branch=master">
 
 
 <p align=center>Sample lua code. Share and enjoy. For details, see [website](http://menzies.us/lua).</p>
+
+<p align=center><a 
+href="LICENSE.md">License</a> :: <a 
+href="INSTALL.md">Install</a> :: <a
+href="CODE_OF_CONDUCT.md">Contribute</a> :: <a 
+href="CONTACT.md">Contact</a>   </p>
