@@ -3,7 +3,7 @@
 
  
  
-<p align=center><a 
+<p align=left><a 
 href="LICENSE.md">License</a> :: <a 
 href="INSTALL.md">Install</a> :: <a
 href="CODE_OF_CONDUCT.md">Contribute</a> :: <a 
