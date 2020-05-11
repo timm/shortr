@@ -32,6 +32,6 @@ Also, soooo many cool shell and editting tricks:
 - Git gtters
 - and so much more
 
-<a href="etc/img/screen-vim.png"><img align=middle width=700 src="etc/img/screen-vim.png"> </a> 
+<a href="etc/img/screen-vim.png"><img align=center width=700 src="etc/img/screen-vim.png"> </a> 
 
 
