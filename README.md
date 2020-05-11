@@ -15,7 +15,7 @@ href="INSTALL.md">Install</a> :: <a
 href="CODE_OF_CONDUCT.md">Contribute</a> :: <a 
 href="CONTACT.md">Contact</a> <hr></p>
 
-<img src="etc/img/stitch.png" align=right width=400>
+<img src="etc/img/stitch.png" align=right width=300>
 
 # Sample lua code. 
 
