@@ -70,7 +70,14 @@ the = {dump   = cli("-D", false),
        keep   = cli("-k", 512  ),
        p      = cli("-p", 2    ),
        seed   = cli("-S", 10019),
-       todo   = cli("-t", "nothing")}
+       todo   = cli("-t", "nothing")}
+
+-- git rid of SOME for rows
+-- nss  = NUM | SYM | SKIP
+-- COLS = all:[nss]+, x:[nss]*, y:[nss]*, klass;col?
+-- ROWS = cols:COLS, rows:SOME
+
+
 -- ____ _  _ _  _ ____ ___ _ ____ _  _ ____ 
 -- |___ |  | |\ | |     |  | |  | |\ | [__  
 -- |    |__| | \| |___  |  | |__| | \| ___] 
@@ -255,7 +262,7 @@ function SYM.add(i,x,inc)
     inc = inc or 1
     i.n = i.n + inc
     i.has[x] = inc + (i.has[x] or 0) 
-    if i.has[x] > i.most then i.most,i.mode=i.has[x],x end end end
+    if i.has[x] > i.most then i.most,i.mode=i.has[x],x end end end
 
 function SYM.merge(i,j,    k)
   k = SYM:new(i.at,i.txt)
@@ -265,7 +272,7 @@ function SYM.merge(i,j,    k)
   if i.n==0 or j.n==0 or .99*ek <= (i.n*ei + j.n*ej)/k.n then
     return k end end
 
--- CLUSTER
+-- CLUSTER
 function CLUSTER.new(k,sample,top)
   local i,enough,left,right
   top    = top or sample
@@ -278,13 +285,15 @@ function CLUSTER.new(k,sample,top)
       i.right= CLUSTER:new(right, top) end end 
   return i end
 
-function CLUSTER.show(i,pre)
+function CLUSTER.show(i,pre,  here)
   pre = pre or ""
   here=""
   if not i.left and not i.right then here= o(i.here:mid(i.here.cols.y)) end
   print(fmt("%6s : %-30s %s",i.here.rows.n, pre, here))
   for _,kid in pairs{i.left, i.right} do
-   if kid then kid:show(pre .. "|.. ") end end end
+    if kid then kid:show(pre .. "|.. ") end end end
+
+---------------------------------------------------------------------
 -- ___  ____ _  _ ____ ____ 
 -- |  \ |___ |\/| |  | [__  
 -- |__/ |___ |  | |__| ___] 
