@@ -1,28 +1,29 @@
-#!/usr/bin/env lua
 -- vim : ft=lua et sts=2 sw=2 ts=2 :
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end --used later (to find rogues)
 local help = [[
 
-lua sl.lua [OPTIONS]
+sl == S.U.B.L.I.M.E. == Sublime's unsupervised 
+bifurcation: let's infer minimal explanations. 
+(c) 2022, Tim Menzies, BSD 2-clause license.
 
-Sublime's unsupervised bifurcation: let's infer minimal explanations. 
-(c) 2022, Tim Menzies, BSD 2-clause license
+USAGE: 
+  lua sl.lua [OPTIONS]
 
 OPTIONS: 
   -Dump        stack dump on assert fails = false
-  -data    f   data file                  = etc/data/auto93.csv
-  -enough  f   recurse until rows^enough  = .5
+  -data    N   data file                  = etc/data/auto93.csv
+  -enough  F   recurse until rows^enough  = .5
   -far     F   far                        = .9
   -keep    P   max kept items             = 512
   -p       P   distance coefficient       = 2
-  -Seed    P   set seed                   = 10019
+  -seed    P   set seed                   = 10019
   -todo    S   start up action (or 'all') = nothing
   -help        show help                  = false
 
-KEY: f=filename F=float P=posint S=string
+KEY: N=fileName F=float P=posint S=string
 ]]
 local any,asserts,big,cli,fails,firsts,fmt,goalp,ignorep,klassp
-local lessp,map,main,many,max,min,morep,new,nump,o,oo,per,push
+local lessp,map,main,many,max,min,morep,new,nump,o,oo,per,pop,push
 local r,rows,slots,sort,sum,thing,things,unpack
 local CLUSTER, COLS, EGS, NUM, ROWS, SKIP, SOME, SYM = {},{},{},{},{},{},{},{}
 
@@ -31,7 +32,11 @@ help:gsub("\n  [-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x)
   for n,flag in ipairs(arg) do 
     if flag:sub(1,1)=="-" and key:find("^"..flag:sub(2)..".*") then
       x = x=="false" and true or arg[n+1] end end 
-  the[key] = tonumber(x) or x end )
+  if x=="false" then the[key]=false elseif x=="true" then the[key]=true else
+    the[key] = tonumber(x) or x end end )
+ 
+for k,v in pairs(the) do
+  print(k,v,type(v)) end
 -- ----------------------------------------------------------------------------
 -- strings
 fmt = string.format
@@ -51,6 +56,7 @@ function morep(x)   return x:find"+$" end
 function nump(x)    return x:find"^[A-Z]" end
 
 -- tables
+pop = table.remove
 unpack = table.unpack
 function any(t)       return t[r(#t)] end
 function firsts(a,b)  return a[1] < b[1] end
@@ -89,23 +95,14 @@ function thing(x)
 function things(x,sep,  t)
   t={}
   for y in x:gmatch(sep or"([^,]+)") do push(t,thing(y)) end
-  return t end
-
--- errors
-fails=0
-function asserts(test, msg)
-  print(test and "PASS: "or "FAIL: ",msg or "") 
-  if not test then 
-    fails=fails+1 
-    if the.dump then assert(test,msg) end end end
-
--- objects
-function new(k,t)     k.__index=k; k.__tostring=o; return setmetatable(t,k) end
+  return t end
 -- ____ _    ____ ____ ____ ____ ____ 
 -- |    |    |__| [__  [__  |___ [__  
 -- |___ |___ |  | ___] ___] |___ ___] 
 --
--- COLS
+function new(k,t) k.__index=k; k.__tostring=o; return setmetatable(t,k) end
+
+-- COLS: turns list of column names into NUMs, SYMs, or SKIPs
 function COLS.new(k,row,   i)
   i= new(k,{all={},x={},y={},names=row}) 
   for at,txt in ipairs(row) do  push(i.all, i:col(at,txt)) end
@@ -122,7 +119,7 @@ function COLS.col(i,at,txt,     col)
   if klassp(txt) then i.klass = col end
   return col end
 
--- NUM
+-- NUM: summarizes a stream of numbers
 function NUM.new(k,n,s) 
   return new(k,{n=0,at=n or 0,txt=s or"",has=SOME:new(),ok=false,
                 w=lessp(s or "") and -1 or 1, lo=big, hi=-big}) end
@@ -149,7 +146,7 @@ function NUM.sorted(i)
   if i.ok==false then table.sort(i.has.all); i.ok=true end
   return i.has.all end
 
--- ROWS
+-- ROWS: manages `rows`, summarized in `cols` (columns).
 function ROWS.new(k,inits,     i)
   i = new(k,{rows=SOME:new(), cols=nil})
   if type(inits)=="string" then for row in rows(inits) do i:add(row) end end
@@ -176,7 +173,7 @@ function ROWS.half(i, top)
   top = top or i
   _,x = top:far(any(some), some)
   c,y = top:far(x,         some)
-  tmp = sort(map(i.rows.all, function(r) return top:project(r,x,y,c) end), firsts)
+  tmp = sort(map(i.rows.all,function(r) return top:project(r,x,y,c) end),firsts)
   mid = #i.rows.all//2
   lefts, rights = i:clone(), i:clone()
   for at,row in pairs(tmp) do (at <=mid and lefts or rights):add(row[2]) end
@@ -188,20 +185,22 @@ function ROWS.mid(i,cols)
 function ROWS.project(i, r,x,y,c,     a,b)
   a,b = i:dist(r,x), i:dist(r,y); return {(a^2 + c^2 - b^2)/(2*c), r} end
 
--- SKIP
+-- SKIP: summarizes things we want to ignore (so does nothing)
 function SKIP.new(k,n,s) return new(k,{n=0,at=at or 0,txt=s or""}) end
 function SKIP.add(i,x)   return x end
 function SKIP.mid(i)     return "?" end
 
--- SOME
+-- SOME: keeps a random sample on the arriving data
 function SOME.new(k,keep) return new(k,{n=0,all={}, keep=keep or the.keep}) end
 function SOME.add(i,x)
   i.n = i.n+1
   if     #i.all < i.keep then push(i.all,x)          ; return i.all 
   elseif r()     < i.keep/i.n then i.all[r(#i.all)]=x; return i.all end end
 
--- SYM
-function SYM.new(k,n,s)  return new(k,{n=0,at=n or 0,txt=s or"",has={},most=0}) end
+-- SYM: summarizes a stream of symbols
+function SYM.new(k,n,s)  
+  return new(k,{n=0,at=n or 0,txt=s or"",has={},most=0}) end
+
 function SYM.dist(i,x,y) return(x=="?" and y=="?" and 1) or(x==y and 0 or 1) end
 function SYM.mid(i)      return i.mode end
 function SYM.div(i,   fun)
@@ -223,7 +222,7 @@ function SYM.merge(i,j,    k)
   if i.n==0 or j.n==0 or .99*ek <= (i.n*ei + j.n*ej)/k.n then
     return k end end
 
--- CLUSTER
+-- CLUSTER: recursively divides data by clustering towards two distant points
 function CLUSTER.new(k,sample,top)
   local i,enough,left,right
   top    = top or sample
@@ -247,9 +246,23 @@ function CLUSTER.show(i,pre,  here)
 -- |  \ |___ |\/| |  | [__  
 -- |__/ |___ |  | |__| ___] 
 --
+fails=0
+function asserts(test, msg)
+  print(test and "PASS: "or "FAIL: ",msg or "") 
+  if not test then 
+    fails=fails+1 
+    if the.dump then assert(test,msg) end end end
+
 function EGS.nothing() return true end
 function EGS.the()     oo(the) end
 function EGS.rand()    print(r()) end
+function EGS.some(s,t)
+  s=SOME:new(100)
+  for i=1,100000 do s:add(i) end
+  for j,x in pairs(sort(s.all)) do
+    if (j % 10)==0 then print("") end
+    io.write(fmt("%6s",x))  end end 
+
 function EGS.clone( r,s)
   r = ROWS:new(the.data)
   s = r:clone() 
@@ -294,6 +307,7 @@ function EGS.cluster(r)
 
 -- start-up
 if arg[0] == "sl.lua" then
+  oo(the)
   if the.help then print(help) else
     local b4={}; for k,v in pairs(the) do b4[k]=v end
     for _,todo in pairs(the.todo=="all" and slots(EGS) or {the.todo}) do
