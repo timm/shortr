@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# vim: ft=bash ts=2 sw=2 sts=2 et :
+ 
+what=duo
+hi() { 
+  clear
+  tput bold; tput setaf 5
+  cat<<-'EOF'
+                                              ___
+                                           ,o88888
+                                        ,o8888888'
+                  ,:o:o:oooo.        ,8O88Pd8888"
+              ,.::.::o:ooooOoOoO. ,oO8O8Pd888'"
+            ,.:.::o:ooOoOoOO8O8OOo.8OOPd8O8O"
+           , ..:.::o:ooOoOOOO8OOOOo.FdO8O8"
+          , ..:.::o:ooOoOO8O888O8O,COCOO"
+         , . ..:.::o:ooOoOOOO8OOOOCOCO"
+          . ..:.::o:ooOoOoOO8O8OCCCC"o
+             . ..:.::o:ooooOoCoCCC"o:o
+             . ..:.::o:o:,cooooCo"oo:o:
+          `   . . ..:.:cocoooo"'o:o:::'
+          .`   . ..::ccccoc"'o:o:o:::'
+         :.:.    ,c:cccc"':.:.:.:.:.'
+       ..:.:"'`::::c:"'..:.:.:.:.:.'
+     ...:.'.:.::::"'    . . . . .'
+    .. . ....:."' `   .  . . ''
+  . . . ...."'
+  .. . ."'     -hrr-
+ .
+
+	EOF
+  tput bold; tput setaf 241
+  echo "Short cuts:"
+  alias | sed 's/alias /  /'
+  echo ""
+  tput sgr0
+}
+
+here="$(dirname $(cd $( dirname "${BASH_SOURCE[0]}" ) && pwd ))"
+
+alias ..='cd ..'
+alias ...='cd ../../../'
+
+alias bye="gp; tmux detach"
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias gp="git add *;git commit -am save;git push;git status"
+alias grep='grep --color=auto'
+alias h="history"
+alias hello="git pull"
+alias ls="ls -G"
+alias tmux="tmux -f $here/etc/dottmux"
+alias vi="vim -u $here/etc/dotvimrc "
+alias vims="vim +PluginInstall +qall"         
+
+export BASH_SILENCE_DEPRECATION_WARNING=1
+export PATH="$PWD:/opt/homebrew/bin:$PATH"
+export EDITOR=$(which pico)
+
+here() { cd $1; basename `pwd`; }
+#!/usr/bin/env bash
+
+PROMPT_COMMAND='echo -ne "⚙️  $(git branch 2>/dev/null | grep '^*' | colrm 1 2):";PS1="$(here ..)/$(here .):\!\e[m ▶ "'
+
+mytmux() {
+  if [ -z "$TMUX" ]; then
+    session=$RANDOM
+    tmux start-server
+    sleep 1
+    tmux new-session -d -s $session  
+    tmux selectp -t 0
+    tmux send-keys C-m  "etc/h"  C-m
+
+    tmux splitw -h -p 30
+    tmux selectp -t 1
+    tmux send-keys C-m  "etc/h"  C-m
+
+    tmux splitw -v  -p 10
+    tmux selectp -t 2
+    tmux send-keys C-m  "htop"  C-m
+
+    tmux attach-session -t $session
+  fi
+}
+hi
+mytmux
