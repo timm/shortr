@@ -17,7 +17,7 @@ bye:  ## stop work (save all files)
 
 pdfs: docs/sl.pdf ## generate pdfs
 
-docs/%.pdf : %  
+docs/%.pdf : %.lua  
 	echo 1
 	a2ps  -BjR                           \
 		--line-numbers=1                    \

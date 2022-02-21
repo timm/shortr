@@ -1,87 +1,38 @@
 #!/usr/bin/env lua
 -- vim : ft=lua et sts=2 sw=2 ts=2 :
+local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end --used later (to find rogues)
 local help = [[
-sl [OPTIONS]
+
+lua sl.lua [OPTIONS]
+
 Sublime's unsupervised bifurcation: let's infer minimal explanations. 
-(c) 2022, Tim Menzies
+(c) 2022, Tim Menzies, BSD 2-clause license
 
 OPTIONS: 
-  -D       stack dump on assert fails      
-  -d   f   data file                  = etc/data/auto93.csv
-  -e   f   recurse until rows^enough  = .5
-  -f   F   far                        = .9
-  -k   P   max kept items             = 512
-  -p   P   distance coefficient       = 2
-  -S   P   set seed                   = 10019
-  -t   S   start up action (or 'all') = nothing
-  -h       show help                        
+  -Dump        stack dump on assert fails = false
+  -data    f   data file                  = etc/data/auto93.csv
+  -enough  f   recurse until rows^enough  = .5
+  -far     F   far                        = .9
+  -keep    P   max kept items             = 512
+  -p       P   distance coefficient       = 2
+  -Seed    P   set seed                   = 10019
+  -todo    S   start up action (or 'all') = nothing
+  -help        show help                  = false
 
-KEY: f=filename F=float P=posint S=string ]]
---                                  _.
---                          _.-----'' `\
---              __..-----'''            `.
---             <            `\.           '\
---             :.              `.           `\
---              `:.            I  `.           `-.
---                `:\ P  a      O  `.            `+.
---                 `:. L  i  a    ns`.   __.===::::;)
---            I  L E   `: n   t   ___.__>'::::::a:f/'
---       i          X   `.  _,===:::=-'-=-"""''
---   m      n  a         '-/:::''
---                         ''
---
--- Redistribution and use in source and binary forms, with or without
--- modification, are permitted provided that the following conditions are met:
---
--- 1. Redistributions of source code must retain the above copyright notice, 
---    this list of conditions and the following disclaimer.
---
--- 2. Redistributions in binary form must reproduce the above copyright notice,
---    this list of conditions and the following disclaimer in the documentation
---    and/or other materials provided with the distribution.
---
--- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
--- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
--- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR PARTICULAR PURPOSE ARE
--- DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
--- FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
--- DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
--- SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
--- CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
--- OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
--- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end --used later (to find rogues)
-local any,asserts,big,cli,fails,firsts,fmt,goalp,help,ignorep,klassp
+KEY: f=filename F=float P=posint S=string
+]]
+local any,asserts,big,cli,fails,firsts,fmt,goalp,ignorep,klassp
 local lessp,map,main,many,max,min,morep,new,nump,o,oo,per,push
-local r,rows,slots,sort,sum,the,thing,things,unpack
+local r,rows,slots,sort,sum,thing,things,unpack
 local CLUSTER, COLS, EGS, NUM, ROWS, SKIP, SOME, SYM = {},{},{},{},{},{},{},{}
 
-function cli(want,x)
-  for n,got in ipairs(arg) do if got==want then 
-    x = x==false and true or x==true and "false" or arg[n+1] end end 
-  if x=="false" then return false else return tonumber(x) or x end end
-
-the = {dump   = cli("-D", false),
-       data   = cli("-d", "etc/data/auto93.csv"),
-       enough = cli("-e", .5),
-       help   = cli("-h", false),
-       far    = cli("-f", .9   ),
-       keep   = cli("-k", 512  ),
-       p      = cli("-p", 2    ),
-       seed   = cli("-S", 10019),
-       todo   = cli("-t", "nothing")}
-
--- git rid of SOME for rows
--- nss  = NUM | SYM | SKIP
--- COLS = all:[nss]+, x:[nss]*, y:[nss]*, klass;col?
--- ROWS = cols:COLS, rows:SOME
-
-
--- ____ _  _ _  _ ____ ___ _ ____ _  _ ____ 
--- |___ |  | |\ | |     |  | |  | |\ | [__  
--- |    |__| | \| |___  |  | |__| | \| ___] 
---
+local the={}
+help:gsub("\n  [-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x)
+  for n,flag in ipairs(arg) do 
+    if flag:sub(1,1)=="-" and key:find("^"..flag:sub(2)..".*") then
+      x = x=="false" and true or arg[n+1] end end 
+  the[key] = tonumber(x) or x end )
+-- ----------------------------------------------------------------------------
 -- strings
 fmt = string.format
 
@@ -291,9 +242,7 @@ function CLUSTER.show(i,pre,  here)
   if not i.left and not i.right then here= o(i.here:mid(i.here.cols.y)) end
   print(fmt("%6s : %-30s %s",i.here.rows.n, pre, here))
   for _,kid in pairs{i.left, i.right} do
-    if kid then kid:show(pre .. "|.. ") end end end
-
----------------------------------------------------------------------
+    if kid then kid:show(pre .. "|.. ") end end end
 -- ___  ____ _  _ ____ ____ 
 -- |  \ |___ |\/| |  | [__  
 -- |__/ |___ |  | |__| ___] 
@@ -344,12 +293,21 @@ function EGS.cluster(r)
   CLUSTER:new(r):show() end
 
 -- start-up
-if the.help then print(help) else
-  local b4={}; for k,v in pairs(the) do b4[k]=v end
-  for _,todo in pairs(the.todo=="all" and slots(EGS) or {the.todo}) do
-    for k,v in pairs(b4) do the[k]=v end
-    math.randomseed(the.seed)
-    if type(EGS[todo])=="function" then EGS[todo]() end end end
-
-for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  
-os.exit(fails)
+if arg[0] == "sl.lua" then
+  if the.help then print(help) else
+    local b4={}; for k,v in pairs(the) do b4[k]=v end
+    for _,todo in pairs(the.todo=="all" and slots(EGS) or {the.todo}) do
+      for k,v in pairs(b4) do the[k]=v end
+      math.randomseed(the.seed)
+      if type(EGS[todo])=="function" then EGS[todo]() end end 
+  end
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  
+  os.exit(fails) 
+else
+  return {CLUSTER=CLUSTER, COLS=COLS, NUM=NUM, ROWS=ROWS, 
+          SKIP=SKIP, SOME=SOME, SYM=SYM,the=the,oo=oo,o=o}
+end
+-- git rid of SOME for rows
+-- nss  = NUM | SYM | SKIP
+-- COLS = all:[nss]+, x:[nss]*, y:[nss]*, klass;col?
+-- ROWS = cols:COLS, rows:SOME
