@@ -75,7 +75,7 @@ mytmux() {
     tmux selectp -t 1
     tmux send-keys C-m  "etc/h"  C-m
 
-    tmux splitw -v  -p 10
+    tmux splitw -v  -p 20
     tmux selectp -t 2
     tmux send-keys C-m  "htop"  C-m
 
