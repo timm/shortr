@@ -148,14 +148,13 @@ function NUM.sorted(i)
 
 -- ROWS: manages `rows`, summarized in `cols` (columns).
 function ROWS.new(k,inits,     i)
-  i = new(k,{rows=SOME:new(), cols=nil})
-  if type(inits)=="string" then for row in rows(inits) do i:add(row) end end
-  if type(inits)=="table"  then for row in inits       do i:add(row) end end 
+  i = new(k,{rows={},cols=nil})
+  if type(inits)=="string" then for t in rows(inits) do i:add(t) end end
+  if type(inits)=="table"  then for t in inits       do i:add(t) end end 
   return i end
 
-function ROWS.add(i,row)
-  if   i.cols then i.rows:add( i.cols:add(row) )
-  else i.cols = COLS:new(row) end end 
+function ROWS.add(i,t)
+  if i.cols then push(i.rows,i.cols:add(t)) else i.cols=COLS:new(t) end end 
 
 function ROWS.clone(i,  j) j= ROWS:new(); j:add(i.cols.names);return j end
 
@@ -169,12 +168,12 @@ function ROWS.far(i,row1,rows,     fun)
   
 function ROWS.half(i, top)
   local some, top,c,x,y,tmp,mid,lefts,rights,_
-  some= many(i.rows.all, the.keep)
+  some= many(i.rows, the.keep)
   top = top or i
   _,x = top:far(any(some), some)
   c,y = top:far(x,         some)
-  tmp = sort(map(i.rows.all,function(r) return top:project(r,x,y,c) end),firsts)
-  mid = #i.rows.all//2
+  tmp = sort(map(i.rows,function(r) return top:project(r,x,y,c) end),firsts)
+  mid = #i.rows//2
   lefts, rights = i:clone(), i:clone()
   for at,row in pairs(tmp) do (at <=mid and lefts or rights):add(row[2]) end
   return lefts,rights,x,y,c, tmp[mid] end
@@ -227,10 +226,10 @@ function CLUSTER.new(k,sample,top)
   local i,enough,left,right
   top    = top or sample
   i      = new(k, {here=sample})
-  enough = top.rows.n^the.enough
-  if sample.rows.n >= 2*enough then
+  enough = (#top.rows)^the.enough
+  if #sample.rows >= 2*enough then
     left, right, i.x, i.y, i.c, i.mid = sample:half(top)
-    if left.rows.n < sample.rows.n then
+    if #left.rows < #sample.rows then
       i.left = CLUSTER:new(left,   top)
       i.right= CLUSTER:new(right, top) end end 
   return i end
@@ -239,7 +238,7 @@ function CLUSTER.show(i,pre,  here)
   pre = pre or ""
   here=""
   if not i.left and not i.right then here= o(i.here:mid(i.here.cols.y)) end
-  print(fmt("%6s : %-30s %s",i.here.rows.n, pre, here))
+  print(fmt("%6s : %-30s %s",#i.here.rows, pre, here))
   for _,kid in pairs{i.left, i.right} do
     if kid then kid:show(pre .. "|.. ") end end end
 -- ___  ____ _  _ ____ ____ 
@@ -266,7 +265,7 @@ function EGS.some(s,t)
 function EGS.clone( r,s)
   r = ROWS:new(the.data)
   s = r:clone() 
-  for _,row in pairs(r.rows.all) do s:add(row) end
+  for _,row in pairs(r.rows) do s:add(row) end
   asserts(r.cols.x[1].lo==s.cols.x[1].lo,"clone.lo")
   asserts(r.cols.x[1].hi==s.cols.x[1].hi,"clone.hi")
   end
@@ -277,7 +276,7 @@ function EGS.data( r)
 
 function EGS.dist( r,rows,n)   
   r = ROWS:new(the.data)
-  rows = r.rows.all
+  rows = r.rows
   n = NUM:new()
   for _,row in pairs(rows) do n:add(r:dist(row, rows[1])) end 
   oo(r.cols.x[2]:sorted()) end
@@ -288,8 +287,8 @@ function EGS.many(   t)
 
 function EGS.far(   r,c,row1,row2)
   r = ROWS:new(the.data)
-  row1   = r.rows.all[1]
-  c,row2 = r:far(r.rows.all[1], r.rows.all) 
+  row1   = r.rows[1]
+  c,row2 = r:far(r.rows[1], r.rows) 
   print(c,"\n",o(row1),"\n", o(row2)) end
 
 function EGS.half(   r,c,row1,row2)
