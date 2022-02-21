@@ -8,6 +8,7 @@ Sublime's unsupervised bifurcation: let's infer minimal explanations.
 OPTIONS: 
   -D       stack dump on assert fails      
   -d   f   data file                  = etc/data/auto93.csv
+  -e   f   recurse until rows^enough  = .5
   -f   F   far                        = .9
   -k   P   max kept items             = 512
   -p   P   distance coefficient       = 2
@@ -54,21 +55,22 @@ local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end --used later (to find rogues)
 local any,asserts,big,cli,fails,firsts,fmt,goalp,help,ignorep,klassp
 local lessp,map,main,many,max,min,morep,new,nump,o,oo,per,push
 local r,rows,slots,sort,sum,the,thing,things,unpack
-local COLS, EGS, NUM, ROWS, SKIP, SOME, SYM = {},{},{},{},{},{},{}
+local CLUSTER, COLS, EGS, NUM, ROWS, SKIP, SOME, SYM = {},{},{},{},{},{},{},{}
 
 function cli(want,x)
   for n,got in ipairs(arg) do if got==want then 
     x = x==false and true or x==true and "false" or arg[n+1] end end 
   if x=="false" then return false else return tonumber(x) or x end end
 
-the = {dump = cli("-D", false),
-       data = cli("-d", "etc/data/auto93.csv"),
-       help = cli("-h", false),
-       far  = cli("-f", .9   ),
-       keep = cli("-k", 256  ),
-       p    = cli("-p", 2    ),
-       seed = cli("-S", 10019),
-       todo = cli("-t", "nothing")}
+the = {dump   = cli("-D", false),
+       data   = cli("-d", "etc/data/auto93.csv"),
+       enough = cli("-e", .5),
+       help   = cli("-h", false),
+       far    = cli("-f", .9   ),
+       keep   = cli("-k", 512  ),
+       p      = cli("-p", 2    ),
+       seed   = cli("-S", 10019),
+       todo   = cli("-t", "nothing")}
 -- ____ _  _ _  _ ____ ___ _ ____ _  _ ____ 
 -- |___ |  | |\ | |     |  | |  | |\ | [__  
 -- |    |__| | \| |___  |  | |__| | \| ___] 
@@ -244,12 +246,45 @@ function SOME.add(i,x)
 function SYM.new(k,n,s)  return new(k,{n=0,at=n or 0,txt=s or"",has={},most=0}) end
 function SYM.dist(i,x,y) return(x=="?" and y=="?" and 1) or(x==y and 0 or 1) end
 function SYM.mid(i)      return i.mode end
+function SYM.div(i,   fun)
+  function fun(k,  p) p = -i.has[k]/i.n; return -p*math.log(p,2) end
+  return sum(i.has, fun) end
+
 function SYM.add(i,x,inc)
   if x ~= "?" then
     inc = inc or 1
     i.n = i.n + inc
     i.has[x] = inc + (i.has[x] or 0) 
-    if i.has[x] > i.most then i.most,i.mode=i.has[x],x end end end 
+    if i.has[x] > i.most then i.most,i.mode=i.has[x],x end end end
+
+function SYM.merge(i,j,    k)
+  k = SYM:new(i.at,i.txt)
+  for x,n in pairs(i.has) do k:add(x,n) end
+  for x,n in pairs(j.has) do k:add(x,n) end
+  ei, ej, ejk= i:div(), j:div(), k:div()
+  if i.n==0 or j.n==0 or .99*ek <= (i.n*ei + j.n*ej)/k.n then
+    return k end end
+
+-- CLUSTER
+function CLUSTER.new(k,sample,top)
+  local i,enough,left,right
+  top    = top or sample
+  i      = new(k, {here=sample})
+  enough = top.rows.n^the.enough
+  if sample.rows.n >= 2*enough then
+    left, right, i.x, i.y, i.c, i.mid = sample:half(top)
+    if left.rows.n < sample.rows.n then
+      i.left = CLUSTER:new(left,   top)
+      i.right= CLUSTER:new(right, top) end end 
+  return i end
+
+function CLUSTER.show(i,pre)
+  pre = pre or ""
+  here=""
+  if not i.left and not i.right then here= o(i.here:mid(i.here.cols.y)) end
+  print(fmt("%6s : %-30s %s",i.here.rows.n, pre, here))
+  for _,kid in pairs{i.left, i.right} do
+   if kid then kid:show(pre .. "|.. ") end end end
 -- ___  ____ _  _ ____ ____ 
 -- |  \ |___ |\/| |  | [__  
 -- |__/ |___ |  | |__| ___] 
@@ -291,11 +326,14 @@ function EGS.half(   r,c,row1,row2)
   r = ROWS:new(the.data) 
   oo(r:mid(r.cols.y)) 
   lefts,rights,x,y,c = r:half() 
-  print(c)
   oo(lefts:mid(lefts.cols.y ))
   oo(rights:mid(rights.cols.y))
   end
- 
+
+function EGS.cluster(r)
+  r = ROWS:new(the.data)
+  CLUSTER:new(r):show() end
+
 -- start-up
 if the.help then print(help) else
   local b4={}; for k,v in pairs(the) do b4[k]=v end
