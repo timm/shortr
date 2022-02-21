@@ -1,4 +1,5 @@
 #!/usr/bin/env lua
+-- vim : ft=lua et sts=2 sw=2 ts=2 :
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end --used later (to find rogues)
 local azzert,big,cli,fails,fmt,goalp,help,ignorep,klassp
 local lessp,map,main,max,min,morep
@@ -11,19 +12,17 @@ function cli(want,x)
   if x=="false" then return false else return tonumber(x) or x end end
 
 help = [[
-
-./sl.lua [OPTIONS]
+sl [OPTIONS]
 
 OPTIONS: 
-    -D      stack dump on assert fails    = false
-    -d  F   data file                     = etc/data/auto93.csv
-    -h      show help                     = false
-    -k  P   max kept items                = 256
-    -S  P   set seed                      = 10019
-    -t  S   start up action (all= do all) = nothing
+  -D       stack dump on assert fails    = false
+  -d   F   data file                     = etc/data/auto93.csv
+  -h       show help                     = false
+  -k   P   max kept items                = 256
+  -S   P   set seed                      = 10019
+  -t   S   start up action (all= do all) = nothing
 
-KEY: F=filename P=posint S=string
-]]
+KEY: F=filename P=posint S=string ]]
 
 the = {dump = cli("-D", false),
        data = cli("-d", "../etc/data/auto93.csv"),
@@ -35,7 +34,7 @@ the = {dump = cli("-D", false),
 -- ___ ____ ____ _    ____ 
 --  |  |  | |  | |    [__  
 --  |  |__| |__| |___ ___] 
-
+--
 --- strings
 fmt = string.format
 
@@ -100,7 +99,7 @@ function azzert(test, msg)
 -- ____ ____ _  _ ____ 
 -- [__  |  | |\/| |___ 
 -- ___] |__| |  | |___ 
-
+--
 function SOME.new(k,keep) return new(k,{n=0,_all={}, keep=keep or the.keep}) end
 function SOME.add(i,x)
   i.n = i.n+1
@@ -109,13 +108,13 @@ function SOME.add(i,x)
 -- ____ _  _ _ ___  
 -- [__  |_/  | |__] 
 -- ___] | \_ | |    
-
+--
 function SKIP.new(k,n,s) return new(k,{n=0,at=at or 0,txt=s or""}) end
 function SKIP.add(i,x)   return x end
 -- ____ _   _ _  _ 
 -- [__   \_/  |\/| 
 -- ___]   |   |  | 
-
+--
 function SYM.new(k,n,s) return new(k,{n=0,at=n or 0,txt=s or"",has={}}) end
 function SYM.add(i,x,inc)
   if x ~= "?" then
@@ -124,11 +123,10 @@ function SYM.add(i,x,inc)
     i.has[x] = inc + (i.has[x] or 0) end end
 function SYM.dist(i,x,y)
   return  (x=="?" and y=="?" and 1) or (x==y and 0 or 1) end
-
 -- _  _ _  _ _  _ 
 -- |\ | |  | |\/| 
 -- | \| |__| |  | 
-
+--
 function NUM.new(k,n,s) 
   return new(k,{n=0,at=n or 0,txt=s or"",has=SOME:new(),
                 w=lessp(s or "") and -1 or 1, lo=big, hi=-big}) end
@@ -147,7 +145,7 @@ function NUM.dist(i,x,y)
 -- ____ ____ _    ____ 
 -- |    |  | |    [__  
 -- |___ |__| |___ ___] 
-
+--
 function COLS.new(k,row,   i)
   i= new(k,{all={},x={},y={}}) 
   for at,txt in ipairs(row) do  push(i.all, i:col(at,txt)) end
@@ -164,7 +162,7 @@ function COLS.col(i,at,txt,     col)
 -- ____ ____ _ _ _ ____ 
 -- |__/ |  | | | | [__  
 -- |  \ |__| |_|_| ___] 
-
+--                      
 function ROWS.new(k,inits,     i)
   i = new(k,{rows=SOME:new(), cols=nil})
   if type(inits)=="string" then for row in rows(inits) do i:add(row) end end
@@ -180,19 +178,20 @@ function ROWS.dist(i,row1,row2,   d)
 -- ___  ____ _  _ ____ ____ 
 -- |  \ |___ |\/| |  | [__  
 -- |__/ |___ |  | |__| ___] 
-
+--
 local egs={}
 function egs.nothing() return true end
-function egs.the() oo(the) end
+function egs.the()     oo(the) end
+function egs.rand()    print(r()) end
 function egs.f1() print(1) end
 function egs.f2() print(2) end
 
-if   the.help then print(help) 
-else local b4={}; for k,v in pairs(the) do b4[k]=v end
-     for _,todo in pairs(the.todo=="all" and slots(egs) or {the.todo}) do
-       for k,v in pairs(b4) do the[k]=v end
-       math.randomseed(the.seed)
-       if type(egs[todo])=="function" then egs[todo]() end end end
+if the.help then print(help) else
+  local b4={}; for k,v in pairs(the) do b4[k]=v end
+  for _,todo in pairs(the.todo=="all" and slots(egs) or {the.todo}) do
+    for k,v in pairs(b4) do the[k]=v end
+    math.randomseed(the.seed)
+    if type(egs[todo])=="function" then egs[todo]() end end end
 
 for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  
 os.exit(fails)
