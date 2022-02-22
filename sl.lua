@@ -32,7 +32,7 @@ local the={}
 help:gsub("\n  [-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x)
   for n,flag in ipairs(arg) do 
     if flag:sub(1,1)=="-" and key:find("^"..flag:sub(2)..".*") then
-      x = x=="false" and true or arg[n+1] end end 
+      x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
   if x=="false" then the[key]=false elseif x=="true" then the[key]=true else
     the[key] = tonumber(x) or x end end )
  

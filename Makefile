@@ -17,6 +17,11 @@ bye:  ## stop work (save all files)
 	git add *;git commit -am save;git push;git status
 
 pdfs: docs/sl.pdf ## generate pdfs
+html: docs/sl.html 
+
+docs/%.html: %.lua
+	docco -o docs $<
+	cp etc/docco.css docs/
 
 docs/%.pdf : %.lua  
 	echo 1
