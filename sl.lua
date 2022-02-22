@@ -95,8 +95,6 @@ function things(x,sep,  t)
   t={}
   for y in x:gmatch(sep or"([^,]+)") do push(t,thing(y)) end
   return t end
-
-
 -- ____ _    ____ ____ ____ ____ ____ 
 -- |    |    |__| [__  [__  |___ [__  
 -- |___ |___ |  | ___] ___] |___ ___] 
@@ -197,19 +195,6 @@ function SOME.add(i,x)
   if     #i.all < i.keep then push(i.all,x)          ; return i.all 
   elseif r()     < i.keep/i.n then i.all[r(#i.all)]=x; return i.all end end
 
--- SPAN: keeps a random sample on the arriving data
-function SPAN.new(k, col, lo, hi, has) 
-  return new(k,{col=col,lo=lo,hi=hi or lo,has=has or SYM:new()}) end
-
-function SPAN.add(i,x,y,n) i.lo,i.hi=min(x,i.lo),max(x,i.hi); i.has:add(y,n) end
-function SPAN.merge(i,j)
-  local has = i.has:merge(j.has)
-  if now then return SPAN:new(i.col, i.lo, j.hi, has) end end
-
-function SPAN.select(i,row,    x)
-  x = row[i.col.at]
-  return (x=="?") or (i.lo==i.hi and x==i.lo) or (i.lo <= x and x < i.hi) end
-
 -- SYM: summarizes a stream of symbols
 function SYM.new(k,n,s)  
   return new(k,{n=0,at=n or 0,txt=s or"",has={},most=0}) end
@@ -232,22 +217,74 @@ function SYM.merge(i,j,    k)
   for x,n in pairs(j.has) do k:add(x,n) end
   ei, ej, ejk= i:div(), j:div(), k:div()
   if i.n==0 or j.n==0 or .99*ek <= (i.n*ei + j.n*ej)/k.n then
-    return k end end
--- ___  _ ____ ____ ____ ____ ___ _ ___  ____ 
--- |  \ | [__  |    |__/ |___  |  |   /  |___ 
--- |__/ | ___] |___ |  \ |___  |  |  /__ |___ 
+    return k end end
+-- ____ _    _  _ ____ ___ ____ ____ 
+-- |    |    |  | [__   |  |___ |__/ 
+-- |___ |___ |__| ___]  |  |___ |  \ 
 --                                            
+-- CLUSTER: recursively divides data by clustering towards two distant points
+function CLUSTER.new(k,sample,top)
+  local i,enough,left,right
+  top    = top or sample
+  i      = new(k, {here=sample})
+  enough = (#top.rows)^the.enough
+  if #sample.rows >= 2*enough then
+    left, right, i.x, i.y, i.c, i.mid = sample:half(top)
+    if #left.rows < #sample.rows then
+      i.left = CLUSTER:new(left,   top)
+      i.right= CLUSTER:new(right, top) end end 
+  return i end
+
+function CLUSTER.show(i,pre,  here)
+  pre = pre or ""
+  here=""
+  if not i.left and not i.right then here= o(i.here:mid(i.here.cols.y)) end
+  print(fmt("%6s : %-30s %s",#i.here.rows, pre, here))
+  for _,kid in pairs{i.left, i.right} do
+    if kid then kid:show(pre .. "|.. ") end end end
+
+-- ____ _  _ ___  _    ____ _ _  _ 
+-- |___  \/  |__] |    |__| | |\ | 
+-- |___ _/\_ |    |___ |  | | | \| 
+
+-- SPAN: keeps a random sample on the arriving data
+function SPAN.new(k, col, lo, hi, has) 
+  return new(k,{col=col,lo=lo,hi=hi or lo,has=has or SYM:new()}) end
+
+function SPAN.add(i,x,y,n) i.lo,i.hi=min(x,i.lo),max(x,i.hi); i.has:add(y,n) end
+function SPAN.merge(i,j)
+  local has = i.has:merge(j.has)
+  if now then return SPAN:new(i.col, i.lo, j.hi, has) end end
+
+function SPAN.select(i,row,    x)
+  x = row[i.col.at]
+  return (x=="?") or (i.lo==i.hi and x==i.lo) or (i.lo <= x and x < i.hi) end
+
+-- EXPLAIN
+function EXPLAIN(k,sample,top)
+  i.here = sample
+  top = top or sample
+  enough = (#top.rows)^the.enough
+  if #top.rows >= 2*enough then
+    left,right = sample:half(top)
+    spans = {}
+    for n,col in pairs(i.cols.x) do
+       tmp = col:spans(j.cols.x[n]) 
+       if #tmp>1 then for _,one in pairs(tmp) do push(spans,one) end end
+    if #spans > 2 then
+      XXXX? 
+
 function SYM.spans(i, j)
-   local xys,all,one,last,xys,x,c n = {},{}
-   for x,n in pairs(i.has) do push(xys, {x,"this",n}) end
-   for x,n in pairs(j.has) do push(xys, {x,"that",n}) end
-   for _,tmp in ipairs(sort(xys,firsts)) do
-     x,c,n = unpack(tmp)
-     if x ~= last then
-       last = x
-       one  = push(all, Span(i,x,x)) end
-     one:add(x,y,n) end
-   return all end
+  local xys,all,one,last,xys,x,c n = {},{}
+  for x,n in pairs(i.has) do push(xys, {x,"this",n}) end
+  for x,n in pairs(j.has) do push(xys, {x,"that",n}) end
+  for _,tmp in ipairs(sort(xys,firsts)) do
+    x,c,n = unpack(tmp)
+    if x ~= last then
+      last = x
+      one  = push(all, Span(i,x,x)) end
+    one:add(x,y,n) end
+  return all end
 
 function NUM.spans(i, j)
   local xys,all,lo,hi,gap,xys,one,x,c,n = {},{}
@@ -276,41 +313,7 @@ function merge(b4,      j,n,now,a,b,merged)
       if merged then a,j = merged, j+1 end end
     push(now,a)
     j = j+1 end
-  return #now == #b4 and b4 or merge(now) end 
-
--- EXPLAIN
-function EXPLAIN(k,sample,top)
-  i.here = sample
-  top = top or sample
-  enough = (#top.rows)^the.enough
-  if #top.rows >= 2*enough then
-    left,right = sample:half(top)
-    spans = {}
-    for n,col in pairs(i.cols.x) do
-       tmp = col:spans(j.cols.x[n]) 
-       if #tmp>1 then for _,one in pairs(tmp) do push(spans,one) end end
-    if #spans > 2 then
-      XXXX? 
--- CLUSTER: recursively divides data by clustering towards two distant points
-function CLUSTER.new(k,sample,top)
-  local i,enough,left,right
-  top    = top or sample
-  i      = new(k, {here=sample})
-  enough = (#top.rows)^the.enough
-  if #sample.rows >= 2*enough then
-    left, right, i.x, i.y, i.c, i.mid = sample:half(top)
-    if #left.rows < #sample.rows then
-      i.left = CLUSTER:new(left,   top)
-      i.right= CLUSTER:new(right, top) end end 
-  return i end
-
-function CLUSTER.show(i,pre,  here)
-  pre = pre or ""
-  here=""
-  if not i.left and not i.right then here= o(i.here:mid(i.here.cols.y)) end
-  print(fmt("%6s : %-30s %s",#i.here.rows, pre, here))
-  for _,kid in pairs{i.left, i.right} do
-    if kid then kid:show(pre .. "|.. ") end end end
+  return #now == #b4 and b4 or merge(now) end
 -- ___  ____ _  _ ____ ____ 
 -- |  \ |___ |\/| |  | [__  
 -- |__/ |___ |  | |__| ___] 
