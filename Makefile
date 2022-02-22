@@ -7,7 +7,8 @@ help:
 	| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%10s :\033[0m %s\n", $$1, $$2}'
 
 tests: ## run tests
-	lua sl -t all
+	ls *.lua |entr -c etc/tasks.sh
+
 
 hi: ## start work (update all files)
 	git add *;git commit -am save;git push;git status

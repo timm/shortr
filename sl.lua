@@ -22,10 +22,11 @@ OPTIONS:
 
 KEY: N=fileName F=float P=posint S=string
 ]]
-local any,asserts,big,cli,fails,firsts,fmt,goalp,ignorep,klassp
-local lessp,map,main,many,max,min,morep,new,nump,o,oo,per,pop,push
+local any,asserts,big,cli,csv,fails,firsts,fmt,goalp,ignorep,klassp  
+local lessp,map,main,many,max,merge,min,morep,new,nump,o,oo,per,pop,push
 local r,rows,slots,sort,sum,thing,things,unpack
-local CLUSTER, COLS, EGS, NUM, ROWS, SKIP, SOME, SYM = {},{},{},{},{},{},{},{}
+local CLUSTER, COLS, EGS,  NUM, ROWS = {},{},{},{},{}
+local SKIP,    SOME, SPAN, SYM       = {},{},{},{}
 
 local the={}
 help:gsub("\n  [-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x)
@@ -35,9 +36,15 @@ help:gsub("\n  [-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x)
   if x=="false" then the[key]=false elseif x=="true" then the[key]=true else
     the[key] = tonumber(x) or x end end )
  
-for k,v in pairs(the) do
-  print(k,v,type(v)) end
 -- ----------------------------------------------------------------------------
+-- this code reads csv files where the words on line1 define column types.
+function ignorep(x) return x:find":$" end     -- columns to ignore
+function klassp(x)  return x:find"!$" end     -- symbolic goals to achieve
+function lessp(x)   return x:find"-$" end     -- number goals to minimize
+function morep(x)   return x:find"+$" end     -- numeric goals to maximize
+function nump(x)    return x:find"^[A-Z]" end -- numeric columns
+function goalp(x)   return morep(x) or lessp(x) or klassp(x) end
+
 -- strings
 fmt = string.format
 
@@ -47,23 +54,15 @@ max = math.max
 min = math.min
 r   = math.random
 
--- column headers
-function goalp(x)   return morep(x) or lessp(x) or klassp(x) end
-function ignorep(x) return x:find":$" end
-function klassp(x)  return x:find"!$" end
-function lessp(x)   return x:find"-$" end
-function morep(x)   return x:find"+$" end
-function nump(x)    return x:find"^[A-Z]" end
-
 -- tables
 pop = table.remove
 unpack = table.unpack
-function any(t)       return t[r(#t)] end
-function firsts(a,b)  return a[1] < b[1] end
-function many(t,n, u) u={}; for i=1,n do push(u,any(t)) end; return u end
-function per(t,p)     return t[ (#t*(p or .5))//1 ] end
-function push(t,x)    table.insert(t,x); return x end
-function sort(t,f)    table.sort(t,f); return t end
+function any(t)        return t[r(#t)] end
+function firsts(a,b)   return a[1] < b[1] end
+function many(t,n, u)  u={}; for i=1,n do push(u,any(t)) end; return u end
+function per(t,p)      return t[ (#t*(p or .5))//1 ] end
+function push(t,x)     table.insert(t,x); return x end
+function sort(t,f)     table.sort(t,f); return t end
 
 -- meta
 function map(t,f, u)  u={};for k,v in pairs(t) do push(u,f(v)) end; return u end
@@ -82,7 +81,7 @@ function o(t)
   return '{'..table.concat(u," ").."}" end 
 
 -- strings to things
-function rows(file,      x)
+function csv(file,      x)
   file = io.input(file)
   return function() 
     x=io.read(); if x then return things(x) else io.close(file) end end end
@@ -96,6 +95,8 @@ function things(x,sep,  t)
   t={}
   for y in x:gmatch(sep or"([^,]+)") do push(t,thing(y)) end
   return t end
+
+
 -- ____ _    ____ ____ ____ ____ ____ 
 -- |    |    |__| [__  [__  |___ [__  
 -- |___ |___ |  | ___] ___] |___ ___] 
@@ -149,7 +150,7 @@ function NUM.sorted(i)
 -- ROWS: manages `rows`, summarized in `cols` (columns).
 function ROWS.new(k,inits,     i)
   i = new(k,{rows={},cols=nil})
-  if type(inits)=="string" then for t in rows(inits) do i:add(t) end end
+  if type(inits)=="string" then for t in csv(inits) do i:add(t) end end
   if type(inits)=="table"  then for t in inits       do i:add(t) end end 
   return i end
 
@@ -196,15 +197,22 @@ function SOME.add(i,x)
   if     #i.all < i.keep then push(i.all,x)          ; return i.all 
   elseif r()     < i.keep/i.n then i.all[r(#i.all)]=x; return i.all end end
 
+-- SPAN: keeps a random sample on the arriving data
+function SPAN.new(k, col, lo, hi, has) 
+  return new(k,{col=col,lo=lo,hi=hi or lo,has=has or SYM:new()}) end
+
+function SPAN.add(i,x,y,n) i.lo,i.hi=min(x,i.lo),max(x,i.hi); i.has:add(y,n) end
+function SPAN.merge(i,j)
+  local has = i.has:merge(j.has)
+  if now then return SPAN:new(i.col, i.lo, j.hi, has) end end
+
+function SPAN.select(i,row,    x)
+  x = row[i.col.at]
+  return (x=="?") or (i.lo==i.hi and x==i.lo) or (i.lo <= x and x < i.hi) end
+
 -- SYM: summarizes a stream of symbols
 function SYM.new(k,n,s)  
   return new(k,{n=0,at=n or 0,txt=s or"",has={},most=0}) end
-
-function SYM.dist(i,x,y) return(x=="?" and y=="?" and 1) or(x==y and 0 or 1) end
-function SYM.mid(i)      return i.mode end
-function SYM.div(i,   fun)
-  function fun(k,  p) p = -i.has[k]/i.n; return -p*math.log(p,2) end
-  return sum(i.has, fun) end
 
 function SYM.add(i,x,inc)
   if x ~= "?" then
@@ -213,6 +221,11 @@ function SYM.add(i,x,inc)
     i.has[x] = inc + (i.has[x] or 0) 
     if i.has[x] > i.most then i.most,i.mode=i.has[x],x end end end
 
+function SYM.dist(i,x,y) return(x=="?" and y=="?" and 1) or(x==y and 0 or 1) end
+function SYM.mid(i)      return i.mode end
+function SYM.div(i,   p)
+  return sum(i.has,function(k) p=-i.has[k]/i.n;return -p*math.log(p,2) end) end
+
 function SYM.merge(i,j,    k)
   k = SYM:new(i.at,i.txt)
   for x,n in pairs(i.has) do k:add(x,n) end
@@ -220,8 +233,54 @@ function SYM.merge(i,j,    k)
   ei, ej, ejk= i:div(), j:div(), k:div()
   if i.n==0 or j.n==0 or .99*ek <= (i.n*ei + j.n*ej)/k.n then
     return k end end
+-- ___  _ ____ ____ ____ ____ ___ _ ___  ____ 
+-- |  \ | [__  |    |__/ |___  |  |   /  |___ 
+-- |__/ | ___] |___ |  \ |___  |  |  /__ |___ 
+--                                            
+function SYM.spans(i, j)
+   local xys,all,one,last,xys,x,c n = {},{}
+   for x,n in pairs(i.has) do push(xys, {x,"this",n}) end
+   for x,n in pairs(j.has) do push(xys, {x,"that",n}) end
+   for _,tmp in ipairs(sort(xys,firsts)) do
+     x,c,n = unpack(tmp)
+     if x ~= last then
+       last = x
+       one  = push(all, Span(i,x,x)) end
+     one:add(x,y,n) end
+   return all end
 
--- CLUSTER: recursively divides data by clustering towards two distant points
+function NUM.spans(i, j)
+  local xys,all,lo,hi,gap,xys,one,x,c,n = {},{}
+  lo,hi = min(i.lo, j.lo), max(i.hi,j.hi)
+  gap   = (hi - lo) / bins
+  for x,n in pairs(i.has) do push(xys, {x,"this",1}) end
+  for x,n in pairs(j.has) do push(xys, {x,"that",1}) end
+  one = Span:new(i,lo,lo)
+  all = {one}
+  for _,tmp in ipairs(sort(xys,first)) do
+    x,c,n = unpack(tmp) 
+    if one.hi - one.lo > gap then one = push(all, Span(i, one.hi, x)) end
+    one:add(x,y) end
+  all          = merge(all)
+  all[1   ].lo = -big
+  all[#all].hi =  big
+  return all end
+
+function merge(b4,      j,n,now,a,b,merged)
+  j,n,now = 0,#b4,{}
+  while j < #b4 do
+    j    = j+1
+    a, b = b4[j], b4[j+1]
+    if b then
+      merged = a:merge(b)
+      if merged then a,j = merged, j+1 end end
+    push(now,a)
+    j = j+1 end
+  return #now == #b4 and b4 or merge(now) end 
+
+-- EXPLAIN
+--function EXPLAIN(k,sample,top)
+-- CLUSTER: recursively divides data by clustering towards two distant points
 function CLUSTER.new(k,sample,top)
   local i,enough,left,right
   top    = top or sample
@@ -259,8 +318,9 @@ function EGS.some(s,t)
   s=SOME:new(100)
   for i=1,100000 do s:add(i) end
   for j,x in pairs(sort(s.all)) do
-    if (j % 10)==0 then print("") end
-    io.write(fmt("%6s",x))  end end 
+    --if (j % 10)==0 then print("") end
+    --io.write(fmt("%6s",x))  end end 
+    fmt("%6s",x)  end end 
 
 function EGS.clone( r,s)
   r = ROWS:new(the.data)
@@ -279,30 +339,33 @@ function EGS.dist( r,rows,n)
   rows = r.rows
   n = NUM:new()
   for _,row in pairs(rows) do n:add(r:dist(row, rows[1])) end 
-  oo(r.cols.x[2]:sorted()) end
+  --oo(r.cols.x[2]:sorted()) end
+  o(r.cols.x[2]:sorted()) end
 
 function EGS.many(   t)
   t={}; for j=1,100 do push(t,j) end
-  print(oo(many(t, 10))) end
+  --print(oo(many(t, 10))) end
+  o(many(t, 10)) end
 
 function EGS.far(   r,c,row1,row2)
   r = ROWS:new(the.data)
   row1   = r.rows[1]
-  c,row2 = r:far(r.rows[1], r.rows) 
-  print(c,"\n",o(row1),"\n", o(row2)) end
+  c,row2 = r:far(r.rows[1], r.rows) end 
+  --print(c,"\n",o(row1),"\n", o(row2)) end
 
 function EGS.half(   r,c,row1,row2)
   local lefts,rights,x,y,x
   r = ROWS:new(the.data) 
-  oo(r:mid(r.cols.y)) 
+  r:mid(r.cols.y) 
   lefts,rights,x,y,c = r:half() 
-  oo(lefts:mid(lefts.cols.y ))
-  oo(rights:mid(rights.cols.y))
-  end
+  lefts:mid(lefts.cols.y )
+  rights:mid(rights.cols.y)
+  asserts(true,"half") end
 
 function EGS.cluster(r)
   r = ROWS:new(the.data)
-  CLUSTER:new(r):show() end
+  --CLUSTER:new(r):show() end
+  CLUSTER:new(r) end
 
 -- start-up
 if arg[0] == "sl.lua" then
