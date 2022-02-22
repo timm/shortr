@@ -27,27 +27,49 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              <p>Semi-supervised learners [CH05]  make a <em>manifold assumption</em>; i.e. that
+              <p>Standard supervised learners assume that all examples have labels.
+When this is not true, then we need tools to incrementally 
+(a) summarize what has been seen so far; (b) find and focus
+on the most interesting part of that summary, (c) collect
+more data in that region, then (d) repeat.</p>
+<p>To make that search manageable, it is useful to exploit a 
+manifold assumption; i.e.
 higher-dimensional data can be approximated in a lower dimensional
-manifold without loss of signal 
+manifold without loss of signal [Ch05,Le05].
 Manifolds lead to <em>continuity</em>
 effects; i.e. if there are fewer dimensions, then there are more
-similarities between examples.  </p>
-<p><a href="div.png"><img align=right width=250 src="div.png"></a></p>
-<p>Continuity simplifies <em>clustering</em>
-and any subsequent reasoning.  More similarities means  easier
+similarities between examples.
+Continuity simplifies <em>clustering</em>
+(and any subsequent reasoning).  More similarities means  easier
 clustering. And after clustering, reasoning just means reason about
 a handful of examples (maybe even just one)  from each cluster.</p>
-<p>Traditionally, SSL finds those clusters using graph theory.  <code>sl</code>,
-on the other hand, uses a O(N.log(N)) random projection method that
-divides the data
-by grouping it according to nearest to two distant points.  Then
-it uses discretization to find a range that best selects for on the
-the groups. The data is divided on that range and the process
-recurses. </p>
-<p>The output is a tiny tree that comments on the most important
-differences in the data. The space of actions around that tree
-then reduces to just those differences.</p>
+<p><a href="div.png"><img align=right width=250 src="div.png"></a>
+To exploit the manifold assumption, this code uses Aha’s distance
+measure [Aha91] (that can handle numbers and symbols) to 
+recursively divide data based on two distance points (these are found
+in linear time using the Fastmap heuristic [Fal95]). To avoid spurious
+outliers, this code use the 90% furthest points. </p>
+<ul>
+<li><strong>Teaching</strong>: my standard “learn AI from the inside out” exercise is
+to get students to code the following, in whatever language they like.</li>
+<li><strong>Instance selection</strong>: filter the data down to just a few samples per
+cluster, the reason using just those.</li>
+<li><strong>Explanation</strong> 
+Discretize the numeric ranges (*) at each level of the recursion,
+then divide the data according what range best selects for one half, or the other
+at the data at this level of recursion.</li>
+<li><strong>Multi-objective optimization:</strong> This code
+can apply Zitzler’s multi-objective rankining predicate [Zit04] to prune the worst
+half of the data, then recurs on the rest [Ch18]. Assuming a large over-generation
+of the initial population (to say, 10,000, examples), this can be just as effective
+as genetic optimization [Ch18], but runs much faster.</li>
+<li><strong>Semi-supervised learning</strong>: these applications require only the <em>2.log(N)</em> labels at
+of the pair of furthest points seen at each level of recursion.</li>
+</ul>
+<p>(*) Our discretizer is inspired by the ChiMerge algorithm. At each level of the
+recursion, divide the data into <em>Cluster1,Cluster2</em>. Divide each numeric ranges into,
+say, 16 bins then merge adjacent bins with simular distributions in <em>Cluster1</em> and
+<em>Cluster2</em>. </p>
 
             </div>
             
@@ -63,13 +85,13 @@ USAGE:
 
 OPTIONS: 
   -Dump        stack dump on assert fails = false
-  -data    N   data file                  = etc/data/auto93.csv
-  -enough  F   recurse until rows^enough  = .5
-  -far     F   far                        = .9
-  -keep    P   max kept items             = 512
-  -p       P   distance coefficient       = 2
-  -seed    P   set seed                   = 10019
-  -todo    S   start up action (or &#x27;all&#x27;) = nothing
+  -data     N   data file                  = etc/data/auto93.csv
+  -enough   F   recurse until rows^enough  = .5
+  -furthest F   far                        = .9
+  -keep     P   max kept items             = 512
+  -p        P   distance coefficient       = 2
+  -seed     P   set seed                   = 10019
+  -todo     S   start up action (or &#x27;all&#x27;) = nothing
   -help        show help                  = false
 
 KEY: N=fileName F=float P=posint S=string
@@ -428,17 +450,17 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fun</span><span class="hljs-params">(col)</span></span> <span class="hljs-keyword">return</span> col:dist(row1[col.at], row2[col.at])^the.p <span class="hljs-keyword">end</span> 
   <span class="hljs-keyword">return</span> (sum(i.cols.x, fun)/ #i.cols.x)^(<span class="hljs-number">1</span>/the.p) <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.far</span><span class="hljs-params">(i,row1,rows,     fun)</span></span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.furthest</span><span class="hljs-params">(i,row1,rows,     fun)</span></span>
   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fun</span><span class="hljs-params">(row2)</span></span> <span class="hljs-keyword">return</span> {i:dist(row1,row2), row2} <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> <span class="hljs-built_in">unpack</span>(per(<span class="hljs-built_in">sort</span>(map(rows,fun),firsts), the.far)) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">unpack</span>(per(<span class="hljs-built_in">sort</span>(map(rows,fun),firsts), the.furthest)) <span class="hljs-keyword">end</span>
   
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.half</span><span class="hljs-params">(i, top)</span></span>
   <span class="hljs-keyword">local</span> some, top,c,x,y,tmp,mid,lefts,rights,_
   some= many(i.rows, the.keep)
   top = top <span class="hljs-keyword">or</span> i
-  _,x = top:far(any(some), some)
-  c,y = top:far(x,         some)
-  tmp = <span class="hljs-built_in">sort</span>(map(i.rows,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(r)</span></span> <span class="hljs-keyword">return</span> top:project(r,x,y,c) <span class="hljs-keyword">end</span>),firsts)
+  _,x = top:furthest(any(some), some)
+  c,y = top:furthest(x,         some)
+  tmp = <span class="hljs-built_in">sort</span>(map(i.rows,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(r)</span></span> <span class="hljs-keyword">return</span> top:fastmap(r,x,y,c) <span class="hljs-keyword">end</span>),firsts)
   mid = #i.rows//<span class="hljs-number">2</span>
   lefts, rights = i:clone(), i:clone()
   <span class="hljs-keyword">for</span> at,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(tmp) <span class="hljs-keyword">do</span> (at &lt;=mid <span class="hljs-keyword">and</span> lefts <span class="hljs-keyword">or</span> rights):add(row[<span class="hljs-number">2</span>]) <span class="hljs-keyword">end</span>
@@ -447,7 +469,7 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.mid</span><span class="hljs-params">(i,cols)</span></span>
   <span class="hljs-keyword">return</span> map(cols <span class="hljs-keyword">or</span> i.cols.all, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(col)</span></span> <span class="hljs-keyword">return</span> col:mid() <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.project</span><span class="hljs-params">(i, r,x,y,c,     a,b)</span></span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.fastmap</span><span class="hljs-params">(i, r,x,y,c,     a,b)</span></span>
   a,b = i:dist(r,x), i:dist(r,y); <span class="hljs-keyword">return</span> {(a^<span class="hljs-number">2</span> + c^<span class="hljs-number">2</span> - b^<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*c), r} <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
@@ -850,10 +872,41 @@ nss  = NUM | SYM | SKIP
 COLS = all:[nss]+, x:[nss]<em>, y:[nss]</em>, klass;col?
 ROWS = cols:COLS, rows:SOME</p>
 <h2 id="references">References</h2>
-<p>[CH05]:
+<ul>
+<li>[Ah91]:
+Aha, D.W., Kibler, D. &amp; Albert, M.K. Instance-based 
+learning algorithms. Mach Learn 6, 37–66 (1991). 
+<a href="https://doi.org/10.1007/BF00153759">https://doi.org/10.1007/BF00153759</a></li>
+<li>[Boley, 1998]:
+ Boley, D., 1998. 
+<a href="https://www-users.cse.umn.edu/~boley/publications/papers/PDDP.pdf">Principal directions divisive partitioning</a>
+ Data Mining and Knowledge Discovery, 2(4): 325-344.</li>
+<li>[Ch05]:
 <a href="http://www.molgen.mpg.de/3659531/MITPress--SemiSupervised-Learning">Semi-Supervised Learning</a>
 (2005) Olivier Chapelle,  Bernhard Schölkopf, and Alexander Zien (eds). 
-MIT Press.</p>
+MIT Press.</li>
+<li>[Ch18] 
+<a href="https://arxiv.org/pdf/1608.07617.pdf">Sampling” as a Baseline Optimizer for Search-Based Software Engineering</a>,
+Jianfeng Chen; Vivek Nair; Rahul Krishna; Tim Menzies
+IEEE Trans SE, (45)6, 2019</li>
+<li>[Ch22]:
+<a href="https://arxiv.org/pdf/2111.02038.pdf">Can We Achieve Fairness Using Semi-Supervised Learning?</a>
+(2022), Joymallya Chakraborty, Huy Tu, Suvodeep Majumder, Tim Menzies. </li>
+<li>[Fal95]: 
+Christos Faloutsos and King-Ip Lin. 1995. FastMap: a fast algorithm for indexing, data-mining and visualization of traditional and multimedia datasets. SIGMOD Rec. 24, 2 (May 1995), 163–174. DOI:<a href="https://doi.org/10.1145/568271.223812">https://doi.org/10.1145/568271.223812</a></li>
+<li>[Le05}
+Levina, E., Bickel, P.J.: <a href="https://www.stat.berkeley.edu/~bickel/mldim.pdf">Maximum likelihood estimation of intrinsic dimension</a>. 
+In:
+Advances in neural information processing systems, pp. 777–784 (2005)</li>
+<li>[Pl04]: 
+Platt, John. 
+<a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2005/01/nystrom2.pdf">FastMap, MetricMap, and Landmark MDS are all Nystrom Algorithms</a>
+AISTATS (2005).</li>
+<li>[Zit04]:
+<a href="https://link.springer.com/chapter/10.1007/978-3-540-30217-9_84">Indicator-based selection in multiobjective search</a>
+Eckart Zitzler , Simon Künzli
+Proc. 8th International Conference on Parallel Problem Solving from Nature (PPSN VIII</li>
+</ul>
 
             </div>
             

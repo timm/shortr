@@ -1,25 +1,48 @@
--- Semi-supervised learners [CH05]  make a _manifold assumption_; i.e. that
+-- Standard supervised learners assume that all examples have labels.
+-- When this is not true, then we need tools to incrementally 
+-- (a) summarize what has been seen so far; (b) find and focus
+-- on the most interesting part of that summary, (c) collect
+-- more data in that region, then (d) repeat.
+--  
+-- To make that search manageable, it is useful to exploit a 
+-- manifold assumption; i.e.
 -- higher-dimensional data can be approximated in a lower dimensional
--- manifold without loss of signal 
+-- manifold without loss of signal [Ch05,Le05].
 -- Manifolds lead to _continuity_
 -- effects; i.e. if there are fewer dimensions, then there are more
--- similarities between examples.  
+-- similarities between examples.
 -- Continuity simplifies _clustering_
--- and any subsequent reasoning.  More similarities means  easier
+-- (and any subsequent reasoning).  More similarities means  easier
 -- clustering. And after clustering, reasoning just means reason about
 -- a handful of examples (maybe even just one)  from each cluster.
--- Traditionally, SSL finds those clusters using graph theory.  `sl`,
--- on the other hand, uses a O(N.log(N)) random projection method that
--- divides the data
--- by grouping it according to nearest to two distant points.  Then
--- it uses discretization to find a range that best selects for on the
--- the groups. The data is divided on that range and the process
--- recurses. 
---   
+--  
 -- <a href="div.png"><img align=right width=250 src="div.png"></a>
--- The output is a tiny tree that comments on the most important
--- differences in the data. The space of actions around that tree
--- then reduces to just those differences.
+-- To exploit the manifold assumption, this code uses Aha's distance
+-- measure [Aha91] (that can handle numbers and symbols) to 
+-- recursively divide data based on two distance points (these are found
+-- in linear time using the Fastmap heuristic [Fal95]). To avoid spurious
+-- outliers, this code use the 90% furthest points. 
+--   
+-- - **Teaching**: my standard "learn AI from the inside out" exercise is
+-- to get students to code the following, in whatever language they like.
+-- - **Instance selection**: filter the data down to just a few samples per
+-- cluster, the reason using just those.
+-- - **Explanation** 
+-- Discretize the numeric ranges (\*) at each level of the recursion,
+-- then divide the data according what range best selects for one half, or the other
+-- at the data at this level of recursion.
+-- - **Multi-objective optimization:** This code
+-- can apply Zitzler's multi-objective rankining predicate [Zit04] to prune the worst
+-- half of the data, then recurs on the rest [Ch18]. Assuming a large over-generation
+-- of the initial population (to say, 10,000, examples), this can be just as effective
+-- as genetic optimization [Ch18], but runs much faster.
+-- - **Semi-supervised learning**: these applications require only the _2.log(N)_ labels at
+-- of the pair of furthest points seen at each level of recursion.
+--
+-- (\*) Our discretizer is inspired by the ChiMerge algorithm. At each level of the
+-- recursion, divide the data into _Cluster1,Cluster2_. Divide each numeric ranges into,
+-- say, 16 bins then merge adjacent bins with simular distributions in _Cluster1_ and
+-- _Cluster2_. 
 
 local help = [[
 
@@ -32,13 +55,13 @@ USAGE:
 
 OPTIONS: 
   -Dump        stack dump on assert fails = false
-  -data    N   data file                  = etc/data/auto93.csv
-  -enough  F   recurse until rows^enough  = .5
-  -far     F   far                        = .9
-  -keep    P   max kept items             = 512
-  -p       P   distance coefficient       = 2
-  -seed    P   set seed                   = 10019
-  -todo    S   start up action (or 'all') = nothing
+  -data     N   data file                  = etc/data/auto93.csv
+  -enough   F   recurse until rows^enough  = .5
+  -furthest F   far                        = .9
+  -keep     P   max kept items             = 512
+  -p        P   distance coefficient       = 2
+  -seed     P   set seed                   = 10019
+  -todo     S   start up action (or 'all') = nothing
   -help        show help                  = false
 
 KEY: N=fileName F=float P=posint S=string
@@ -198,17 +221,17 @@ function ROWS.dist(i,row1,row2,   d,fun)
   function fun(col) return col:dist(row1[col.at], row2[col.at])^the.p end 
   return (sum(i.cols.x, fun)/ #i.cols.x)^(1/the.p) end
 
-function ROWS.far(i,row1,rows,     fun)
+function ROWS.furthest(i,row1,rows,     fun)
   function fun(row2) return {i:dist(row1,row2), row2} end
-  return unpack(per(sort(map(rows,fun),firsts), the.far)) end
+  return unpack(per(sort(map(rows,fun),firsts), the.furthest)) end
   
 function ROWS.half(i, top)
   local some, top,c,x,y,tmp,mid,lefts,rights,_
   some= many(i.rows, the.keep)
   top = top or i
-  _,x = top:far(any(some), some)
-  c,y = top:far(x,         some)
-  tmp = sort(map(i.rows,function(r) return top:project(r,x,y,c) end),firsts)
+  _,x = top:furthest(any(some), some)
+  c,y = top:furthest(x,         some)
+  tmp = sort(map(i.rows,function(r) return top:fastmap(r,x,y,c) end),firsts)
   mid = #i.rows//2
   lefts, rights = i:clone(), i:clone()
   for at,row in pairs(tmp) do (at <=mid and lefts or rights):add(row[2]) end
@@ -217,7 +240,7 @@ function ROWS.half(i, top)
 function ROWS.mid(i,cols)
   return map(cols or i.cols.all, function(col) return col:mid() end) end
 
-function ROWS.project(i, r,x,y,c,     a,b)
+function ROWS.fastmap(i, r,x,y,c,     a,b)
   a,b = i:dist(r,x), i:dist(r,y); return {(a^2 + c^2 - b^2)/(2*c), r} end
 
 -- SKIP: summarizes things we want to ignore (so does nothing)
@@ -439,27 +462,36 @@ end
 -- COLS = all:[nss]+, x:[nss]*, y:[nss]*, klass;col?
 -- ROWS = cols:COLS, rows:SOME
 -- ## References
---  
--- [Ah91]:
+-- - [Ah91]:
 -- Aha, D.W., Kibler, D. & Albert, M.K. Instance-based 
 -- learning algorithms. Mach Learn 6, 37–66 (1991). 
 -- https://doi.org/10.1007/BF00153759
---   
--- [Boley, 1998]
--- Boley, D., 1998. 
+-- - [Boley, 1998]:
+--  Boley, D., 1998. 
 -- [Principal directions divisive partitioning](https://www-users.cse.umn.edu/~boley/publications/papers/PDDP.pdf)
 --  Data Mining and Knowledge Discovery, 2(4): 325-344.
---   
--- [CH05]:
+-- - [Ch05]:
 -- [Semi-Supervised Learning](http://www.molgen.mpg.de/3659531/MITPress--SemiSupervised-Learning)
 -- (2005) Olivier Chapelle,  Bernhard Schölkopf, and Alexander Zien (eds). 
 -- MIT Press.
---   
--- [Fal95]:
+--  - [Ch18] 
+-- [Sampling” as a Baseline Optimizer for Search-Based Software Engineering](https://arxiv.org/pdf/1608.07617.pdf),
+-- Jianfeng Chen; Vivek Nair; Rahul Krishna; Tim Menzies
+-- IEEE Trans SE, (45)6, 2019
+-- - [Ch22]:
+-- [Can We Achieve Fairness Using Semi-Supervised Learning?](https://arxiv.org/pdf/2111.02038.pdf)
+-- (2022), Joymallya Chakraborty, Huy Tu, Suvodeep Majumder, Tim Menzies. 
+-- - [Fal95]: 
 -- Christos Faloutsos and King-Ip Lin. 1995. FastMap: a fast algorithm for indexing, data-mining and visualization of traditional and multimedia datasets. SIGMOD Rec. 24, 2 (May 1995), 163–174. DOI:https://doi.org/10.1145/568271.223812
---  
--- [Pl04]:
+-- - [Le05}
+-- Levina, E., Bickel, P.J.: [Maximum likelihood estimation of intrinsic dimension](https://www.stat.berkeley.edu/~bickel/mldim.pdf). 
+-- In:
+-- Advances in neural information processing systems, pp. 777–784 (2005)
+-- - [Pl04]: 
 -- Platt, John. 
--- [FastMap, MetricMap, and Landmark MDS are all Nystrom Algorithms](https://www.microsoft.com/en-us/research/wp-content/uploads/2005/01/nystrom2.pdf_
+-- [FastMap, MetricMap, and Landmark MDS are all Nystrom Algorithms](https://www.microsoft.com/en-us/research/wp-content/uploads/2005/01/nystrom2.pdf)
 -- AISTATS (2005).
-
+-- - [Zit04]:
+-- [Indicator-based selection in multiobjective search](https://link.springer.com/chapter/10.1007/978-3-540-30217-9_84)
+-- Eckart Zitzler , Simon Künzli
+-- Proc. 8th International Conference on Parallel Problem Solving from Nature (PPSN VIII
