@@ -279,7 +279,18 @@ function merge(b4,      j,n,now,a,b,merged)
   return #now == #b4 and b4 or merge(now) end 
 
 -- EXPLAIN
---function EXPLAIN(k,sample,top)
+function EXPLAIN(k,sample,top)
+  i.here = sample
+  top = top or sample
+  enough = (#top.rows)^the.enough
+  if #top.rows >= 2*enough then
+    left,right = sample:half(top)
+    spans = {}
+    for n,col in pairs(i.cols.x) do
+       tmp = col:spans(j.cols.x[n]) 
+       if #tmp>1 then for _,one in pairs(tmp) do push(spans,one) end end
+    if #spans > 2 then
+      XXXX? 
 -- CLUSTER: recursively divides data by clustering towards two distant points
 function CLUSTER.new(k,sample,top)
   local i,enough,left,right
