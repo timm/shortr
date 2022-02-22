@@ -4,14 +4,10 @@
 -- Manifolds lead to _continuity_
 -- effects; i.e. if there are fewer dimensions, then there are more
 -- similarities between examples.  
---    
--- <a href="div.png"><img align=right width=250 src="div.png"></a>
---   
 -- Continuity simplifies _clustering_
 -- and any subsequent reasoning.  More similarities means  easier
 -- clustering. And after clustering, reasoning just means reason about
 -- a handful of examples (maybe even just one)  from each cluster.
---
 -- Traditionally, SSL finds those clusters using graph theory.  `sl`,
 -- on the other hand, uses a O(N.log(N)) random projection method that
 -- divides the data
@@ -20,6 +16,7 @@
 -- the groups. The data is divided on that range and the process
 -- recurses. 
 --   
+-- <a href="div.png"><img align=right width=250 src="div.png"></a>
 -- The output is a tiny tree that comments on the most important
 -- differences in the data. The space of actions around that tree
 -- then reduces to just those differences.
@@ -60,6 +57,7 @@ local r,rows,slots,sort,sum,thing,things,unpack
 -- Classes have UPPER CASE names.
 local CLUSTER, COLS, EGS,  NUM, ROWS = {},{},{},{},{}
 local SKIP,    SOME, SPAN, SYM       = {},{},{},{}
+
 -- ## Settings
 -- Parse the help text for flags and defaults (e.g. -keep, 512).   
 -- Check for updates on those details from command line       
@@ -441,8 +439,27 @@ end
 -- COLS = all:[nss]+, x:[nss]*, y:[nss]*, klass;col?
 -- ROWS = cols:COLS, rows:SOME
 -- ## References
--- 
+--  
+-- [Ah91]:
+-- Aha, D.W., Kibler, D. & Albert, M.K. Instance-based 
+-- learning algorithms. Mach Learn 6, 37–66 (1991). 
+-- https://doi.org/10.1007/BF00153759
+--   
+-- [Boley, 1998]
+-- Boley, D., 1998. 
+-- [Principal directions divisive partitioning](https://www-users.cse.umn.edu/~boley/publications/papers/PDDP.pdf)
+--  Data Mining and Knowledge Discovery, 2(4): 325-344.
+--   
 -- [CH05]:
 -- [Semi-Supervised Learning](http://www.molgen.mpg.de/3659531/MITPress--SemiSupervised-Learning)
 -- (2005) Olivier Chapelle,  Bernhard Schölkopf, and Alexander Zien (eds). 
 -- MIT Press.
+--   
+-- [Fal95]:
+-- Christos Faloutsos and King-Ip Lin. 1995. FastMap: a fast algorithm for indexing, data-mining and visualization of traditional and multimedia datasets. SIGMOD Rec. 24, 2 (May 1995), 163–174. DOI:https://doi.org/10.1145/568271.223812
+--  
+-- [Pl04]:
+-- Platt, John. 
+-- [FastMap, MetricMap, and Landmark MDS are all Nystrom Algorithms](https://www.microsoft.com/en-us/research/wp-content/uploads/2005/01/nystrom2.pdf_
+-- AISTATS (2005).
+
