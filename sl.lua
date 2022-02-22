@@ -1,5 +1,13 @@
--- Tim Menzies <timm@ieee.org>
+-- Tim Menzies       
+-- <timm@ieee.org>
 -- 
+-- The next generation of AI-literature software engineering needs a deep
+-- understanding of the many services offered by AI, and how to mix and match them.
+-- To give them an appreciation for that, I've been reflecting on the work of  17 Ph.D.
+-- students to find a minimal common core of all that research (see below).  My standard 
+-- "intro to explainable AI" assignment is to get them to code up the following, in
+-- whatever language they like.  
+--
 -- Standard supervised learners assume that all examples have labels.
 -- When this is not true, then we need tools to incrementally 
 -- (a) summarize what has been seen so far; (b) find and focus
@@ -25,10 +33,9 @@
 -- in linear time using the Fastmap heuristic [Fal95]). To avoid spurious
 -- outliers, this code use the 90% furthest points. 
 --   
--- - **Teaching**: my standard "learn AI from the inside out" exercise is
--- to get students to code the following, in whatever language they like.
 -- - **Instance selection**: filter the data down to just a few samples per
 -- cluster, the reason using just those.
+-- - **Anomaly detection**
 -- - **Explanation** 
 -- Discretize the numeric ranges (\*) at each level of the recursion,
 -- then divide the data according what range best selects for one half, or the other
