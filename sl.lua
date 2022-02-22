@@ -1,3 +1,5 @@
+-- Tim Menzies <timm@ieee.org>
+-- 
 -- Standard supervised learners assume that all examples have labels.
 -- When this is not true, then we need tools to incrementally 
 -- (a) summarize what has been seen so far; (b) find and focus
