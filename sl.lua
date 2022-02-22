@@ -1,5 +1,29 @@
--- vim : ft=lua et sts=2 sw=2 ts=2 :
-local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end --used later (to find rogues)
+-- Semi-supervised learners [CH05]  make a _manifold assumption_; i.e. that
+-- higher-dimensional data can be approximated in a lower dimensional
+-- manifold without loss of signal 
+-- Manifolds lead to _continuity_
+-- effects; i.e. if there are fewer dimensions, then there are more
+-- similarities between examples.  
+--    
+-- <a href="div.png"><img align=right width=250 src="div.png"></a>
+--   
+-- Continuity simplifies _clustering_
+-- and any subsequent reasoning.  More similarities means  easier
+-- clustering. And after clustering, reasoning just means reason about
+-- a handful of examples (maybe even just one)  from each cluster.
+--
+-- Traditionally, SSL finds those clusters using graph theory.  `sl`,
+-- on the other hand, uses a O(N.log(N)) random projection method that
+-- divides the data
+-- by grouping it according to nearest to two distant points.  Then
+-- it uses discretization to find a range that best selects for on the
+-- the groups. The data is divided on that range and the process
+-- recurses. 
+--   
+-- The output is a tiny tree that comments on the most important
+-- differences in the data. The space of actions around that tree
+-- then reduces to just those differences.
+
 local help = [[
 
 sl == S.U.B.L.I.M.E. == Sublime's unsupervised 
@@ -22,12 +46,27 @@ OPTIONS:
 
 KEY: N=fileName F=float P=posint S=string
 ]]
+
+-- ## Namespace
+
+-- Cache current globals, use at end to find rogue variables
+local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
+
+-- Defined local names.
 local any,asserts,big,cli,csv,fails,firsts,fmt,goalp,ignorep,klassp  
 local lessp,map,main,many,max,merge,min,morep,new,nump,o,oo,per,pop,push
 local r,rows,slots,sort,sum,thing,things,unpack
+
+-- Classes have UPPER CASE names.
 local CLUSTER, COLS, EGS,  NUM, ROWS = {},{},{},{},{}
 local SKIP,    SOME, SPAN, SYM       = {},{},{},{}
-
+-- ## Settings
+-- Parse the help text for flags and defaults (e.g. -keep, 512).   
+-- Check for updates on those details from command line       
+-- (and and there, 
+-- some shortcuts are available;
+-- e.g.  _-k N_ &rArr; `keep=N`;         
+-- and  _-booleanFlag_ &rArr; `booleanFlag=not default`). 
 local the={}
 help:gsub("\n  [-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x)
   for n,flag in ipairs(arg) do 
@@ -401,3 +440,9 @@ end
 -- nss  = NUM | SYM | SKIP
 -- COLS = all:[nss]+, x:[nss]*, y:[nss]*, klass;col?
 -- ROWS = cols:COLS, rows:SOME
+-- ## References
+-- 
+-- [CH05]:
+-- [Semi-Supervised Learning](http://www.molgen.mpg.de/3659531/MITPress--SemiSupervised-Learning)
+-- (2005) Olivier Chapelle,  Bernhard Schölkopf, and Alexander Zien (eds). 
+-- MIT Press.
