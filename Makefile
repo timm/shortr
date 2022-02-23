@@ -1,12 +1,16 @@
 .PHONY: help tests hi bye pdfs
 
+LUA = $(shell ls *.lua)
+PDF = $(addsuffix .pdf, $(addprefix docs/,$(basename $(LUA))))
+HTML= $(addsuffix .html,$(addprefix docs/,$(basename $(LUA))))
+
 help:
 	@printf "\nmake [OPTIONS]\n\nOPTIONS:\n"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 	| sort \
 	| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%10s :\033[0m %s\n", $$1, $$2}'
 
-doc: docs/l4.pdf docs/l4.html ## generate pdfs
+doc: $(PDF) $(HTML) ## generate pdfs
 
 tests: ## run tests
 	ls *.lua |entr -c etc/tasks.sh

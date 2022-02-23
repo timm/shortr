@@ -2,27 +2,27 @@
 --    
 -- **[Repo](https://github.com/timm/lua) • [Issues](https://github.com/timm/lua/issues) • [&copy;2022](LICENSE.md)** Tim Menzies
 --        
--- The next generation of AI-literature software engineers need a deep
--- understanding of AI tools.  To that end, I've been looking back over
--- common themes from my
--- AI graduate students (30+ students, over 20 years). The result
--- is a 
--- tool kit small enough to build in a semester, and which can be
--- refactored many ways.  The code may not be optimal, but it does
--- enable a tour through many of the current themes in AI. No, its
--- not a deep learner since I want to build succinct high-level models
--- that humans can read, understand, critique, and change.
+-- If we choose our AI tools not on their complexity, but
+-- on their understandably, what would they look like?
+-- To that end, I've been looking back over
+-- common themes seen in my
+-- AI graduate students (30+ students, over 20 years). What I was
+-- after were the least lines of code that offer the most
+-- AI functionality-- and which could be mixed and matched in
+-- novel and interesting ways.
 --       
--- Anyway, my standard "intro to AI" exercise is six
+-- The result is this file. My standard "intro to AI" exercise is six
 -- weeks of homeworks where students rebuild the following code,from
 -- scratch, in any language they like (except LUA).  After that, 
 -- students can review all the assumptions of this code, then read the
 -- literature looking for other tools that challenge those assumptions.
 -- That leads to a second a 4-6 week project using these tools as a baseline against
--- which they can compare other approaches.
+-- which they can compare other, more complex, approaches.
 --   
 -- <hr>
---   
+--     
+-- The need for baselines. XXXX
+---   
 -- Standard supervised learners assume that all examples have labels.
 -- When this is not true, then we need tools to incrementally 
 -- (a) summarize what has been seen so far; (b) find and focus
@@ -62,11 +62,11 @@
 -- - **Monitoring**
 local help = [[
 
-l4 == a little LUA learner laboratory.
+l5 == a little lab of lots of LUA learning algorithms.
 (c) 2022, Tim Menzies, BSD 2-clause license.
 
 USAGE: 
-  lua l4.lua [OPTIONS]
+  lua l5.lua [OPTIONS]
 
 OPTIONS: 
   -cohen    F   Cohen's delta              = .35
@@ -371,22 +371,24 @@ function EXPLAIN.new(k,egs,top)
   i    = new(k,{here = egs})
   top  = top or egs
   want = (#top.rows)^the.want
-  if #top.rows >= 2*want then
-    left,right = egs:half(top)
+  if #top.rows >= 2*want then  -- if enough to recurse
+    left,right = egs:half(top) -- cluster in two
     spans, divs, sizes = {}, Num(), Num()
-    for n,col in pairs(i.cols.x) do
-      for _,span in pairs(col:spans(j.cols.x[n])) do
-        push(spans, span)
-        size, div = span:score()
-        sizes:add(size)
+    for n,col1 in pairs(i.cols.x) do  -- for each x attribute ...
+      col2 = j.cols.x[n]              -- col1,col2 is same col in either cluster
+      for _,span in pairs(col1:spans(col2)) do -- spans are deltas between clusters
+        push(spans, span)                      -- cache the span
+        size, div = span:score()               -- remember the span's score (so
+        sizes:add(size)                        --    we can normalize it, later)
         divs:add(div) end end 
-    order = function(a,b) return a:good(sizes,divs) < b:good(sizes,divs) end
-    best  = sort(spans, order)[1]
+    order = function(a,b)  -- compare two spans, normalizing the scores
+              return a:good(sizes,divs) < b:good(sizes,divs) end
+    best  = sort(spans, order)[1]    -- best span is first in this sort
     yes, no = egs:clone(), egs:clone()
-    for _,row in pairs(egs.rows) do 
-      (best:selects(row) and yes or no):add(row) end
-    if #yes.rows<#egs.rows then
-      if #yes.rows>=want then i.yes=EXPLAIN:new(yes,top) end
+    for _,row in pairs(egs.rows) do  -- 
+      (best:selects(row) and yes or no):add(row) end -- divide data in two
+    if #yes.rows<#egs.rows then -- make kids if kid size different to parent size
+      if #yes.rows>=want then i.yes=EXPLAIN:new(yes,top) end 
       if #no.rows >=want then i.no =EXPLAIN:new(no,top)  end end end
   return i end
 
