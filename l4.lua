@@ -1,19 +1,20 @@
--- Tim Menzies       
--- <timm@ieee.org>
--- 
--- The next generation of AI-literature software engineering needs a deep
--- understanding of the many services offered by AI, and how to mix and match them.
--- To give them an appreciation for that, I've been reflecting on the work of  17 Ph.D.
--- students to find a minimal common core of all that research (see below).  My standard 
--- "intro to explainable AI" assignment is to get them to code up the following, in
--- whatever language they like.  
---
+-- <img style="margin-left: 5px;" src=head.png width=150 align=right>
+--   
+-- The next generation of AI-literature software engineers need 
+-- to know how to mix-and-match the services within AI tools.  To that end, I've
+-- been refactoring the work of my AI graduate students (3 dozen over 20 years)
+-- into a   tool kit small enough to build in a semester, that can be refactored
+-- many ways.  So my standard "intro to AI" project is to get students to
+-- rebuild the following code,from scratch, in any language they like
+-- (except LUA) in six weekly homeworks. <br clear=all>
+--      
 -- Standard supervised learners assume that all examples have labels.
 -- When this is not true, then we need tools to incrementally 
 -- (a) summarize what has been seen so far; (b) find and focus
 -- on the most interesting part of that summary, (c) collect
 -- more data in that region, then (d) repeat.
---  
+--        
+-- <a href="div.png"><img align=right width=225 src="div.png"></a>
 -- To make that search manageable, it is useful to exploit a 
 -- manifold assumption; i.e.
 -- higher-dimensional data can be approximated in a lower dimensional
@@ -25,14 +26,16 @@
 -- (and any subsequent reasoning).  More similarities means  easier
 -- clustering. And after clustering, reasoning just means reason about
 -- a handful of examples (maybe even just one)  from each cluster.
---  
--- <a href="div.png"><img align=right width=250 src="div.png"></a>
+--         
 -- To exploit the manifold assumption, this code uses Aha's distance
 -- measure [Aha91] (that can handle numbers and symbols) to 
--- recursively divide data based on two distance points (these are found
--- in linear time using the Fastmap heuristic [Fal95]). To avoid spurious
--- outliers, this code use the 90% furthest points. 
---   
+-- recursively divide data based on two distant points (these are found
+-- in linear time using the Fastmap heuristic [Fa95]). To avoid spurious
+-- outliers, this code use the 90% furthest points.  To avoid long runtimes,
+-- uses a subset of the data to learn where to divide data (then all the data
+-- gets pushed down first halves).
+--       
+-- **ASSIGNMENTS**
 -- - **Instance selection**: filter the data down to just a few samples per
 -- cluster, the reason using just those.
 -- - **Anomaly detection**
@@ -47,20 +50,14 @@
 -- as genetic optimization [Ch18], but runs much faster.
 -- - **Semi-supervised learning**: these applications require only the _2.log(N)_ labels at
 -- of the pair of furthest points seen at each level of recursion.
---
--- (\*) Our discretizer is inspired by the ChiMerge algorithm. At each level of the
--- recursion, divide the data into _Cluster1,Cluster2_. Divide each numeric ranges into,
--- say, 16 bins then merge adjacent bins with simular distributions in _Cluster1_ and
--- _Cluster2_. 
-
+--       
 local help = [[
 
-sl == S.U.B.L.I.M.E. == Sublime's unsupervised 
-bifurcation: let's infer minimal explanations. 
+l4 == a little LUA learner laboratory.
 (c) 2022, Tim Menzies, BSD 2-clause license.
 
 USAGE: 
-  lua sl.lua [OPTIONS]
+  lua l4.lua [OPTIONS]
 
 OPTIONS: 
   -Dump        stack dump on assert fails = false
@@ -74,6 +71,22 @@ OPTIONS:
   -help        show help                  = false
 
 KEY: N=fileName F=float P=posint S=string
+
+NOTES: This code uses Aha's distance measure [Aha91] (that can
+handle numbers and symbols) to recursively divide data based on two
+distant points (these two are found in linear time using the Fastmap
+heuristic [Fa95]).
+
+To avoid spurious outliers, this code use the 90% furthest points.
+
+To avoid long runtimes, uses a subset of the data to learn where
+to divide data (then all the data gets pushed down first halves).
+
+To support explanation, optionally, at each level of recursion,
+this code reports what ranges can best distinguish sibling clusters
+C1,C2..  The  discretizer is inspired by the ChiMerge algorithm:
+numerics are divided into, say, 16 bins. Then, while we can find
+adjacent bins, merge them then look for other merges.
 ]]
 
 -- ## Namespace
@@ -453,7 +466,7 @@ function EGS.cluster(r)
 -- start-up
 if arg[0] == "sl.lua" then
   oo(the)
-  if the.help then print(help) else
+  if the.help then print(help:gsub("\nNOTES:*$","")) else
     local b4={}; for k,v in pairs(the) do b4[k]=v end
     for _,todo in pairs(the.todo=="all" and slots(EGS) or {the.todo}) do
       for k,v in pairs(b4) do the[k]=v end
