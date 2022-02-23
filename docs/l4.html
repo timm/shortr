@@ -27,7 +27,9 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              <p><strong><a href="https://github.com/timm/lua">Repo</a> • <a href="https://github.com/timm/lua/issues">Issues</a> • <a href="LICENSE.md">License</a></strong></p>
+              <img align=left width=150 src=head.png>
+   
+<p><strong><a href="https://github.com/timm/lua">Repo</a> • <a href="https://github.com/timm/lua/issues">Issues</a> • <a href="LICENSE.md">&copy;2022</a></strong> Tim Menzies</p>
 <p>The next generation of AI-literature software engineers need a deep
 understanding of AI tools.  To that end, I’ve been refactoring the
 work of my AI graduate students (3 dozen over 20 years) into a
@@ -83,15 +85,17 @@ USAGE:
   lua l4.lua [OPTIONS]
 
 OPTIONS: 
-  -Dump        stack dump on assert fails = false
+  -cohen    F   Cohen&#x27;s delta              = .35
   -data     N   data file                  = etc/data/auto93.csv
-  -enough   F   recurse until rows^enough  = .5
+  -Dump         stack dump on assert fails = false
   -furthest F   far                        = .9
+  -Format   s   format string              = %5.2f
   -keep     P   max kept items             = 512
   -p        P   distance coefficient       = 2
   -seed     P   set seed                   = 10019
   -todo     S   start up action (or &#x27;all&#x27;) = nothing
   -help        show help                  = false
+  -want     F   recurse until rows^want    = .5
 
 KEY: N=fileName F=float P=posint S=string
 
@@ -156,7 +160,7 @@ adjacent bins with the similar distributions in C1,C2, then
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> any,asserts,big,cli,csv,fails,firsts,fmt,goalp,ignorep,klassp  
 <span class="hljs-keyword">local</span> lessp,map,main,many,<span class="hljs-built_in">max</span>,merge,<span class="hljs-built_in">min</span>,morep,new,nump,o,oo,per,pop,push
-<span class="hljs-keyword">local</span> r,rows,slots,<span class="hljs-built_in">sort</span>,sum,thing,things,<span class="hljs-built_in">unpack</span></pre></div></div>
+<span class="hljs-keyword">local</span> r,rows,rnd,rnds,slots,<span class="hljs-built_in">sort</span>,sum,thing,things,<span class="hljs-built_in">unpack</span></pre></div></div>
             
         </li>
         
@@ -262,7 +266,11 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
             <div class="content"><div class='highlight'><pre>big = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
 <span class="hljs-built_in">max</span> = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>
 <span class="hljs-built_in">min</span> = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>
-r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span></pre></div></div>
+r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rnds</span><span class="hljs-params">(t,f)</span></span> <span class="hljs-keyword">return</span> map(t, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> rnd(x,f) <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rnd</span><span class="hljs-params">(x,f)</span></span> 
+  <span class="hljs-keyword">return</span> fmt(<span class="hljs-built_in">type</span>(x)==<span class="hljs-string">&quot;number&quot;</span> <span class="hljs-keyword">and</span> x~=x//<span class="hljs-number">1</span> <span class="hljs-keyword">and</span> f <span class="hljs-keyword">or</span> the.rnd <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;%s&quot;</span>,x) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -576,14 +584,14 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">CLUSTER.new</span><span class="hljs-params">(k,sample,top)</span></span>
-  <span class="hljs-keyword">local</span> i,enough,left,right
-  top    = top <span class="hljs-keyword">or</span> sample
-  i      = new(k, {here=sample})
-  enough = (#top.rows)^the.enough
-  <span class="hljs-keyword">if</span> #sample.rows &gt;= <span class="hljs-number">2</span>*enough <span class="hljs-keyword">then</span>
-    left, right, i.x, i.y, i.c, i.mid = sample:half(top)
-    <span class="hljs-keyword">if</span> #left.rows &lt; #sample.rows <span class="hljs-keyword">then</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">CLUSTER.new</span><span class="hljs-params">(k,egs,top)</span></span>
+  <span class="hljs-keyword">local</span> i,want,left,right
+  i      = new(k, {here=egs})
+  top    = top <span class="hljs-keyword">or</span> egs
+  want = (#top.rows)^the.want
+  <span class="hljs-keyword">if</span> #egs.rows &gt;= <span class="hljs-number">2</span>*want <span class="hljs-keyword">then</span>
+    left, right, i.x, i.y, i.c, i.mid = egs:half(top)
+    <span class="hljs-keyword">if</span> #left.rows &lt; #egs.rows <span class="hljs-keyword">then</span>
       i.left = CLUSTER:new(left,   top)
       i.right= CLUSTER:new(right, top) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
   <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
@@ -634,7 +642,14 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SPAN.select</span><span class="hljs-params">(i,row,    x)</span></span>
   x = row[i.col.at]
-  <span class="hljs-keyword">return</span> (x==<span class="hljs-string">&quot;?&quot;</span>) <span class="hljs-keyword">or</span> (i.lo==i.hi <span class="hljs-keyword">and</span> x==i.lo) <span class="hljs-keyword">or</span> (i.lo &lt;= x <span class="hljs-keyword">and</span> x &lt; i.hi) <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">return</span> (x==<span class="hljs-string">&quot;?&quot;</span>) <span class="hljs-keyword">or</span> (i.lo==i.hi <span class="hljs-keyword">and</span> x==i.lo) <span class="hljs-keyword">or</span> (i.lo &lt;= x <span class="hljs-keyword">and</span> x &lt; i.hi) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SPAN.score</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.has.n/i.col.n, i.has:div() <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SPAN.scores</span><span class="hljs-params">(i, ss,ds)</span></span>
+  size,div = i:score()
+  size,div = ss:norm(size), ds:norm(div)
+  <span class="hljs-keyword">return</span> ((<span class="hljs-number">1</span> - size)^<span class="hljs-number">2</span> + (<span class="hljs-number">0</span> - div)^<span class="hljs-number">2</span>)^<span class="hljs-number">.5</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -645,22 +660,40 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
               <div class="sswrap ">
                 <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
-              <p>EXPLAIN</p>
+              <p>EXPLAIN:</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EXPLAIN</span><span class="hljs-params">(k,sample,top)</span></span>
-  i.here = sample
-  top = top <span class="hljs-keyword">or</span> sample
-  enough = (#top.rows)^the.enough
-  <span class="hljs-keyword">if</span> #top.rows &gt;= <span class="hljs-number">2</span>*enough <span class="hljs-keyword">then</span>
-    left,right = sample:half(top)
-    spans = {}
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EXPLAIN.new</span><span class="hljs-params">(k,egs,top)</span></span>
+  <span class="hljs-keyword">local</span> i,n,y,ds,ss,top,div,want,size,left,span,right,spans
+  i    = new(k,{here = egs})
+  top  = top <span class="hljs-keyword">or</span> egs
+  want = (#top.rows)^the.want
+  <span class="hljs-keyword">if</span> #top.rows &gt;= <span class="hljs-number">2</span>*want <span class="hljs-keyword">then</span>
+    left,right    = egs:half(top)
+    spans, ds, ss = {}, Num(), Num()
     <span class="hljs-keyword">for</span> n,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.x) <span class="hljs-keyword">do</span>
-       tmp = col:spans(j.cols.x[n]) 
-       <span class="hljs-keyword">if</span> #tmp&gt;<span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span> _,one <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(tmp) <span class="hljs-keyword">do</span> push(spans,one) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-    <span class="hljs-keyword">if</span> #spans &gt; <span class="hljs-number">2</span> <span class="hljs-keyword">then</span>
-      XXXX? 
+       <span class="hljs-keyword">for</span> _,span <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(col:spans(j.cols.x[n])) <span class="hljs-keyword">do</span>
+         push(spans, one)
+         size, div = span:score()
+         ss:add(size)
+         ds:add(div) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+    span= <span class="hljs-built_in">sort</span>(spans,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x,y)</span></span><span class="hljs-keyword">return</span> x:scores(ss,ds)&lt;y:scores(ss,ds) <span class="hljs-keyword">end</span>)[<span class="hljs-number">1</span>]
+    y, n = egs:clone(), egs:clone()
+    <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(egs.rows) <span class="hljs-keyword">do</span> (span:selects(row) <span class="hljs-keyword">and</span> y <span class="hljs-keyword">or</span> n):add(row) <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> #y.rows&lt;#egs.rows <span class="hljs-keyword">and</span> #y.rows&gt;want <span class="hljs-keyword">then</span> i.yes=EXPLAIN:new(y,top) <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> #n.rows&lt;#egs.rows <span class="hljs-keyword">and</span> #n.rows&gt;want <span class="hljs-keyword">then</span> i.no =EXPLAIN:new(n,top) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EXPLAN.show</span><span class="hljs-params">(i,pre)</span></span>
+  pre = pre <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> pre <span class="hljs-keyword">then</span>
+    tmp = i.here:mid(i.here.y)
+  <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;%6s : %~30s %s&quot;</span>, #i.here.rows, pre, o(i.here:mid(i.here.cols.y))))
+
+  <span class="hljs-keyword">for</span> _,pair <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{{<span class="hljs-literal">true</span>,i.yes},{<span class="hljs-literal">false</span>,i.no}} <span class="hljs-keyword">do</span>
+    <span class="hljs-built_in">status</span>,kid = <span class="hljs-built_in">unpack</span>(pair)
+    k:shpw(pre .. <span class="hljs-string">&quot;|.. &quot;</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.spans</span><span class="hljs-params">(i, j)</span></span>
   <span class="hljs-keyword">local</span> xys,all,one,last,xys,x,c n = {},{}
@@ -677,7 +710,7 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.spans</span><span class="hljs-params">(i, j)</span></span>
   <span class="hljs-keyword">local</span> xys,all,lo,hi,gap,xys,one,x,c,n = {},{}
   lo,hi = <span class="hljs-built_in">min</span>(i.lo, j.lo), <span class="hljs-built_in">max</span>(i.hi,j.hi)
-  gap   = (hi - lo) / bins
+  gap   = (hi - lo) / (<span class="hljs-number">6</span>/the.cohen)
   <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.has) <span class="hljs-keyword">do</span> push(xys, {x,<span class="hljs-string">&quot;this&quot;</span>,<span class="hljs-number">1</span>}) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.has) <span class="hljs-keyword">do</span> push(xys, {x,<span class="hljs-string">&quot;that&quot;</span>,<span class="hljs-number">1</span>}) <span class="hljs-keyword">end</span>
   one = Span:new(i,lo,lo)

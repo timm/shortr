@@ -1,5 +1,7 @@
--- **[Repo](https://github.com/timm/lua) • [Issues](https://github.com/timm/lua/issues) • [License](LICENSE.md)**
---      
+-- <img align=left width=150 src=head.png>
+--    
+-- **[Repo](https://github.com/timm/lua) • [Issues](https://github.com/timm/lua/issues) • [&copy;2022](LICENSE.md)** Tim Menzies
+--        
 -- The next generation of AI-literature software engineers need a deep
 -- understanding of AI tools.  To that end, I've been refactoring the
 -- work of my AI graduate students (3 dozen over 20 years) into a
