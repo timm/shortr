@@ -27,15 +27,16 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              <img style="margin-left: 5px;" src=head.png width=150 align=right>
-  
-<p>The next generation of AI-literature software engineers need 
-to know how to mix-and-match the services within AI tools.  To that end, I’ve
-been refactoring the work of my AI graduate students (3 dozen over 20 years)
-into a   tool kit small enough to build in a semester, that can be refactored
-many ways.  So my standard “intro to AI” project is to get students to
-rebuild the following code,from scratch, in any language they like
-(except LUA) in six weekly homeworks. <br clear=all></p>
+              <p><strong><a href="https://github.com/timm/lua">Repo</a> • <a href="https://github.com/timm/lua/issues">Issues</a> • <a href="LICENSE.md">License</a></strong></p>
+<p>The next generation of AI-literature software engineers need a deep
+understanding of AI tools.  To that end, I’ve been refactoring the
+work of my AI graduate students (3 dozen over 20 years) into a
+tool kit small enough to build in a semester, and which can be
+refactored many ways.  So my standard “intro to AI” exercise is six
+weeks of homeworks where students rebuild the following code,from
+scratch, in any language they like (except LUA). </p>
+<hr>
+
 <p>Standard supervised learners assume that all examples have labels.
 When this is not true, then we need tools to incrementally 
 (a) summarize what has been seen so far; (b) find and focus
@@ -53,13 +54,6 @@ Continuity simplifies <em>clustering</em>
 (and any subsequent reasoning).  More similarities means  easier
 clustering. And after clustering, reasoning just means reason about
 a handful of examples (maybe even just one)  from each cluster.</p>
-<p>To exploit the manifold assumption, this code uses Aha’s distance
-measure [Aha91] (that can handle numbers and symbols) to 
-recursively divide data based on two distant points (these are found
-in linear time using the Fastmap heuristic [Fa95]). To avoid spurious
-outliers, this code use the 90% furthest points.  To avoid long runtimes,
-uses a subset of the data to learn where to divide data (then all the data
-gets pushed down first halves).</p>
 <p><strong>ASSIGNMENTS</strong></p>
 <ul>
 <li><strong>Instance selection</strong>: filter the data down to just a few samples per
@@ -113,9 +107,10 @@ to divide data (then all the data gets pushed down first halves).
 
 To support explanation, optionally, at each level of recursion,
 this code reports what ranges can best distinguish sibling clusters
-C1,C2..  The  discretizer is inspired by the ChiMerge algorithm:
+C1,C2.  The  discretizer is inspired by the ChiMerge algorithm:
 numerics are divided into, say, 16 bins. Then, while we can find
-adjacent bins, merge them then look for other merges.
+adjacent bins with the similar distributions in C1,C2, then 
+(a) merge then (b) look for other merges.
 ]]</span></pre></div></div>
             
         </li>

@@ -1,19 +1,21 @@
--- <img style="margin-left: 5px;" src=head.png width=150 align=right>
---   
--- The next generation of AI-literature software engineers need 
--- to know how to mix-and-match the services within AI tools.  To that end, I've
--- been refactoring the work of my AI graduate students (3 dozen over 20 years)
--- into a   tool kit small enough to build in a semester, that can be refactored
--- many ways.  So my standard "intro to AI" project is to get students to
--- rebuild the following code,from scratch, in any language they like
--- (except LUA) in six weekly homeworks. <br clear=all>
+-- **[Repo](https://github.com/timm/lua) • [Issues](https://github.com/timm/lua/issues) • [License](LICENSE.md)**
 --      
+-- The next generation of AI-literature software engineers need a deep
+-- understanding of AI tools.  To that end, I've been refactoring the
+-- work of my AI graduate students (3 dozen over 20 years) into a
+-- tool kit small enough to build in a semester, and which can be
+-- refactored many ways.  So my standard "intro to AI" exercise is six
+-- weeks of homeworks where students rebuild the following code,from
+-- scratch, in any language they like (except LUA). 
+-- 
+-- <hr>
+-- 
 -- Standard supervised learners assume that all examples have labels.
 -- When this is not true, then we need tools to incrementally 
 -- (a) summarize what has been seen so far; (b) find and focus
 -- on the most interesting part of that summary, (c) collect
 -- more data in that region, then (d) repeat.
---        
+--          
 -- <a href="div.png"><img align=right width=225 src="div.png"></a>
 -- To make that search manageable, it is useful to exploit a 
 -- manifold assumption; i.e.
@@ -27,14 +29,6 @@
 -- clustering. And after clustering, reasoning just means reason about
 -- a handful of examples (maybe even just one)  from each cluster.
 --         
--- To exploit the manifold assumption, this code uses Aha's distance
--- measure [Aha91] (that can handle numbers and symbols) to 
--- recursively divide data based on two distant points (these are found
--- in linear time using the Fastmap heuristic [Fa95]). To avoid spurious
--- outliers, this code use the 90% furthest points.  To avoid long runtimes,
--- uses a subset of the data to learn where to divide data (then all the data
--- gets pushed down first halves).
---       
 -- **ASSIGNMENTS**
 -- - **Instance selection**: filter the data down to just a few samples per
 -- cluster, the reason using just those.
@@ -50,7 +44,6 @@
 -- as genetic optimization [Ch18], but runs much faster.
 -- - **Semi-supervised learning**: these applications require only the _2.log(N)_ labels at
 -- of the pair of furthest points seen at each level of recursion.
---       
 local help = [[
 
 l4 == a little LUA learner laboratory.
@@ -60,15 +53,17 @@ USAGE:
   lua l4.lua [OPTIONS]
 
 OPTIONS: 
-  -Dump        stack dump on assert fails = false
+  -cohen    F   Cohen's delta              = .35
   -data     N   data file                  = etc/data/auto93.csv
-  -enough   F   recurse until rows^enough  = .5
+  -Dump         stack dump on assert fails = false
   -furthest F   far                        = .9
+  -Format   s   format string              = %5.2f
   -keep     P   max kept items             = 512
   -p        P   distance coefficient       = 2
   -seed     P   set seed                   = 10019
   -todo     S   start up action (or 'all') = nothing
   -help        show help                  = false
+  -want     F   recurse until rows^want    = .5
 
 KEY: N=fileName F=float P=posint S=string
 
@@ -84,9 +79,10 @@ to divide data (then all the data gets pushed down first halves).
 
 To support explanation, optionally, at each level of recursion,
 this code reports what ranges can best distinguish sibling clusters
-C1,C2..  The  discretizer is inspired by the ChiMerge algorithm:
+C1,C2.  The  discretizer is inspired by the ChiMerge algorithm:
 numerics are divided into, say, 16 bins. Then, while we can find
-adjacent bins, merge them then look for other merges.
+adjacent bins with the similar distributions in C1,C2, then 
+(a) merge then (b) look for other merges.
 ]]
 
 -- ## Namespace
@@ -97,7 +93,7 @@ local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 -- Defined local names.
 local any,asserts,big,cli,csv,fails,firsts,fmt,goalp,ignorep,klassp  
 local lessp,map,main,many,max,merge,min,morep,new,nump,o,oo,per,pop,push
-local r,rows,slots,sort,sum,thing,things,unpack
+local r,rows,rnd,rnds,slots,sort,sum,thing,things,unpack
 
 -- Classes have UPPER CASE names.
 local CLUSTER, COLS, EGS,  NUM, ROWS = {},{},{},{},{}
@@ -135,6 +131,10 @@ big = math.huge
 max = math.max
 min = math.min
 r   = math.random
+
+function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
+function rnd(x,f) 
+  return fmt(type(x)=="number" and x~=x//1 and f or the.rnd or "%s",x) end
 
 -- tables
 pop = table.remove
@@ -305,14 +305,14 @@ function SYM.merge(i,j,    k)
 -- |___ |___ |__| ___]  |  |___ |  \ 
 --                                            
 -- CLUSTER: recursively divides data by clustering towards two distant points
-function CLUSTER.new(k,sample,top)
-  local i,enough,left,right
-  top    = top or sample
-  i      = new(k, {here=sample})
-  enough = (#top.rows)^the.enough
-  if #sample.rows >= 2*enough then
-    left, right, i.x, i.y, i.c, i.mid = sample:half(top)
-    if #left.rows < #sample.rows then
+function CLUSTER.new(k,egs,top)
+  local i,want,left,right
+  i      = new(k, {here=egs})
+  top    = top or egs
+  want = (#top.rows)^the.want
+  if #egs.rows >= 2*want then
+    left, right, i.x, i.y, i.c, i.mid = egs:half(top)
+    if #left.rows < #egs.rows then
       i.left = CLUSTER:new(left,   top)
       i.right= CLUSTER:new(right, top) end end 
   return i end
@@ -342,19 +342,44 @@ function SPAN.select(i,row,    x)
   x = row[i.col.at]
   return (x=="?") or (i.lo==i.hi and x==i.lo) or (i.lo <= x and x < i.hi) end
 
--- EXPLAIN
-function EXPLAIN(k,sample,top)
-  i.here = sample
-  top = top or sample
-  enough = (#top.rows)^the.enough
-  if #top.rows >= 2*enough then
-    left,right = sample:half(top)
-    spans = {}
+function SPAN.score(i) return i.has.n/i.col.n, i.has:div() end
+
+function SPAN.scores(i, ss,ds)
+  size,div = i:score()
+  size,div = ss:norm(size), ds:norm(div)
+  return ((1 - size)^2 + (0 - div)^2)^.5 end
+
+-- EXPLAIN:
+function EXPLAIN.new(k,egs,top)
+  local i,n,y,ds,ss,top,div,want,size,left,span,right,spans
+  i    = new(k,{here = egs})
+  top  = top or egs
+  want = (#top.rows)^the.want
+  if #top.rows >= 2*want then
+    left,right    = egs:half(top)
+    spans, ds, ss = {}, Num(), Num()
     for n,col in pairs(i.cols.x) do
-       tmp = col:spans(j.cols.x[n]) 
-       if #tmp>1 then for _,one in pairs(tmp) do push(spans,one) end end
-    if #spans > 2 then
-      XXXX? 
+       for _,span in pairs(col:spans(j.cols.x[n])) do
+         push(spans, one)
+         size, div = span:score()
+         ss:add(size)
+         ds:add(div) end end 
+    span= sort(spans,function(x,y)return x:scores(ss,ds)<y:scores(ss,ds) end)[1]
+    y, n = egs:clone(), egs:clone()
+    for _,row in pairs(egs.rows) do (span:selects(row) and y or n):add(row) end
+    if #y.rows<#egs.rows and #y.rows>want then i.yes=EXPLAIN:new(y,top) end
+    if #n.rows<#egs.rows and #n.rows>want then i.no =EXPLAIN:new(n,top) end end
+  return i end
+
+function EXPLAN.show(i,pre)
+  pre = pre or ""
+  if not pre then
+    tmp = i.here:mid(i.here.y)
+  print(fmt("%6s : %~30s %s", #i.here.rows, pre, o(i.here:mid(i.here.cols.y))))
+
+  for _,pair in pairs{{true,i.yes},{false,i.no}} do
+    status,kid = unpack(pair)
+    k:shpw(pre .. "|.. ") end end
 
 function SYM.spans(i, j)
   local xys,all,one,last,xys,x,c n = {},{}
@@ -371,7 +396,7 @@ function SYM.spans(i, j)
 function NUM.spans(i, j)
   local xys,all,lo,hi,gap,xys,one,x,c,n = {},{}
   lo,hi = min(i.lo, j.lo), max(i.hi,j.hi)
-  gap   = (hi - lo) / bins
+  gap   = (hi - lo) / (6/the.cohen)
   for x,n in pairs(i.has) do push(xys, {x,"this",1}) end
   for x,n in pairs(j.has) do push(xys, {x,"that",1}) end
   one = Span:new(i,lo,lo)
