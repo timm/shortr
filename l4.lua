@@ -3,15 +3,26 @@
 -- **[Repo](https://github.com/timm/lua) • [Issues](https://github.com/timm/lua/issues) • [&copy;2022](LICENSE.md)** Tim Menzies
 --        
 -- The next generation of AI-literature software engineers need a deep
--- understanding of AI tools.  To that end, I've been refactoring the
--- work of my AI graduate students (3 dozen over 20 years) into a
+-- understanding of AI tools.  To that end, I've been looking back over
+-- common themes from my
+-- AI graduate students (30+ students, over 20 years). The result
+-- is a 
 -- tool kit small enough to build in a semester, and which can be
--- refactored many ways.  So my standard "intro to AI" exercise is six
+-- refactored many ways.  The code may not be optimal, but it does
+-- enable a tour through many of the current themes in AI. No, its
+-- not a deep learner since I want to build succinct high-level models
+-- that humans can read, understand, critique, and change.
+--       
+-- Anyway, my standard "intro to AI" exercise is six
 -- weeks of homeworks where students rebuild the following code,from
--- scratch, in any language they like (except LUA). 
--- 
+-- scratch, in any language they like (except LUA).  After that, 
+-- students can review all the assumptions of this code, then read the
+-- literature looking for other tools that challenge those assumptions.
+-- That leads to a second a 4-6 week project using these tools as a baseline against
+-- which they can compare other approaches.
+--   
 -- <hr>
--- 
+--   
 -- Standard supervised learners assume that all examples have labels.
 -- When this is not true, then we need tools to incrementally 
 -- (a) summarize what has been seen so far; (b) find and focus
@@ -46,6 +57,9 @@
 -- as genetic optimization [Ch18], but runs much faster.
 -- - **Semi-supervised learning**: these applications require only the _2.log(N)_ labels at
 -- of the pair of furthest points seen at each level of recursion.
+-- - **Privacy**
+-- - **Planning**
+-- - **Monitoring**
 local help = [[
 
 l4 == a little LUA learner laboratory.
@@ -136,7 +150,7 @@ r   = math.random
 
 function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
-  return fmt(type(x)=="number" and x~=x//1 and f or the.rnd or "%s",x) end
+  return fmt(type(x)=="number" and (x~=x//1 and f or the.Format) or "%s",x) end
 
 -- tables
 pop = table.remove
@@ -346,31 +360,34 @@ function SPAN.select(i,row,    x)
 
 function SPAN.score(i) return i.has.n/i.col.n, i.has:div() end
 
-function SPAN.scores(i, ss,ds)
+function SPAN.good(i, sizes,divs)
   size,div = i:score()
-  size,div = ss:norm(size), ds:norm(div)
-  return ((1 - size)^2 + (0 - div)^2)^.5 end
+  size,div = sizes:norm(size), divs:norm(div)
+  return  ((1-size)^2 + (0 - div)^2)^.5 end
 
 -- EXPLAIN:
 function EXPLAIN.new(k,egs,top)
-  local i,n,y,ds,ss,top,div,want,size,left,span,right,spans
+  local i,no,yes,divs,sizes,top,div,best,want,size,left,order,right,spans
   i    = new(k,{here = egs})
   top  = top or egs
   want = (#top.rows)^the.want
   if #top.rows >= 2*want then
-    left,right    = egs:half(top)
-    spans, ds, ss = {}, Num(), Num()
+    left,right = egs:half(top)
+    spans, divs, sizes = {}, Num(), Num()
     for n,col in pairs(i.cols.x) do
-       for _,span in pairs(col:spans(j.cols.x[n])) do
-         push(spans, one)
-         size, div = span:score()
-         ss:add(size)
-         ds:add(div) end end 
-    span= sort(spans,function(x,y)return x:scores(ss,ds)<y:scores(ss,ds) end)[1]
-    y, n = egs:clone(), egs:clone()
-    for _,row in pairs(egs.rows) do (span:selects(row) and y or n):add(row) end
-    if #y.rows<#egs.rows and #y.rows>want then i.yes=EXPLAIN:new(y,top) end
-    if #n.rows<#egs.rows and #n.rows>want then i.no =EXPLAIN:new(n,top) end end
+      for _,span in pairs(col:spans(j.cols.x[n])) do
+        push(spans, span)
+        size, div = span:score()
+        sizes:add(size)
+        divs:add(div) end end 
+    order = function(a,b) return a:good(sizes,divs) < b:good(sizes,divs) end
+    best  = sort(spans, order)[1]
+    yes, no = egs:clone(), egs:clone()
+    for _,row in pairs(egs.rows) do 
+      (best:selects(row) and yes or no):add(row) end
+    if #yes.rows<#egs.rows then
+      if #yes.rows>=want then i.yes=EXPLAIN:new(yes,top) end
+      if #no.rows >=want then i.no =EXPLAIN:new(no,top)  end end end
   return i end
 
 function EXPLAN.show(i,pre)
@@ -378,7 +395,6 @@ function EXPLAN.show(i,pre)
   if not pre then
     tmp = i.here:mid(i.here.y)
   print(fmt("%6s : %~30s %s", #i.here.rows, pre, o(i.here:mid(i.here.cols.y))))
-
   for _,pair in pairs{{true,i.yes},{false,i.no}} do
     status,kid = unpack(pair)
     k:shpw(pre .. "|.. ") end end

@@ -31,14 +31,24 @@
    
 <p><strong><a href="https://github.com/timm/lua">Repo</a> • <a href="https://github.com/timm/lua/issues">Issues</a> • <a href="LICENSE.md">&copy;2022</a></strong> Tim Menzies</p>
 <p>The next generation of AI-literature software engineers need a deep
-understanding of AI tools.  To that end, I’ve been refactoring the
-work of my AI graduate students (3 dozen over 20 years) into a
+understanding of AI tools.  To that end, I’ve been looking back over
+common themes from my
+AI graduate students (30+ students, over 20 years). The result
+is a 
 tool kit small enough to build in a semester, and which can be
-refactored many ways.  So my standard “intro to AI” exercise is six
+refactored many ways.  The code may not be optimal, but it does
+enable a tour through many of the current themes in AI. No, its
+not a deep learner since I want to build succinct high-level models
+that humans can read, understand, critique, and change.</p>
+<p>Anyway, my standard “intro to AI” exercise is six
 weeks of homeworks where students rebuild the following code,from
-scratch, in any language they like (except LUA). </p>
+scratch, in any language they like (except LUA).  After that, 
+students can review all the assumptions of this code, then read the
+literature looking for other tools that challenge those assumptions.
+That leads to a second a 4-6 week project using these tools as a baseline against
+which they can compare other approaches.</p>
 <hr>
-
+  
 <p>Standard supervised learners assume that all examples have labels.
 When this is not true, then we need tools to incrementally 
 (a) summarize what has been seen so far; (b) find and focus
