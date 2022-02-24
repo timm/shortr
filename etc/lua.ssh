@@ -49,6 +49,10 @@ keywords in Keyword_strong are
     setmetatable, then, until, while, xpcall, _G, _VERSION
 end keywords
 
+keywords in Label_strong are
+    self
+end keywords
+
 sequences are
     "--[[" Comment "]]",
     "--" Comment,

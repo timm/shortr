@@ -1,73 +1,143 @@
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local big = 1E34
 local tiny= 1/big
-local thing,cli,them,col,num,sym,cols
-local the
 
-function settings() return {
-   cohen = cli("-c", .35),
-   data  = cli("-d", "etc/data/auto93.csv"),
-   seed  = cli("-s", 10019)} end
-
-function col(at,x)
-  local i = {n=0, at=at or 0, txt=txt or "", has={}}
-  i.w = i.txt:find"-$" and -1 or 1
-  return i end
-
-function num(at,x)
-  local i = col(at,t)
-  i.is, i.mu,i.m2,i.lo,i.hi= num,0,0,-big,big
-  return i end
-
-function sym(at,x) 
-  local i=col(at,x); i.is,i.most=sym,0; return i end
-
-function cols(headers,    i,now,here)
-  i = {all={}, x={}, y={}}
-  for at,x in pair(headers) do
-    now = (x:find"^[A-Z]" and Num or Sym)(at,x)
-    i.all[at] = now 
-    if x:find":$" then
-      here =  x:find"[+-]$" and i.y or i.x
-      here[1+#where] = col end end
-  return i end
-
-M=class{} 
-function SYM.new(at,s)
-return new({at=at or 0,txt=s or "",has={},n=0,most=0,mode=nil},SYM) end
-
-local class= function(t, new)
- function new(_,...) return t.new(...) end
- t.__index=t
- return setmetatable(t,{__call=new}) end
-
-function sample(header) 
-  return {egs={}, cols=cols(headers)} end
-
-function sample1(i,row)
-  for at,x in ipairs(row) do add(i.cols[at],x) end
-  i.egs[1+i.egs]= row end
-
-function num1(i,x) print(x+1000) end
-
-is={_all = {show=oo},
-    num={add=num1},
-    sym={add=sym1}}
-
-function call(i,f,...) return (is[i.is][f] or is["_all"][f])(i,...)  end
-
-function add(i,x) return call(i,"add",x) end
-
-print(num().lo)
-function thing(x)   
+local function atom(x)   
+  if type(x)~="string" then return x end
+  x = x:match"^%s*(.-)%s*$" 
   if x=="true" then return true elseif x=="false" then return false end
   return tonumber(x) or x end
 
-function cli(key,x)
+local function cli(key,x)
   for n,y in pairs(arg) do if y==k then 
     x=x=="false" and"true" or x=="true" and"false" or arg[n+1] end end
-  return thing(x) end
+  return atom(x) end
 
+local function settings() return {
+  cohen = cli("-c", .35),
+  best  = cli("-b", .85),
+  data  = cli("-d", "etc/data/auto93.csv"),
+  seed  = cli("-s", 10019)} end
+
+local function atoms(x,  t) 
+  t={}; for y in x:gmatch(sep or"([^,]+)") do t[1+#t]=atom(y) end; return t end
+
+local function rows(file,      x,prep)
+  file = io.input(file)
+  return function() 
+    x=io.read(); if x then return atoms(x) else io.close(file) end end end
+
+as=setmetatable
+local function obj(   t)
+  t={}; t.__index=t
+  return as(t, {__call=function(_,...) return t.new(...) end}) end
+
+---------------------------------------------------------------------------
+local Num,Sym,Cols,Data=obj(),obj(),obj(),obj()
+
+local function col(at,x,  i)
+  i = {n=0, at=at or 0, txt=txt or "", has={}}
+  i.w = i.txt:find"-$" and -1 or 1
+  return i end
+
+local function add(self,x,inc)
+  if x~="?" then
+    inc = inc or 1
+    self.n = self.n+1
+    self:add1(x,inc or inc) end
+  return self end
+
+function Num:new(at,x,  new)
+  new = as(col(at,t),self)
+  new.mu, new.m2, new.lo, new.hi= 0,0,-big,big
+  return new end
+
+function Num:add1(self,x,_,    d) 
+  d = x - self.mu
+  self.mu = self.mu + d/self.n
+  self.m2 = self.m2 + d*(x - self.mu)
+  self.sd = (self.n<2 or self.m2<0) and 0 or (self.m2/(self.n-1))^.5 
+  if x > self.max then self.max = x end
+  if x < self.min then self.min = x end end
+
+function Num:norm(x) 
+  return self.hi-self.lo<tiny and 0 or (x-self.lo)/(self.hi-self.lo) end
+
+function Num:heaven(x,   heaven)
+  heaven = self.w>0  and 1 or 0
+  return (heaven - self:norm(x))^the.p end
+
+function Sym:new(at,x,inc,   new) 
+  new=as(col(at,x),self); new.most=0; return new end
+
+function Sym:add1(x,inc)
+  i.has[x] = inc + (i.has[x] or 0) 
+  if i.has[x] > i.most then i.most,i.mode=i.has[x],x end end 
+
+function Data:new(inits,  new)
+  new = as({rows={},heavens=Num()},self)
+  if type(inits)=="string" then for   row in csv(inits)   do new:add(row) end end 
+  if type(inits)=="table"  then for _,row in pairs(inits) do new:add(row) end end 
+  return new end
+
+function Data:add(t, n)
+  if self.cols then self:addData(t) else 
+     self.cols = Cols(t) 
+     self.best = self.cols:clone()
+     self.rest = self.cols:clone() end end
+
+function Data:addData(t,   n)
+  self.rows[1+#self.rows] = self.cols:add(t) 
+  n = self.heavens.norm( self.heavens.add(self.heaven(t))) 
+  (n>=the.best and self.best or self.rest):add(t) end 
+
+function Data:heaven(t)
+  heaven = function(col) return col:heaven(t[col.at]) end
+  return (sum(self.cols.y,heaven)/#self.cols.y)^(1/the.p) end 
+
+function Cols:new(headers,   new,col,here)
+  new = as({all={}, x={}, y={}},self)
+  for at,x in pair(headers) do
+    if x:find":$" then new.all[n] = Skip(at,x) else
+      col = (x:find"^[A-Z]" and Num or Sym)(at,x)
+      self.all[at] = col 
+      here =  x:find"[+-]$" and self.y or self.x
+      here[1+#here] = new end end
+  return new end
+
+function Cols:add(t)
+  for _,col in pairs(self.all) do col:add(t[col.at]) end 
+  return t end
+
+function Cols:clone(rows,   new)
+  new = new or Cols(map(self.cols.all, function(x) return x.txt end))
+  for _,row in pairs(rows or {}) do new:add(row) end
+  return {rows=rows,cols=new} end
+
+function csv(i,file,   new,about,rows)
+  new=new or Cols(about)
+  rows={}
+  for row in rows(file) do
+    if about then rows[1+#rows]=cols1(about,row) else about=cols(row) end end
+  return {rows=rows,cols=about} end
+
+as={sym={add=sym1},
+    num={add=num1}}
+
+function add(i,x, inc) 
+  if x ~= "?" then
+    inc=inc or 1
+    i.n = i.n+inc
+    as[i.as].add(i,x,inc) end
+  return x end
+
+function what(data, row)
+  for _,col in pairs(data.cols.y) do
+    
+function main(file, rows,it)
+  for row in csv(file) do
+    if cols then
+      cols
 for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  
  --
 --
