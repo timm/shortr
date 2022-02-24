@@ -362,7 +362,7 @@ function SPAN.score(i) return {i.has.n/i.col.n, i.has:div()} end
 
 -- HEAVEN:
 function HEAVEN.new(k,t,fun) 
-  return new(k,{heaven = t, p=p or 2, fun=fun,
+  return new(k,{heaven = t, p=2, fun=fun,
                 nums   = map(t,function()return NUM:new() end)}) end
 
 function HEAVEN.add(i,xs,    ys) 
@@ -388,7 +388,7 @@ function EXPLAIN.new(k,egs,top)
     for n,col1 in pairs(i.cols.x) do   -- for each x attribute ...
       col2 = j.cols.x[n]               -- col1,col2 is same col in both  cluster
       for _,span in pairs(col1:spans(col2)) do -- spans= deltas between clusters
-        push(spans, heaven:add( span ) ) end end
+        push(spans, heaven:add(span) ) end end
     best   = heaven.sort( spans )[1]
     yes,no = egs:clone(), egs:clone()
     for _,row in pairs(egs.rows) do 
