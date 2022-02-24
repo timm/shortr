@@ -1,38 +1,28 @@
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local big = 1E34
 local tiny= 1/big
-
 local thing,cli,them,col,num,sym,cols
+local the
 
-function thing(x)   
-  if x=="true" then return true elseif x=="false" then return false end
-  return tonumber(x) or x end
+function settings() return {
+   cohen = cli("-c", .35),
+   data  = cli("-d", "etc/data/auto93.csv"),
+   seed  = cli("-s", 10019)} end
 
-function cli(key,x)
-  for n,y in pairs(arg) do if y==k then 
-    x=x=="false" and"true" or x=="true" and"false" or arg[n+1] end end
-  return thing(x) end
-
-the= {cohen = cli("-c", .35),
-      data  = cli("-d", "etc/data/auto93.csv"),
-      seed  = cli("-s", 10019)}
-
-function Col(at,x)
-  i = {n=0, at=at or 0, txt=txt or "", has={}}
+function col(at,x)
+  local i = {n=0, at=at or 0, txt=txt or "", has={}}
   i.w = i.txt:find"-$" and -1 or 1
   return i end
 
-function Num(at,x)
-  i = col(at,t)
-  i.is, i.mu,i.m2,i.lo,i.hi= "num",0,0,-big,big
+function num(at,x)
+  local i = col(at,t)
+  i.is, i.mu,i.m2,i.lo,i.hi= num,0,0,-big,big
   return i end
 
-function Sym(at,x)
-  i = col(at,x)
-  i.most=0
-  return i end
+function sym(at,x) 
+  local i=col(at,x); i.is,i.most=sym,0; return i end
 
-function Cols(headers,    i,now,here)
+function cols(headers,    i,now,here)
   i = {all={}, x={}, y={}}
   for at,x in pair(headers) do
     now = (x:find"^[A-Z]" and Num or Sym)(at,x)
@@ -42,15 +32,42 @@ function Cols(headers,    i,now,here)
       here[1+#where] = col end end
   return i end
 
+M=class{} 
+function SYM.new(at,s)
+return new({at=at or 0,txt=s or "",has={},n=0,most=0,mode=nil},SYM) end
+
+local class= function(t, new)
+ function new(_,...) return t.new(...) end
+ t.__index=t
+ return setmetatable(t,{__call=new}) end
+
+function sample(header) 
+  return {egs={}, cols=cols(headers)} end
+
+function sample1(i,row)
+  for at,x in ipairs(row) do add(i.cols[at],x) end
+  i.egs[1+i.egs]= row end
+
 function num1(i,x) print(x+1000) end
 
-is={num={add=num1},
+is={_all = {show=oo},
+    num={add=num1},
     sym={add=sym1}}
 
-function add(i,x) return is[i.is].add(i,x) end
+function call(i,f,...) return (is[i.is][f] or is["_all"][f])(i,...)  end
 
-add(num(),10)
+function add(i,x) return call(i,"add",x) end
+
 print(num().lo)
+function thing(x)   
+  if x=="true" then return true elseif x=="false" then return false end
+  return tonumber(x) or x end
+
+function cli(key,x)
+  for n,y in pairs(arg) do if y==k then 
+    x=x=="false" and"true" or x=="true" and"false" or arg[n+1] end end
+  return thing(x) end
+
 for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  
  --
 --
