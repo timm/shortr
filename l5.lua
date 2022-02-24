@@ -358,12 +358,22 @@ function SPAN.select(i,row,    x)
   x = row[i.col.at]
   return (x=="?") or (i.lo==i.hi and x==i.lo) or (i.lo <= x and x < i.hi) end
 
-function SPAN.score(i) return i.has.n/i.col.n, i.has:div() end
+function SPAN.score(i) return {i.has.n/i.col.n, i.has:div()} end
 
-function SPAN.good(i, sizes,divs)
-  size,div = i:score()
-  size,div = sizes:norm(size), divs:norm(div)
-  return  ((1-size)^2 + (0 - div)^2)^.5 end
+-- HEAVEN:
+function HEAVEN.new(k,t,fun) 
+  return new(k,{heaven = t, p=p or 2, fun=fun,
+                nums   = map(t,function()return NUM:new() end)}) end
+
+function HEAVEN.add(i,xs,    ys) 
+  ys=i.fun(xs); for n,num in ipairs(i.nums) do num:add(ys[n]) end; return xs end
+
+function HEAVEN.d2h(i,ys,   x)
+   x=0; for n,num in pairs(i.nums) do x=x+(i.heaven[n] - num:norm(ys[n]))^2 end
+   return (x/#i.heaven)^.5 end
+
+function HEAVEN.sort(i,t)
+   return sort(t, function(a,b) return i:d2h(i.fun(a))<i:d2h(i.fun(b)) end) end
 
 -- EXPLAIN:
 function EXPLAIN.new(k,egs,top)
@@ -373,23 +383,19 @@ function EXPLAIN.new(k,egs,top)
   want = (#top.rows)^the.want
   if #top.rows >= 2*want then  -- if enough to recurse
     left,right = egs:half(top) -- cluster in two
-    spans, divs, sizes = {}, Num(), Num()
-    for n,col1 in pairs(i.cols.x) do  -- for each x attribute ...
-      col2 = j.cols.x[n]              -- col1,col2 is same col in either cluster
-      for _,span in pairs(col1:spans(col2)) do -- spans are deltas between clusters
-        push(spans, span)                      -- cache the span
-        size, div = span:score()               -- remember the span's score (so
-        sizes:add(size)                        --    we can normalize it, later)
-        divs:add(div) end end 
-    order = function(a,b)  -- compare two spans, normalizing the scores
-              return a:good(sizes,divs) < b:good(sizes,divs) end
-    best  = sort(spans, order)[1]    -- best span is first in this sort
-    yes, no = egs:clone(), egs:clone()
-    for _,row in pairs(egs.rows) do  -- 
+    spans  = {}
+    heaven = HEAVEN({1,0}, function(span) return span.score() end)
+    for n,col1 in pairs(i.cols.x) do   -- for each x attribute ...
+      col2 = j.cols.x[n]               -- col1,col2 is same col in both  cluster
+      for _,span in pairs(col1:spans(col2)) do -- spans= deltas between clusters
+        push(spans, heaven:add( span ) ) end end
+    best   = heaven.sort( spans )[1]
+    yes,no = egs:clone(), egs:clone()
+    for _,row in pairs(egs.rows) do 
       (best:selects(row) and yes or no):add(row) end -- divide data in two
     if #yes.rows<#egs.rows then -- make kids if kid size different to parent size
       if #yes.rows>=want then i.yes=EXPLAIN:new(yes,top) end 
-      if #no.rows >=want then i.no =EXPLAIN:new(no,top)  end end end
+      if #no.rows >=want then i.no =EXPLAIN:new(no, top)  end end end
   return i end
 
 function EXPLAN.show(i,pre)
