@@ -35,7 +35,7 @@ more data in that region, then (d) repeat.
 To make that search manageable, it is useful to exploit a 
 manifold assumption; i.e.
 higher-dimensional data can be approximated in a lower dimensional
-manifold without loss of signal[^Ch05][^Le05].
+manifold without loss of signal[^Ch05,Le05].
 Manifolds lead to _continuity_
 effects; i.e. if there are fewer dimensions, then there are more
 similarities between examples.
