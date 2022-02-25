@@ -77,7 +77,6 @@ of the pair of furthest points seen at each level of recursion.
 - **Planning**
 - **Monitoring**
 
-## References
 
 [^Ah91]: Aha, D.W., Kibler, D. & Albert, M.K. Instance-based   learning algorithms. Mach Learn 6, 37–66 (1991).  https://doi.org/10.1007/BF00153759
 
