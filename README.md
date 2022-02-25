@@ -10,7 +10,7 @@ it up, very succinctly. And no cheating
 (so no importing of some massive background AI library).
 
 For example, 
-Buse and Zimmermann surveyed over a hundred developers and managers to
+Buse and Zimmermann[^Bu15] surveyed over a hundred developers and managers to
 find a list of "information needs" for software analytics. 
 Can you code to handle the following? In less than
 1000 lines of code?
