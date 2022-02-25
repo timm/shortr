@@ -46,7 +46,7 @@ a handful of examples (maybe even just one)  from each cluster.
         
 **HOMEWORKS**
 
-Buse and Zimmermann offer us a list of "information needs" for software analytics:
+Buse and Zimmermann offer us a list of "information needs" for software analytics. Lets code up supprot for all of these... in under 1000 lines of code.
 
 ![docs/bi.png](docs/bi.png)
 
