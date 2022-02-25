@@ -1,6 +1,6 @@
 .PHONY: help tests hi bye pdfs
 
-D=../
+D=..
 LUA = $(shell ls *.lua)
 PDF = $(addsuffix .pdf, $(addprefix $D/docs/,$(basename $(LUA))))
 HTML= $(addsuffix .html,$(addprefix $D/docs/,$(basename $(LUA))))

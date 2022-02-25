@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="A layout example that shows off a blog page with a list of posts.">
-		<title>Blog &ndash; Layout Examples &ndash; Pure</title>
+		<title>L5 &ndash; a little LUA learning library</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="css/pure/pure-min.css">
 		<link rel="stylesheet" href="css/pure/grids-responsive-min.css">
@@ -70,7 +70,20 @@ Continuity simplifies <em>clustering</em>
 (<a href="and">and</a> any subsequent reasoning).  More similarities means  easier
 clustering. And after clustering, reasoning just means reason about
 a handful of examples (maybe even just one)  from each cluster.</p>
-<p><strong>ASSIGNMENTS</strong></p>
+<p><strong>HOMEWORKS</strong></p>
+<ul>
+<li><strong>Scripting</strong>: little languages (e.g. regular expressions); test-drive-development, CLI design, version control, GitHub workflows, test-driven development, open science</li>
+<li>Data layer: summarize text files as samples of data</li>
+<li>Nearest-neighbor, Clustering</li>
+<li>Validation: effect size, significance texts</li>
+<li>Regression, model trees.</li>
+<li>Discretization, explanation</li>
+<li>Privacy</li>
+<li>Planning, monitoring</li>
+<li>Optimization</li>
+<li>Bias, Fairness mitigation</li>
+</ul>
+<p><strong>ASSiGNMENTS</strong></p>
 <ul>
 <li><strong>Instance selection</strong>: filter the data down to just a few samples per
 cluster, the reason using just those.</li>
@@ -83,13 +96,62 @@ at the data at this level of recursion.</li>
 can apply Zitzler's multi-objective rankining predicate [Zit04] to prune the worst
 half of the data, then recurs on the rest [Ch18]. Assuming a large over-generation
 of the initial population (to say, 10,000, examples), this can be just as effective
-as genetic optimization [Ch18], but runs much faster.</li>
+as genetic optimization <sup id="fnref:Ch18"><a class="footnote-ref" href="#fn:Ch18">4</a></sup>, but runs much faster.</li>
 <li><strong>Semi-supervised learning</strong>: these applications require only the <em>2.log(N)</em> labels at
 of the pair of furthest points seen at each level of recursion.</li>
 <li><strong>Privacy</strong></li>
 <li><strong>Planning</strong></li>
 <li><strong>Monitoring</strong></li>
 </ul>
+<h2 id="references">References</h2>
+<p>[Le05]:
+Levina, E., Bickel, P.J.: <a href="https://www.stat.berkeley.edu/~bickel/mldim.pdf">Maximum likelihood estimation of intrinsic dimension</a>. 
+In:
+Advances in neural information processing systems, pp. 777–784 (2005)</p>
+<p>[Zit04]:
+<a href="https://link.springer.com/chapter/10.1007/978-3-540-30217-9_84">Indicator-based selection in multiobjective search</a>
+Eckart Zitzler , Simon Künzli
+Proc. 8th International Conference on Parallel Problem Solving from Nature (PPSN VIII</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:Ah91">
+<p>Aha, D.W., Kibler, D. &amp; Albert, M.K. Instance-based <br />
+learning algorithms. Mach Learn 6, 37–66 (1991). 
+https://doi.org/10.1007/BF00153759&#160;<a class="footnote-backref" href="#fnref:Ah91" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:Bo98">
+<p>Boley, D., 1998. 
+<a href="https://www-users.cse.umn.edu/~boley/publications/papers/PDDP.pdf">Principal directions divisive partitioning</a>
+ Data Mining and Knowledge Discovery, 2(4): 325-344.&#160;<a class="footnote-backref" href="#fnref:Bo98" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:Ch05">
+<p><a href="http://www.molgen.mpg.de/3659531/MITPress--SemiSupervised-Learning">Semi-Supervised Learning</a>
+(2005) Olivier Chapelle,  Bernhard Schölkopf, and Alexander Zien (eds). 
+MIT Press.&#160;<a class="footnote-backref" href="#fnref:Ch05" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:Ch18">
+<p><a href="https://arxiv.org/pdf/1608.07617.pdf">Sampling” as a Baseline Optimizer for Search-Based Software Engineering</a>,
+Jianfeng Chen; Vivek Nair; Rahul Krishna; Tim Menzies
+IEEE Trans SE, (45)6, 2019&#160;<a class="footnote-backref" href="#fnref:Ch18" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:Ch22">
+<p><a href="https://arxiv.org/pdf/2111.02038.pdf">Can We Achieve Fairness Using Semi-Supervised Learning?</a>
+(2022), Joymallya Chakraborty, Huy Tu, Suvodeep Majumder, Tim Menzies.&#160;<a class="footnote-backref" href="#fnref:Ch22" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:Fal95">
+<p>Christos Faloutsos and King-Ip Lin. 1995. FastMap: a fast algorithm for indexing, data-mining and visualization of traditional and multimedia datasets. SIGMOD Rec. 24, 2 (May 1995), 163–174. DOI:https://doi.org/10.1145/568271.223812&#160;<a class="footnote-backref" href="#fnref:Fal95" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:Ke92">
+<p>Kerber, Randy <a href="https://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf">ChiMerge: Discretization of Numeric Attributes</a>, AAAI'92&#160;<a class="footnote-backref" href="#fnref:Ke92" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+<li id="fn:Pl04">
+<p>Platt, John. 
+<a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2005/01/nystrom2.pdf">FastMap, MetricMap, and Landmark MDS are all Nystrom Algorithms</a>
+AISTATS (2005).&#160;<a class="footnote-backref" href="#fnref:Pl04" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 					</div>
 				</div>
