@@ -2,17 +2,19 @@
 
 **[Docs](https://menzies.us/l5) • [Repo](https://github.com/timm/l5) • [Issues](https://github.com/timm/l5/issues) • [&copy;2022](http://github.com/timm/l5.LICENSE.md)** Tim Menzies
 
-#  Do you understand AI? Then prove it!
-       
+#  Do you understand AI?
+
+Do you understand AI? Want to check if you do?
+
+Here's the test.
 Write down what you think an AI toolkit should do, then code
-it up, very succinctly. And no cheating 
+it up, very succinctly (say, in less than 1000 lines of code). And no cheating 
 (so no importing of some massive background AI library).
 
 For example, 
 Buse and Zimmermann[^Bu15] surveyed over a hundred developers and managers to
 find a list of "information needs" for software analytics. 
-Can you code to handle the following? In less than
-1000 lines of code?
+How many of the following do you really understand? 
 
 ![docs/bi.png](docs/bi.png)
 
@@ -38,15 +40,16 @@ which they can compare other, more complex, approaches.
 
 Because Lua is fun to write
 and [easy to learn](https://learnxinyminutes.com/docs/lua/).
+
+Because
 LUA
 supports multiple programming methods, including procedural, object-oriented, functional, and data-driven programming. You can also use it to
 wite you own [domain-specific alnguages](https://www.lua.org/wshop11/luaws11_ag.pdf).
 
-More importantly, for teaching, it installs, very quickly, on most platforms so, when you try to copy it in  another language,
-this code serves as an executable specification. Students like that since it gives them an oracle against which they can test their code.
-
-
-
+Because LUA is great for teaching since 
+it LUA installs, very quickly, on most platforms. This means that 
+this code can serve as an executable specification
+that students can use to check the output of their own code.
 
 <br clear=all><hr>
     
