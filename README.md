@@ -46,6 +46,11 @@ a handful of examples (maybe even just one)  from each cluster.
         
 **HOMEWORKS**
 
+Buse and Zimmermann offer us a list of "information needs" for software analytics:
+
+![docs/bi.png](docs/bi.png)
+
+
 - **Scripting**: little languages (e.g. regular expressions); test-drive-development, CLI design, version control, GitHub workflows, test-driven development, open science
 - Data layer: summarize text files as samples of data
 - Anomaly detection: Nearest-neighbor, Clustering
@@ -81,6 +86,8 @@ of the pair of furthest points seen at each level of recursion.
 [^Ah91]: Aha, D.W., Kibler, D. & Albert, M.K. Instance-based   learning algorithms. Mach Learn 6, 37–66 (1991).  https://doi.org/10.1007/BF00153759
 
 [^Bo98]: Boley, D., 1998.  [Principal directions divisive partitioning](https://www-users.cse.umn.edu/~boley/publications/papers/PDDP.pdf) Data Mining and Knowledge Discovery, 2(4): 325-344.
+
+[^Bu15]: Buse, R. and Zimmerman T. [Information Needs for Software Development Analytics](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/MSR-TR-2011-8.pdf), ICSE'12, 2011
 
 [^Ch05]: [Semi-Supervised Learning](http://www.molgen.mpg.de/3659531/MITPress--SemiSupervised-Learning) (2005) Olivier Chapelle,  Bernhard Schölkopf, and Alexander Zien (eds).  MIT Press.
  

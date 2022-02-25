@@ -62,7 +62,7 @@ more data in that region, then (d) repeat.</p>
 To make that search manageable, it is useful to exploit a 
 manifold assumption; i.e.
 higher-dimensional data can be approximated in a lower dimensional
-manifold without loss of signal<sup id="fnref:Ch05"><a class="footnote-ref" href="#fn:Ch05">3</a></sup> <sup id="fnref:Le05"><a class="footnote-ref" href="#fn:Le05">7</a></sup>.
+manifold without loss of signal<sup id="fnref:Ch05"><a class="footnote-ref" href="#fn:Ch05">4</a></sup> <sup id="fnref:Le05"><a class="footnote-ref" href="#fn:Le05">8</a></sup>.
 Manifolds lead to <em>continuity</em>
 effects; i.e. if there are fewer dimensions, then there are more
 similarities between examples.
@@ -71,6 +71,8 @@ Continuity simplifies <em>clustering</em>
 clustering. And after clustering, reasoning just means reason about
 a handful of examples (maybe even just one)  from each cluster.</p>
 <p><strong>HOMEWORKS</strong></p>
+<p>Buse and Zimmermann offer us a list of "information needs" for software analytics:</p>
+<p><img alt="bi.png" src="bi.png" /></p>
 <ul>
 <li><strong>Scripting</strong>: little languages (e.g. regular expressions); test-drive-development, CLI design, version control, GitHub workflows, test-driven development, open science</li>
 <li>Data layer: summarize text files as samples of data</li>
@@ -93,10 +95,10 @@ Discretize the numeric ranges (*) at each level of the recursion,
 then divide the data according what range best selects for one half, or the other
 at the data at this level of recursion.</li>
 <li><strong>Multi-objective optimization:</strong> This code
-can apply Zitzler's multi-objective ranking predicate<sup id="fnref:Zit04"><a class="footnote-ref" href="#fn:Zit04">10</a></sup> to prune the worst
-half of the data, then recurs on the rest<sup id="fnref:Ch18"><a class="footnote-ref" href="#fn:Ch18">4</a></sup>. Assuming a large over-generation
+can apply Zitzler's multi-objective ranking predicate<sup id="fnref:Zit04"><a class="footnote-ref" href="#fn:Zit04">11</a></sup> to prune the worst
+half of the data, then recurs on the rest<sup id="fnref:Ch18"><a class="footnote-ref" href="#fn:Ch18">5</a></sup>. Assuming a large over-generation
 of the initial population (to say, 10,000, examples), this can be just as effective
-as genetic optimization<sup id="fnref2:Ch18"><a class="footnote-ref" href="#fn:Ch18">4</a></sup>, but runs much faster.</li>
+as genetic optimization<sup id="fnref2:Ch18"><a class="footnote-ref" href="#fn:Ch18">5</a></sup>, but runs much faster.</li>
 <li><strong>Semi-supervised learning</strong>: these applications require only the <em>2.log(N)</em> labels at
 of the pair of furthest points seen at each level of recursion.</li>
 <li><strong>Privacy</strong></li>
@@ -112,29 +114,32 @@ of the pair of furthest points seen at each level of recursion.</li>
 <li id="fn:Bo98">
 <p>Boley, D., 1998.  <a href="https://www-users.cse.umn.edu/~boley/publications/papers/PDDP.pdf">Principal directions divisive partitioning</a> Data Mining and Knowledge Discovery, 2(4): 325-344.&#160;<a class="footnote-backref" href="#fnref:Bo98" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
+<li id="fn:Bu15">
+<p>Buse, R. and Zimmerman T. <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/MSR-TR-2011-8.pdf">Information Needs for Software Development Analytics</a>, ICSE'12, 2011&#160;<a class="footnote-backref" href="#fnref:Bu15" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
 <li id="fn:Ch05">
-<p><a href="http://www.molgen.mpg.de/3659531/MITPress--SemiSupervised-Learning">Semi-Supervised Learning</a> (2005) Olivier Chapelle,  Bernhard Schölkopf, and Alexander Zien (eds).  MIT Press.&#160;<a class="footnote-backref" href="#fnref:Ch05" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p><a href="http://www.molgen.mpg.de/3659531/MITPress--SemiSupervised-Learning">Semi-Supervised Learning</a> (2005) Olivier Chapelle,  Bernhard Schölkopf, and Alexander Zien (eds).  MIT Press.&#160;<a class="footnote-backref" href="#fnref:Ch05" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 <li id="fn:Ch18">
-<p><a href="https://arxiv.org/pdf/1608.07617.pdf">Sampling” as a Baseline Optimizer for Search-Based Software Engineering</a>, Jianfeng Chen; Vivek Nair; Rahul Krishna; Tim Menzies IEEE Trans SE, (45)6, 2019&#160;<a class="footnote-backref" href="#fnref:Ch18" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:Ch18" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<p><a href="https://arxiv.org/pdf/1608.07617.pdf">Sampling” as a Baseline Optimizer for Search-Based Software Engineering</a>, Jianfeng Chen; Vivek Nair; Rahul Krishna; Tim Menzies IEEE Trans SE, (45)6, 2019&#160;<a class="footnote-backref" href="#fnref:Ch18" title="Jump back to footnote 5 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:Ch18" title="Jump back to footnote 5 in the text">&#8617;</a></p>
 </li>
 <li id="fn:Ch22">
-<p><a href="https://arxiv.org/pdf/2111.02038.pdf">Can We Achieve Fairness Using Semi-Supervised Learning?</a> (2022), Joymallya Chakraborty, Huy Tu, Suvodeep Majumder, Tim Menzies.&#160;<a class="footnote-backref" href="#fnref:Ch22" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+<p><a href="https://arxiv.org/pdf/2111.02038.pdf">Can We Achieve Fairness Using Semi-Supervised Learning?</a> (2022), Joymallya Chakraborty, Huy Tu, Suvodeep Majumder, Tim Menzies.&#160;<a class="footnote-backref" href="#fnref:Ch22" title="Jump back to footnote 6 in the text">&#8617;</a></p>
 </li>
 <li id="fn:Fal95">
-<p>Christos Faloutsos and King-Ip Lin. 1995. FastMap: a fast algorithm for indexing, data-mining and visualization of traditional and multimedia datasets. SIGMOD Rec. 24, 2 (May 1995), 163–174. DOI:https://doi.org/10.1145/568271.223812&#160;<a class="footnote-backref" href="#fnref:Fal95" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+<p>Christos Faloutsos and King-Ip Lin. 1995. FastMap: a fast algorithm for indexing, data-mining and visualization of traditional and multimedia datasets. SIGMOD Rec. 24, 2 (May 1995), 163–174. DOI:https://doi.org/10.1145/568271.223812&#160;<a class="footnote-backref" href="#fnref:Fal95" title="Jump back to footnote 7 in the text">&#8617;</a></p>
 </li>
 <li id="fn:Le05">
-<p>Levina, E., Bickel, P.J.: <a href="https://www.stat.berkeley.edu/~bickel/mldim.pdf">Maximum likelihood estimation of intrinsic dimension</a>.  In: Advances in neural information processing systems, pp. 777–784 (2005)&#160;<a class="footnote-backref" href="#fnref:Le05" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+<p>Levina, E., Bickel, P.J.: <a href="https://www.stat.berkeley.edu/~bickel/mldim.pdf">Maximum likelihood estimation of intrinsic dimension</a>.  In: Advances in neural information processing systems, pp. 777–784 (2005)&#160;<a class="footnote-backref" href="#fnref:Le05" title="Jump back to footnote 8 in the text">&#8617;</a></p>
 </li>
 <li id="fn:Ke92">
-<p>Kerber, Randy <a href="https://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf">ChiMerge: Discretization of Numeric Attributes</a>, AAAI'92&#160;<a class="footnote-backref" href="#fnref:Ke92" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+<p>Kerber, Randy <a href="https://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf">ChiMerge: Discretization of Numeric Attributes</a>, AAAI'92&#160;<a class="footnote-backref" href="#fnref:Ke92" title="Jump back to footnote 9 in the text">&#8617;</a></p>
 </li>
 <li id="fn:Pl04">
-<p>Platt, John.  <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2005/01/nystrom2.pdf">FastMap, MetricMap, and Landmark MDS are all Nystrom Algorithms</a> AISTATS (2005).&#160;<a class="footnote-backref" href="#fnref:Pl04" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+<p>Platt, John.  <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2005/01/nystrom2.pdf">FastMap, MetricMap, and Landmark MDS are all Nystrom Algorithms</a> AISTATS (2005).&#160;<a class="footnote-backref" href="#fnref:Pl04" title="Jump back to footnote 10 in the text">&#8617;</a></p>
 </li>
 <li id="fn:Zit04">
-<p><a href="https://link.springer.com/chapter/10.1007/978-3-540-30217-9_84">Indicator-based selection in multiobjective search</a> Eckart Zitzler , Simon Künzli Proc. 8th International Conference on Parallel Problem Solving from Nature (PPSN VIII&#160;<a class="footnote-backref" href="#fnref:Zit04" title="Jump back to footnote 10 in the text">&#8617;</a></p>
+<p><a href="https://link.springer.com/chapter/10.1007/978-3-540-30217-9_84">Indicator-based selection in multiobjective search</a> Eckart Zitzler , Simon Künzli Proc. 8th International Conference on Parallel Problem Solving from Nature (PPSN VIII&#160;<a class="footnote-backref" href="#fnref:Zit04" title="Jump back to footnote 11 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
