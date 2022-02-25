@@ -31,7 +31,7 @@ When this is not true, then we need tools to incrementally
 on the most interesting part of that summary, (c) collect
 more data in that region, then (d) repeat.
          
-<a href="docs/div.png"><img align=right width=225 src="div.png"></a>
+<a href="docs/div.png"><img align=right width=225 src="docs/div.png"></a>
 To make that search manageable, it is useful to exploit a 
 manifold assumption; i.e.
 higher-dimensional data can be approximated in a lower dimensional
@@ -48,7 +48,7 @@ a handful of examples (maybe even just one)  from each cluster.
 
 - **Scripting**: little languages (e.g. regular expressions); test-drive-development, CLI design, version control, GitHub workflows, test-driven development, open science
 - Data layer: summarize text files as samples of data
-- Nearest-neighbor, Clustering
+- Anomaly detection: Nearest-neighbor, Clustering
 - Validation: effect size, significance texts
 - Regression, model trees.
 - Discretization, explanation
