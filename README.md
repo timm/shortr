@@ -70,7 +70,7 @@ at the data at this level of recursion.
 can apply Zitzler's multi-objective rankining predicate [Zit04] to prune the worst
 half of the data, then recurs on the rest [Ch18]. Assuming a large over-generation
 of the initial population (to say, 10,000, examples), this can be just as effective
-as genetic optimization [^Ch18], but runs much faster.
+as genetic optimization[^Ch18], but runs much faster.
 - **Semi-supervised learning**: these applications require only the _2.log(N)_ labels at
 of the pair of furthest points seen at each level of recursion.
 - **Privacy**
@@ -99,9 +99,7 @@ MIT Press.
 Jianfeng Chen; Vivek Nair; Rahul Krishna; Tim Menzies
 IEEE Trans SE, (45)6, 2019
 
-[^Ch22]:
-[Can We Achieve Fairness Using Semi-Supervised Learning?](https://arxiv.org/pdf/2111.02038.pdf)
-(2022), Joymallya Chakraborty, Huy Tu, Suvodeep Majumder, Tim Menzies. 
+[^Ch22]: [Can We Achieve Fairness Using Semi-Supervised Learning?](https://arxiv.org/pdf/2111.02038.pdf) (2022), Joymallya Chakraborty, Huy Tu, Suvodeep Majumder, Tim Menzies. 
 
 [^Fal95]: 
 Christos Faloutsos and King-Ip Lin. 1995. FastMap: a fast algorithm for indexing, data-mining and visualization of traditional and multimedia datasets. SIGMOD Rec. 24, 2 (May 1995), 163–174. DOI:https://doi.org/10.1145/568271.223812
