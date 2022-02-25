@@ -383,6 +383,27 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
               <div class="sswrap ">
                 <a class="ss" href="#section-15">&#x00a7;</a>
               </div>
+              <p>misc</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">distance2Heaven</span><span class="hljs-params">(t,heaven,   num,d)</span></span>
+  <span class="hljs-keyword">for</span> n,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(heaven) <span class="hljs-keyword">do</span> 
+    num = Num(at,txt) 
+    <span class="hljs-keyword">for</span> _,z <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> num:add(z.ys[n]) <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">for</span> _,z <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> z.ys[n] = num:distance2heaven(z.ys[n]) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  d = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(one)</span></span> <span class="hljs-keyword">return</span> (sum(one.ys)/#one.ys)^<span class="hljs-number">.5</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(t, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> d(a) &lt; d(b) <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-16">&#x00a7;</a>
+              </div>
               <hr>
 <p>|    |    |<strong>| [</strong>  [__  |___ [__<br>|___ |___ |  | ___] <em><strong>] |</strong></em> ___] </p>
 
@@ -393,11 +414,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-16">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-16">&#x00a7;</a>
+                <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
               <p>COLS: turns list of column names into NUMs, SYMs, or SKIPs</p>
 
@@ -422,11 +443,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-17">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-17">&#x00a7;</a>
+                <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
               <p>NUM: summarizes a stream of numbers</p>
 
@@ -449,6 +470,9 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
   <span class="hljs-keyword">else</span>   x,y = i:norm(x), i:norm(y) <span class="hljs-keyword">end</span> 
   <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">abs</span>(x-y) <span class="hljs-keyword">end</span>  
 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.distance2heaven</span><span class="hljs-params">(x, w)</span></span> 
+  <span class="hljs-keyword">return</span> ((i.w&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) - i:norm(x))^<span class="hljs-number">2</span> <span class="hljs-keyword">end</span>
+
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.mid</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> per(i:sorted(), <span class="hljs-number">.5</span>) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.norm</span><span class="hljs-params">(i,x)</span></span> 
@@ -461,11 +485,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-18">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-18">&#x00a7;</a>
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
               <p>ROWS: manages <code>rows</code>, summarized in <code>cols</code> (columns).</p>
 
@@ -511,11 +535,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-19">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
               <p>SKIP: summarizes things we want to ignore (so does nothing)</p>
 
@@ -528,11 +552,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-20">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
               <p>SOME: keeps a random sample on the arriving data</p>
 
@@ -547,11 +571,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-21">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-21">&#x00a7;</a>
+                <a class="ss" href="#section-22">&#x00a7;</a>
               </div>
               <p>SYM: summarizes a stream of symbols</p>
 
@@ -583,11 +607,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-22">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-22">&#x00a7;</a>
+                <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
               <hr>
 <p>|    |    |  | [__   |  |___ |<strong>/ 
@@ -619,11 +643,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-23">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-23">&#x00a7;</a>
+                <a class="ss" href="#section-24">&#x00a7;</a>
               </div>
               <hr>
 <p>|___  /  |<strong>] |    |</strong>| | |\ | 
@@ -634,11 +658,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-24">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
+                <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
               <p>SPAN: keeps a random sample on the arriving data</p>
 
@@ -656,50 +680,39 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
   x = row[i.col.at]
   <span class="hljs-keyword">return</span> (x==<span class="hljs-string">&quot;?&quot;</span>) <span class="hljs-keyword">or</span> (i.lo==i.hi <span class="hljs-keyword">and</span> x==i.lo) <span class="hljs-keyword">or</span> (i.lo &lt;= x <span class="hljs-keyword">and</span> x &lt; i.hi) <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SPAN.score</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.has.n/i.col.n, i.has:div() <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SPAN.good</span><span class="hljs-params">(i, sizes,divs)</span></span>
-  size,div = i:score()
-  size,div = sizes:norm(size), divs:norm(div)
-  <span class="hljs-keyword">return</span>  ((<span class="hljs-number">1</span>-size)^<span class="hljs-number">2</span> + (<span class="hljs-number">0</span> - div)^<span class="hljs-number">2</span>)^<span class="hljs-number">.5</span> <span class="hljs-keyword">end</span></pre></div></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SPAN.score</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> {i.has.n/i.col.n,  i.has:div()} <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-25">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-25">&#x00a7;</a>
+                <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
               <p>EXPLAIN:</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EXPLAIN.new</span><span class="hljs-params">(k,egs,top)</span></span>
-  <span class="hljs-keyword">local</span> i,no,yes,divs,sizes,top,div,best,want,size,left,order,right,spans
+  <span class="hljs-keyword">local</span> i,top,want,left,right,spans,best,yes,no
   i    = new(k,{here = egs})
   top  = top <span class="hljs-keyword">or</span> egs
   want = (#top.rows)^the.want
-  <span class="hljs-keyword">if</span> #top.rows &gt;= <span class="hljs-number">2</span>*want <span class="hljs-keyword">then</span>  <span class="hljs-comment">-- if enough to recurse</span>
-    left,right = egs:half(top) <span class="hljs-comment">-- cluster in two</span>
-    spans, divs, sizes = {}, Num(), Num()
-    <span class="hljs-keyword">for</span> n,col1 <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.x) <span class="hljs-keyword">do</span>  <span class="hljs-comment">-- for each x attribute ...</span>
-      col2 = j.cols.x[n]              <span class="hljs-comment">-- col1,col2 is same col in either cluster</span>
-      <span class="hljs-keyword">for</span> _,span <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(col1:spans(col2)) <span class="hljs-keyword">do</span> <span class="hljs-comment">-- spans are deltas between clusters</span>
-        push(spans, span)                      <span class="hljs-comment">-- cache the span</span>
-        size, div = span:score()               <span class="hljs-comment">-- remember the span&#x27;s score (so</span>
-        sizes:add(size)                        <span class="hljs-comment">--    we can normalize it, later)</span>
-        divs:add(div) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-    order = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span>  <span class="hljs-comment">-- compare two spans, normalizing the scores</span>
-              <span class="hljs-keyword">return</span> a:good(sizes,divs) &lt; b:good(sizes,divs) <span class="hljs-keyword">end</span>
-    best  = <span class="hljs-built_in">sort</span>(spans, order)[<span class="hljs-number">1</span>]    <span class="hljs-comment">-- best span is first in this sort</span>
-    yes, no = egs:clone(), egs:clone()
-    <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(egs.rows) <span class="hljs-keyword">do</span>  <span class="hljs-comment">-- </span>
+  <span class="hljs-keyword">if</span> #top.rows &gt;= <span class="hljs-number">2</span>*want <span class="hljs-keyword">then</span>  
+    left,right = egs:half(top) 
+    spans  = {}
+    <span class="hljs-keyword">for</span> n,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.x) <span class="hljs-keyword">do</span>   
+      <span class="hljs-keyword">for</span> _,s <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(col:spans(j.cols.x[n])) <span class="hljs-keyword">do</span> 
+        push(spans,{ys=s:score(),it=s}) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    best   = distance2heaven(spans,{<span class="hljs-string">&quot;+&quot;</span>,<span class="hljs-string">&quot;-&quot;</span>})[<span class="hljs-number">1</span>]
+    yes,no = egs:clone(), egs:clone()
+    <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(egs.rows) <span class="hljs-keyword">do</span> 
       (best:selects(row) <span class="hljs-keyword">and</span> yes <span class="hljs-keyword">or</span> no):add(row) <span class="hljs-keyword">end</span> <span class="hljs-comment">-- divide data in two</span>
     <span class="hljs-keyword">if</span> #yes.rows&lt;#egs.rows <span class="hljs-keyword">then</span> <span class="hljs-comment">-- make kids if kid size different to parent size</span>
       <span class="hljs-keyword">if</span> #yes.rows&gt;=want <span class="hljs-keyword">then</span> i.yes=EXPLAIN:new(yes,top) <span class="hljs-keyword">end</span> 
-      <span class="hljs-keyword">if</span> #no.rows &gt;=want <span class="hljs-keyword">then</span> i.no =EXPLAIN:new(no,top)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">if</span> #no.rows &gt;=want <span class="hljs-keyword">then</span> i.no =EXPLAIN:new(no, top)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EXPLAN.show</span><span class="hljs-params">(i,pre)</span></span>
@@ -755,11 +768,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-26">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-26">&#x00a7;</a>
+                <a class="ss" href="#section-27">&#x00a7;</a>
               </div>
               <hr>
 <p>|  \ |___ |/| |  | [__<br>|<strong>/ |</strong>_ |  | |__| ___] </p>
@@ -784,11 +797,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-27">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-27">&#x00a7;</a>
+                <a class="ss" href="#section-28">&#x00a7;</a>
               </div>
               <p>if (j % 10)==0 then print(“”) end
 io.write(fmt(“%6s”,x))  end end </p>
@@ -818,11 +831,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-28">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-28">&#x00a7;</a>
+                <a class="ss" href="#section-29">&#x00a7;</a>
               </div>
               <p>oo(r.cols.x[2]:sorted()) end</p>
 
@@ -836,11 +849,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-29">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-29">&#x00a7;</a>
+                <a class="ss" href="#section-30">&#x00a7;</a>
               </div>
               <p>print(oo(many(t, 10))) end</p>
 
@@ -856,11 +869,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-30">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-30">&#x00a7;</a>
+                <a class="ss" href="#section-31">&#x00a7;</a>
               </div>
               <p>print(c,”\n”,o(row1),”\n”, o(row2)) end</p>
 
@@ -882,11 +895,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-31">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-31">&#x00a7;</a>
+                <a class="ss" href="#section-32">&#x00a7;</a>
               </div>
               <p>CLUSTER:new(r):show() end</p>
 
@@ -897,11 +910,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-32">&#x00a7;</a>
+                <a class="ss" href="#section-33">&#x00a7;</a>
               </div>
               <p>start-up</p>
 
@@ -926,11 +939,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-33">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-33">&#x00a7;</a>
+                <a class="ss" href="#section-34">&#x00a7;</a>
               </div>
               <p>git rid of SOME for rows
 nss  = NUM | SYM | SKIP

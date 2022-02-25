@@ -10,14 +10,9 @@ help:
 	| sort \
 	| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%10s :\033[0m %s\n", $$1, $$2}'
 
-h1:
-	@figlet -W -flarry3d $t | gawk '{print "-- " $$0}'
-
-h2:
-	@figlet -W -fogre $t | gawk '{print "-- " $$0}'
-
-h3:
-	@figlet -W -fcybermedium $t | gawk '{print "-- " $$0}'
+h1:; @figlet -W -flarry3d     $t | gawk '{print "--    " $$0}'
+h2:; @figlet -W -fogre        $t | gawk '{print "--    " $$0}'
+h3:: @figlet -W -fcybermedium $t | gawk '{print "--    " $$0}'
 
 doc: $(PDF) $(HTML) ## generate pdfs
 
