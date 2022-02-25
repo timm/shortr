@@ -1,3 +1,25 @@
+-- - Recursively divide data based on two
+-- distant points (found in linear time using the Fastmap
+-- heuristic [Fa95]). Then find and print the attribute range
+-- that best distinguishes these halves. Recurse on each half.
+-- - (which is sort of like PDDP [Bo98] but faster; and we
+-- offers a human-readable description for each division).
+-- - To find those ranges, this code uses a variant of the ChiMerge
+-- discretizer (but we select on entropy and size, 
+-- not the Chi statistic)
+-- - To avoid spurious outliers, this code separates using `-furthest=.9`;
+-- i.e. the 90% furthest points.
+-- - To avoid long runtimes, this code only searches at most `-keep=512 ` 
+-- randomly selected examples to find those furtherst points.
+-- - To suport multi-objective optimization, this code reads csv files 
+-- whose headers may contain markers for "minimize this" or "maximize
+-- that" (see the `lessp, morep` functions).
+-- - To support explanation, optionally, at each level of recursion,
+-- this code reports what ranges can best distinguish sibling clusters
+-- C1,C2.  The  discretizer is inspired by the ChiMerge algorithm:
+-- numerics are divided into, say, 16 bins. Then, while we can find
+-- adjacent bins with the similar distributions in C1,C2, then 
+-- (a) merge then (b) look for other merges.
 local help = [[
 
 l5 == a little lab of lots of LUA learning algorithms.
@@ -21,44 +43,22 @@ OPTIONS:
 
 KEY: N=fileName F=float P=posint S=string
 
-NOTES: This code uses Aha's distance measure [Aha91] (that can
-handle numbers and symbols) to recursively divide data based on two
-distant points (these two are found in linear time using the Fastmap
-heuristic [Fa95]).
-
-To avoid spurious outliers, this code use the 90% furthest points.
-
-To avoid long runtimes, uses a subset of the data to learn where
-to divide data (then all the data gets pushed down first halves).
-
-To support explanation, optionally, at each level of recursion,
-this code reports what ranges can best distinguish sibling clusters
-C1,C2.  The  discretizer is inspired by the ChiMerge algorithm:
-numerics are divided into, say, 16 bins. Then, while we can find
-adjacent bins with the similar distributions in C1,C2, then 
-(a) merge then (b) look for other merges.
 ]]
+    
+-- ## Definitions
 
--- ## Namespace
-
--- Cache current globals, use at end to find rogue variables
+-- Cache current names (used at end to find rogue variables)
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-
--- Defined local names.
+-- Define local names.
 local any,asserts,big,cli,csv,fails,firsts,fmt,goalp,ignorep,klassp  
 local lessp,map,main,many,max,merge,min,morep,new,nump,o,oo,per,pop,push
 local r,rows,rnd,rnds,slots,sort,sum,thing,things,unpack
-
--- Classes have UPPER CASE names.
+-- Define classes to gave UPPER CASE names.
 local CLUSTER, COLS, EGS,  EXPLAIN, NUM, ROWS = {},{},{},{},{},{}
 local SKIP,    SOME, SPAN, SYM       = {},{},{},{}
-
--- ## Settings
--- Parse the help text for flags and defaults (e.g. -keep, 512).   
--- Check for updates on those details from command line       
--- (and and there, 
--- some shortcuts are available;
--- e.g.  _-k N_ &rArr; `keep=N`;         
+-- Define parameter settings.     
+-- Update parameter defaults from command line. Allow for some shorthand:  
+-- e.g.  _-k N_ &rArr; `keep=N`;    
 -- and  _-booleanFlag_ &rArr; `booleanFlag=not default`). 
 local the={}
 help:gsub("\n  [-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x)
@@ -68,8 +68,7 @@ help:gsub("\n  [-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x)
   if x=="false" then the[key]=false elseif x=="true" then the[key]=true else
     the[key] = tonumber(x) or x end end )
  
--- ----------------------------------------------------------------------------
--- this code reads csv files where the words on line1 define column types.
+-- ## Define headers for row1 of csv files
 function ignorep(x) return x:find":$" end     -- columns to ignore
 function klassp(x)  return x:find"!$" end     -- symbolic goals to achieve
 function lessp(x)   return x:find"-$" end     -- number goals to minimize
@@ -77,10 +76,11 @@ function morep(x)   return x:find"+$" end     -- numeric goals to maximize
 function nump(x)    return x:find"^[A-Z]" end -- numeric columns
 function goalp(x)   return morep(x) or lessp(x) or klassp(x) end
 
--- strings
+-- ## Misc Utils
+-- Strings
 fmt = string.format
 
--- maths
+-- Maths
 big = math.huge
 max = math.max
 min = math.min
@@ -90,7 +90,7 @@ function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or the.Format) or "%s",x) end
 
--- tables
+-- Tables
 pop = table.remove
 unpack = table.unpack
 function any(t)        return t[r(#t)] end
@@ -100,7 +100,7 @@ function per(t,p)      return t[ (#t*(p or .5))//1 ] end
 function push(t,x)     table.insert(t,x); return x end
 function sort(t,f)     table.sort(t,f); return t end
 
--- meta
+-- Meta
 function map(t,f, u)  u={};for k,v in pairs(t) do push(u,f(v)) end; return u end
 function sum(t,f, n)  n=0; for _,v in pairs(t) do n=n+f(v)     end; return n end
 function slots(t, u) 
@@ -108,7 +108,7 @@ function slots(t, u)
   for k,v in pairs(t) do k=tostring(k);if k:sub(1,1)~="_" then push(u,k) end end
   return sort(u) end 
 
--- print tables, recursively
+-- Print tables, recursively
 function oo(t) print(o(t)) end
 function o(t)
   if type(t)~="table" then return tostring(t) end
@@ -116,7 +116,7 @@ function o(t)
   local u = #t>0 and map(t,o) or map(slots(t),key) 
   return '{'..table.concat(u," ").."}" end 
 
--- strings to things
+-- Coerce strings to things
 function csv(file,      x)
   file = io.input(file)
   return function() 
@@ -132,14 +132,14 @@ function things(x,sep,  t)
   for y in x:gmatch(sep or"([^,]+)") do push(t,thing(y)) end
   return t end
 
--- misc
+-- Misc stuff
 function distance2Heaven(t,heaven,   num,d)
   for n,txt in pairs(heaven) do 
     num = Num(at,txt) 
     for _,z in pairs(t) do num:add(z.ys[n]) end
     for _,z in pairs(t) do z.ys[n] = num:distance2heaven(z.ys[n]) end end
   d = function(one) return (sum(one.ys)/#one.ys)^.5 end
-  return sort(t, function(a,b) return d(a) < d(b) end) end
+  return sort(t, function(a,b) return d(a) < d(b) end) end
 -- ____ _    ____ ____ ____ ____ ____ 
 -- |    |    |__| [__  [__  |___ [__  
 -- |___ |___ |  | ___] ___] |___ ___] 
@@ -467,3 +467,6 @@ end
 -- nss  = NUM | SYM | SKIP
 -- COLS = all:[nss]+, x:[nss]*, y:[nss]*, klass;col?
 -- ROWS = cols:COLS, rows:SOME
+--
+-- [Ah91]: Aha, D.W., Kibler, D. & Albert, M.K. Instance-based   learning algorithms. Mach Learn 6, 37–66 (1991).  https://doi.org/10.1007/BF00153759
+--

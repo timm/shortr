@@ -4,21 +4,32 @@
        
 <img align=right width=250 src=docs/head.png>
 
-If we choose our AI tools not on their complexity, but
-on their understandably, what would they look like?
-To that end, I've been looking back over
-common themes seen in my
-AI graduate students (30+ students, over 20 years). What I was
-after were the least lines of code that offer the most
-AI functionality-- and which could be mixed and matched in
-novel and interesting ways.
-      
-The result is this file. My standard "intro to AI" exercise is six
-weeks of homeworks where students rebuild the following code,from
-scratch, in any language they like (except LUA).  After that, 
-students can review all the assumptions of this code, then read the
-literature looking for other tools that challenge those assumptions.
-That leads to a second a 4-6 week project using these tools as a baseline against
+Do you understand AI? Then prove it. Write down what you think an AI toolkit should do, then code
+it up, very succinctly. And no cheating 
+(so no importing of some massive background AI library).
+
+For example, 
+Buse and Zimmermann surveyed over a hundred developers and managers to
+find a list of "information needs" for software analytics. 
+
+![docs/bi.png](docs/bi.png)
+
+That list is not quite up-to-date- it makes no mention of current concerns about FAT (fair, accountable, trustworthy) or bias mitigation.
+Nor does it really touch on model-based reasoning  or multi-objective optimization.
+So lets fix that.
+Lets write a tiny software library that handles all the above in less than 1000 lines of code
+
+
+I use this toolkit for teaching AI to software engineers.
+My premise is that the AI-literate engineering can mix and match AI tools
+to create specific solutions for specific probems. To show then what goes on inside the box,
+I ask them to:
+
+- Reproduce this code in whatever language they like (except LUA). That takes 6-8 weeks.
+- Find all the short-cuts in this code, then find other AI tools that another approach to those short-cuts.
+- - Benchmark this tiny toolkit agains those more elaborate tools.
+
+For upper-level class (and grad classes,
 which they can compare other, more complex, approaches.
   
 <br clear=all><hr>
@@ -46,20 +57,13 @@ a handful of examples (maybe even just one)  from each cluster.
         
 **HOMEWORKS**
 
-Buse and Zimmermann offer us a list of "information needs" for software analytics. 
-That list is not quite upt to date- it makes no mention of current concerns about FAT (fair, accountable, trustworthy) or bias mitigation.
-So can we support all these information needs? As well as issue related to FAT? And to make it fun, can we do all that under 1000 lines of code?
-
-
-![docs/bi.png](docs/bi.png)
-
-Sure!
 
 
 - **Scripting**: little languages (e.g. regular expressions); test-drive-development, CLI design, version control, GitHub workflows, test-driven development, open science
 - Data layer: summarize text files as samples of data
 - Anomaly detection: Nearest-neighbor, Clustering
 - Validation: effect size, significance texts
+- Semi-supervised learning
 - Regression, model trees.
 - Discretization, explanation
 - Privacy

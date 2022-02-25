@@ -27,63 +27,29 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              <img align=left width=150 src=head.png>
-   
-<p><strong><a href="https://github.com/timm/lua">Repo</a> • <a href="https://github.com/timm/lua/issues">Issues</a> • <a href="LICENSE.md">&copy;2022</a></strong> Tim Menzies</p>
-<p>If we choose our AI tools not on their complexity, but
-on their understandably, what would they look like?
-To that end, I’ve been looking back over
-common themes seen in my
-AI graduate students (30+ students, over 20 years). What I was
-after were the least lines of code that offer the most
-AI functionality– and which could be mixed and matched in
-novel and interesting ways.</p>
-<p>The result is this file. My standard “intro to AI” exercise is six
-weeks of homeworks where students rebuild the following code,from
-scratch, in any language they like (except LUA).  After that, 
-students can review all the assumptions of this code, then read the
-literature looking for other tools that challenge those assumptions.
-That leads to a second a 4-6 week project using these tools as a baseline against
-which they can compare other, more complex, approaches.</p>
-<hr>
-    
-<h2 id="the-need-for-baselines-xxxx">The need for baselines. XXXX</h2>
-<p>Standard supervised learners assume that all examples have labels.
-When this is not true, then we need tools to incrementally 
-(a) summarize what has been seen so far; (b) find and focus
-on the most interesting part of that summary, (c) collect
-more data in that region, then (d) repeat.</p>
-<p><a href="div.png"><img align=right width=225 src="div.png"></a>
-To make that search manageable, it is useful to exploit a 
-manifold assumption; i.e.
-higher-dimensional data can be approximated in a lower dimensional
-manifold without loss of signal [Ch05,Le05].
-Manifolds lead to <em>continuity</em>
-effects; i.e. if there are fewer dimensions, then there are more
-similarities between examples.
-Continuity simplifies <em>clustering</em>
-(and any subsequent reasoning).  More similarities means  easier
-clustering. And after clustering, reasoning just means reason about
-a handful of examples (maybe even just one)  from each cluster.</p>
-<p><strong>ASSIGNMENTS</strong></p>
-<ul>
-<li><strong>Instance selection</strong>: filter the data down to just a few samples per
-cluster, the reason using just those.</li>
-<li><strong>Anomaly detection</strong></li>
-<li><strong>Explanation</strong> 
-Discretize the numeric ranges (*) at each level of the recursion,
-then divide the data according what range best selects for one half, or the other
-at the data at this level of recursion.</li>
-<li><strong>Multi-objective optimization:</strong> This code
-can apply Zitzler’s multi-objective rankining predicate [Zit04] to prune the worst
-half of the data, then recurs on the rest [Ch18]. Assuming a large over-generation
-of the initial population (to say, 10,000, examples), this can be just as effective
-as genetic optimization [Ch18], but runs much faster.</li>
-<li><strong>Semi-supervised learning</strong>: these applications require only the <em>2.log(N)</em> labels at
-of the pair of furthest points seen at each level of recursion.</li>
-<li><strong>Privacy</strong></li>
-<li><strong>Planning</strong></li>
-<li><strong>Monitoring</strong></li>
+              <ul>
+<li>Recursively divide data based on two
+distant points (found in linear time using the Fastmap
+heuristic [Fa95]). Then find and print the attribute range
+that best distinguishes these halves. Recurse on each half.</li>
+<li>(which is sort of like PDDP [Bo98] but faster; and we
+offers a human-readable description for each division).</li>
+<li>To find those ranges, this code uses a variant of the ChiMerge
+discretizer (but we select on entropy and size, 
+not the Chi statistic)</li>
+<li>To avoid spurious outliers, this code separates using <code>-furthest=.9</code>;
+i.e. the 90% furthest points.</li>
+<li>To avoid long runtimes, this code only searches at most <code>-keep=512 </code> 
+randomly selected examples to find those furtherst points.</li>
+<li>To suport multi-objective optimization, this code reads csv files 
+whose headers may contain markers for “minimize this” or “maximize
+that” (see the <code>lessp, morep</code> functions).</li>
+<li>To support explanation, optionally, at each level of recursion,
+this code reports what ranges can best distinguish sibling clusters
+C1,C2.  The  discretizer is inspired by the ChiMerge algorithm:
+numerics are divided into, say, 16 bins. Then, while we can find
+adjacent bins with the similar distributions in C1,C2, then 
+(a) merge then (b) look for other merges.</li>
 </ul>
 
             </div>
@@ -111,22 +77,6 @@ OPTIONS:
 
 KEY: N=fileName F=float P=posint S=string
 
-NOTES: This code uses Aha&#x27;s distance measure [Aha91] (that can
-handle numbers and symbols) to recursively divide data based on two
-distant points (these two are found in linear time using the Fastmap
-heuristic [Fa95]).
-
-To avoid spurious outliers, this code use the 90% furthest points.
-
-To avoid long runtimes, uses a subset of the data to learn where
-to divide data (then all the data gets pushed down first halves).
-
-To support explanation, optionally, at each level of recursion,
-this code reports what ranges can best distinguish sibling clusters
-C1,C2.  The  discretizer is inspired by the ChiMerge algorithm:
-numerics are divided into, say, 16 bins. Then, while we can find
-adjacent bins with the similar distributions in C1,C2, then 
-(a) merge then (b) look for other merges.
 ]]</span></pre></div></div>
             
         </li>
@@ -138,7 +88,7 @@ adjacent bins with the similar distributions in C1,C2, then
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
               </div>
-              <h2 id="namespace">Namespace</h2>
+              <h2 id="definitions">Definitions</h2>
 
             </div>
             
@@ -151,7 +101,7 @@ adjacent bins with the similar distributions in C1,C2, then
               <div class="sswrap ">
                 <a class="ss" href="#section-3">&#x00a7;</a>
               </div>
-              <p>Cache current globals, use at end to find rogue variables</p>
+              <p>Cache current names (used at end to find rogue variables)</p>
 
             </div>
             
@@ -166,7 +116,7 @@ adjacent bins with the similar distributions in C1,C2, then
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <p>Defined local names.</p>
+              <p>Define local names.</p>
 
             </div>
             
@@ -183,11 +133,11 @@ adjacent bins with the similar distributions in C1,C2, then
               <div class="sswrap ">
                 <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
-              <p>Classes have UPPER CASE names.</p>
+              <p>Define classes to gave UPPER CASE names.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> CLUSTER, COLS, EGS,  NUM, ROWS = {},{},{},{},{}
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> CLUSTER, COLS, EGS,  EXPLAIN, NUM, ROWS = {},{},{},{},{},{}
 <span class="hljs-keyword">local</span> SKIP,    SOME, SPAN, SYM       = {},{},{},{}</pre></div></div>
             
         </li>
@@ -199,10 +149,7 @@ adjacent bins with the similar distributions in C1,C2, then
               <div class="sswrap ">
                 <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
-              <h2 id="settings">Settings</h2>
-<p>Parse the help text for flags and defaults (e.g. -keep, 512).<br>Check for updates on those details from command line<br>(and and there, 
-some shortcuts are available;
-e.g.  <em>-k N</em> &rArr; <code>keep=N</code>;<br>and  <em>-booleanFlag</em> &rArr; <code>booleanFlag=not default</code>). </p>
+              <p>Define parameter settings.<br>Update parameter defaults from command line. Allow for some shorthand:<br>e.g.  <em>-k N</em> &rArr; <code>keep=N</code>;<br>and  <em>-booleanFlag</em> &rArr; <code>booleanFlag=not default</code>). </p>
 
             </div>
             
@@ -223,20 +170,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
               <div class="sswrap ">
                 <a class="ss" href="#section-7">&#x00a7;</a>
               </div>
-              <hr>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-8">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-8">&#x00a7;</a>
-              </div>
-              <p>this code reads csv files where the words on line1 define column types.</p>
+              <h2 id="define-headers-for-row1-of-csv-files">Define headers for row1 of csv files</h2>
 
             </div>
             
@@ -250,13 +184,14 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
         </li>
         
         
-        <li id="section-9">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-9">&#x00a7;</a>
+                <a class="ss" href="#section-8">&#x00a7;</a>
               </div>
-              <p>strings</p>
+              <h2 id="misc-utils">Misc Utils</h2>
+<p>Strings</p>
 
             </div>
             
@@ -265,13 +200,13 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
         </li>
         
         
-        <li id="section-10">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-10">&#x00a7;</a>
+                <a class="ss" href="#section-9">&#x00a7;</a>
               </div>
-              <p>maths</p>
+              <p>Maths</p>
 
             </div>
             
@@ -287,13 +222,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-11">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-11">&#x00a7;</a>
+                <a class="ss" href="#section-10">&#x00a7;</a>
               </div>
-              <p>tables</p>
+              <p>Tables</p>
 
             </div>
             
@@ -309,13 +244,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-12">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-12">&#x00a7;</a>
+                <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
-              <p>meta</p>
+              <p>Meta</p>
 
             </div>
             
@@ -329,13 +264,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-13">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-13">&#x00a7;</a>
+                <a class="ss" href="#section-12">&#x00a7;</a>
               </div>
-              <p>print tables, recursively</p>
+              <p>Print tables, recursively</p>
 
             </div>
             
@@ -349,13 +284,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-14">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-14">&#x00a7;</a>
+                <a class="ss" href="#section-13">&#x00a7;</a>
               </div>
-              <p>strings to things</p>
+              <p>Coerce strings to things</p>
 
             </div>
             
@@ -377,13 +312,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-15">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-15">&#x00a7;</a>
+                <a class="ss" href="#section-14">&#x00a7;</a>
               </div>
-              <p>misc</p>
+              <p>Misc stuff</p>
 
             </div>
             
@@ -398,11 +333,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-16">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-16">&#x00a7;</a>
+                <a class="ss" href="#section-15">&#x00a7;</a>
               </div>
               <hr>
 <p>|    |    |<strong>| [</strong>  [__  |___ [__<br>|___ |___ |  | ___] <em><strong>] |</strong></em> ___] </p>
@@ -414,11 +349,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-17">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-17">&#x00a7;</a>
+                <a class="ss" href="#section-16">&#x00a7;</a>
               </div>
               <p>COLS: turns list of column names into NUMs, SYMs, or SKIPs</p>
 
@@ -443,11 +378,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-18">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-18">&#x00a7;</a>
+                <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
               <p>NUM: summarizes a stream of numbers</p>
 
@@ -485,11 +420,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-19">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
               <p>ROWS: manages <code>rows</code>, summarized in <code>cols</code> (columns).</p>
 
@@ -535,11 +470,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-20">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
               <p>SKIP: summarizes things we want to ignore (so does nothing)</p>
 
@@ -552,11 +487,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-21">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-21">&#x00a7;</a>
+                <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
               <p>SOME: keeps a random sample on the arriving data</p>
 
@@ -571,11 +506,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-22">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-22">&#x00a7;</a>
+                <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
               <p>SYM: summarizes a stream of symbols</p>
 
@@ -607,11 +542,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-23">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-23">&#x00a7;</a>
+                <a class="ss" href="#section-22">&#x00a7;</a>
               </div>
               <hr>
 <p>|    |    |  | [__   |  |___ |<strong>/ 
@@ -643,11 +578,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-24">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
+                <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
               <hr>
 <p>|___  /  |<strong>] |    |</strong>| | |\ | 
@@ -658,11 +593,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-25">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-25">&#x00a7;</a>
+                <a class="ss" href="#section-24">&#x00a7;</a>
               </div>
               <p>SPAN: keeps a random sample on the arriving data</p>
 
@@ -685,11 +620,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-26">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-26">&#x00a7;</a>
+                <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
               <p>EXPLAIN:</p>
 
@@ -715,14 +650,14 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
       <span class="hljs-keyword">if</span> #no.rows &gt;=want <span class="hljs-keyword">then</span> i.no =EXPLAIN:new(no, top)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EXPLAN.show</span><span class="hljs-params">(i,pre)</span></span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EXPLAIN.show</span><span class="hljs-params">(i,pre)</span></span>
   pre = pre <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
   <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> pre <span class="hljs-keyword">then</span>
     tmp = i.here:mid(i.here.y)
   <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;%6s : %~30s %s&quot;</span>, #i.here.rows, pre, o(i.here:mid(i.here.cols.y))))
   <span class="hljs-keyword">for</span> _,pair <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{{<span class="hljs-literal">true</span>,i.yes},{<span class="hljs-literal">false</span>,i.no}} <span class="hljs-keyword">do</span>
     <span class="hljs-built_in">status</span>,kid = <span class="hljs-built_in">unpack</span>(pair)
-    k:shpw(pre .. <span class="hljs-string">&quot;|.. &quot;</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    k:shpw(pre .. <span class="hljs-string">&quot;|.. &quot;</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.spans</span><span class="hljs-params">(i, j)</span></span>
   <span class="hljs-keyword">local</span> xys,all,one,last,xys,x,c n = {},{}
@@ -768,11 +703,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-27">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-27">&#x00a7;</a>
+                <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
               <hr>
 <p>|  \ |___ |/| |  | [__<br>|<strong>/ |</strong>_ |  | |__| ___] </p>
@@ -797,11 +732,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-28">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-28">&#x00a7;</a>
+                <a class="ss" href="#section-27">&#x00a7;</a>
               </div>
               <p>if (j % 10)==0 then print(“”) end
 io.write(fmt(“%6s”,x))  end end </p>
@@ -831,11 +766,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-29">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-29">&#x00a7;</a>
+                <a class="ss" href="#section-28">&#x00a7;</a>
               </div>
               <p>oo(r.cols.x[2]:sorted()) end</p>
 
@@ -849,11 +784,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-30">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-30">&#x00a7;</a>
+                <a class="ss" href="#section-29">&#x00a7;</a>
               </div>
               <p>print(oo(many(t, 10))) end</p>
 
@@ -869,11 +804,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-31">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-31">&#x00a7;</a>
+                <a class="ss" href="#section-30">&#x00a7;</a>
               </div>
               <p>print(c,”\n”,o(row1),”\n”, o(row2)) end</p>
 
@@ -895,11 +830,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-32">&#x00a7;</a>
+                <a class="ss" href="#section-31">&#x00a7;</a>
               </div>
               <p>CLUSTER:new(r):show() end</p>
 
@@ -910,18 +845,17 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-33">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-33">&#x00a7;</a>
+                <a class="ss" href="#section-32">&#x00a7;</a>
               </div>
               <p>start-up</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span> <span class="hljs-built_in">arg</span>[<span class="hljs-number">0</span>] == <span class="hljs-string">&quot;sl.lua&quot;</span> <span class="hljs-keyword">then</span>
-  oo(the)
   <span class="hljs-keyword">if</span> the.help <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\nNOTES:*$&quot;</span>,<span class="hljs-string">&quot;&quot;</span>)) <span class="hljs-keyword">else</span>
     <span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(the) <span class="hljs-keyword">do</span> b4[k]=v <span class="hljs-keyword">end</span>
     <span class="hljs-keyword">for</span> _,todo <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(the.todo==<span class="hljs-string">&quot;all&quot;</span> <span class="hljs-keyword">and</span> slots(EGS) <span class="hljs-keyword">or</span> {the.todo}) <span class="hljs-keyword">do</span>
@@ -939,52 +873,17 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-34">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-34">&#x00a7;</a>
+                <a class="ss" href="#section-33">&#x00a7;</a>
               </div>
               <p>git rid of SOME for rows
 nss  = NUM | SYM | SKIP
 COLS = all:[nss]+, x:[nss]<em>, y:[nss]</em>, klass;col?
 ROWS = cols:COLS, rows:SOME</p>
-<h2 id="references">References</h2>
-<ul>
-<li>[Ah91]:
-Aha, D.W., Kibler, D. &amp; Albert, M.K. Instance-based 
-learning algorithms. Mach Learn 6, 37–66 (1991). 
-<a href="https://doi.org/10.1007/BF00153759">https://doi.org/10.1007/BF00153759</a></li>
-<li>[Boley, 1998]:
- Boley, D., 1998. 
-<a href="https://www-users.cse.umn.edu/~boley/publications/papers/PDDP.pdf">Principal directions divisive partitioning</a>
- Data Mining and Knowledge Discovery, 2(4): 325-344.</li>
-<li>[Ch05]:
-<a href="http://www.molgen.mpg.de/3659531/MITPress--SemiSupervised-Learning">Semi-Supervised Learning</a>
-(2005) Olivier Chapelle,  Bernhard Schölkopf, and Alexander Zien (eds). 
-MIT Press.</li>
-<li>[Ch18] 
-<a href="https://arxiv.org/pdf/1608.07617.pdf">Sampling” as a Baseline Optimizer for Search-Based Software Engineering</a>,
-Jianfeng Chen; Vivek Nair; Rahul Krishna; Tim Menzies
-IEEE Trans SE, (45)6, 2019</li>
-<li>[Ch22]:
-<a href="https://arxiv.org/pdf/2111.02038.pdf">Can We Achieve Fairness Using Semi-Supervised Learning?</a>
-(2022), Joymallya Chakraborty, Huy Tu, Suvodeep Majumder, Tim Menzies. </li>
-<li>[Fal95]: 
-Christos Faloutsos and King-Ip Lin. 1995. FastMap: a fast algorithm for indexing, data-mining and visualization of traditional and multimedia datasets. SIGMOD Rec. 24, 2 (May 1995), 163–174. DOI:<a href="https://doi.org/10.1145/568271.223812">https://doi.org/10.1145/568271.223812</a></li>
-<li>[Le05}
-Levina, E., Bickel, P.J.: <a href="https://www.stat.berkeley.edu/~bickel/mldim.pdf">Maximum likelihood estimation of intrinsic dimension</a>. 
-In:
-Advances in neural information processing systems, pp. 777–784 (2005)</li>
-<li>[Pl04]: 
-Platt, John. 
-<a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2005/01/nystrom2.pdf">FastMap, MetricMap, and Landmark MDS are all Nystrom Algorithms</a>
-AISTATS (2005).</li>
-<li>[Zit04]:
-<a href="https://link.springer.com/chapter/10.1007/978-3-540-30217-9_84">Indicator-based selection in multiobjective search</a>
-Eckart Zitzler , Simon Künzli
-Proc. 8th International Conference on Parallel Problem Solving from Nature (PPSN VIII</li>
-</ul>
+<p>[Ah91]: Aha, D.W., Kibler, D. &amp; Albert, M.K. Instance-based   learning algorithms. Mach Learn 6, 37–66 (1991).  <a href="https://doi.org/10.1007/BF00153759">https://doi.org/10.1007/BF00153759</a></p>
 
             </div>
             

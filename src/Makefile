@@ -36,8 +36,8 @@ $D/docs/index.html: $D/README.md $D/etc/head.html $D/etc/foot.html
    cat $D/etc/foot.html) > $@
 
 $D/docs/%.html: %.lua
-	docco -o docs $<
-	cp $D/etc/docco.css docs/
+	docco -o $D/docs $<
+	cp $D/etc/docco.css $D/docs/
 
 $D/docs/%.pdf : %.lua  
 	a2ps -BjR                            \

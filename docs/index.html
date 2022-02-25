@@ -36,20 +36,31 @@
 <p><strong><a href="https://menzies.us/l5">Docs</a> • <a href="https://github.com/timm/l5">Repo</a> • <a href="https://github.com/timm/l5/issues">Issues</a> • <a href="http://github.com/timm/l5.LICENSE.md">&copy;2022</a></strong> Tim Menzies</p>
 <h1 id="about-l5">About L5</h1>
 <p><img align=right width=250 src=head.png></p>
-<p>If we choose our AI tools not on their complexity, but
-on their understandably, what would they look like?
-To that end, I've been looking back over
-common themes seen in my
-AI graduate students (30+ students, over 20 years). What I was
-after were the least lines of code that offer the most
-AI functionality-- and which could be mixed and matched in
-novel and interesting ways.</p>
-<p>The result is this file. My standard "intro to AI" exercise is six
-weeks of homeworks where students rebuild the following code,from
-scratch, in any language they like (except LUA).  After that, 
-students can review all the assumptions of this code, then read the
-literature looking for other tools that challenge those assumptions.
-That leads to a second a 4-6 week project using these tools as a baseline against
+<p>Do you understand AI? Then prove it. Write down what you think an AI toolkit should do, then code
+it up, very succinctly. And no cheating 
+(so no importing of some massive background AI library).</p>
+<p>For example, 
+Buse and Zimmermann surveyed over a hundred developers and managers to
+find a list of "information needs" for software analytics. </p>
+<p><img alt="bi.png" src="bi.png" /></p>
+<p>That list is not quite up-to-date- it makes no mention of current concerns about FAT (fair, accountable, trustworthy) or bias mitigation.
+Nor does it really touch on model-based reasoning  or multi-objective optimization.
+So lets fix that.
+Lets write a tiny software library that handles all the above in less than 1000 lines of code</p>
+<p>I use this toolkit for teaching AI to software engineers.
+My premise is that the AI-literate engineering can mix and match AI tools
+to create specific solutions for specific probems. To show then what goes on inside the box,
+I ask them to:</p>
+<ul>
+<li>Reproduce this code in whatever language they like (except LUA). That takes 6-8 weeks.</li>
+<li>Find all the short-cuts in this code, then find other AI tools that another approach to those short-cuts.</li>
+<li>
+<ul>
+<li>Benchmark this tiny toolkit agains those more elaborate tools.</li>
+</ul>
+</li>
+</ul>
+<p>For upper-level class (and grad classes,
 which they can compare other, more complex, approaches.</p>
 <p><br clear=all><hr></p>
 <p>The need for baselines. XXXX</p>
@@ -71,16 +82,12 @@ Continuity simplifies <em>clustering</em>
 clustering. And after clustering, reasoning just means reason about
 a handful of examples (maybe even just one)  from each cluster.</p>
 <p><strong>HOMEWORKS</strong></p>
-<p>Buse and Zimmermann offer us a list of "information needs" for software analytics. 
-That list is not quite upt to date- it makes no mention of current concerns about FAT (fair, accountable, trustworthy) or bias mitigation.
-So can we support all these information needs? As well as issue related to FAT? And to make it fun, can we do all that under 1000 lines of code?</p>
-<p><img alt="bi.png" src="bi.png" /></p>
-<p>Sure!</p>
 <ul>
 <li><strong>Scripting</strong>: little languages (e.g. regular expressions); test-drive-development, CLI design, version control, GitHub workflows, test-driven development, open science</li>
 <li>Data layer: summarize text files as samples of data</li>
 <li>Anomaly detection: Nearest-neighbor, Clustering</li>
 <li>Validation: effect size, significance texts</li>
+<li>Semi-supervised learning</li>
 <li>Regression, model trees.</li>
 <li>Discretization, explanation</li>
 <li>Privacy</li>
