@@ -62,6 +62,8 @@ here() { cd $1; basename `pwd`; }
 
 PROMPT_COMMAND='echo -ne "⚙️  $(git branch 2>/dev/null | grep '^*' | colrm 1 2):";PS1="$(here ..)/$(here .):\!\e[m ▶ "'
 
+lu() { f=$1; lua $f.lua $*; }
+
 mytmux() {
   if [ -z "$TMUX" ]; then
     session=$RANDOM

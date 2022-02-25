@@ -193,6 +193,15 @@ function things(x,sep,  t)
   t={}
   for y in x:gmatch(sep or"([^,]+)") do push(t,thing(y)) end
   return t end
+
+-- misc
+function distance2Heaven(t,heaven,   num,d)
+  for n,txt in pairs(heaven) do 
+    num = Num(at,txt) 
+    for _,z in pairs(t) do num:add(z.ys[n]) end
+    for _,z in pairs(t) do z.ys[n] = num:distance2heaven(z.ys[n]) end end
+  d = function(one) return (sum(one.ys)/#one.ys)^.5 end
+  return sort(t, function(a,b) return d(a) < d(b) end) end
 -- ____ _    ____ ____ ____ ____ ____ 
 -- |    |    |__| [__  [__  |___ [__  
 -- |___ |___ |  | ___] ___] |___ ___] 
@@ -233,6 +242,9 @@ function NUM.dist(i,x,y)
   elseif y=="?" then x=i:norm(x); y=x<0.5 and 1 or 0
   else   x,y = i:norm(x), i:norm(y) end 
   return math.abs(x-y) end  
+
+function NUM.distance2heaven(x, w) 
+  return ((i.w>0 and 1 or 0) - i:norm(x))^2 end
 
 function NUM.mid(i) return per(i:sorted(), .5) end
 
@@ -358,38 +370,22 @@ function SPAN.select(i,row,    x)
   x = row[i.col.at]
   return (x=="?") or (i.lo==i.hi and x==i.lo) or (i.lo <= x and x < i.hi) end
 
-function SPAN.score(i) return {i.has.n/i.col.n, i.has:div()} end
+function SPAN.score(i) return {i.has.n/i.col.n,  i.has:div()} end
 
--- HEAVEN:
-function HEAVEN.new(k,t,fun) 
-  return new(k,{heaven = t, p=2, fun=fun,
-                nums   = map(t,function()return NUM:new() end)}) end
-
-function HEAVEN.add(i,xs,    ys) 
-  ys=i.fun(xs); for n,num in ipairs(i.nums) do num:add(ys[n]) end; return xs end
-
-function HEAVEN.d2h(i,ys,   x)
-   x=0; for n,num in pairs(i.nums) do x=x+(i.heaven[n] - num:norm(ys[n]))^2 end
-   return (x/#i.heaven)^.5 end
-
-function HEAVEN.sort(i,t)
-   return sort(t, function(a,b) return i:d2h(i.fun(a))<i:d2h(i.fun(b)) end) end
-
+   
 -- EXPLAIN:
 function EXPLAIN.new(k,egs,top)
-  local i,no,yes,divs,sizes,top,div,best,want,size,left,order,right,spans
+  local i,top,want,left,right,spans,best,yes,no
   i    = new(k,{here = egs})
   top  = top or egs
   want = (#top.rows)^the.want
-  if #top.rows >= 2*want then  -- if enough to recurse
-    left,right = egs:half(top) -- cluster in two
+  if #top.rows >= 2*want then  
+    left,right = egs:half(top) 
     spans  = {}
-    heaven = HEAVEN({1,0}, function(span) return span.score() end)
-    for n,col1 in pairs(i.cols.x) do   -- for each x attribute ...
-      col2 = j.cols.x[n]               -- col1,col2 is same col in both  cluster
-      for _,span in pairs(col1:spans(col2)) do -- spans= deltas between clusters
-        push(spans, heaven:add(span) ) end end
-    best   = heaven.sort( spans )[1]
+    for n,col in pairs(i.cols.x) do   
+      for _,s in pairs(col:spans(j.cols.x[n])) do 
+        push(spans,{ys=s:score(),it=s}) end end
+    best   = distance2heaven(spans,{"+","-"})[1]
     yes,no = egs:clone(), egs:clone()
     for _,row in pairs(egs.rows) do 
       (best:selects(row) and yes or no):add(row) end -- divide data in two
