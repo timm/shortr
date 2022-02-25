@@ -94,10 +94,7 @@ https://doi.org/10.1007/BF00153759
 (2005) Olivier Chapelle,  Bernhard Schölkopf, and Alexander Zien (eds). 
 MIT Press.
  
-[^Ch18]: 
-[Sampling” as a Baseline Optimizer for Search-Based Software Engineering](https://arxiv.org/pdf/1608.07617.pdf),
-Jianfeng Chen; Vivek Nair; Rahul Krishna; Tim Menzies
-IEEE Trans SE, (45)6, 2019
+[^Ch18]: [Sampling” as a Baseline Optimizer for Search-Based Software Engineering](https://arxiv.org/pdf/1608.07617.pdf), Jianfeng Chen; Vivek Nair; Rahul Krishna; Tim Menzies IEEE Trans SE, (45)6, 2019
 
 [^Ch22]: [Can We Achieve Fairness Using Semi-Supervised Learning?](https://arxiv.org/pdf/2111.02038.pdf) (2022), Joymallya Chakraborty, Huy Tu, Suvodeep Majumder, Tim Menzies. 
 
