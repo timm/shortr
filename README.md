@@ -36,6 +36,16 @@ which they can compare other, more complex, approaches.
  
 ## Why LUA?
 
+Because Lua is fun to write
+and [easy to learn](https://learnxinyminutes.com/docs/lua/).
+LUA
+supports multiple programming methods, including procedural, object-oriented, functional, and data-driven programming. You can also use it to
+wite you own [domain-specific alnguages](https://www.lua.org/wshop11/luaws11_ag.pdf).
+
+More importantly, for teaching, it installs, very quickly, on most platforms so, when you try to copy it in  another language,
+this code serves as an executable specification. Students like that since it gives them an oracle against which they can test their code.
+
+
 
 
 <br clear=all><hr>
