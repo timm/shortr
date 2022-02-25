@@ -11,27 +11,33 @@ it up, very succinctly. And no cheating
 For example, 
 Buse and Zimmermann surveyed over a hundred developers and managers to
 find a list of "information needs" for software analytics. 
+Can you code to handle the following? In less than
+1000 lines of code?
 
 ![docs/bi.png](docs/bi.png)
 
-That list is not quite up-to-date- it makes no mention of current concerns about FAT (fair, accountable, trustworthy) or bias mitigation.
-Nor does it really touch on model-based reasoning  or multi-objective optimization.
-So lets fix that.
-Lets write a tiny software library that handles all the above in less than 1000 lines of code
+(Aside: this list is not quite up-to-date- it makes no mention of current concerns about FAT (fair, accountable, trust) or bias mitigation.
+Nor does it really touch on model-based reasoning  or multi-objective optimization. But that's ok-- we can add that i and still not break 1000 lines of code).
 
+
+## Teaching AI to Software Engineers
 
 I use this toolkit for teaching AI to software engineers.
 My premise is that the AI-literate engineering can mix and match AI tools
 to create specific solutions for specific probems. To show then what goes on inside the box,
 I ask them to:
 
-- Reproduce this code in whatever language they like (except LUA). That takes 6-8 weeks.
+- Reproduce this code in whatever language they like (except the one used here). That takes 6-8 weeks.
 - Find all the short-cuts in this code, then find other AI tools that another approach to those short-cuts.
 - - Benchmark this tiny toolkit agains those more elaborate tools.
 
 For upper-level class (and grad classes,
 which they can compare other, more complex, approaches.
-  
+ 
+## Why LUA?
+
+
+
 <br clear=all><hr>
     
 The need for baselines. XXXX
