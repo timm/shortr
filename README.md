@@ -1,8 +1,9 @@
+<img align=right width=250 src=docs/head.png>
+
 **[Docs](https://menzies.us/l5) • [Repo](https://github.com/timm/l5) • [Issues](https://github.com/timm/l5/issues) • [&copy;2022](http://github.com/timm/l5.LICENSE.md)** Tim Menzies
 
 #  About L5
        
-<img align=right width=250 src=docs/head.png>
 
 Do you understand AI? Then prove it. Write down what you think an AI toolkit should do, then code
 it up, very succinctly. And no cheating 
