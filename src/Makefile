@@ -32,7 +32,7 @@ bye:  ## stop work (save all files)
 #https://purecss.io/start/
 $D/docs/index.html: $D/README.md $D/etc/head.html $D/etc/foot.html
 	(cat $D/etc/head.html; \
-   python3 -m markdown -x toc -x extra $< ; \
+   python3 -m markdown -x toc -x extra $< | sed 's/docs\///g' ;\
    cat $D/etc/foot.html) > $@
 
 $D/docs/%.html: %.lua
