@@ -31,20 +31,23 @@ bye:  ## stop work (save all files)
 
 #https://purecss.io/start/
 $D/docs/index.html: $D/README.md $D/etc/head.html $D/etc/foot.html
-	(cat $D/etc/head.html; \
+	@echo "index-ing $@"
+	@(cat $D/etc/head.html; \
    python3 -m markdown -x toc -x extra $< | sed 's/docs\///g' ;\
    cat $D/etc/foot.html) > $@
 
 $D/docs/%.html: %.lua
-	docco -o $D/docs $<
-	cp $D/etc/docco.css $D/docs/
+	@echo "html-ing  $@"
+	@docco -o $D/docs $< > /dev/null
+	@cp $D/etc/docco.css $D/docs/
 
 $D/docs/%.pdf : %.lua  
-	a2ps -BjR                            \
+	@echo "pdf-ing   $@ "
+	@a2ps -BjR    -q                        \
 		--line-numbers=1                    \
 		--borders=no --pro=color --columns 2 \
 		--right-footer="" --left-footer=""    \
 		--pretty-print=$D/etc/lua.ssh             \
 		--footer="page %p."                     \
 		-M letter -o $@.ps $<
-	ps2pdf $@.ps $@; rm $@.ps; git add $@
+	@ps2pdf $@.ps $@; rm $@.ps; git add $@

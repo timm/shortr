@@ -29,9 +29,9 @@
               </div>
               <ul>
 <li>Recursively divide data based on two
-distant points (found in linear time using the Fastmap
-heuristic [Fa95]). Then find and print the attribute range
-that best distinguishes these halves. Recurse on each half.</li>
+  distant points (found in linear time using the Fastmap
+  heuristic [Fa95]). Then find and print the attribute range
+  that best distinguishes these halves. Recurse on each half.</li>
 <li>(which is sort of like PDDP [Bo98] but faster; and we
 offers a human-readable description for each division).</li>
 <li>To find those ranges, this code uses a variant of the ChiMerge
@@ -60,20 +60,20 @@ l5 == a little lab of lots of LUA learning algorithms.
 (c) 2022, Tim Menzies, BSD 2-clause license.
 
 USAGE: 
-  lua l5.lua [OPTIONS]
+  lua l5.lua [OPTIONS]  
 
 OPTIONS: 
-  -cohen    F   Cohen&#x27;s delta              = .35
-  -data     N   data file                  = etc/data/auto93.csv
-  -Dump         stack dump on assert fails = false
-  -furthest F   far                        = .9
-  -Format   s   format string              = %5.2f
-  -keep     P   max kept items             = 512
-  -p        P   distance coefficient       = 2
-  -seed     P   set seed                   = 10019
-  -todo     S   start up action (or &#x27;all&#x27;) = nothing
-  -help        show help                  = false
-  -want     F   recurse until rows^want    = .5
+  -cohen    -c   F   Cohen&#x27;s delta              = .35
+  -data     -d   N   data file                  = etc/data/auto93.csv
+  -Dump     -D       stack dump on assert fails = false
+  -furthest -f   F   far                        = .9
+  -Format   -F   S   format string              = %5.2f
+  -keep     -k   P   max kept items             = 512
+  -p        -p   P   distance coefficient       = 2
+  -seed     -s   P   set seed                   = 10019
+  -todo     -t   S   start up action (or &#x27;all&#x27;) = nothing
+  -help     -h       show help                  = false
+  -want     -w   F   recurse until rows^want    = .5
 
 KEY: N=fileName F=float P=posint S=string
 
@@ -101,7 +101,7 @@ KEY: N=fileName F=float P=posint S=string
               <div class="sswrap ">
                 <a class="ss" href="#section-3">&#x00a7;</a>
               </div>
-              <p>Cache current names (used at end to find rogue variables)</p>
+              <h3 id="cache-current-names-used-at-end-to-find-rogue-variables">Cache current names (used at end to find rogue variables)</h3>
 
             </div>
             
@@ -116,7 +116,7 @@ KEY: N=fileName F=float P=posint S=string
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <p>Define local names.</p>
+              <h3 id="define-locals">Define locals.</h3>
 
             </div>
             
@@ -133,7 +133,7 @@ KEY: N=fileName F=float P=posint S=string
               <div class="sswrap ">
                 <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
-              <p>Define classes to gave UPPER CASE names.</p>
+              <h3 id="define-classes">Define classes</h3>
 
             </div>
             
@@ -149,17 +149,20 @@ KEY: N=fileName F=float P=posint S=string
               <div class="sswrap ">
                 <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
-              <p>Define parameter settings.<br>Update parameter defaults from command line. Allow for some shorthand:<br>e.g.  <em>-k N</em> &rArr; <code>keep=N</code>;<br>and  <em>-booleanFlag</em> &rArr; <code>booleanFlag=not default</code>). </p>
+              <h3 id="define-parameter-settings">Define parameter settings.</h3>
+<p>Update parameter defaults from command line. Allow for some shorthand:<br>e.g.  <em>-k N</em> &rArr; <code>keep=N</code>;<br>and  <em>-booleanFlag</em> &rArr; <code>booleanFlag=not default</code>). </p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> the={}
-help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  [-]([^%s]+)[^\n]*%s([^%s]+)&quot;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(key,x)</span></span>
-  <span class="hljs-keyword">for</span> n,flag <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">arg</span>) <span class="hljs-keyword">do</span> 
-    <span class="hljs-keyword">if</span> flag:<span class="hljs-built_in">sub</span>(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)==<span class="hljs-string">&quot;-&quot;</span> <span class="hljs-keyword">and</span> key:<span class="hljs-built_in">find</span>(<span class="hljs-string">&quot;^&quot;</span>..flag:<span class="hljs-built_in">sub</span>(<span class="hljs-number">2</span>)..<span class="hljs-string">&quot;.*&quot;</span>) <span class="hljs-keyword">then</span>
+help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  [-]([^%s]+)[%s]+(-[^%s]+)[^\n]*%s([^%s]+)&quot;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(key,flag1,x)</span></span>
+  <span class="hljs-keyword">for</span> n,flag2 <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">arg</span>) <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">if</span> flag1==flag2 <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;-&quot;</span>..key ==<span class="hljs-string">&quot;flag2&quot;</span><span class="hljs-keyword">then</span>
       x = x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">or</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">arg</span>[n+<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
   <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">then</span> the[key]=<span class="hljs-literal">false</span> <span class="hljs-keyword">elseif</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">then</span> the[key]=<span class="hljs-literal">true</span> <span class="hljs-keyword">else</span>
-    the[key] = <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> )</pre></div></div>
+    the[key] = <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> )
+
+<span class="hljs-built_in">print</span>(the.help)</pre></div></div>
             
         </li>
         
@@ -170,16 +173,9 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
               <div class="sswrap ">
                 <a class="ss" href="#section-7">&#x00a7;</a>
               </div>
-              <h2 id="define-headers-for-row1-of-csv-files">Define headers for row1 of csv files</h2>
+              <h3 id="define-headers-for-row1-of-csv-files">Define headers for row1 of csv files</h3>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ignorep</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">end</span>     <span class="hljs-comment">-- columns to ignore</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">klassp</span><span class="hljs-params">(x)</span></span>  <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;!$&quot;</span> <span class="hljs-keyword">end</span>     <span class="hljs-comment">-- symbolic goals to achieve</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lessp</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">end</span>     <span class="hljs-comment">-- number goals to minimize</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">morep</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;+$&quot;</span> <span class="hljs-keyword">end</span>     <span class="hljs-comment">-- numeric goals to maximize</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nump</span><span class="hljs-params">(x)</span></span>    <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">end</span> <span class="hljs-comment">-- numeric columns</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">goalp</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> morep(x) <span class="hljs-keyword">or</span> lessp(x) <span class="hljs-keyword">or</span> klassp(x) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -190,12 +186,11 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
               <div class="sswrap ">
                 <a class="ss" href="#section-8">&#x00a7;</a>
               </div>
-              <h2 id="misc-utils">Misc Utils</h2>
-<p>Strings</p>
+              <p>Columns to ignore</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">format</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ignorep</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">end</span>     <span class="hljs-comment">-- columns to ignore</span></pre></div></div>
             
         </li>
         
@@ -206,7 +201,82 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
               <div class="sswrap ">
                 <a class="ss" href="#section-9">&#x00a7;</a>
               </div>
-              <p>Maths</p>
+              <p>Symbolic classes</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">klassp</span><span class="hljs-params">(x)</span></span>  <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;!$&quot;</span> <span class="hljs-keyword">end</span>     <span class="hljs-comment">-- symbolic goals to achieve</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-10">&#x00a7;</a>
+              </div>
+              <p>Goals to minimize</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lessp</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> nump(x) <span class="hljs-keyword">and</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">end</span>     <span class="hljs-comment">-- number goals to minimize</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-11">&#x00a7;</a>
+              </div>
+              <p>i Goals to mazumze</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">morep</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;+$&quot;</span> <span class="hljs-keyword">end</span>     <span class="hljs-comment">-- numeric goals to maximize</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nump</span><span class="hljs-params">(x)</span></span>    <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">end</span> <span class="hljs-comment">-- numeric columns</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">goalp</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> morep(x) <span class="hljs-keyword">or</span> lessp(x) <span class="hljs-keyword">or</span> klassp(x) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-12">&#x00a7;</a>
+              </div>
+              <h2 id="misc-utils">Misc Utils</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-13">&#x00a7;</a>
+              </div>
+              <h3 id="strings">Strings</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">format</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-14">&#x00a7;</a>
+              </div>
+              <h3 id="maths">Maths</h3>
 
             </div>
             
@@ -222,13 +292,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-10">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-10">&#x00a7;</a>
+                <a class="ss" href="#section-15">&#x00a7;</a>
               </div>
-              <p>Tables</p>
+              <h3 id="tables">Tables</h3>
 
             </div>
             
@@ -244,13 +314,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-11">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-11">&#x00a7;</a>
+                <a class="ss" href="#section-16">&#x00a7;</a>
               </div>
-              <p>Meta</p>
+              <h3 id="meta">Meta</h3>
 
             </div>
             
@@ -264,13 +334,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-12">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-12">&#x00a7;</a>
+                <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
-              <p>Print tables, recursively</p>
+              <h3 id="print-tables-recursively">Print tables, recursively</h3>
 
             </div>
             
@@ -284,13 +354,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-13">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-13">&#x00a7;</a>
+                <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
-              <p>Coerce strings to things</p>
+              <h3 id="coerce-strings-to-things">Coerce strings to things</h3>
 
             </div>
             
@@ -312,13 +382,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-14">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-14">&#x00a7;</a>
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
-              <p>Misc stuff</p>
+              <h3 id="misc-stuff">Misc stuff</h3>
 
             </div>
             
@@ -333,14 +403,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-15">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-15">&#x00a7;</a>
+                <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
-              <hr>
-<p>|    |    |<strong>| [</strong>  [__  |___ [__<br>|___ |___ |  | ___] <em><strong>] |</strong></em> ___] </p>
+              <p>objects</p>
 
             </div>
             
@@ -349,40 +418,53 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-16">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-16">&#x00a7;</a>
+                <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
-              <p>COLS: turns list of column names into NUMs, SYMs, or SKIPs</p>
+              <h2 id="cols">COLS</h2>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">COLS.new</span><span class="hljs-params">(k,row,   i)</span></span>
-  i= new(k,{all={},x={},y={},names=row}) 
-  <span class="hljs-keyword">for</span> at,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(row) <span class="hljs-keyword">do</span>  push(i.all, i:col(at,txt)) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">COLS.add</span><span class="hljs-params">(i,t)</span></span> 
-  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> col:add( t[col.at] ) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">COLS.col</span><span class="hljs-params">(i,at,txt,     col)</span></span>
-  <span class="hljs-keyword">if</span> ignorep(txt) <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> SKIP:new(at,txt) <span class="hljs-keyword">end</span>
-  col = (nump(txt) <span class="hljs-keyword">and</span> NUM <span class="hljs-keyword">or</span> SYM):new(at,txt)
-  push(goalp(txt) <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x, col)
-  <span class="hljs-keyword">if</span> klassp(txt) <span class="hljs-keyword">then</span> i.klass = col <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> col <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-17">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-17">&#x00a7;</a>
+                <a class="ss" href="#section-22">&#x00a7;</a>
+              </div>
+              <p>Factory. Turns list of column names into NUMs, SYMs, or SKIPs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">COLS.new</span><span class="hljs-params">(k,row,   i,create1)</span></span>
+  create1 = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,at,txt,     col)</span></span>
+    <span class="hljs-keyword">if</span> ignorep(txt) <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> SKIP:new(at,txt) <span class="hljs-keyword">end</span>
+    col = (nump(txt) <span class="hljs-keyword">and</span> NUM <span class="hljs-keyword">or</span> SYM):new(at,txt)
+    push(goalp(txt) <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x, col)
+    <span class="hljs-keyword">if</span> klassp(txt) <span class="hljs-keyword">then</span> i.klass = col <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">return</span> col 
+  <span class="hljs-keyword">end</span> <span class="hljs-comment">------------------</span>
+  i= new(k,{all={},x={},y={},names=row}) 
+  <span class="hljs-keyword">for</span> at,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(row) <span class="hljs-keyword">do</span>  push(i.all, create1(at,txt)) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">COLS.add</span><span class="hljs-params">(i,t)</span></span> 
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> col:add( t[col.at] ) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
               <p>NUM: summarizes a stream of numbers</p>
 
@@ -420,11 +502,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-18">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-18">&#x00a7;</a>
+                <a class="ss" href="#section-24">&#x00a7;</a>
               </div>
               <p>ROWS: manages <code>rows</code>, summarized in <code>cols</code> (columns).</p>
 
@@ -470,11 +552,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-19">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
               <p>SKIP: summarizes things we want to ignore (so does nothing)</p>
 
@@ -487,11 +569,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-20">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
               <p>SOME: keeps a random sample on the arriving data</p>
 
@@ -506,11 +588,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-21">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-21">&#x00a7;</a>
+                <a class="ss" href="#section-27">&#x00a7;</a>
               </div>
               <p>SYM: summarizes a stream of symbols</p>
 
@@ -542,11 +624,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-22">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-22">&#x00a7;</a>
+                <a class="ss" href="#section-28">&#x00a7;</a>
               </div>
               <hr>
 <p>|    |    |  | [__   |  |___ |<strong>/ 
@@ -578,11 +660,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-23">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-23">&#x00a7;</a>
+                <a class="ss" href="#section-29">&#x00a7;</a>
               </div>
               <hr>
 <p>|___  /  |<strong>] |    |</strong>| | |\ | 
@@ -593,11 +675,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-24">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
+                <a class="ss" href="#section-30">&#x00a7;</a>
               </div>
               <p>SPAN: keeps a random sample on the arriving data</p>
 
@@ -620,11 +702,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-25">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-25">&#x00a7;</a>
+                <a class="ss" href="#section-31">&#x00a7;</a>
               </div>
               <p>EXPLAIN:</p>
 
@@ -703,11 +785,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-26">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-26">&#x00a7;</a>
+                <a class="ss" href="#section-32">&#x00a7;</a>
               </div>
               <hr>
 <p>|  \ |___ |/| |  | [__<br>|<strong>/ |</strong>_ |  | |__| ___] </p>
@@ -732,11 +814,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-27">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-27">&#x00a7;</a>
+                <a class="ss" href="#section-33">&#x00a7;</a>
               </div>
               <p>if (j % 10)==0 then print(“”) end
 io.write(fmt(“%6s”,x))  end end </p>
@@ -766,11 +848,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-28">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-28">&#x00a7;</a>
+                <a class="ss" href="#section-34">&#x00a7;</a>
               </div>
               <p>oo(r.cols.x[2]:sorted()) end</p>
 
@@ -784,11 +866,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-29">
+        <li id="section-35">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-29">&#x00a7;</a>
+                <a class="ss" href="#section-35">&#x00a7;</a>
               </div>
               <p>print(oo(many(t, 10))) end</p>
 
@@ -804,11 +886,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-30">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-30">&#x00a7;</a>
+                <a class="ss" href="#section-36">&#x00a7;</a>
               </div>
               <p>print(c,”\n”,o(row1),”\n”, o(row2)) end</p>
 
@@ -830,11 +912,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-31">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-31">&#x00a7;</a>
+                <a class="ss" href="#section-37">&#x00a7;</a>
               </div>
               <p>CLUSTER:new(r):show() end</p>
 
@@ -845,11 +927,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-32">&#x00a7;</a>
+                <a class="ss" href="#section-38">&#x00a7;</a>
               </div>
               <p>start-up</p>
 
@@ -873,11 +955,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-33">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-33">&#x00a7;</a>
+                <a class="ss" href="#section-39">&#x00a7;</a>
               </div>
               <p>git rid of SOME for rows
 nss  = NUM | SYM | SKIP

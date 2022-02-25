@@ -1,45 +1,45 @@
--- - Recursively divide data based on two
--- distant points (found in linear time using the Fastmap
--- heuristic [Fa95]). Then find and print the attribute range
--- that best distinguishes these halves. Recurse on each half.
+-- -  Recursively divide data based on two
+--   distant points (found in linear time using the Fastmap
+--   heuristic [Fa95]). Then find and print the attribute range
+--   that best distinguishes these halves. Recurse on each half.
 -- - (which is sort of like PDDP [Bo98] but faster; and we
--- offers a human-readable description for each division).
+--   offers a human-readable description for each division).
 -- - To find those ranges, this code uses a variant of the ChiMerge
--- discretizer (but we select on entropy and size, 
--- not the Chi statistic)
+--   discretizer (but we select on entropy and size, 
+--   not the Chi statistic)
 -- - To avoid spurious outliers, this code separates using `-furthest=.9`;
--- i.e. the 90% furthest points.
+--   i.e. the 90% furthest points.
 -- - To avoid long runtimes, this code only searches at most `-keep=512 ` 
--- randomly selected examples to find those furtherst points.
+--   randomly selected examples to find those furtherst points.
 -- - To suport multi-objective optimization, this code reads csv files 
--- whose headers may contain markers for "minimize this" or "maximize
--- that" (see the `lessp, morep` functions).
+--   whose headers may contain markers for "minimize this" or "maximize
+--   that" (see the `lessp, morep` functions).
 -- - To support explanation, optionally, at each level of recursion,
--- this code reports what ranges can best distinguish sibling clusters
--- C1,C2.  The  discretizer is inspired by the ChiMerge algorithm:
--- numerics are divided into, say, 16 bins. Then, while we can find
--- adjacent bins with the similar distributions in C1,C2, then 
--- (a) merge then (b) look for other merges.
+--   this code reports what ranges can best distinguish sibling clusters
+--   C1,C2.  The  discretizer is inspired by the ChiMerge algorithm:
+--   numerics are divided into, say, 16 bins. Then, while we can find
+--   adjacent bins with the similar distributions in C1,C2, then 
+--   (a) merge then (b) look for other merges.
 local help = [[
 
 l5 == a little lab of lots of LUA learning algorithms.
 (c) 2022, Tim Menzies, BSD 2-clause license.
 
 USAGE: 
-  lua l5.lua [OPTIONS]
+  lua l5.lua [OPTIONS]  
 
 OPTIONS: 
-  -cohen    F   Cohen's delta              = .35
-  -data     N   data file                  = etc/data/auto93.csv
-  -Dump         stack dump on assert fails = false
-  -furthest F   far                        = .9
-  -Format   s   format string              = %5.2f
-  -keep     P   max kept items             = 512
-  -p        P   distance coefficient       = 2
-  -seed     P   set seed                   = 10019
-  -todo     S   start up action (or 'all') = nothing
-  -help        show help                  = false
-  -want     F   recurse until rows^want    = .5
+  -cohen    -c   F   Cohen's delta              = .35
+  -data     -d   N   data file                  = etc/data/auto93.csv
+  -Dump     -D       stack dump on assert fails = false
+  -furthest -f   F   far                        = .9
+  -Format   -F   S   format string              = %5.2f
+  -keep     -k   P   max kept items             = 512
+  -p        -p   P   distance coefficient       = 2
+  -seed     -s   P   set seed                   = 10019
+  -todo     -t   S   start up action (or 'all') = nothing
+  -help     -h       show help                  = false
+  -want     -w   F   recurse until rows^want    = .5
 
 KEY: N=fileName F=float P=posint S=string
 
@@ -47,40 +47,50 @@ KEY: N=fileName F=float P=posint S=string
     
 -- ## Definitions
 
--- Cache current names (used at end to find rogue variables)
+-- ### Cache current names (used at end to find rogue variables)  
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
--- Define local names.
+
+-- ### Define locals.
 local any,asserts,big,cli,csv,fails,firsts,fmt,goalp,ignorep,klassp  
 local lessp,map,main,many,max,merge,min,morep,new,nump,o,oo,per,pop,push
 local r,rows,rnd,rnds,slots,sort,sum,thing,things,unpack
--- Define classes to gave UPPER CASE names.
+
+-- ### Define classes
 local CLUSTER, COLS, EGS,  EXPLAIN, NUM, ROWS = {},{},{},{},{},{}
 local SKIP,    SOME, SPAN, SYM       = {},{},{},{}
--- Define parameter settings.     
+
+-- ### Define parameter settings.     
 -- Update parameter defaults from command line. Allow for some shorthand:  
 -- e.g.  _-k N_ &rArr; `keep=N`;    
 -- and  _-booleanFlag_ &rArr; `booleanFlag=not default`). 
 local the={}
-help:gsub("\n  [-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x)
-  for n,flag in ipairs(arg) do 
-    if flag:sub(1,1)=="-" and key:find("^"..flag:sub(2)..".*") then
+help:gsub("\n  [-]([^%s]+)[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",function(key,flag1,x)
+  for n,flag2 in ipairs(arg) do 
+    if flag1==flag2 or "-"..key =="flag2"then
       x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
   if x=="false" then the[key]=false elseif x=="true" then the[key]=true else
     the[key] = tonumber(x) or x end end )
- 
--- ## Define headers for row1 of csv files
+
+print(the.help)
+
+-- ### Define headers for row1 of csv files
+
+-- Columns to ignore
 function ignorep(x) return x:find":$" end     -- columns to ignore
+-- Symbolic classes
 function klassp(x)  return x:find"!$" end     -- symbolic goals to achieve
-function lessp(x)   return x:find"-$" end     -- number goals to minimize
+-- Goals to minimize
+function lessp(x)   return nump(x) and x:find"-$" end     -- number goals to minimize
+--i Goals to mazumze
 function morep(x)   return x:find"+$" end     -- numeric goals to maximize
 function nump(x)    return x:find"^[A-Z]" end -- numeric columns
-function goalp(x)   return morep(x) or lessp(x) or klassp(x) end
-
+function goalp(x)   return morep(x) or lessp(x) or klassp(x) end
 -- ## Misc Utils
--- Strings
+
+-- ### Strings
 fmt = string.format
 
--- Maths
+-- ### Maths
 big = math.huge
 max = math.max
 min = math.min
@@ -90,7 +100,7 @@ function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or the.Format) or "%s",x) end
 
--- Tables
+-- ### Tables
 pop = table.remove
 unpack = table.unpack
 function any(t)        return t[r(#t)] end
@@ -100,7 +110,7 @@ function per(t,p)      return t[ (#t*(p or .5))//1 ] end
 function push(t,x)     table.insert(t,x); return x end
 function sort(t,f)     table.sort(t,f); return t end
 
--- Meta
+-- ### Meta
 function map(t,f, u)  u={};for k,v in pairs(t) do push(u,f(v)) end; return u end
 function sum(t,f, n)  n=0; for _,v in pairs(t) do n=n+f(v)     end; return n end
 function slots(t, u) 
@@ -108,7 +118,7 @@ function slots(t, u)
   for k,v in pairs(t) do k=tostring(k);if k:sub(1,1)~="_" then push(u,k) end end
   return sort(u) end 
 
--- Print tables, recursively
+-- ### Print tables, recursively
 function oo(t) print(o(t)) end
 function o(t)
   if type(t)~="table" then return tostring(t) end
@@ -116,7 +126,7 @@ function o(t)
   local u = #t>0 and map(t,o) or map(slots(t),key) 
   return '{'..table.concat(u," ").."}" end 
 
--- Coerce strings to things
+-- ### Coerce strings to things
 function csv(file,      x)
   file = io.input(file)
   return function() 
@@ -130,40 +140,39 @@ function thing(x)
 function things(x,sep,  t)
   t={}
   for y in x:gmatch(sep or"([^,]+)") do push(t,thing(y)) end
-  return t end
+  return t end
 
--- Misc stuff
+-- ### Misc stuff
 function distance2Heaven(t,heaven,   num,d)
   for n,txt in pairs(heaven) do 
     num = Num(at,txt) 
     for _,z in pairs(t) do num:add(z.ys[n]) end
     for _,z in pairs(t) do z.ys[n] = num:distance2heaven(z.ys[n]) end end
   d = function(one) return (sum(one.ys)/#one.ys)^.5 end
-  return sort(t, function(a,b) return d(a) < d(b) end) end
--- ____ _    ____ ____ ____ ____ ____ 
--- |    |    |__| [__  [__  |___ [__  
--- |___ |___ |  | ___] ___] |___ ___] 
---
-function new(k,t) k.__index=k; k.__tostring=o; return setmetatable(t,k) end
+  return sort(t, function(a,b) return d(a) < d(b) end) end
 
--- COLS: turns list of column names into NUMs, SYMs, or SKIPs
-function COLS.new(k,row,   i)
+-- objects
+function new(k,t) k.__index=k; k.__tostring=o; return setmetatable(t,k) end
+-- ## COLS
+
+-- Factory. Turns list of column names into NUMs, SYMs, or SKIPs
+function COLS.new(k,row,   i,create1)
+  create1 = function(i,at,txt,     col)
+    if ignorep(txt) then return SKIP:new(at,txt) end
+    col = (nump(txt) and NUM or SYM):new(at,txt)
+    push(goalp(txt) and i.y or i.x, col)
+    if klassp(txt) then i.klass = col end
+    return col 
+  end ------------------
   i= new(k,{all={},x={},y={},names=row}) 
-  for at,txt in ipairs(row) do  push(i.all, i:col(at,txt)) end
+  for at,txt in ipairs(row) do  push(i.all, create1(at,txt)) end
   return i end
 
 function COLS.add(i,t) 
   for _,col in pairs(i.all) do col:add( t[col.at] ) end
   return t end
 
-function COLS.col(i,at,txt,     col)
-  if ignorep(txt) then return SKIP:new(at,txt) end
-  col = (nump(txt) and NUM or SYM):new(at,txt)
-  push(goalp(txt) and i.y or i.x, col)
-  if klassp(txt) then i.klass = col end
-  return col end
-
--- NUM: summarizes a stream of numbers
+  -- NUM: summarizes a stream of numbers
 function NUM.new(k,n,s) 
   return new(k,{n=0,at=n or 0,txt=s or"",has=SOME:new(),ok=false,
                 w=lessp(s or "") and -1 or 1, lo=big, hi=-big}) end
