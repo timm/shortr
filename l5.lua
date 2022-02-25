@@ -112,7 +112,7 @@ local lessp,map,main,many,max,merge,min,morep,new,nump,o,oo,per,pop,push
 local r,rows,rnd,rnds,slots,sort,sum,thing,things,unpack
 
 -- Classes have UPPER CASE names.
-local CLUSTER, COLS, EGS,  NUM, ROWS = {},{},{},{},{}
+local CLUSTER, COLS, EGS,  EXPLAIN, NUM, ROWS = {},{},{},{},{},{}
 local SKIP,    SOME, SPAN, SYM       = {},{},{},{}
 
 -- ## Settings
@@ -394,14 +394,14 @@ function EXPLAIN.new(k,egs,top)
       if #no.rows >=want then i.no =EXPLAIN:new(no, top)  end end end
   return i end
 
-function EXPLAN.show(i,pre)
+function EXPLAIN.show(i,pre)
   pre = pre or ""
   if not pre then
     tmp = i.here:mid(i.here.y)
   print(fmt("%6s : %~30s %s", #i.here.rows, pre, o(i.here:mid(i.here.cols.y))))
   for _,pair in pairs{{true,i.yes},{false,i.no}} do
     status,kid = unpack(pair)
-    k:shpw(pre .. "|.. ") end end
+    k:shpw(pre .. "|.. ") end end end
 
 function SYM.spans(i, j)
   local xys,all,one,last,xys,x,c n = {},{}
@@ -512,7 +512,6 @@ function EGS.cluster(r)
 
 -- start-up
 if arg[0] == "sl.lua" then
-  oo(the)
   if the.help then print(help:gsub("\nNOTES:*$","")) else
     local b4={}; for k,v in pairs(the) do b4[k]=v end
     for _,todo in pairs(the.todo=="all" and slots(EGS) or {the.todo}) do

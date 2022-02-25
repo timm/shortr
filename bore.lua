@@ -62,7 +62,7 @@ local fmt = string.format
 local function sort(t,f) table.sort(t,f); return t end
 
 local function slots(t, u) 
-  u={}; for k,v in pairs(t) do if k:sub(1,1)~="_" then u[1+#u]=k end end; 
+  u={}; for k,v in pairs(t) do l=tostring(k); if l:sub(1,1)~="_" then u[1+#u]=k end end; 
   return sort(u) end
 
 local function main(the, help, demos)
@@ -75,10 +75,15 @@ local function main(the, help, demos)
 local function map(t,f, u) 
   u={};for k,v in pairs(t) do u[1+#u]=f(v) end; return u end
 
-local function o(t)
-  if type(t)~="table" then return tostring(t) end
-  local key=function(k) return fmt(":%s %s",k,o(t[k])) end
-  local u = #t>0 and map(t,o) or map(slots(t),key) 
+local function tablep(t) return type(t)=="table" end
+
+local function o(t, seen)
+  seen = seen or {}
+  if not tablep(t) then return tostring(t) end
+  if seen[t] then return "..." end
+  seen[t]=t
+  local key=function(k) return fmt(":%s %s",k,o(t[k],seen)) end
+  local u= #t>0 and map(t,function(x) return o(x,seen) end) or map(slots(t),key) 
   return '{'..table.concat(u," ").."}" end 
 
 local function oo(t) print(o(t)) end
@@ -89,7 +94,18 @@ local function rows(file,      x,prep)
     x=io.read(); if x then return atoms(x) else io.close(file) end end end
 
 local function sum(t,f,    n)
-  n=0; for _,v in pairs(t) do n=n+f(v) end; return n end
+  n=0; for _,v in pairs(t) do n=n+f(v) end; return n end
+
+local function tree(t, seen, pre, txt, v)
+  pre, seen = pre or "", seen or {}
+  if not tablep(t) then return print(fmt("%s%s",pre,t)) end
+  if seen[t]       then return print(fmt("%s...",pre))  end
+  seen[t]=t
+  for _,k in pairs(slots(t)) do
+    v= t[k]
+    if   tablep(v)
+    then print(fmt("%s%s",     pre,k)); tree(v,seen,pre .. "    ") 
+    else print(fmt("%s%s = %s",pre,k,v)) end end end 
 -- -----------------------------------------------------------------------------
 --            _                             
 --       ___ | |  __ _  ___  ___   ___  ___ 
@@ -166,15 +182,15 @@ function Skip:add(x,inc) return x end
 --     |___ |__| |___ ___] 
 
 local Cols=obj{}
-function Cols:new(headers,   new,col,here)
-  new = as({all={}, x={}, y={}}, Cols)
+function Cols:new(headers,   self,col,here)
+  self = as({all={}, x={}, y={}}, Cols)
   for at,x in pairs(headers) do
-    if x:find":$" then new.all[at] = Skip(at,x) else
+    if x:find":$" then self.all[at] = Skip(at,x) else
       col = (x:find"^[A-Z]" and Num or Sym)(at,x)
-      new.all[at] = col 
-      here =  x:find"[+-]$" and new.y or new.x
-      here[1+#here] = new end end
-  return new end
+      self.all[at] = col 
+      here =  x:find"[+-]$" and self.y or self.x
+      here[1+#here] = col end end
+  return self end
 
 function Cols:add(t)
   for _,col in pairs(self.all) do col:add(t[col.at]) end 
@@ -234,7 +250,9 @@ function Demos.sym(   s)
   asserts(s:div() - 1.376 < 0.005, "entropy") end
 
 function Demos.cols(  c)
-  print(Cols({"Clndrs", "Weight", "Hp:", "Lbs-", "Acc+", "Model", "origin", "Mpg+"})) end
+  print(Cols({"Clndrs", "Weight", "Hp:", "Lbs-", 
+               "Acc+", "Model", "origin", "Mpg+"})) 
+  end
 
 the = cli(help)
 main(the, help, Demos)
