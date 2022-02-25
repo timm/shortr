@@ -46,9 +46,14 @@ a handful of examples (maybe even just one)  from each cluster.
         
 **HOMEWORKS**
 
-Buse and Zimmermann offer us a list of "information needs" for software analytics. Lets code up supprot for all of these... in under 1000 lines of code.
+Buse and Zimmermann offer us a list of "information needs" for software analytics. 
+That list is not quite upt to date- it makes no mention of current concerns about FAT (fair, accountable, trustworthy) or bias mitigation.
+So can we support all these information needs? As well as issue related to FAT? And to make it fun, can we do all that under 1000 lines of code?
+
 
 ![docs/bi.png](docs/bi.png)
+
+Sure!
 
 
 - **Scripting**: little languages (e.g. regular expressions); test-drive-development, CLI design, version control, GitHub workflows, test-driven development, open science
