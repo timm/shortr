@@ -931,7 +931,14 @@ io.write(fmt(“%6s”,x))  end end </p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  CLUSTER:new(r):show() <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>  CLUSTER:new(r):show() <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.numspan</span><span class="hljs-params">(   r,c,row1,row2)</span></span>
+  <span class="hljs-keyword">local</span> lefts,rights,x,y,x
+  r = ROWS:new(the.data) 
+  r:mid(r.cols.y) 
+  lefts,rights,x,y,c = r:half() 
+  lefts.cols.x[<span class="hljs-number">1</span>]:spans(rights.cols.x[<span class="hljs-number">1</span>]) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         

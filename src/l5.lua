@@ -169,7 +169,7 @@ function distance2Heaven(t,heaven,   num,d)
   d = function(one) return (sum(one.ys)/#one.ys)^.5 end
   return sort(t, function(a,b) return d(a) < d(b) end) end
 
--- While we can find similar adjacent ranges, then merge them.
+-- While merges found: merge similar adjacent ranges j and j+1 then jump to j+2.
 function merge(b4,      j,n,now,a,b,merged)
   j,n,now = 0,#b4,{}
   while j < #b4 do
@@ -422,16 +422,17 @@ function SYM.spans(i, j)
   return all end
 
 function NUM.spans(i, j)
-  local xys,all,lo,hi,gap,xys,one,x,c,n = {},{}
+  local xys,all,lo,hi,gap,one,x,c,n = {},{}
   lo,hi = min(i.lo, j.lo), max(i.hi,j.hi)
   gap   = (hi - lo) / (6/the.cohen)
-  for x,n in pairs(i.has) do push(xys, {x,"this",1}) end
-  for x,n in pairs(j.has) do push(xys, {x,"that",1}) end
-  one = Span:new(i,lo,lo)
+  for x,n in pairs(i.has.all) do push(xys, {x,"this",1}) end
+  for x,n in pairs(j.has.all) do push(xys, {x,"that",1}) end
+  one = SPAN:new(i,lo,lo)
   all = {one}
-  for _,tmp in ipairs(sort(xys,first)) do
+  oo(xys)
+  for _,tmp in ipairs(sort(xys,firsts)) do
     x,c,n = unpack(tmp) 
-    if one.hi - one.lo > gap then one = push(all, Span(i, one.hi, x)) end
+    if one.hi - one.lo > gap then one = push(all, SPAN(i, one.hi, x)) end
     one:add(x,y) end
   all          = merge(all)
   all[1   ].lo = -big
