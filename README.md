@@ -46,22 +46,20 @@ I ask them to:
 
 ## Why is all these coded in LUA?
 
-- Because I want you to learn AI by coding it up from scratch, but I do not want to give you a fully worked solution.
-So here's my code-- and your job is to recode it.
 - Because Lua is fun to write and [easy to learn](https://learnxinyminutes.com/docs/lua/).
-- Because
-LUA
-supports multiple programming methods, including procedural, object-oriented, functional, and data-driven programming. You can also use it to
-write you own [domain-specific alnguages](https://www.lua.org/wshop11/luaws11_ag.pdf).
+- Because I want you to learn AI by coding it up from scratch, but I do not want to 
+  give you a fully worked solution.  So here's my code-- and your job is to recode it.
+- Because LUA supports multiple programming methods, including procedural, object-oriented, functional, and data-driven programming. You can also use it to
+  write you own [domain-specific alnguages](https://www.lua.org/wshop11/luaws11_ag.pdf).
 - Because LUA is great for teaching since 
-it installs, very quickly, on most platforms. This means that 
-this code can serve as an executable specification
-that students can use to check the output of their own code.
+  it installs, very quickly, on most platforms. This means that 
+  this code can serve as an executable specification
+  that students can use to check the output of their own code.
 - Also, for hyperparameter optimziation, LUA has an interesting special advantage
   - A LUA name space is a very simple, very regular thing.
-If I load  a file twice (using `dofile`) then I get **two** copies of the namespace of that code. 
+    If I load  a file twice (using `dofile`) then I get **two** copies of the namespace of that code. 
   - Which means I can write an optimizer in LUA
-and use that optimizer to optimize itself (in another namespace) which almost no chance (\*)  of variables  in one space messing with the other
+    and use that optimizer to optimize itself (in another namespace) which almost no chance (\*)  of variables  in one space messing with the other
 
 (\*) Of course, nothing is 100% safe. If one namespace reset the random number seed, that change can spread to the other space. Ditto with any other
 global defined in the background LUA libraries.
