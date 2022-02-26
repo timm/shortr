@@ -56,7 +56,7 @@ adjacent bins with the similar distributions in C1,C2, then
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> help = <span class="hljs-string">[[
 
-l5 == a little lab of lots of LUA learning algorithms.
+l5 == a little LUA learning library
 (c) 2022, Tim Menzies, BSD 2-clause license.
 
 USAGE: 
@@ -76,7 +76,6 @@ OPTIONS:
   -want     -w   F   recurse until rows^want    = .5
 
 KEY: N=fileName F=float P=posint S=string
-
 ]]</span></pre></div></div>
             
         </li>
@@ -155,12 +154,13 @@ KEY: N=fileName F=float P=posint S=string
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> the={}
-help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  [-]([^%s]+)[%s]+(-[^%s]+)[^\n]*%s([^%s]+)&quot;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(key,flag1,x)</span></span>
-  <span class="hljs-keyword">for</span> n,flag2 <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">arg</span>) <span class="hljs-keyword">do</span> 
-    <span class="hljs-keyword">if</span> flag1==flag2 <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;-&quot;</span>..key ==<span class="hljs-string">&quot;flag2&quot;</span><span class="hljs-keyword">then</span>
-      x = x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">or</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">arg</span>[n+<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">then</span> the[key]=<span class="hljs-literal">false</span> <span class="hljs-keyword">elseif</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">then</span> the[key]=<span class="hljs-literal">true</span> <span class="hljs-keyword">else</span>
-    the[key] = <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> )</pre></div></div>
+help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)&quot;</span>,
+  <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(long,key,short,x)</span></span>
+    <span class="hljs-keyword">for</span> n,flag <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">arg</span>) <span class="hljs-keyword">do</span> 
+      <span class="hljs-keyword">if</span> flag==short <span class="hljs-keyword">or</span> flag==long <span class="hljs-keyword">then</span>
+        x = x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">or</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">arg</span>[n+<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+    <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">then</span> the[key]=<span class="hljs-literal">false</span> <span class="hljs-keyword">elseif</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">then</span> the[key]=<span class="hljs-literal">true</span> <span class="hljs-keyword">else</span>
+      the[key] = <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> )</pre></div></div>
             
         </li>
         
@@ -849,7 +849,8 @@ io.write(fmt(“%6s”,x))  end end </p>
   r = ROWS:new(the.data)
   rows = r.rows
   n = NUM:new()
-  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span> n:add(r:dist(row, rows[<span class="hljs-number">1</span>])) <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span> n:add(r:dist(row, rows[<span class="hljs-number">1</span>])) <span class="hljs-keyword">end</span> 
+  oo(rnds(n:sorted()))</pre></div></div>
             
         </li>
         
@@ -860,14 +861,14 @@ io.write(fmt(“%6s”,x))  end end </p>
               <div class="sswrap ">
                 <a class="ss" href="#section-35">&#x00a7;</a>
               </div>
-              <p>oo(r.cols.x[2]:sorted()) end</p>
+              <p>oo(r.cols.x[2]:sorted()) </p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>  o(r.cols.x[<span class="hljs-number">2</span>]:sorted()) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.many</span><span class="hljs-params">(   t)</span></span>
-  t={}; <span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,<span class="hljs-number">100</span> <span class="hljs-keyword">do</span> push(t,j) <span class="hljs-keyword">end</span></pre></div></div>
+  t={}; <span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,<span class="hljs-number">1000</span> <span class="hljs-keyword">do</span> push(t,j) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -882,7 +883,7 @@ io.write(fmt(“%6s”,x))  end end </p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  o(many(t, <span class="hljs-number">10</span>)) <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre>  oo(many(t, <span class="hljs-number">10</span>)) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.far</span><span class="hljs-params">(   r,c,row1,row2)</span></span>
   r = ROWS:new(the.data)
@@ -910,6 +911,8 @@ io.write(fmt(“%6s”,x))  end end </p>
   lefts,rights,x,y,c = r:half() 
   lefts:mid(lefts.cols.y )
   rights:mid(rights.cols.y)
+  asserts(<span class="hljs-number">199</span>==#lefts.rows,<span class="hljs-string">&quot;left rows&quot;</span>)
+  asserts(<span class="hljs-number">199</span>==#rights.rows,<span class="hljs-string">&quot;right rows&quot;</span>)
   asserts(<span class="hljs-literal">true</span>,<span class="hljs-string">&quot;half&quot;</span>) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.cluster</span><span class="hljs-params">(r)</span></span>
@@ -928,7 +931,7 @@ io.write(fmt(“%6s”,x))  end end </p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  CLUSTER:new(r) <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>  CLUSTER:new(r):show() <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -944,7 +947,7 @@ io.write(fmt(“%6s”,x))  end end </p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span> <span class="hljs-built_in">arg</span>[<span class="hljs-number">0</span>] == <span class="hljs-string">&quot;l5.lua&quot;</span> <span class="hljs-keyword">then</span>
-  <span class="hljs-keyword">if</span> the.help <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\nNOTES:*$&quot;</span>,<span class="hljs-string">&quot;&quot;</span>)) <span class="hljs-keyword">else</span>
+  <span class="hljs-keyword">if</span> the.help <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(help) <span class="hljs-keyword">else</span>
     <span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(the) <span class="hljs-keyword">do</span> b4[k]=v <span class="hljs-keyword">end</span>
     <span class="hljs-keyword">for</span> _,todo <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(the.todo==<span class="hljs-string">&quot;all&quot;</span> <span class="hljs-keyword">and</span> slots(EGS) <span class="hljs-keyword">or</span> {the.todo}) <span class="hljs-keyword">do</span>
       <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(b4) <span class="hljs-keyword">do</span> the[k]=v <span class="hljs-keyword">end</span>
