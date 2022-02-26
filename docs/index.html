@@ -33,51 +33,53 @@
 					<div class="posts">
 
 
-<p><img align=right width=250 src=head.png></p>
+<p><img align=right width=200 src=head.png></p>
 <p><strong><a href="https://menzies.us/l5">Docs</a> • <a href="https://github.com/timm/l5">Repo</a> • <a href="https://github.com/timm/l5/issues">Issues</a> • <a href="http://github.com/timm/l5.LICENSE.md">&copy;2022</a></strong> Tim Menzies</p>
 <h1 id="do-you-understand-ai">Do you understand AI?</h1>
 <p>Do you understand AI? Want to check if you do?</p>
-<p>Here's the test.
+<p>Alternatively, do you want to better understand AI?  Want to practice that skill, a little more?</p>
+<p>If you answered "yes" to any of the above, there here's a little exercise for you.
 Write down what you think an AI toolkit should do, then code
 it up, very succinctly (say, in less than 1000 lines of code). And no cheating 
 (so no importing of some massive background AI library).</p>
 <p>For example, 
-Buse and Zimmermann<sup id="fnref:Bu15"><a class="footnote-ref" href="#fn:Bu15">3</a></sup> surveyed over a hundred developers and managers to
+Buse and Zimmermann<sup id="fnref:Bu15"><a class="footnote-ref" href="#fn:Bu15">3</a></sup> surveyed over  hundreds of developers and managers to
 find a list of "information needs" for software analytics. 
-How many of the following do you really understand? </p>
+Lets make sure you understand these, enough, to code them succinctly.</p>
 <p><img alt="bi.png" src="bi.png" /></p>
 <p>(Aside: this list is not quite up-to-date- it makes no mention of current concerns about FAT (fair, accountable, trust) or bias mitigation.
 Nor does it really touch on model-based reasoning  or multi-objective optimization. But that's ok-- we can add that i and still not break 1000 lines of code).</p>
-<h2 id="teaching-ai-to-software-engineers">Teaching AI to Software Engineers</h2>
-<p>I use this toolkit for teaching AI to software engineers.
-My premise is that the AI-literate engineering can mix and match AI tools
-to create specific solutions for specific probems. To show then what goes on inside the box,
+<p>I use this exercise  to teach software engineers what goes on inside AI.
+My premise is that
+the AI-literate engineering should be able to mix and match AI tools
+  to create specific solutions for specific problems.<br />
+To show then what goes on inside the box,
 I ask them to:</p>
 <ul>
 <li>Reproduce this code in whatever language they like (except the one used here). That takes 6-8 weeks.</li>
 <li>Find all the short-cuts in this code, then find other AI tools that another approach to those short-cuts.</li>
-<li>
+<li>Benchmark this tiny toolkit against those more elaborate tools. This is end-of-semester project, which takes
+  another 6-8 weeks.</li>
+</ul>
+<h2 id="why-is-all-these-coded-in-lua">Why is all these coded in LUA?</h2>
 <ul>
-<li>Benchmark this tiny toolkit agains those more elaborate tools.</li>
-</ul>
-</li>
-</ul>
-<p>For upper-level class (and grad classes,
-which they can compare other, more complex, approaches.</p>
-<h2 id="why-lua">Why LUA?</h2>
-<p>Because Lua is fun to write
-and <a href="https://learnxinyminutes.com/lua/">easy to learn</a>.</p>
-<p>Because
+<li>Because I want you to learn AI by coding it up from scratch, but I do not want to give you a fully worked solution.
+So here's my code-- and your job is to recode it.</li>
+<li>Because Lua is fun to write and <a href="https://learnxinyminutes.com/lua/">easy to learn</a>.</li>
+<li>Because
 LUA
 supports multiple programming methods, including procedural, object-oriented, functional, and data-driven programming. You can also use it to
-write you own <a href="https://www.lua.org/wshop11/luaws11_ag.pdf">domain-specific alnguages</a>.</p>
-<p>Because LUA is great for teaching since 
-it LUA installs, very quickly, on most platforms. This means that 
+write you own <a href="https://www.lua.org/wshop11/luaws11_ag.pdf">domain-specific alnguages</a>.</li>
+<li>Because LUA is great for teaching since 
+it installs, very quickly, on most platforms. This means that 
 this code can serve as an executable specification
-that students can use to check the output of their own code.</p>
-<p>Also, for hyperparameter optimziation, LUA has an interesting special advantage. A LUA name space is a very simple, very regular thing.
-If I load  afile twice (using <code>dofile</code>) then I get <strong>two</strong> copies of the namespace of that code. Which means I can write an optimizer in LUA
-and use that optimizer to optimize itself (in another namespace) which almost no chance (*)  of variables  in one space messing with the other</p>
+that students can use to check the output of their own code.</li>
+<li>Also, for hyperparameter optimziation, LUA has an interesting special advantage</li>
+<li>A LUA name space is a very simple, very regular thing.
+If I load  a file twice (using <code>dofile</code>) then I get <strong>two</strong> copies of the namespace of that code. </li>
+<li>Which means I can write an optimizer in LUA
+and use that optimizer to optimize itself (in another namespace) which almost no chance (*)  of variables  in one space messing with the other</li>
+</ul>
 <p>(*) Of course, nothing is 100% safe. If one namespace reset the random number seed, that change can spread to the other space. Ditto with any other
 global defined in the background LUA libraries.</p>
 <p><br clear=all><hr></p>

@@ -1,4 +1,4 @@
-<img align=right width=250 src=docs/head.png>
+<img align=right width=200 src=docs/head.png>
 
 **[Docs](https://menzies.us/l5) • [Repo](https://github.com/timm/l5) • [Issues](https://github.com/timm/l5/issues) • [&copy;2022](http://github.com/timm/l5.LICENSE.md)** Tim Menzies
 
@@ -6,15 +6,17 @@
 
 Do you understand AI? Want to check if you do?
 
-Here's the test.
+Alternatively, do you want to better understand AI?  Want to practice that skill, a little more?
+
+If you answered "yes" to any of the above, there here's a little exercise for you.
 Write down what you think an AI toolkit should do, then code
 it up, very succinctly (say, in less than 1000 lines of code). And no cheating 
 (so no importing of some massive background AI library).
 
 For example, 
-Buse and Zimmermann[^Bu15] surveyed over a hundred developers and managers to
+Buse and Zimmermann[^Bu15] surveyed over  hundreds of developers and managers to
 find a list of "information needs" for software analytics. 
-How many of the following do you really understand? 
+Lets make sure you understand these, enough, to code them succinctly.
 
 ![docs/bi.png](docs/bi.png)
 
@@ -22,38 +24,35 @@ How many of the following do you really understand?
 Nor does it really touch on model-based reasoning  or multi-objective optimization. But that's ok-- we can add that i and still not break 1000 lines of code).
 
 
-## Teaching AI to Software Engineers
-
-I use this toolkit for teaching AI to software engineers.
-My premise is that the AI-literate engineering can mix and match AI tools
-to create specific solutions for specific probems. To show then what goes on inside the box,
+I use this exercise  to teach software engineers what goes on inside AI.
+My premise is that
+the AI-literate engineering should be able to mix and match AI tools
+  to create specific solutions for specific problems.  
+To show then what goes on inside the box,
 I ask them to:
 
 - Reproduce this code in whatever language they like (except the one used here). That takes 6-8 weeks.
 - Find all the short-cuts in this code, then find other AI tools that another approach to those short-cuts.
-- - Benchmark this tiny toolkit agains those more elaborate tools.
+- Benchmark this tiny toolkit against those more elaborate tools. This is end-of-semester project, which takes
+  another 6-8 weeks.
 
-For upper-level class (and grad classes,
-which they can compare other, more complex, approaches.
- 
-## Why LUA?
+## Why is all these coded in LUA?
 
-Because Lua is fun to write
-and [easy to learn](https://learnxinyminutes.com/docs/lua/).
-
-Because
+- Because I want you to learn AI by coding it up from scratch, but I do not want to give you a fully worked solution.
+So here's my code-- and your job is to recode it.
+- Because Lua is fun to write and [easy to learn](https://learnxinyminutes.com/docs/lua/).
+- Because
 LUA
 supports multiple programming methods, including procedural, object-oriented, functional, and data-driven programming. You can also use it to
 write you own [domain-specific alnguages](https://www.lua.org/wshop11/luaws11_ag.pdf).
-
-Because LUA is great for teaching since 
-it LUA installs, very quickly, on most platforms. This means that 
+- Because LUA is great for teaching since 
+it installs, very quickly, on most platforms. This means that 
 this code can serve as an executable specification
 that students can use to check the output of their own code.
-
-
-Also, for hyperparameter optimziation, LUA has an interesting special advantage. A LUA name space is a very simple, very regular thing.
-If I load  afile twice (using `dofile`) then I get **two** copies of the namespace of that code. Which means I can write an optimizer in LUA
+- Also, for hyperparameter optimziation, LUA has an interesting special advantage
+  - A LUA name space is a very simple, very regular thing.
+If I load  a file twice (using `dofile`) then I get **two** copies of the namespace of that code. 
+  - Which means I can write an optimizer in LUA
 and use that optimizer to optimize itself (in another namespace) which almost no chance (\*)  of variables  in one space messing with the other
 
 (\*) Of course, nothing is 100% safe. If one namespace reset the random number seed, that change can spread to the other space. Ditto with any other

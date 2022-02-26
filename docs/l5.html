@@ -160,9 +160,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
     <span class="hljs-keyword">if</span> flag1==flag2 <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;-&quot;</span>..key ==<span class="hljs-string">&quot;flag2&quot;</span><span class="hljs-keyword">then</span>
       x = x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">or</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">arg</span>[n+<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
   <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">then</span> the[key]=<span class="hljs-literal">false</span> <span class="hljs-keyword">elseif</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">then</span> the[key]=<span class="hljs-literal">true</span> <span class="hljs-keyword">else</span>
-    the[key] = <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> )
-
-<span class="hljs-built_in">print</span>(the.help)</pre></div></div>
+    the[key] = <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> )</pre></div></div>
             
         </li>
         
@@ -190,7 +188,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ignorep</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">end</span>     <span class="hljs-comment">-- columns to ignore</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ignorep</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -205,7 +203,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">klassp</span><span class="hljs-params">(x)</span></span>  <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;!$&quot;</span> <span class="hljs-keyword">end</span>     <span class="hljs-comment">-- symbolic goals to achieve</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">klassp</span><span class="hljs-params">(x)</span></span>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">not</span> nump(x) <span class="hljs-keyword">and</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;!$&quot;</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -220,7 +218,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lessp</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> nump(x) <span class="hljs-keyword">and</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">end</span>     <span class="hljs-comment">-- number goals to minimize</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lessp</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> nump(x) <span class="hljs-keyword">and</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -231,13 +229,11 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
               <div class="sswrap ">
                 <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
-              <p>i Goals to mazumze</p>
+              <p>Goals to maximize</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">morep</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;+$&quot;</span> <span class="hljs-keyword">end</span>     <span class="hljs-comment">-- numeric goals to maximize</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nump</span><span class="hljs-params">(x)</span></span>    <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">end</span> <span class="hljs-comment">-- numeric columns</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">goalp</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> morep(x) <span class="hljs-keyword">or</span> lessp(x) <span class="hljs-keyword">or</span> klassp(x) <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">morep</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> nump(x) <span class="hljs-keyword">and</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;+$&quot;</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -248,9 +244,11 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
               <div class="sswrap ">
                 <a class="ss" href="#section-12">&#x00a7;</a>
               </div>
-              <h2 id="misc-utils">Misc Utils</h2>
+              <p>Numeric columns</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nump</span><span class="hljs-params">(x)</span></span>    <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -261,11 +259,11 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
               <div class="sswrap ">
                 <a class="ss" href="#section-13">&#x00a7;</a>
               </div>
-              <h3 id="strings">Strings</h3>
+              <p>Dependent attributes</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">format</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">goalp</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> morep(x) <span class="hljs-keyword">or</span> lessp(x) <span class="hljs-keyword">or</span> klassp(x) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -275,6 +273,34 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
               
               <div class="sswrap ">
                 <a class="ss" href="#section-14">&#x00a7;</a>
+              </div>
+              <h2 id="misc-utils">Misc Utils</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-15">&#x00a7;</a>
+              </div>
+              <h3 id="strings">Strings</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">format</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-16">&#x00a7;</a>
               </div>
               <h3 id="maths">Maths</h3>
 
@@ -292,11 +318,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-15">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-15">&#x00a7;</a>
+                <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
               <h3 id="tables">Tables</h3>
 
@@ -314,11 +340,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-16">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-16">&#x00a7;</a>
+                <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
               <h3 id="meta">Meta</h3>
 
@@ -334,11 +360,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-17">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-17">&#x00a7;</a>
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
               <h3 id="print-tables-recursively">Print tables, recursively</h3>
 
@@ -354,11 +380,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-18">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-18">&#x00a7;</a>
+                <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
               <h3 id="coerce-strings-to-things">Coerce strings to things</h3>
 
@@ -382,13 +408,26 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-19">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
               <h3 id="misc-stuff">Misc stuff</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-22">&#x00a7;</a>
+              </div>
+              <p>Multi-objectives. Normalized, scored  via distance to heaven.</p>
 
             </div>
             
@@ -403,13 +442,38 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-20">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
-              <p>objects</p>
+              <p>While we can find similar adjacent ranges, then merge them.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">merge</span><span class="hljs-params">(b4,      j,n,now,a,b,merged)</span></span>
+  j,n,now = <span class="hljs-number">0</span>,#b4,{}
+  <span class="hljs-keyword">while</span> j &lt; #b4 <span class="hljs-keyword">do</span>
+    j    = j+<span class="hljs-number">1</span>
+    a, b = b4[j], b4[j+<span class="hljs-number">1</span>]
+    <span class="hljs-keyword">if</span> b <span class="hljs-keyword">then</span>
+      merged = a:merge(b)
+      <span class="hljs-keyword">if</span> merged <span class="hljs-keyword">then</span> a,j = merged, j+<span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    push(now,a)
+    j = j+<span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> #now == #b4 <span class="hljs-keyword">and</span> b4 <span class="hljs-keyword">or</span> merge(now) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-24">&#x00a7;</a>
+              </div>
+              <p>Objects</p>
 
             </div>
             
@@ -418,26 +482,14 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-21">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-21">&#x00a7;</a>
+                <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
               <h2 id="cols">COLS</h2>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-22">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-22">&#x00a7;</a>
-              </div>
-              <p>Factory. Turns list of column names into NUMs, SYMs, or SKIPs</p>
+<p>Factory. Turns list of column names into NUMs, SYMs, or SKIPs</p>
 
             </div>
             
@@ -448,7 +500,6 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
     push(goalp(txt) <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x, col)
     <span class="hljs-keyword">if</span> klassp(txt) <span class="hljs-keyword">then</span> i.klass = col <span class="hljs-keyword">end</span>
     <span class="hljs-keyword">return</span> col 
-  <span class="hljs-keyword">end</span> <span class="hljs-comment">------------------</span>
   i= new(k,{all={},x={},y={},names=row}) 
   <span class="hljs-keyword">for</span> at,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(row) <span class="hljs-keyword">do</span>  push(i.all, create1(at,txt)) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
@@ -460,11 +511,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-23">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-23">&#x00a7;</a>
+                <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
               <p>NUM: summarizes a stream of numbers</p>
 
@@ -502,11 +553,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-24">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
+                <a class="ss" href="#section-27">&#x00a7;</a>
               </div>
               <p>ROWS: manages <code>rows</code>, summarized in <code>cols</code> (columns).</p>
 
@@ -552,11 +603,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-25">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-25">&#x00a7;</a>
+                <a class="ss" href="#section-28">&#x00a7;</a>
               </div>
               <p>SKIP: summarizes things we want to ignore (so does nothing)</p>
 
@@ -569,11 +620,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-26">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-26">&#x00a7;</a>
+                <a class="ss" href="#section-29">&#x00a7;</a>
               </div>
               <p>SOME: keeps a random sample on the arriving data</p>
 
@@ -588,11 +639,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-27">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-27">&#x00a7;</a>
+                <a class="ss" href="#section-30">&#x00a7;</a>
               </div>
               <p>SYM: summarizes a stream of symbols</p>
 
@@ -624,16 +675,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-28">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-28">&#x00a7;</a>
+                <a class="ss" href="#section-31">&#x00a7;</a>
               </div>
-              <hr>
-<p>|    |    |  | [__   |  |___ |<strong>/ 
-|</strong>_ |___ |__| <em><strong>]  |  |</strong></em> |  \ </p>
-<p>CLUSTER: recursively divides data by clustering towards two distant points</p>
+              <p>CLUSTER: recursively divides data by clustering towards two distant points</p>
 
             </div>
             
@@ -660,26 +708,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-29">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-29">&#x00a7;</a>
-              </div>
-              <hr>
-<p>|___  /  |<strong>] |    |</strong>| | |\ | 
-|___ <em>/_ |    |</em>__ |  | | | | </p>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-30">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-30">&#x00a7;</a>
+                <a class="ss" href="#section-32">&#x00a7;</a>
               </div>
               <p>SPAN: keeps a random sample on the arriving data</p>
 
@@ -702,13 +735,13 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-31">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-31">&#x00a7;</a>
+                <a class="ss" href="#section-33">&#x00a7;</a>
               </div>
-              <p>EXPLAIN:</p>
+              <h3 id="explain">EXPLAIN:</h3>
 
             </div>
             
@@ -768,35 +801,8 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
   all          = merge(all)
   all[<span class="hljs-number">1</span>   ].lo = -big
   all[#all].hi =  big
-  <span class="hljs-keyword">return</span> all <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">merge</span><span class="hljs-params">(b4,      j,n,now,a,b,merged)</span></span>
-  j,n,now = <span class="hljs-number">0</span>,#b4,{}
-  <span class="hljs-keyword">while</span> j &lt; #b4 <span class="hljs-keyword">do</span>
-    j    = j+<span class="hljs-number">1</span>
-    a, b = b4[j], b4[j+<span class="hljs-number">1</span>]
-    <span class="hljs-keyword">if</span> b <span class="hljs-keyword">then</span>
-      merged = a:merge(b)
-      <span class="hljs-keyword">if</span> merged <span class="hljs-keyword">then</span> a,j = merged, j+<span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-    push(now,a)
-    j = j+<span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> #now == #b4 <span class="hljs-keyword">and</span> b4 <span class="hljs-keyword">or</span> merge(now) <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-32">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-32">&#x00a7;</a>
-              </div>
-              <hr>
-<p>|  \ |___ |/| |  | [__<br>|<strong>/ |</strong>_ |  | |__| ___] </p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>fails=<span class="hljs-number">0</span>
+  <span class="hljs-keyword">return</span> all <span class="hljs-keyword">end</span>
+fails=<span class="hljs-number">0</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">asserts</span><span class="hljs-params">(test, msg)</span></span>
   <span class="hljs-built_in">print</span>(test <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;PASS: &quot;</span><span class="hljs-keyword">or</span> <span class="hljs-string">&quot;FAIL: &quot;</span>,msg <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>) 
   <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> test <span class="hljs-keyword">then</span> 
@@ -814,11 +820,11 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
         </li>
         
         
-        <li id="section-33">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-33">&#x00a7;</a>
+                <a class="ss" href="#section-34">&#x00a7;</a>
               </div>
               <p>if (j % 10)==0 then print(“”) end
 io.write(fmt(“%6s”,x))  end end </p>
@@ -848,11 +854,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-34">
+        <li id="section-35">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-34">&#x00a7;</a>
+                <a class="ss" href="#section-35">&#x00a7;</a>
               </div>
               <p>oo(r.cols.x[2]:sorted()) end</p>
 
@@ -866,11 +872,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-35">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-35">&#x00a7;</a>
+                <a class="ss" href="#section-36">&#x00a7;</a>
               </div>
               <p>print(oo(many(t, 10))) end</p>
 
@@ -886,11 +892,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-36">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-36">&#x00a7;</a>
+                <a class="ss" href="#section-37">&#x00a7;</a>
               </div>
               <p>print(c,”\n”,o(row1),”\n”, o(row2)) end</p>
 
@@ -912,11 +918,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-37">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-37">&#x00a7;</a>
+                <a class="ss" href="#section-38">&#x00a7;</a>
               </div>
               <p>CLUSTER:new(r):show() end</p>
 
@@ -927,11 +933,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-38">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-38">&#x00a7;</a>
+                <a class="ss" href="#section-39">&#x00a7;</a>
               </div>
               <p>start-up</p>
 
@@ -955,11 +961,11 @@ io.write(fmt(“%6s”,x))  end end </p>
         </li>
         
         
-        <li id="section-39">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-39">&#x00a7;</a>
+                <a class="ss" href="#section-40">&#x00a7;</a>
               </div>
               <p>git rid of SOME for rows
 nss  = NUM | SYM | SKIP

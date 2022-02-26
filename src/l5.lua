@@ -71,20 +71,26 @@ help:gsub("\n  [-]([^%s]+)[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",function(key,flag1,x)
   if x=="false" then the[key]=false elseif x=="true" then the[key]=true else
     the[key] = tonumber(x) or x end end )
 
-print(the.help)
-
 -- ### Define headers for row1 of csv files
 
 -- Columns to ignore
-function ignorep(x) return x:find":$" end     -- columns to ignore
+function ignorep(x) return x:find":$" end  
 -- Symbolic classes
-function klassp(x)  return x:find"!$" end     -- symbolic goals to achieve
+function klassp(x)  return not nump(x) and x:find"!$" end 
 -- Goals to minimize
-function lessp(x)   return nump(x) and x:find"-$" end     -- number goals to minimize
---i Goals to mazumze
-function morep(x)   return x:find"+$" end     -- numeric goals to maximize
-function nump(x)    return x:find"^[A-Z]" end -- numeric columns
+function lessp(x)   return nump(x) and x:find"-$" end 
+-- Goals to maximize
+function morep(x)   return nump(x) and x:find"+$" end  
+-- Numeric columns
+function nump(x)    return x:find"^[A-Z]" end
+-- Dependent attributes
 function goalp(x)   return morep(x) or lessp(x) or klassp(x) end
+---       __                      _    _                    
+---      / _| _   _  _ __    ___ | |_ (_)  ___   _ __   ___ 
+---     | |_ | | | || '_ \  / __|| __|| | / _ \ | '_ \ / __|
+---     |  _|| |_| || | | || (__ | |_ | || (_) || | | |\__ \
+---     |_|   \__,_||_| |_| \___| \__||_| \___/ |_| |_||___/
+
 -- ## Misc Utils
 
 -- ### Strings
@@ -143,6 +149,8 @@ function things(x,sep,  t)
   return t end
 
 -- ### Misc stuff
+
+-- Multi-objectives. Normalized, scored  via distance to heaven.
 function distance2Heaven(t,heaven,   num,d)
   for n,txt in pairs(heaven) do 
     num = Num(at,txt) 
@@ -151,10 +159,32 @@ function distance2Heaven(t,heaven,   num,d)
   d = function(one) return (sum(one.ys)/#one.ys)^.5 end
   return sort(t, function(a,b) return d(a) < d(b) end) end
 
--- objects
-function new(k,t) k.__index=k; k.__tostring=o; return setmetatable(t,k) end
--- ## COLS
+-- While we can find similar adjacent ranges, then merge them.
+function merge(b4,      j,n,now,a,b,merged)
+  j,n,now = 0,#b4,{}
+  while j < #b4 do
+    j    = j+1
+    a, b = b4[j], b4[j+1]
+    if b then
+      merged = a:merge(b)
+      if merged then a,j = merged, j+1 end end
+    push(now,a)
+    j = j+1 end
+  return #now == #b4 and b4 or merge(now) end
 
+-- Objects
+function new(k,t) k.__index=k; k.__tostring=o; return setmetatable(t,k) end
+---            _                             
+---       ___ | |  __ _  ___  ___   ___  ___ 
+---      / __|| | / _` |/ __|/ __| / _ \/ __|
+---     | (__ | || (_| |\__ \\__ \|  __/\__ \
+---      \___||_| \__,_||___/|___/ \___||___/
+
+---     ____ ____ _    ____ 
+---     |    |  | |    [__  
+---     |___ |__| |___ ___] 
+
+-- ## COLS
 -- Factory. Turns list of column names into NUMs, SYMs, or SKIPs
 function COLS.new(k,row,   i,create1)
   create1 = function(i,at,txt,     col)
@@ -171,8 +201,11 @@ function COLS.new(k,row,   i,create1)
 function COLS.add(i,t) 
   for _,col in pairs(i.all) do col:add( t[col.at] ) end
   return t end
+---     _  _ _  _ _  _ 
+---     |\ | |  | |\/| 
+---     | \| |__| |  | 
 
-  -- NUM: summarizes a stream of numbers
+-- NUM: summarizes a stream of numbers
 function NUM.new(k,n,s) 
   return new(k,{n=0,at=n or 0,txt=s or"",has=SOME:new(),ok=false,
                 w=lessp(s or "") and -1 or 1, lo=big, hi=-big}) end
@@ -201,6 +234,9 @@ function NUM.norm(i,x)
 function NUM.sorted(i)
   if i.ok==false then table.sort(i.has.all); i.ok=true end
   return i.has.all end
+---     ____ ____ _ _ _ ____ 
+---     |__/ |  | | | | [__  
+---     |  \ |__| |_|_| ___] 
 
 -- ROWS: manages `rows`, summarized in `cols` (columns).
 function ROWS.new(k,inits,     i)
@@ -239,11 +275,17 @@ function ROWS.mid(i,cols)
 
 function ROWS.fastmap(i, r,x,y,c,     a,b)
   a,b = i:dist(r,x), i:dist(r,y); return {(a^2 + c^2 - b^2)/(2*c), r} end
+---     ____ _  _ _ ___  
+---     [__  |_/  | |__] 
+---     ___] | \_ | |    
 
 -- SKIP: summarizes things we want to ignore (so does nothing)
 function SKIP.new(k,n,s) return new(k,{n=0,at=at or 0,txt=s or""}) end
 function SKIP.add(i,x)   return x end
 function SKIP.mid(i)     return "?" end
+---     ____ ____ _  _ ____ 
+---     [__  |  | |\/| |___ 
+---     ___] |__| |  | |___ 
 
 -- SOME: keeps a random sample on the arriving data
 function SOME.new(k,keep) return new(k,{n=0,all={}, keep=keep or the.keep}) end
@@ -251,6 +293,9 @@ function SOME.add(i,x)
   i.n = i.n+1
   if     #i.all < i.keep then push(i.all,x)          ; return i.all 
   elseif r()     < i.keep/i.n then i.all[r(#i.all)]=x; return i.all end end
+---     ____ _   _ _  _ 
+---     [__   \_/  |\/| 
+---     ___]   |   |  | 
 
 -- SYM: summarizes a stream of symbols
 function SYM.new(k,n,s)  
@@ -274,11 +319,11 @@ function SYM.merge(i,j,    k)
   for x,n in pairs(j.has) do k:add(x,n) end
   ei, ej, ejk= i:div(), j:div(), k:div()
   if i.n==0 or j.n==0 or .99*ek <= (i.n*ei + j.n*ej)/k.n then
-    return k end end
--- ____ _    _  _ ____ ___ ____ ____ 
--- |    |    |  | [__   |  |___ |__/ 
--- |___ |___ |__| ___]  |  |___ |  \ 
---                                            
+    return k end end
+---     ____ _    _  _ ____ ___ ____ ____ 
+---     |    |    |  | [__   |  |___ |__/ 
+---     |___ |___ |__| ___]  |  |___ |  \ 
+
 -- CLUSTER: recursively divides data by clustering towards two distant points
 function CLUSTER.new(k,egs,top)
   local i,want,left,right
@@ -299,10 +344,9 @@ function CLUSTER.show(i,pre,  here)
   print(fmt("%6s : %-30s %s",#i.here.rows, pre, here))
   for _,kid in pairs{i.left, i.right} do
     if kid then kid:show(pre .. "|.. ") end end end
-
--- ____ _  _ ___  _    ____ _ _  _ 
--- |___  \/  |__] |    |__| | |\ | 
--- |___ _/\_ |    |___ |  | | | \| 
+---     ____ ___  ____ _  _ 
+---     [__  |__] |__| |\ | 
+---     ___] |    |  | | \| 
 
 -- SPAN: keeps a random sample on the arriving data
 function SPAN.new(k, col, lo, hi, has) 
@@ -318,9 +362,11 @@ function SPAN.select(i,row,    x)
   return (x=="?") or (i.lo==i.hi and x==i.lo) or (i.lo <= x and x < i.hi) end
 
 function SPAN.score(i) return {i.has.n/i.col.n,  i.has:div()} end
-
+---     ____ _  _ ___  _    ____ _ _  _ 
+---     |___  \/  |__] |    |__| | |\ | 
+---     |___ _/\_ |    |___ |  | | | \| 
    
--- EXPLAIN:
+-- ### EXPLAIN:
 function EXPLAIN.new(k,egs,top)
   local i,top,want,left,right,spans,best,yes,no
   i    = new(k,{here = egs})
@@ -349,6 +395,9 @@ function EXPLAIN.show(i,pre)
   for _,pair in pairs{{true,i.yes},{false,i.no}} do
     status,kid = unpack(pair)
     k:shpw(pre .. "|.. ") end end end
+---     ____ ___  ____ _  _ ____ 
+---     [__  |__] |__| |\ | [__  
+---     ___] |    |  | | \| ___] 
 
 function SYM.spans(i, j)
   local xys,all,one,last,xys,x,c n = {},{}
@@ -377,23 +426,13 @@ function NUM.spans(i, j)
   all          = merge(all)
   all[1   ].lo = -big
   all[#all].hi =  big
-  return all end
-
-function merge(b4,      j,n,now,a,b,merged)
-  j,n,now = 0,#b4,{}
-  while j < #b4 do
-    j    = j+1
-    a, b = b4[j], b4[j+1]
-    if b then
-      merged = a:merge(b)
-      if merged then a,j = merged, j+1 end end
-    push(now,a)
-    j = j+1 end
-  return #now == #b4 and b4 or merge(now) end
--- ___  ____ _  _ ____ ____ 
--- |  \ |___ |\/| |  | [__  
--- |__/ |___ |  | |__| ___] 
---
+  return all end
+---           _                 _                  
+---      ___ | |_   __ _  _ __ | |_   _   _  _ __  
+---     / __|| __| / _` || '__|| __| | | | || '_ \ 
+---     \__ \| |_ | (_| || |   | |_  | |_| || |_) |
+---     |___/ \__| \__,_||_|    \__|  \__,_|| .__/ 
+---                                         |_|    
 fails=0
 function asserts(test, msg)
   print(test and "PASS: "or "FAIL: ",msg or "") 
