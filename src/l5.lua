@@ -84,15 +84,15 @@ help:gsub("\n  [-]([^%s]+)[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",function(key,flag1,x)
 
 -- Columns to ignore
 function ignorep(x) return x:find":$" end  
--- Symbolic classes
+-- Symbolic class columns.
 function klassp(x)  return not nump(x) and x:find"!$" end 
--- Goals to minimize
+-- Goal columns to minimize
 function lessp(x)   return nump(x) and x:find"-$" end 
--- Goals to maximize
+-- Goal columns to maximize
 function morep(x)   return nump(x) and x:find"+$" end  
 -- Numeric columns
 function nump(x)    return x:find"^[A-Z]" end
--- Dependent attributes
+-- Dependent columns
 function goalp(x)   return morep(x) or lessp(x) or klassp(x) end
 ---       __                      _    _                    
 ---      / _| _   _  _ __    ___ | |_ (_)  ___   _ __   ___ 
