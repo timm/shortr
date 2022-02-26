@@ -1,16 +1,22 @@
 <img align=right width=175 src=docs/head.png>
 
-**[Docs](https://menzies.us/l5) • [Repo](https://github.com/timm/l5) • [Issues](https://github.com/timm/l5/issues) • [&copy;2022](http://github.com/timm/l5.LICENSE.md)** Tim Menzies
+**[Docs](https://menzies.us/l5) •  [&copy;2022](http://github.com/timm/l5.LICENSE.md).** Tim Menzies
 
 #  Do you understand AI?
 
-Do you understand AI? Want to check if you do?
+How well do  you understand AI? 
+Do you want to understand it better?  Want to practice that skill, a little more?
 
-Alternatively, do you want to better understand AI?  Want to practice that skill, a little more?
+If you answering "yes", here's a little exercise for you.
+List out down what you think an AI toolkit should do.
+Don't say "deep learning" or "regression"-- those are just solution technologies.
+Think instead of what services people want to get out of an AI.
 
-If you answered "yes" to any of the above, there here's a little exercise for you.
-Write down what you think an AI toolkit should do, then code
-it up, very succinctly (say, in less than 1000 lines of code). And no cheating 
+Now,  code 
+ up those services, as succinctly as can (say, in less than 1000 lines of code). Try to find
+ patterns in the processing, such all the parts of your code are used
+ in as many different ways as possible,
+ And no cheating 
 (so no importing of some massive background AI library).
 
 For example, 
