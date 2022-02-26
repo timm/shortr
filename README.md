@@ -14,7 +14,7 @@ it up, very succinctly (say, in less than 1000 lines of code). And no cheating
 (so no importing of some massive background AI library).
 
 For example, 
-Buse and Zimmermann[^Bu15] surveyed over  hundreds of developers and managers to
+Buse and Zimmermann[^Bu12] surveyed over  hundreds of developers and managers to
 find a list of "information needs" for software analytics. 
 Lets make sure you understand these, enough, to code them succinctly.
 
@@ -118,11 +118,11 @@ of the pair of furthest points seen at each level of recursion.
 - **Monitoring**
 
 
-[^Ah91]: Aha, D.W., Kibler, D. & Albert, M.K. Instance-based   learning algorithms. Mach Learn 6, 37–66 (1991).  https://doi.org/10.1007/BF00153759
+[^Ah91]: Aha, D.W., Kibler, D. & Albert, M.K. [Instance-based   learning algorithms](https://link.springer.com/content/pdf/10.1007%2FBF00153759.pdf). Mach Learn 6, 37–66 (1991).  https://doi.org/10.1007/BF00153759
 
 [^Bo98]: Boley, D., 1998.  [Principal directions divisive partitioning](https://www-users.cse.umn.edu/~boley/publications/papers/PDDP.pdf) Data Mining and Knowledge Discovery, 2(4): 325-344.
 
-[^Bu15]: Buse, R. and Zimmerman T. [Information Needs for Software Development Analytics](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/MSR-TR-2011-8.pdf), ICSE'12, 2011
+[^Bu12]: Buse, R. and Zimmerman T. [Information Needs for Software Development Analytics](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/MSR-TR-2011-8.pdf), ICSE'12, 2012
 
 [^Ch05]: [Semi-Supervised Learning](http://www.molgen.mpg.de/3659531/MITPress--SemiSupervised-Learning) (2005) Olivier Chapelle,  Bernhard Schölkopf, and Alexander Zien (eds).  MIT Press.
  
