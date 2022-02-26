@@ -9,7 +9,7 @@ Do you want to understand it better?  Want to practice that skill, a little more
 
 If you answering "yes", here's a little exercise for you.
 List out down what you think an AI toolkit should do.
-Don't say "deep learning" or "regression"-- those are just solution technologies.
+Don't say "deep learning" or "clustering"-- those are just solution technologies.
 Think instead of what services people want to get out of an AI. Things like
 "watch for problems" or  "help me debate ideas with my friends" or "learn a summary
 of what is going on right now" or "solutions we can trust".

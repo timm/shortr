@@ -102,10 +102,10 @@ function goalp(x)   return morep(x) or lessp(x) or klassp(x) end
 
 -- ## Misc Utils
 
--- ### Strings
+-- Strings
 fmt = string.format
 
--- ### Maths
+-- Maths
 big = math.huge
 max = math.max
 min = math.min
@@ -115,7 +115,7 @@ function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or the.Format) or "%s",x) end
 
--- ### Tables
+-- Tables
 pop = table.remove
 unpack = table.unpack
 function any(t)        return t[r(#t)] end
@@ -125,7 +125,7 @@ function per(t,p)      return t[ (#t*(p or .5))//1 ] end
 function push(t,x)     table.insert(t,x); return x end
 function sort(t,f)     table.sort(t,f); return t end
 
--- ### Meta
+--  Meta
 function map(t,f, u)  u={};for k,v in pairs(t) do push(u,f(v)) end; return u end
 function sum(t,f, n)  n=0; for _,v in pairs(t) do n=n+f(v)     end; return n end
 function slots(t, u) 
@@ -133,7 +133,7 @@ function slots(t, u)
   for k,v in pairs(t) do k=tostring(k);if k:sub(1,1)~="_" then push(u,k) end end
   return sort(u) end 
 
--- ### Print tables, recursively
+--  Print tables, recursively
 function oo(t) print(o(t)) end
 function o(t)
   if type(t)~="table" then return tostring(t) end
@@ -141,7 +141,7 @@ function o(t)
   local u = #t>0 and map(t,o) or map(slots(t),key) 
   return '{'..table.concat(u," ").."}" end 
 
--- ### Coerce strings to things
+-- Coerce strings to things
 function csv(file,      x)
   file = io.input(file)
   return function() 
