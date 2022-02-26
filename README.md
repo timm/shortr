@@ -12,7 +12,7 @@ List out down what you think an AI toolkit should do.
 Don't say "deep learning" or "regression"-- those are just solution technologies.
 Think instead of what services people want to get out of an AI. Things like
 "watch for problems" or  "help me debate ideas with my friends" or "learn a summary
-of what is going on right now".
+of what is going on right now" or "solutions we can trust".
 
 Now,  code 
  up those services, as succinctly as can (say, in less than 1000 lines of code). Try to find
