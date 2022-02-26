@@ -6,8 +6,9 @@
 ---      \ \ \L\ \  \/\ \L\ \
 ---       \ \____/   \ \____/
 ---        \/___/     \/___/ 
+---   
 --- ---------------------------------------------------------------------------
--- -  Recursively divide data based on two
+-- - Recursively divide data based on two
 --   distant points (found in linear time using the Fastmap
 --   heuristic [Fa95]). Then find and print the attribute range
 --   that best distinguishes these halves. Recurse on each half.
@@ -31,7 +32,7 @@
 --   (a) merge then (b) look for other merges.
 local help = [[
 
-l5 == a little lab of lots of LUA learning algorithms.
+l5 == a little LUA learning library
 (c) 2022, Tim Menzies, BSD 2-clause license.
 
 USAGE: 
@@ -39,7 +40,7 @@ USAGE:
 
 OPTIONS: 
   -cohen    -c   F   Cohen's delta              = .35
-  -data     -d   N   data file                  = etc/data/auto93.csv
+  -data     -d   N   data file                  = ../etc/data/auto93.csv
   -Dump     -D       stack dump on assert fails = false
   -furthest -f   F   far                        = .9
   -Format   -F   S   format string              = %5.2f
@@ -51,7 +52,6 @@ OPTIONS:
   -want     -w   F   recurse until rows^want    = .5
 
 KEY: N=fileName F=float P=posint S=string
-
 ]]
     
 -- ## Definitions
@@ -60,7 +60,8 @@ KEY: N=fileName F=float P=posint S=string
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 
 -- Define locals.
-local any,asserts,big,cli,fails,firsts,fmt,goalp,ignorep,klassp  
+local any,asserts,big,cli,distance2Heaven
+local fails,firsts,fmt,goalp,ignorep,klassp  
 local lessp,map,main,many,max,merge,min,morep,new,nump,o,oo,per,pop,push
 local r,rows,rnd,rnds,slots,sort,sum,thing,things,file2things,unpack
 
@@ -73,12 +74,13 @@ local SKIP,    SOME, SPAN, SYM       = {},{},{},{}
 -- e.g.  _-k N_ &rArr; `keep=N`;    
 -- and  _-booleanFlag_ &rArr; `booleanFlag=not default`). 
 local the={}
-help:gsub("\n  [-]([^%s]+)[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",function(key,flag1,x)
-  for n,flag2 in ipairs(arg) do 
-    if flag1==flag2 or "-"..key =="flag2"then
-      x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
-  if x=="false" then the[key]=false elseif x=="true" then the[key]=true else
-    the[key] = tonumber(x) or x end end )
+help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+  function(long,key,short,x)
+    for n,flag in ipairs(arg) do 
+      if flag==short or flag==long then
+        x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
+    if x=="false" then the[key]=false elseif x=="true" then the[key]=true else
+      the[key] = tonumber(x) or x end end )
 
 -- ### Define headers for row1 of csv files
 
@@ -195,13 +197,13 @@ function new(k,t) k.__index=k; k.__tostring=o; return setmetatable(t,k) end
 -- ## COLS
 -- Factory. Turns list of column names into NUMs, SYMs, or SKIPs
 function COLS.new(k,row,   i,create1)
-  create1 = function(i,at,txt,     col)
+  create1 = function(at,txt,     col)
     if ignorep(txt) then return SKIP:new(at,txt) end
     col = (nump(txt) and NUM or SYM):new(at,txt)
     push(goalp(txt) and i.y or i.x, col)
     if klassp(txt) then i.klass = col end
     return col 
-  end ------------------
+  end ----------------------------------
   i= new(k,{all={},x={},y={},names=row}) 
   for at,txt in ipairs(row) do  push(i.all, create1(at,txt)) end
   return i end
@@ -250,7 +252,7 @@ function NUM.sorted(i)
 function ROWS.new(k,inits,     i)
   i = new(k,{rows={},cols=nil})
   if type(inits)=="table"  then for t in inits do i:add(t) end end 
-  if type(inits)=="string" then for t in file2Things(inits) do i:add(t) end end
+  if type(inits)=="string" then for t in file2things(inits) do i:add(t) end end
   return i end
 
 function ROWS.add(i,t)
@@ -454,6 +456,7 @@ function EGS.rand()    print(r()) end
 function EGS.some(s,t)
   s=SOME:new(100)
   for i=1,100000 do s:add(i) end
+  asserts(100==#s.all,"length")
   for j,x in pairs(sort(s.all)) do
     --if (j % 10)==0 then print("") end
     --io.write(fmt("%6s",x))  end end 
@@ -476,13 +479,14 @@ function EGS.dist( r,rows,n)
   rows = r.rows
   n = NUM:new()
   for _,row in pairs(rows) do n:add(r:dist(row, rows[1])) end 
-  --oo(r.cols.x[2]:sorted()) end
+  oo(rnds(n:sorted()))
+  --oo(r.cols.x[2]:sorted()) 
   o(r.cols.x[2]:sorted()) end
 
 function EGS.many(   t)
-  t={}; for j=1,100 do push(t,j) end
+  t={}; for j=1,1000 do push(t,j) end
   --print(oo(many(t, 10))) end
-  o(many(t, 10)) end
+  oo(many(t, 10)) end
 
 function EGS.far(   r,c,row1,row2)
   r = ROWS:new(the.data)
@@ -497,16 +501,18 @@ function EGS.half(   r,c,row1,row2)
   lefts,rights,x,y,c = r:half() 
   lefts:mid(lefts.cols.y )
   rights:mid(rights.cols.y)
+  asserts(199==#lefts.rows,"left rows")
+  asserts(199==#rights.rows,"right rows")
   asserts(true,"half") end
 
 function EGS.cluster(r)
   r = ROWS:new(the.data)
   --CLUSTER:new(r):show() end
-  CLUSTER:new(r) end
+  CLUSTER:new(r):show() end
 
 -- start-up
-if arg[0] == "sl.lua" then
-  if the.help then print(help:gsub("\nNOTES:*$","")) else
+if arg[0] == "l5.lua" then
+  if the.help then print(help) else
     local b4={}; for k,v in pairs(the) do b4[k]=v end
     for _,todo in pairs(the.todo=="all" and slots(EGS) or {the.todo}) do
       for k,v in pairs(b4) do the[k]=v end

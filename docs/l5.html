@@ -29,9 +29,9 @@
               </div>
               <ul>
 <li>Recursively divide data based on two
-  distant points (found in linear time using the Fastmap
-  heuristic [Fa95]). Then find and print the attribute range
-  that best distinguishes these halves. Recurse on each half.</li>
+distant points (found in linear time using the Fastmap
+heuristic [Fa95]). Then find and print the attribute range
+that best distinguishes these halves. Recurse on each half.</li>
 <li>(which is sort of like PDDP [Bo98] but faster; and we
 offers a human-readable description for each division).</li>
 <li>To find those ranges, this code uses a variant of the ChiMerge
@@ -64,7 +64,7 @@ USAGE:
 
 OPTIONS: 
   -cohen    -c   F   Cohen&#x27;s delta              = .35
-  -data     -d   N   data file                  = etc/data/auto93.csv
+  -data     -d   N   data file                  = ../etc/data/auto93.csv
   -Dump     -D       stack dump on assert fails = false
   -furthest -f   F   far                        = .9
   -Format   -F   S   format string              = %5.2f
@@ -120,7 +120,8 @@ KEY: N=fileName F=float P=posint S=string
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> any,asserts,big,cli,fails,firsts,fmt,goalp,ignorep,klassp  
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> any,asserts,big,cli,distance2Heaven
+<span class="hljs-keyword">local</span> fails,firsts,fmt,goalp,ignorep,klassp  
 <span class="hljs-keyword">local</span> lessp,map,main,many,<span class="hljs-built_in">max</span>,merge,<span class="hljs-built_in">min</span>,morep,new,nump,o,oo,per,pop,push
 <span class="hljs-keyword">local</span> r,rows,rnd,rnds,slots,<span class="hljs-built_in">sort</span>,sum,thing,things,file2things,<span class="hljs-built_in">unpack</span></pre></div></div>
             
@@ -492,7 +493,7 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">COLS.new</span><span class="hljs-params">(k,row,   i,create1)</span></span>
-  create1 = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,at,txt,     col)</span></span>
+  create1 = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(at,txt,     col)</span></span>
     <span class="hljs-keyword">if</span> ignorep(txt) <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> SKIP:new(at,txt) <span class="hljs-keyword">end</span>
     col = (nump(txt) <span class="hljs-keyword">and</span> NUM <span class="hljs-keyword">or</span> SYM):new(at,txt)
     push(goalp(txt) <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x, col)
@@ -564,7 +565,7 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.new</span><span class="hljs-params">(k,inits,     i)</span></span>
   i = new(k,{rows={},cols=<span class="hljs-literal">nil</span>})
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">type</span>(inits)==<span class="hljs-string">&quot;table&quot;</span>  <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> inits <span class="hljs-keyword">do</span> i:add(t) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">if</span> <span class="hljs-built_in">type</span>(inits)==<span class="hljs-string">&quot;string&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> file2Things(inits) <span class="hljs-keyword">do</span> i:add(t) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">type</span>(inits)==<span class="hljs-string">&quot;string&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> file2things(inits) <span class="hljs-keyword">do</span> i:add(t) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.add</span><span class="hljs-params">(i,t)</span></span>
@@ -813,6 +814,7 @@ fails=<span class="hljs-number">0</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.some</span><span class="hljs-params">(s,t)</span></span>
   s=SOME:new(<span class="hljs-number">100</span>)
   <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">100000</span> <span class="hljs-keyword">do</span> s:add(i) <span class="hljs-keyword">end</span>
+  asserts(<span class="hljs-number">100</span>==#s.all,<span class="hljs-string">&quot;length&quot;</span>)
   <span class="hljs-keyword">for</span> j,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(s.all)) <span class="hljs-keyword">do</span></pre></div></div>
             
         </li>
@@ -941,7 +943,7 @@ io.write(fmt(“%6s”,x))  end end </p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span> <span class="hljs-built_in">arg</span>[<span class="hljs-number">0</span>] == <span class="hljs-string">&quot;sl.lua&quot;</span> <span class="hljs-keyword">then</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span> <span class="hljs-built_in">arg</span>[<span class="hljs-number">0</span>] == <span class="hljs-string">&quot;l5.lua&quot;</span> <span class="hljs-keyword">then</span>
   <span class="hljs-keyword">if</span> the.help <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\nNOTES:*$&quot;</span>,<span class="hljs-string">&quot;&quot;</span>)) <span class="hljs-keyword">else</span>
     <span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(the) <span class="hljs-keyword">do</span> b4[k]=v <span class="hljs-keyword">end</span>
     <span class="hljs-keyword">for</span> _,todo <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(the.todo==<span class="hljs-string">&quot;all&quot;</span> <span class="hljs-keyword">and</span> slots(EGS) <span class="hljs-keyword">or</span> {the.todo}) <span class="hljs-keyword">do</span>
