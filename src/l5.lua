@@ -56,19 +56,19 @@ KEY: N=fileName F=float P=posint S=string
     
 -- ## Definitions
 
--- ### Cache current names (used at end to find rogue variables)  
+-- Cache current names (used at end to find rogue variables)  
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 
--- ### Define locals.
+-- Define locals.
 local any,asserts,big,cli,csv,fails,firsts,fmt,goalp,ignorep,klassp  
 local lessp,map,main,many,max,merge,min,morep,new,nump,o,oo,per,pop,push
 local r,rows,rnd,rnds,slots,sort,sum,thing,things,unpack
 
--- ### Define classes
+-- Define classes
 local CLUSTER, COLS, EGS,  EXPLAIN, NUM, ROWS = {},{},{},{},{},{}
 local SKIP,    SOME, SPAN, SYM       = {},{},{},{}
 
--- ### Define parameter settings.     
+-- Define parameter settings.     
 -- Update parameter defaults from command line. Allow for some shorthand:  
 -- e.g.  _-k N_ &rArr; `keep=N`;    
 -- and  _-booleanFlag_ &rArr; `booleanFlag=not default`). 
