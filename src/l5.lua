@@ -510,6 +510,13 @@ function EGS.cluster(r)
   --CLUSTER:new(r):show() end
   CLUSTER:new(r):show() end
 
+function EGS.numspan(   r,c,row1,row2)
+  local lefts,rights,x,y,x
+  r = ROWS:new(the.data) 
+  r:mid(r.cols.y) 
+  lefts,rights,x,y,c = r:half() 
+  lefts.cols.x[1]:spans(rights.cols.x[1]) end
+
 -- start-up
 if arg[0] == "l5.lua" then
   if the.help then print(help) else

@@ -116,7 +116,7 @@ a handful of examples (maybe even just one)  from each cluster.
 
 - **Instance selection**: filter the data down to just a few samples per
 cluster, the reason using just those.
-- **Anomaly detection**
+- **Anomaly detection**:
 - **Explanation** 
 Discretize the numeric ranges (\*) at each level of the recursion,
 then divide the data according what range best selects for one half, or the other
@@ -131,6 +131,26 @@ of the pair of furthest points seen at each level of recursion.
 - **Privacy**
 - **Planning**
 - **Monitoring**
+
+## TOC
+
+- Some theory
+  - nothing as useful as a good theory
+  - kelly. understand the world via . cluster and contrast
+    - unifnying framework srteching for initilaiz conceptualization internal to a sysrtem
+  - constrasts
+    - difference between things shorter than the things
+  - super discretization
+    - consider everything we want for good and bad cluster. 
+    - tabu, plan, monitor, optimization , explain
+    - all ways to assess ranges
+    - repeated observastion: a few ranges are most powerful
+    - so when we say cluster and contrast, we mean find the ranges that most
+      distinguish things
+    - of course we combine these ranges into model... but we might not have to
+      - could just print_ the super ranges and stop
+  - chi merge: botton up discretization to combine silimar ranges
+  - fastmap (an approximation to pca)
 
 
 [^Ah91]: Aha, D.W., Kibler, D. & Albert, M.K. [Instance-based   learning algorithms](https://link.springer.com/content/pdf/10.1007%2FBF00153759.pdf). Mach Learn 6, 37–66 (1991).  https://doi.org/10.1007/BF00153759
