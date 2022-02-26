@@ -1,4 +1,4 @@
-<img align=right width=200 src=docs/head.png>
+<img align=right width=175 src=docs/head.png>
 
 **[Docs](https://menzies.us/l5) • [Repo](https://github.com/timm/l5) • [Issues](https://github.com/timm/l5/issues) • [&copy;2022](http://github.com/timm/l5.LICENSE.md)** Tim Menzies
 
