@@ -28,8 +28,14 @@ Lets make sure you understand these, enough, to code them succinctly.
 
 ![docs/bi.png](docs/bi.png)
 
-(Aside: this list is not quite up-to-date- it makes no mention of current concerns about FAT (fair, accountable, trust) or bias mitigation.
-Nor does it really touch on model-based reasoning  or multi-objective optimization. But that's ok-- we can add that i and still not break 1000 lines of code).
+(Aside: this list is not as complete as I'd like.
+current concerns about FAT (fair, accountable, trust) or bias
+mitigation.
+Nor does it really touch on knowledge acquisition or
+or how to trade
+off goals between competing stakeholders.
+But that's ok-- we can add that i and still not break
+1000 lines of code).
 
 
 I use this exercise  to teach software engineers what goes on inside AI.
@@ -49,19 +55,22 @@ I ask them to:
 - Because Lua is fun to write and [easy to learn](https://learnxinyminutes.com/docs/lua/).
 - Because I want you to learn AI by coding it up from scratch, but I do not want to 
   give you a fully worked solution.  So here's my code-- and your job is to recode it.
-- Because LUA supports multiple programming methods, including procedural, object-oriented, functional, and data-driven programming. You can also use it to
-  write you own [domain-specific alnguages](https://www.lua.org/wshop11/luaws11_ag.pdf).
 - Because LUA is great for teaching since 
   it installs, very quickly, on most platforms. This means that 
   this code can serve as an executable specification
   that students can use to check the output of their own code.
+- Because LUA supports multiple programming methods, including procedural, 
+  object-oriented, functional, and data-driven programming. You can also use it to
+  write you own [domain-specific alnguages](https://www.lua.org/wshop11/luaws11_ag.pdf).
 - Also, for hyperparameter optimziation, LUA has an interesting special advantage
   - A LUA name space is a very simple, very regular thing.
     If I load  a file twice (using `dofile`) then I get **two** copies of the namespace of that code. 
   - Which means I can write an optimizer in LUA
-    and use that optimizer to optimize itself (in another namespace) which almost no chance (\*)  of variables  in one space messing with the other
+    and use that optimizer to optimize itself (in another namespace) 
+    which almost no chance (\*)  of variables  in one space messing with the other
 
-(\*) Of course, nothing is 100% safe. If one namespace reset the random number seed, that change can spread to the other space. Ditto with any other
+(\*) Of course, nothing is 100% safe. If one namespace reset the random number seed, 
+that change can spread to the other space. Ditto with any other
 global defined in the background LUA libraries.
 
 <br clear=all><hr>

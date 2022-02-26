@@ -56,8 +56,14 @@ Buse and Zimmermann<sup id="fnref:Bu12"><a class="footnote-ref" href="#fn:Bu12">
 find a list of "information needs" for software analytics. 
 Lets make sure you understand these, enough, to code them succinctly.</p>
 <p><img alt="bi.png" src="bi.png" /></p>
-<p>(Aside: this list is not quite up-to-date- it makes no mention of current concerns about FAT (fair, accountable, trust) or bias mitigation.
-Nor does it really touch on model-based reasoning  or multi-objective optimization. But that's ok-- we can add that i and still not break 1000 lines of code).</p>
+<p>(Aside: this list is not as complete as I'd like.
+current concerns about FAT (fair, accountable, trust) or bias
+mitigation.
+Nor does it really touch on knowledge acquisition or
+or how to trade
+off goals between competing stakeholders.
+But that's ok-- we can add that i and still not break
+1000 lines of code).</p>
 <p>I use this exercise  to teach software engineers what goes on inside AI.
 My premise is that
 the AI-literate engineering should be able to mix and match AI tools
@@ -75,19 +81,22 @@ I ask them to:</p>
 <li>Because Lua is fun to write and <a href="https://learnxinyminutes.com/lua/">easy to learn</a>.</li>
 <li>Because I want you to learn AI by coding it up from scratch, but I do not want to 
   give you a fully worked solution.  So here's my code-- and your job is to recode it.</li>
-<li>Because LUA supports multiple programming methods, including procedural, object-oriented, functional, and data-driven programming. You can also use it to
-  write you own <a href="https://www.lua.org/wshop11/luaws11_ag.pdf">domain-specific alnguages</a>.</li>
 <li>Because LUA is great for teaching since 
   it installs, very quickly, on most platforms. This means that 
   this code can serve as an executable specification
   that students can use to check the output of their own code.</li>
+<li>Because LUA supports multiple programming methods, including procedural, 
+  object-oriented, functional, and data-driven programming. You can also use it to
+  write you own <a href="https://www.lua.org/wshop11/luaws11_ag.pdf">domain-specific alnguages</a>.</li>
 <li>Also, for hyperparameter optimziation, LUA has an interesting special advantage</li>
 <li>A LUA name space is a very simple, very regular thing.
     If I load  a file twice (using <code>dofile</code>) then I get <strong>two</strong> copies of the namespace of that code. </li>
 <li>Which means I can write an optimizer in LUA
-    and use that optimizer to optimize itself (in another namespace) which almost no chance (*)  of variables  in one space messing with the other</li>
+    and use that optimizer to optimize itself (in another namespace) 
+    which almost no chance (*)  of variables  in one space messing with the other</li>
 </ul>
-<p>(*) Of course, nothing is 100% safe. If one namespace reset the random number seed, that change can spread to the other space. Ditto with any other
+<p>(*) Of course, nothing is 100% safe. If one namespace reset the random number seed, 
+that change can spread to the other space. Ditto with any other
 global defined in the background LUA libraries.</p>
 <p><br clear=all><hr></p>
 <p>The need for baselines. XXXX</p>
