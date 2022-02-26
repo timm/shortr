@@ -60,9 +60,9 @@ KEY: N=fileName F=float P=posint S=string
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 
 -- Define locals.
-local any,asserts,big,cli,csv,fails,firsts,fmt,goalp,ignorep,klassp  
+local any,asserts,big,cli,fails,firsts,fmt,goalp,ignorep,klassp  
 local lessp,map,main,many,max,merge,min,morep,new,nump,o,oo,per,pop,push
-local r,rows,rnd,rnds,slots,sort,sum,thing,things,unpack
+local r,rows,rnd,rnds,slots,sort,sum,thing,things,file2things,unpack
 
 -- Define classes
 local CLUSTER, COLS, EGS,  EXPLAIN, NUM, ROWS = {},{},{},{},{},{}
@@ -142,20 +142,19 @@ function o(t)
   return '{'..table.concat(u," ").."}" end 
 
 -- Coerce strings to things
-function csv(file,      x)
-  file = io.input(file)
-  return function() 
-    x=io.read(); if x then return things(x) else io.close(file) end end end
-
 function thing(x)   
   x = x:match"^%s*(.-)%s*$" 
   if x=="true" then return true elseif x=="false" then return false end
   return tonumber(x) or x end
 
 function things(x,sep,  t)
-  t={}
-  for y in x:gmatch(sep or"([^,]+)") do push(t,thing(y)) end
+  t={}; for y in x:gmatch(sep or"([^,]+)") do push(t,thing(y)) end
   return t end
+
+function file2things(file,      x)
+  file = io.input(file)
+  return function() 
+    x=io.read(); if x then return things(x) else io.close(file) end end end
 
 -- ### Misc stuff
 
@@ -250,8 +249,8 @@ function NUM.sorted(i)
 -- ROWS: manages `rows`, summarized in `cols` (columns).
 function ROWS.new(k,inits,     i)
   i = new(k,{rows={},cols=nil})
-  if type(inits)=="string" then for t in csv(inits) do i:add(t) end end
-  if type(inits)=="table"  then for t in inits       do i:add(t) end end 
+  if type(inits)=="table"  then for t in inits do i:add(t) end end 
+  if type(inits)=="string" then for t in file2Things(inits) do i:add(t) end end
   return i end
 
 function ROWS.add(i,t)
