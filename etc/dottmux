@@ -4,6 +4,10 @@ set -g aggressive-resize on
 #bind C-m send-prefix
 set -g base-index 1
 # start with pane 1
+# Set prefix to Ctrl-Space instead of Ctrl-b
+unbind C-b
+set -g prefix C-Space
+bind Space send-prefix
 bind | split-window -h -c "#{pane_current_path}"
 bind - split-window -v -c "#{pane_current_path}"
 unbind '"'

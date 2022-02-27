@@ -447,7 +447,7 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
               <div class="sswrap ">
                 <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
-              <p>While we can find similar adjacent ranges, then merge them.</p>
+              <p>While merges found: merge similar adjacent ranges j and j+1 then jump to j+2.</p>
 
             </div>
             
@@ -786,16 +786,17 @@ r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random
   <span class="hljs-keyword">return</span> all <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.spans</span><span class="hljs-params">(i, j)</span></span>
-  <span class="hljs-keyword">local</span> xys,all,lo,hi,gap,xys,one,x,c,n = {},{}
+  <span class="hljs-keyword">local</span> xys,all,lo,hi,gap,one,x,c,n = {},{}
   lo,hi = <span class="hljs-built_in">min</span>(i.lo, j.lo), <span class="hljs-built_in">max</span>(i.hi,j.hi)
   gap   = (hi - lo) / (<span class="hljs-number">6</span>/the.cohen)
-  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.has) <span class="hljs-keyword">do</span> push(xys, {x,<span class="hljs-string">&quot;this&quot;</span>,<span class="hljs-number">1</span>}) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.has) <span class="hljs-keyword">do</span> push(xys, {x,<span class="hljs-string">&quot;that&quot;</span>,<span class="hljs-number">1</span>}) <span class="hljs-keyword">end</span>
-  one = Span:new(i,lo,lo)
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.has.all) <span class="hljs-keyword">do</span> push(xys, {x,<span class="hljs-string">&quot;this&quot;</span>,<span class="hljs-number">1</span>}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.has.all) <span class="hljs-keyword">do</span> push(xys, {x,<span class="hljs-string">&quot;that&quot;</span>,<span class="hljs-number">1</span>}) <span class="hljs-keyword">end</span>
+  one = SPAN:new(i,lo,lo)
   all = {one}
-  <span class="hljs-keyword">for</span> _,tmp <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">sort</span>(xys,first)) <span class="hljs-keyword">do</span>
+  oo(xys)
+  <span class="hljs-keyword">for</span> _,tmp <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">sort</span>(xys,firsts)) <span class="hljs-keyword">do</span>
     x,c,n = <span class="hljs-built_in">unpack</span>(tmp) 
-    <span class="hljs-keyword">if</span> one.hi - one.lo &gt; gap <span class="hljs-keyword">then</span> one = push(all, Span(i, one.hi, x)) <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> one.hi - one.lo &gt; gap <span class="hljs-keyword">then</span> one = push(all, SPAN(i, one.hi, x)) <span class="hljs-keyword">end</span>
     one:add(x,y) <span class="hljs-keyword">end</span>
   all          = merge(all)
   all[<span class="hljs-number">1</span>   ].lo = -big

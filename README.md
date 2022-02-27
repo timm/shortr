@@ -8,23 +8,31 @@ How well do  you understand AI?
 Do you want to understand it better?  Want to practice that skill, a little more?
 
 If you answering "yes", here's a little exercise for you.
-List out down what you think an AI toolkit should do.
+
+- Step1: List out down what you think an AI toolkit should do.
 Don't say "deep learning" or "clustering"-- those are just solution technologies.
 Think instead of what services people want to get out of an AI. Things like
 "watch for problems" or  "help me debate ideas with my friends" or "learn a summary
 of what is going on right now" or "solutions we can trust".
-
-Now,  code 
+- Step2:  Now,  code 
  up those services, as succinctly as can (say, in less than 1000 lines of code). Try to find
  patterns in the processing, such all the parts of your code are used
  in as many different ways as possible,
  And no cheating 
 (so no importing of some massive background AI library).
 
-For example, 
+If you try this, and show  your list to someone else, straight away you will learn that
+"AI" is not one thing. Different people will list different things, depending on their
+training and experiences. For the record, I'm all about using AI to help people understand
+the world around them so my "AI" tries to find useful and succinct symbolic summaries. Other
+people might prefer (e.g.)  sub-symbolic neural approaches. No worries, we can still be friends. And
+maybe when those folks want succinct explanations of the systems they are exploring,
+they might remember this code. 
+
+But lets get to some specifics.
 Buse and Zimmermann[^Bu12] surveyed over  hundreds of developers and managers to
 find a list of "information needs" for software analytics. 
-Lets make sure you understand these, enough, to code them succinctly.
+Lets make sure we understand these, enough, to code them succinctly.
 
 ![docs/bi.png](docs/bi.png)
 

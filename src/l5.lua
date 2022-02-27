@@ -171,6 +171,7 @@ function distance2Heaven(t,heaven,   num,d)
 
 -- While merges found: merge similar adjacent ranges j and j+1 then jump to j+2.
 function merge(b4,      j,n,now,a,b,merged)
+  print(#b4)
   j,n,now = 0,#b4,{}
   while j < #b4 do
     j    = j+1
@@ -277,14 +278,17 @@ function ROWS.half(i, top)
   tmp = sort(map(i.rows,function(r) return top:fastmap(r,x,y,c) end),firsts)
   mid = #i.rows//2
   lefts, rights = i:clone(), i:clone()
-  for at,row in pairs(tmp) do (at <=mid and lefts or rights):add(row[2]) end
+  for at,row in pairs(tmp) do (at <=mid and lefts or rights):add(row[3]) end
   return lefts,rights,x,y,c, tmp[mid] end
 
 function ROWS.mid(i,cols)
   return map(cols or i.cols.all, function(col) return col:mid() end) end
 
-function ROWS.fastmap(i, r,x,y,c,     a,b)
-  a,b = i:dist(r,x), i:dist(r,y); return {(a^2 + c^2 - b^2)/(2*c), r} end
+function ROWS.fastmap(i, row,left,right,c,     a,b,x,y )
+  a,b = i:dist(row,left), i:dist(row,right); 
+  x   = (a^2 + c^2 - b^2)/(2*c)
+  x   = max(0, min(x,1))
+  return {x, (x^2-a^2)^.5, row} end
 ---     ____ _  _ _ ___  
 ---     [__  |_/  | |__] 
 ---     ___] | \_ | |    
@@ -321,14 +325,14 @@ function SYM.add(i,x,inc)
 function SYM.dist(i,x,y) return(x=="?" and y=="?" and 1) or(x==y and 0 or 1) end
 function SYM.mid(i)      return i.mode end
 function SYM.div(i,   p)
-  return sum(i.has,function(k) p=-i.has[k]/i.n;return -p*math.log(p,2) end) end
+  return -sum(i.has,function(n) p=n/i.n;return p*math.log(p,2) end) end
 
-function SYM.merge(i,j,    k)
+function SYM.merge(i,j,    k,ei,ej,ek)
   k = SYM:new(i.at,i.txt)
   for x,n in pairs(i.has) do k:add(x,n) end
   for x,n in pairs(j.has) do k:add(x,n) end
-  ei, ej, ejk= i:div(), j:div(), k:div()
-  if i.n==0 or j.n==0 or .99*ek <= (i.n*ei + j.n*ej)/k.n then
+  ei, ej, ek= i:div(), j:div(), k:div()
+  if i.n==0 or j.n==0 or 1.01*ek <= (i.n*ei + j.n*ej)/k.n then
     return k end end
 ---     ____ _    _  _ ____ ___ ____ ____ 
 ---     |    |    |  | [__   |  |___ |__/ 
@@ -362,7 +366,9 @@ function CLUSTER.show(i,pre,  here)
 function SPAN.new(k, col, lo, hi, has) 
   return new(k,{col=col,lo=lo,hi=hi or lo,has=has or SYM:new()}) end
 
-function SPAN.add(i,x,y,n) i.lo,i.hi=min(x,i.lo),max(x,i.hi); i.has:add(y,n) end
+function SPAN.add(i,x,y,n) 
+  i.lo, i.hi = min(x,i.lo), max(x,i.hi); i.has:add(y,n or 1) end
+
 function SPAN.merge(i,j)
   local has = i.has:merge(j.has)
   if now then return SPAN:new(i.col, i.lo, j.hi, has) end end
@@ -410,30 +416,29 @@ function EXPLAIN.show(i,pre)
 ---     ___] |    |  | | \| ___] 
 
 function SYM.spans(i, j)
-  local xys,all,one,last,xys,x,c n = {},{}
-  for x,n in pairs(i.has) do push(xys, {x,"this",n}) end
-  for x,n in pairs(j.has) do push(xys, {x,"that",n}) end
+  local xys,all,one,last,x,y,n = {}, {}
+  for x,n in pairs(i.has) do print(x,n); push(xys, {x,"this",n}) end
+  for x,n in pairs(j.has) do print(x,n); push(xys, {x,"that",n}) end
   for _,tmp in ipairs(sort(xys,firsts)) do
-    x,c,n = unpack(tmp)
+    x,y,n = unpack(tmp)
     if x ~= last then
       last = x
-      one  = push(all, Span(i,x,x)) end
+      one  = push(all, SPAN:new(i,x,x)) end
     one:add(x,y,n) end
   return all end
 
 function NUM.spans(i, j)
-  local xys,all,lo,hi,gap,one,x,c,n = {},{}
+  local xys,all,lo,hi,gap,one,x,y,n = {},{}
   lo,hi = min(i.lo, j.lo), max(i.hi,j.hi)
   gap   = (hi - lo) / (6/the.cohen)
-  for x,n in pairs(i.has.all) do push(xys, {x,"this",1}) end
-  for x,n in pairs(j.has.all) do push(xys, {x,"that",1}) end
+  for _,n in pairs(i.has.all) do push(xys, {n,"this",1}) end
+  for _,n in pairs(j.has.all) do push(xys, {n,"that",1}) end
   one = SPAN:new(i,lo,lo)
   all = {one}
-  oo(xys)
   for _,tmp in ipairs(sort(xys,firsts)) do
-    x,c,n = unpack(tmp) 
-    if one.hi - one.lo > gap then one = push(all, SPAN(i, one.hi, x)) end
-    one:add(x,y) end
+    x,y,n = unpack(tmp) 
+    if one.hi - one.lo > gap then one = push(all, SPAN:new(i, one.hi, x)) end
+    one:add(x,y,n) end
   all          = merge(all)
   all[1   ].lo = -big
   all[#all].hi =  big
@@ -462,6 +467,14 @@ function EGS.some(s,t)
     --if (j % 10)==0 then print("") end
     --io.write(fmt("%6s",x))  end end 
     fmt("%6s",x)  end end 
+
+function EGS.sum(  s)
+  print(sum({1,2,3,4,5},function(x) return x*1 end)) end
+
+function EGS.div(  s)
+  s = SYM:new()
+  for _,x in pairs{"a","a","a","a","b","b","c"} do print(x); s:add(x) end
+  print(s:div()) end
 
 function EGS.clone( r,s)
   r = ROWS:new(the.data)
@@ -516,7 +529,11 @@ function EGS.numspan(   r,c,row1,row2)
   r = ROWS:new(the.data) 
   r:mid(r.cols.y) 
   lefts,rights,x,y,c = r:half() 
-  lefts.cols.x[1]:spans(rights.cols.x[1]) end
+  for n,col in pairs(lefts.cols.x) do
+    print("----")
+    for x,span in pairs(lefts.cols.x[n]:spans(rights.cols.x[n]) or {}) do
+      print(span.col.txt, span.lo,span.hi) end end
+  end
 
 -- start-up
 if arg[0] == "l5.lua" then
