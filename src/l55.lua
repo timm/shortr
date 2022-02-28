@@ -27,44 +27,49 @@ OPTIONS (for housekeeping):
 KEY: S=string, P=poisint, F=float
 ]]
 
---------------------------------------------------------------------------------
+local as = setmetatable
+local function obj(   t)
+  t={__tostring=o}; t.__index=t
+  return as(t, {__call=function(_,...) return t.new(_,...) end}) end
+---------------------------------------------------------------------------------
 ---         _         _          
 ---      __| |  __ _ | |_   __ _ 
 ---     / _` | / _` || __| / _` |
 ---    | (_| || (_| || |_ | (_| |
 ---     \__,_| \__,_| \__| \__,_|
 
-local function Sym(at,s) 
-  return { is="Sym",     -- type
-           at=at or 0,   -- column index
-           name=s or "", -- column name
-           n=0,          -- number of items summarized in this column
-           all={},       -- all[x] = n means we've seen "n" repeats of "x" 
-           most=0,       -- count of the most frequently seen symbol
-           mode=nil      -- the most commonly seen letter
-  } end
+local Sym, Num = obj(), obj()
+function Sym:new(at,s) return as({
+  is="Sym",     -- type
+  at=at or 0,   -- column index
+  name=s or "", -- column name
+  n=0,          -- number of items summarized in this column
+  all={},       -- all[x] = n means we've seen "n" repeats of "x" 
+   most=0,      -- count of the most frequently seen symbol
+   mode=nil     -- the most commonly seen letter
+  }, Sym) end
 
-local function Num(at,s) 
-  return { is="Num",     -- type
-           at=at or 0,   -- column index
-           name=s or "", -- column name
-           n=0,          -- number of items summarizes in this column
-           mu=0,         -- mean (updated incrementally)
-           m2=0,         -- second moment (updated incrementally)
-           sd=0,         -- standard deviation
-           all={},       -- a sample of items seen so far
-           lo=1E31,      -- lowest number seen
-           hi=-1E31,     -- highest number seen
-           w=(s or ""):find"-$" and -1 or 1 -- "-1"= minimize and "1"= maximize
-  } end
+function Num:new(at,s) return as({
+  is="Num",     -- type
+  at=at or 0,   -- column index
+  name=s or "", -- column name
+  n=0,          -- number of items summarizes in this column
+  mu=0,         -- mean (updated incrementally)
+  m2=0,         -- second moment (updated incrementally)
+  sd=0,         -- standard deviation
+  all={},       -- a sample of items seen so far
+  lo=1E31,      -- lowest number seen
+  hi=-1E31,     -- highest number seen
+  w=(s or ""):find"-$" and -1 or 1 -- "-1"= minimize and "1"= maximize
+  }, Num) end
 
-local function Egs(names) 
-  return { is="egs",     -- type
-           all={},       -- all the rows
-           names=names,  -- list of name 
-           cols={},      -- list of all columns  (Nums or Syms)
-           x={},         -- independent columns (nothing marked as "skip")
-           y={}          -- dependent columns (nothing marked as "skip")
+local function Egs(names)  return {
+  is="egs",     -- type
+  all={},       -- all the rows
+  names=names,  -- list of name 
+  cols={},      -- list of all columns  (Nums or Syms)
+  x={},         -- independent columns (nothing marked as "skip")
+  y={}          -- dependent columns (nothing marked as "skip")
   } end
 
 --[[
@@ -72,6 +77,7 @@ local function Egs(names)
 - "i" not "self"
 - if something holds a list of thing, name the holding variable "all"
 - no inheritance
+- only define a method if that is for polymorphism
 - when you can, write functions down on one line
 - all config items into a global "the" variable
 - all the test cases (or demos) are "function Demo.xxx".
@@ -131,7 +137,6 @@ function slots(t, u,s)
 ---    |    |  \ | | \|  |  
 
 local oo,o, rnd, rnds
-
 function oo(t) print(o(t)) end
 function o(t,seen,        key,xseen,u)
   seen = seen or {}
@@ -180,30 +185,28 @@ local function settings(txt,  d)
 ---    |  | |__] |  \ |__|  |  |___    |    |  | |    [__  
 ---    |__| |    |__/ |  |  |  |___    |___ |__| |___ ___] 
 
-local nump,add
-function nump(col) return col.w end
-
-function add(i,x,inc,      sym1,num1)
-  function sym1()
-    i.all[x] = inc + (i.all[x] or 0)
-    if i.all[x] > i.most then i.most, i.mode = i.all[x], x end 
-  end ------------------------
-  function num1(    d)
-    for j=1,inc do
-      d     = x - i.mu
-      i.mu  = i.mu + d/i.n
-      i.m2  = i.m2 + d*(x - i.mu)
-      i.sd  = (i.m2<0 or i.n<2) and 0 or ((i.m2/(i.n-1))^0.5)
-      i.lo  = math.min(x, i.lo)
-      i.hi  = math.max(x, i.hi) 
-      if     #i.all < the.keep      then push(i.all,x)  
-      elseif r()    < they.keep/i.n then i.all[r(#i.all)]=x end end
-  end ----------
-  inc = inc or 1 
+local add
+function add(i,x, inc)
+  inc = inc or 1
   if x ~= "?" then
     i.n = i.n + inc
-    if nump(i) then num1() else sym1() end end
-  return x end 
+    i:add1(x,inc) end
+  return x end
+
+function Sym.add1(i,x,inc)
+  i.all[x] = inc + (i.all[x] or 0)
+  if i.all[x] > i.most then i.most, i.mode = i.all[x], x end end
+
+function Num.add1(i,x,inc,    d)
+  for j=1,inc do
+    d     = x - i.mu
+    i.mu  = i.mu + d/i.n
+    i.m2  = i.m2 + d*(x - i.mu)
+    i.sd  = (i.m2<0 or i.n<2) and 0 or ((i.m2/(i.n-1))^0.5)
+    i.lo  = math.min(x, i.lo)
+    i.hi  = math.max(x, i.hi) 
+    if     #i.all < the.keep      then push(i.all,x)  
+    elseif r()    < they.keep/i.n then i.all[r(#i.all)]=x end end end
 ---    _  _ ____ _  _ ____    ___  ____ ___ ____ 
 ---    |\/| |__| |_/  |___    |  \ |__|  |  |__| 
 ---    |  | |  | | \_ |___    |__/ |  |  |  |  | 
@@ -230,47 +233,30 @@ function file2Egs(file,   i)
 ---    [__  |  | |\/| |\/| |__| |__/ |   /  |___ 
 ---    ___] |__| |  | |  | |  | |  \ |  /__ |___ 
 
-local div,mid,mids,seen
-function mid(i) 
-  return nump(i) and i.mu or i.mode end
-
-function div(i)
-  if nump(i) then return i.sd end
-  e=0
-  map(i.all,function(n) e = e+  n/i.n * math.log(n/i.n,2) end)
+function Sym.mid(i) return i.mode end
+function Sym.div(i,  e)
+  e=0; map(i.all,function(n) e = e + n/i.n * math.log(n/i.n,2) end)
   return -e end
 
-function mids(cols,rows,    seen,out)
-  seen = function(col) return nump(col) and Num(col.at) or Sym(col.at) end
-  out  = map(cols, seen)
+function Num.mid(i) return i.mu end
+function Num.div(i) return i.sd end
+
+function Num.clone(i) return Num(i.at, i.name) end
+function Sym.clone(i) return Sym(i.at, i.name) end
+
+local mids
+function mids(cols,rows,    seen,tmp)
+  seen = function(col) return col:clone() end 
+  tmp  = map(cols, seen)
   for _,row in pairs(rows) do 
-    for _,seen in pairs(out) do 
+    for _,seen in pairs(tmp) do 
       add(seen, row[seen.at]) end end
-  return rnds(map(out, function(seen) return mid(seen) end)) end
+  return rnds(map(tmp, function(seen) return seen:mid() end)) end
 ---    ___  _ ____ ___ ____ _  _ ____ ____ 
 ---    |  \ | [__   |  |__| |\ | |    |___ 
 ---    |__/ | ___]  |  |  | | \| |___ |___ 
 
-local dist,far,furthest,neighbors
-function dist(i,row1,row2,    d,n,norm,dist1,lo,hi)
-  function norm(x,lo,hi) 
-    return hi-lo<1E-9 and 0 or (x-lo)/(hi-lo) 
-  end ------------------- 
-  function dist1(col,a,b)
-    if a=="?" and b=="?" then return 1 end
-    if not nump(col) then return a==b and 0 or 1 end
-    lo,hi=col.lo, col.hi
-    if     a=="?" then b=norm(b,lo,hi); a=b<.5 and 1 or 0 
-    elseif b=="?" then a=norm(a,lo,hi); b=a<.5 and 1 or 0
-    else   a,b = norm(a,lo,hi), norm(b,lo,hi)  end
-    return math.abs(a - b) 
-  end ------------------------ 
-  d,n = 0,0    
-  for _,col in pairs(i.x) do
-    d = d + dist1(col, row1[col.at], row2[col.at])^the.p
-    n = n + 1 end 
-  return (d/n)^(1/the.p) end
-
+local far,furthest,neighbors,dist
 function far(      i,r1,rows,far) 
   return per(neighbors(i,r1,rows),far or the.far)[2] end
 
@@ -278,7 +264,27 @@ function furthest( i,r1,rows)
   return last(neighbors(i,r1,rows))[2] end 
 
 function neighbors(i,r1,rows) 
-  return sort(map(rows, function(r2) return {dist(i,r1,r2),r2} end),firsts) end
+  return sort(map(rows, function(r2) return {dist(i,r1,r2),r2} end),firsts) end
+
+function dist(i,row1,row2,    d,n,a,b,inc)
+  d,n = 0,0    
+  for _,col in pairs(i.x) do
+    a,b = row1[col.at], row2[col.at]
+    inc = a=="?" and b=="?" and 1 or col:dist1(a,b) 
+    d = d + inc^the.p
+    n = n + 1 end 
+  return (d/n)^(1/the.p) end
+
+function Sym.dist1(i,a,b) return a==b and 0 or 1 end
+
+function Num.dist1(i,a,b)
+  if     a=="?" then b=i:norm(b); a=b<.5 and 1 or 0 
+  elseif b=="?" then a=i:norm(a); b=a<.5 and 1 or 0
+  else   a,b = i:norm(a), i:norm(b)  end
+  return math.abs(a - b) end
+
+function Num.norm(i,x)
+  return i.hi - i.lo < 1E-32 and 0 or (x - i.lo)/(i.hi - i.lo) end 
 ---    ____ _    _  _ ____ ___ ____ ____ 
 ---    |    |    |  | [__   |  |___ |__/ 
 ---    |___ |___ |__| ___]  |  |___ |  \ 
@@ -323,12 +329,11 @@ function clusters(i,t,pre)
 ---    ___  _ ____ ____ ____ ____ ___ _ ___  ____ 
 ---    |  \ | [__  |    |__/ |___  |  |   /  |___ 
 ---    |__/ | ___] |___ |  \ |___  |  |  /__ |___ 
-
-local sym_spans, num_spans, merge, merged
-function sym_spans(i, j)
+local merge,merged
+function Sym.spans(i, j)
   local xys,all,one,last,x,y,n = {}, {}
-  for x,n in pairs(i.all) do push(xys, {x,"this",n}) end
-  for x,n in pairs(j.all) do push(xys, {x,"that",n}) end
+  for x,n in pairs(i.all) do push(xys, {x,"easts",n}) end
+  for x,n in pairs(j.all) do push(xys, {x,"wests",n}) end
   for _,tmp in ipairs(sort(xys,firsts)) do
     x,y,n = unpack(tmp)
     if x ~= last then
@@ -337,12 +342,12 @@ function sym_spans(i, j)
     add(one.all, y, n) end
   return all end
 
-function num_spans(i, j)
+function Num.spans(i, j)
   local xys,all,lo,hi,gap,one,x,y,n = {},{}
   lo,hi = math.min(i.lo, j.lo), math.max(i.hi,j.hi)
   gap   = (hi - lo) / (6/the.cohen)
-  for _,n in pairs(i.all) do push(xys, {n,"this",1}) end
-  for _,n in pairs(j.all) do push(xys, {n,"that",1}) end
+  for _,n in pairs(i.all) do push(xys, {n,"easts",1}) end
+  for _,n in pairs(j.all) do push(xys, {n,"wests",1}) end
   one = {lo=lo, hi=lo, all=Sym(i.at,i.txt)}
   all = {one}
   for _,tmp in ipairs(sort(xys,firsts)) do
@@ -352,8 +357,8 @@ function num_spans(i, j)
     one.hi = x
     add(one.all,y,n) end
   all          = merge(all)
-  all[1   ].lo = -big
-  all[#all].hi =  big
+  all[1   ].lo = -math.huge
+  all[#all].hi =  math.huge
   return all end
 
 function merge(b4,      j,n,now,a,b,both)
