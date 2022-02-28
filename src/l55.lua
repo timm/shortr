@@ -1,12 +1,30 @@
 --------------------------------------------------------------------------------
----     __         ______    
----    /\ \       /\  ___\   
----    \ \ \      \ \ \__/   
----     \ \ \  __  \ \___``\ 
----      \ \ \L\ \  \/\ \L\ \
----       \ \____/   \ \____/
----        \/___/     \/___/ 
---------------------------------------------------------------------------------
+---     __         ______                              ,:
+---    /\ \       /\  ___\                           ,' |
+---    \ \ \      \ \ \__/                          /   :
+---     \ \ \  __  \ \___``\                     --'   /
+---      \ \ \L\ \  \/\ \L\ \                    \/ />/
+---       \ \____/   \ \____/                    / /_\
+---        \/___/     \/___/                  __/   /
+---                                           )'-. /
+---    a little LUA learning library          ./  :\
+---    (c) Tim Menzies 2022, BSD-2             /.' '
+---    Share and enjoy.                      '/'
+---    http://menzies.us/l5                  +
+---                                         '
+---                                       `.
+---                                   .-"-
+---                                  (    |
+---                               . .-'  '.
+---                              ( (.   )8:
+---                          .'    / (_  )
+---                           _. :(.   )8P  `
+---                       .  (  `-' (  `.   .
+---                        .  :  (   .a8a)
+---                       /_`( "a `a. )"'
+---                   (  (/  .  ' )=='
+---                  (   (    )  .8"   +
+
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local the,help={},[[
 
@@ -35,8 +53,7 @@ OPTIONS (for housekeeping):
 
 KEY: S=string, P=poisint, F=float
 ]]
-
-local as = setmetatable
+local as,o = setmetatable
 local function obj(   t)
   t={__tostring=o}; t.__index=t
   return as(t, {__call=function(_,...) return t.new(_,...) end}) end
@@ -46,7 +63,7 @@ local function obj(   t)
 ---    | (_| || (_| || |_ | (_| |
 ---     \__,_| \__,_| \__| \__,_|
 
-local Sym, Num = obj(), obj()
+local Sym = obj() -- Where to summarize symbols
 function Sym:new(at,s) return as({
   is="Sym",     -- type
   at=at or 0,   -- column index
@@ -57,6 +74,7 @@ function Sym:new(at,s) return as({
    mode=nil     -- the most commonly seen letter
   }, Sym) end
 
+local Num = obj() -- Where to summarize numbers
 function Num:new(at,s) return as({
   is="Num",     -- type
   at=at or 0,   -- column index
@@ -71,14 +89,33 @@ function Num:new(at,s) return as({
   w=(s or ""):find"-$" and -1 or 1 -- "-1"= minimize and "1"= maximize
   }, Num) end
 
-local function Egs(names)  return {
-  is="egs",     -- type
+local Egs = obj() -- Where to store examples, summarized into Syms or Nums
+function Egs:new(names,     i,col,here)  i=as({
+  is="Egs",     -- type
   all={},       -- all the rows
   names=names,  -- list of name 
   cols={},      -- list of all columns  (Nums or Syms)
   x={},         -- independent columns (nothing marked as "skip")
   y={}          -- dependent columns (nothing marked as "skip")
-  } end
+  },Egs)
+  for at,name in pairs(names) do
+    col = (name:find"^[A-Z]" and Num or Sym)(at,name)
+    i.cols[1+#i.cols] = col
+    here = name:find"[-+]$" and i.y or i.x
+    if not name:find":$" then here[1 + #here] = col end end
+  return i end  
+---    ____ _    ____ _  _ _ _  _ ____ 
+---    |    |    |  | |\ | | |\ | | __ 
+---    |___ |___ |__| | \| | | \| |__] 
+
+function Num.clone(i) return Num(i.at, i.name) end
+function Sym.clone(i) return Sym(i.at, i.name) end
+
+local data
+function Egs.clone(i, rows,    copy) 
+  copy = Egs(i.names)  
+  for _,row in pairs(rows or {}) do data(copy,row)  end
+  return copy end
 
 --[[
 ## Coding Conventions
@@ -90,6 +127,7 @@ local function Egs(names)  return {
 - all config items into a global "the" variable
 - all the test cases (or demos) are "function Demo.xxx".
 - random seed reset so carefully, just once, at the end of the code.
+- usually, no line with just "end" on it 
 ]]
 ---            _    _  _      
 ---     _   _ | |_ (_)| | ___ 
@@ -144,7 +182,7 @@ function slots(t, u,s)
 ---    |__] |__/ | |\ |  |  
 ---    |    |  \ | | \|  |  
 
-local oo,o, rnd, rnds
+local oo,rnd, rnds -- local o was declared above (in "new")
 function oo(t) print(o(t)) end
 function o(t,seen,        key,xseen,u)
   seen = seen or {}
@@ -219,15 +257,7 @@ function Num.add1(i,x,inc,    d)
 ---    |\/| |__| |_/  |___    |  \ |__|  |  |__| 
 ---    |  | |  | | \_ |___    |__/ |  |  |  |  | 
 
-local header,data,file2Egs
-function header(names,   i,col)
-  i = Egs(names)
-  for at,name in pairs(names) do
-    col = push(i.cols, (name:find"^[A-Z]" and Num or Sym)(at,name))
-    if not name:find":$" then
-      push(name:find"[-+]$" and i.y or i.x, col) end end
-  return i end 
-
+local file2Egs -- not "local data" (since defined above)
 function data(i,row)
   push(i.all, row)
   for _,col in pairs(i.cols) do add(col, row[col.at]) end 
@@ -235,31 +265,28 @@ function data(i,row)
 
 function file2Egs(file,   i)
   for row in file2things(file) do
-    if i then data(i,row) else i = header(row) end end
+    if i then data(i,row) else i = Egs(row) end end
   return i end
 ---    ____ _  _ _  _ _  _ ____ ____ _ ___  ____ 
 ---    [__  |  | |\/| |\/| |__| |__/ |   /  |___ 
 ---    ___] |__| |  | |  | |  | |  \ |  /__ |___ 
 
 function Sym.mid(i) return i.mode end
+function Num.mid(i) return i.mu end
+
+function Num.div(i) return i.sd end
 function Sym.div(i,  e)
-  e=0; map(i.all,function(n) e = e + n/i.n * math.log(n/i.n,2) end)
+  e=0; for _,n in pairs(i.all) do e=e + n/i.n*math.log(n/i.n,2) end
   return -e end
 
-function Num.mid(i) return i.mu end
-function Num.div(i) return i.sd end
-
-function Num.clone(i) return Num(i.at, i.name) end
-function Sym.clone(i) return Sym(i.at, i.name) end
+function Egs.mid(i,cols) 
+  return map(cols or i.y,function(col) return col:mid() end) end
 
 local mids
-function mids(cols,rows,    seen,tmp)
-  seen = function(col) return col:clone() end 
-  tmp  = map(cols, seen)
-  for _,row in pairs(rows) do 
-    for _,seen in pairs(tmp) do 
-      add(seen, row[seen.at]) end end
-  return rnds(map(tmp, function(seen) return seen:mid() end)) end
+function mids(i,rows,cols,    seen,tmp,j)
+  j = i:clone()
+  for _,row in pairs(rows) do data(j, row) end
+  return rnds(j:mid(cols)) end
 ---    ___  _ ____ ___ ____ _  _ ____ ____ 
 ---    |  \ | [__   |  |__| |\ | |    |___ 
 ---    |__/ | ___]  |  |  | | \| |___ |___ 
@@ -326,10 +353,10 @@ function cluster(i,rows,  here,lefts,rights)
   return here end
 
 function clusters(i,t,pre)
+  pre = pre or ""
   if t then
-    pre = pre or ""
     if not t.lefts and not t.rights then
-      print(fmt("%5s %-20s",#t.all, pre), o(mids(i.y,t.all)))
+      print(fmt("%5s %-20s",#t.all, pre), o(mids(i,t.all)))
     else 
       print(fmt("%5s %-20s",#t.all, pre)) 
       clusters(i,t.lefts,  "|.. ".. pre)
@@ -338,33 +365,34 @@ function clusters(i,t,pre)
 ---    |  \ | [__  |    |__/ |___  |  |   /  |___ 
 ---    |__/ | ___] |___ |  \ |___  |  |  /__ |___ 
 
-local merge,merged
 function Sym.spans(i, j)
   local xys,all,one,last,x,y,n = {}, {}
   for x,n in pairs(i.all) do push(xys, {x,"easts",n}) end
   for x,n in pairs(j.all) do push(xys, {x,"wests",n}) end
   for _,tmp in ipairs(sort(xys,firsts)) do
-    x,y,n = unpack(tmp)
+    x,y,n = table.unpack(tmp)
     if x ~= last then
       last = x
-      one  = push(all, {lo=x, hi=x, all=Num(i.at,i.txt)}) end
+      one  = push(all, {lo=x, hi=x, all=i:clone()}) end
     add(one.all, y, n) end
   return all end
 
+local merge,merged
 function Num.spans(i, j)
   local xys,all,lo,hi,gap,one,x,y,n = {},{}
   lo,hi = math.min(i.lo, j.lo), math.max(i.hi,j.hi)
   gap   = (hi - lo) / (6/the.cohen)
   for _,n in pairs(i.all) do push(xys, {n,"easts",1}) end
   for _,n in pairs(j.all) do push(xys, {n,"wests",1}) end
-  one = {lo=lo, hi=lo, all=Sym(i.at,i.txt)}
+  one = {lo=lo, hi=lo, all=Sym(i.at,i.name)}
   all = {one}
   for _,tmp in ipairs(sort(xys,firsts)) do
-    x,y,n = unpack(tmp) 
-    if   one.hi - one.lo > gap 
-    then one = push(all, {lo=one.hi, hi=x, all=Sym(i.at,i.txt)}) end
+    x,y,n = table.unpack(tmp) 
+    if   one.hi - one.lo > gap then
+      one = push(all, {lo=one.hi, hi=x, all=one.all:clone()}) 
+    end
     one.hi = x
-    add(one.all,y,n) end
+    add(one.all, y, n) end
   all          = merge(all)
   all[1   ].lo = -math.huge
   all[#all].hi =  math.huge
@@ -376,15 +404,19 @@ function merge(b4,      j,n,now,a,b,both)
     j    = j+1
     a, b = b4[j], b4[j+1]
     if b then
-      both = merged(a,b)
+      print("b",o(b.all))
+      both = a.all:merge(b.all)
+      print("both",o(both))
       if both then a, j = {lo=a.lo, hi=b.hi, all=both}, j+1 end end
     push(now,a)
     j = j+1 end
   return #now == #b4 and b4 or merge(now) end
 
-function merged(i,j,    k,ei,ej,ek)
-  k = Sym(i.at,i.txt)
-  for x,n in pairs(i.all) do add(k,x,n) end
+function Sym:merge(i,j,    k,ei,ej,ek)
+  print("i", o(i))
+  print("j",o(j))
+  k = self:clone()
+  for x,n in pairs(i.all) do print(x,n); add(k,x,n) end
   for x,n in pairs(j.all) do add(k,x,n) end
   ei, ej, ek= div(i), div(j), div(k)
   if i.n==0 or j.n==0 or 1.01*ek <= (i.n*ei + j.n*ej)/(i.n+j.n) then
@@ -426,10 +458,17 @@ function Demo.half(  i,easts,wests)
 
 function Demo.cluster(   i)
   i = file2Egs(the.file)
+  clusters(i,cluster(i)) end
+
+function Demo.spans(    i,j,easts,wests)
   i = file2Egs(the.file)
-  clusters(i,cluster(i))
- end
+  easts,wests = half(i, i.all) 
+  easts,wests = i:clone(easts), i:clone(wests)
+  for _,j in pairs{4,1,2} do
+    print(fmt("\n%s",j))
+    for n,span in pairs(easts.x[j]:spans(wests.x[j])) do 
+      print(n,o(span)) end end end
 
 --------------------------------------------------------------------------------
-the=settings(help)
+the = settings(help)
 Demo.main(the.todo, the.seed) 
