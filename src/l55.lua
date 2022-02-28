@@ -28,11 +28,11 @@ KEY: S=string, P=poisint, F=float
 ]]
 
 --------------------------------------------------------------------------------
----                                        _      
----     _ __   ___   ___   ___   _ __   __| | ___ 
----    | '__| / _ \ / __| / _ \ | '__| / _` |/ __|
----    | |   |  __/| (__ | (_) || |   | (_| |\__ \
----    |_|    \___| \___| \___/ |_|    \__,_||___/
+---         _         _          
+---      __| |  __ _ | |_   __ _ 
+---     / _` | / _` || __| / _` |
+---    | (_| || (_| || |_ | (_| |
+---     \__,_| \__,_| \__| \__,_|
 
 local function Sym(at,s) 
   return { is="Sym",     -- type
@@ -146,7 +146,6 @@ function o(t,seen,        key,xseen,u)
 function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or "%s",x) end
-
 ---    ____ ___ ____ ____ ___    _  _ ___  
 ---    [__   |  |__| |__/  |  __ |  | |__] 
 ---    ___]  |  |  | |  \  |     |__| |    
@@ -177,7 +176,10 @@ local function settings(txt,  d)
       d[key] = tonumber(x) or x end end)
   if d.help then print(help) end
   return d end
---------------------------------------------------------------------------------
+---    _  _ ___  ___  ____ ___ ____    ____ ____ _    ____ 
+---    |  | |__] |  \ |__|  |  |___    |    |  | |    [__  
+---    |__| |    |__/ |  |  |  |___    |___ |__| |___ ___] 
+
 local nump,add
 function nump(col) return col.w end
 
@@ -202,8 +204,10 @@ function add(i,x,inc,      sym1,num1)
     i.n = i.n + inc
     if nump(i) then num1() else sym1() end end
   return x end 
+---    _  _ ____ _  _ ____    ___  ____ ___ ____ 
+---    |\/| |__| |_/  |___    |  \ |__|  |  |__| 
+---    |  | |  | | \_ |___    |__/ |  |  |  |  | 
 
---------------------------------------------------------------------------------
 local header,data,file2Egs
 function header(names,   i,col)
   i = Egs(names)
@@ -222,8 +226,10 @@ function file2Egs(file,   i)
   for row in file2things(file) do
     if i then data(i,row) else i = header(row) end end
   return i end
+---    ____ _  _ _  _ _  _ ____ ____ _ ___  ____ 
+---    [__  |  | |\/| |\/| |__| |__/ |   /  |___ 
+---    ___] |__| |  | |  | |  | |  \ |  /__ |___ 
 
---------------------------------------------------------------------------------
 local div,mid,mids,seen
 function mid(i) 
   return nump(i) and i.mu or i.mode end
@@ -241,8 +247,10 @@ function mids(cols,rows,    seen,out)
     for _,seen in pairs(out) do 
       add(seen, row[seen.at]) end end
   return rnds(map(out, function(seen) return mid(seen) end)) end
+---    ___  _ ____ ___ ____ _  _ ____ ____ 
+---    |  \ | [__   |  |__| |\ | |    |___ 
+---    |__/ | ___]  |  |  | | \| |___ |___ 
 
---------------------------------------------------------------------------------
 local dist,far,furthest,neighbors
 function dist(i,row1,row2,    d,n,norm,dist1,lo,hi)
   function norm(x,lo,hi) 
@@ -270,9 +278,12 @@ function furthest( i,r1,rows)
   return last(neighbors(i,r1,rows))[2] end 
 
 function neighbors(i,r1,rows) 
-  return sort(map(rows, function(r2) return {dist(i,r1,r2),r2} end), firsts) end
+  return sort(map(rows, function(r2) return {dist(i,r1,r2),r2} end),firsts) end
+---    ____ _    _  _ ____ ___ ____ ____ 
+---    |    |    |  | [__   |  |___ |__/ 
+---    |___ |___ |__| ___]  |  |___ |  \ 
 
-local half
+local half, cluster, clusters
 function half(i, rows,    project,row,some,east,west,easts,wests,c,mid)
   function project(row,a,b)
     a= dist(i,east,row)
@@ -288,10 +299,8 @@ function half(i, rows,    project,row,some,east,west,easts,wests,c,mid)
     row = xrow[2]
     if n==#rows//2 then mid=row end
     push(n <= #rows//2 and easts or wests, row) end
-  return easts, wests, east, west, mid  end
+  return easts, wests, east, west, mid  end
 
---------------------------------------------------------------------------------
-local cluster,clusters
 function cluster(i,rows,  here,lefts,rights)
   rows = rows or i.all
   here = {all=rows}
@@ -311,8 +320,10 @@ function clusters(i,t,pre)
       print(fmt("%5s %-20s",#t.all, pre)) 
       clusters(i,t.lefts,  "|.. ".. pre)
       clusters(i,t.rights, "|.. ".. pre) end end end
+---    ___  _ ____ ____ ____ ____ ___ _ ___  ____ 
+---    |  \ | [__  |    |__/ |___  |  |   /  |___ 
+---    |__/ | ___] |___ |  \ |___  |  |  /__ |___ 
 
---------------------------------------------------------------------------------
 local sym_spans, num_spans, merge, merged
 function sym_spans(i, j)
   local xys,all,one,last,x,y,n = {}, {}
@@ -343,7 +354,7 @@ function num_spans(i, j)
   all          = merge(all)
   all[1   ].lo = -big
   all[#all].hi =  big
-  return all end
+  return all end
 
 function merge(b4,      j,n,now,a,b,both)
   j, n, now = 0, #b4, {}
@@ -363,7 +374,7 @@ function merged(i,j,    k,ei,ej,ek)
   for x,n in pairs(j.all) do add(k,x,n) end
   ei, ej, ek= div(i), div(j), div(k)
   if i.n==0 or j.n==0 or 1.01*ek <= (i.n*ei + j.n*ej)/(i.n+j.n) then
-    return k end end
+    return k end end
 
 --------------------------------------------------------------------------------
 function Demo.the() oo(the) end
