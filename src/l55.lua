@@ -329,6 +329,7 @@ function clusters(i,t,pre)
 ---    ___  _ ____ ____ ____ ____ ___ _ ___  ____ 
 ---    |  \ | [__  |    |__/ |___  |  |   /  |___ 
 ---    |__/ | ___] |___ |  \ |___  |  |  /__ |___ 
+
 local merge,merged
 function Sym.spans(i, j)
   local xys,all,one,last,x,y,n = {}, {}
