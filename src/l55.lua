@@ -1,3 +1,12 @@
+--------------------------------------------------------------------------------
+---     __         ______    
+---    /\ \       /\  ___\   
+---    \ \ \      \ \ \__/   
+---     \ \ \  __  \ \___``\ 
+---      \ \ \L\ \  \/\ \L\ \
+---       \ \____/   \ \____/
+---        \/___/     \/___/ 
+--------------------------------------------------------------------------------
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local the,help={},[[
 
@@ -31,7 +40,6 @@ local as = setmetatable
 local function obj(   t)
   t={__tostring=o}; t.__index=t
   return as(t, {__call=function(_,...) return t.new(_,...) end}) end
----------------------------------------------------------------------------------
 ---         _         _          
 ---      __| |  __ _ | |_   __ _ 
 ---     / _` | / _` || __| / _` |
@@ -120,9 +128,9 @@ function last(a)       return a[ #a ] end
 function per(a,p)      return a[ (p*#a)//1 ] end
 function any(a)        return a[ math.random(#a) ] end
 function many(a,n,  u) u={}; for j=1,n do push(u,any(a)) end; return u end
----    ___ ____ ___  _    ____ 
----     |  |__| |__] |    |___ 
----     |  |  | |__] |___ |___ 
+---    _    _ ____ ___ 
+---    |    | [__   |  
+---    |___ | ___]  |  
 
 local firsts,sort,map,slots
 function firsts(a,b)  return a[1] < b[1] end
@@ -381,8 +389,13 @@ function merged(i,j,    k,ei,ej,ek)
   ei, ej, ek= div(i), div(j), div(k)
   if i.n==0 or j.n==0 or 1.01*ek <= (i.n*ei + j.n*ej)/(i.n+j.n) then
     return k end end
-
 --------------------------------------------------------------------------------
+---                       _        
+---     _ __ ___    __ _ (_) _ __  
+---    | '_ ` _ \  / _` || || '_ \ 
+---    | | | | | || (_| || || | | |
+---    |_| |_| |_| \__,_||_||_| |_|
+
 function Demo.the() oo(the) end
 
 function Demo.many(a) 
