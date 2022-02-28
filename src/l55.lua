@@ -18,6 +18,12 @@ KEY: S=string, P=poisint, F=float
 ]]
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 --------------------------------------------------------------------------------
+--[[
+Conventions
+- "i" not "self"
+- if something holds soehtimg, make the hodler cald "all"
+-]]
+--------------------------------------------------------------------------------
 local push,fmt
 fmt=string.format
 function push(t,x) table.insert(t,x); return x end
@@ -92,38 +98,35 @@ local function settings(txt,  d)
   if d.help then print(help) end
   return d end
 --------------------------------------------------------------------------------
-local Sym,sym1
+local Sym,Num,nump add
 function Sym(at,s) return {is="Sym", at=at, name=s, n=0,all={},most=0} end
 
-function sym1(i,x,inc)
-  i.all[x] = inc + (i.all[x] or 0)
-  if i.all[x] > i.most then i.most, i.model = i.all[x], x end end
-
---------------------------------------------------------------------------------
-local Num, num1
 function Num(at,s) return {is="Num", at=at, name=s, n=0,mu=0,m2=0,sd=0,
                           hi=-1E31, lo=1E31, w=s:find"-$" and -1 or 1} end
 
-function num1(i,x,inc) 
-  for j=1,inc do
-    d     = x - i.mu
-    i.mu  = i.mu + d/i.n
-    i._m2 = i.m2 + d*(x - i.mu)
-    i.sd  = (i.m2<0 or i.n<2) and 0 or ((i.m2/(i.n-1))^0.5)
-    i.lo  = math.min(x, i.lo)
-    i.hi  = math.max(x, i.hi)  end end
-
---------------------------------------------------------------------------------
-local nump,add
 function nump(col) return col.w end
 
-function add(col,x,inc)
+function add(i,x,inc,     sym,num)
+  inc=inc or 1 
+  function sym()
+    i.all[x] = inc + (i.all[x] or 0)
+    if i.all[x] > i.most then i.most, i.model = i.all[x], x end 
+  end -----------
+  function num()
+    for j=1,inc do
+      d     = x - i.mu
+      i.mu  = i.mu + d/i.n
+      i._m2 = i.m2 + d*(x - i.mu)
+      i.sd  = (i.m2<0 or i.n<2) and 0 or ((i.m2/(i.n-1))^0.5)
+      i.lo  = math.min(x, i.lo)
+      i.hi  = math.max(x, i.hi)  end 
+  end -----------
   if x ~= "?" then
-    col.n = col.n+1
-    (nump(x) and num1 or sym1)(col,n,inc or 1) end
+    i.n = i.n+1
+    (nump(x) and num or sym)() end
   return x end 
---------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
 function Egs(names,   i,col)
   i = {is="egs",all={},names=names,all={},x={},y={}}
   for at,name in pairs(names) do
@@ -134,7 +137,7 @@ function Egs(names,   i,col)
 
 function data(i,row)
   push(i.all,row)
-  for _,c in pairs(i.all) do if row[c.at]~="?" then add(c, row[c.at]) end end 
+  for _,c in pairs(i.all) do add(c, row[c.at]) end 
   return i end
 
 function file2Egs(file, egs)
@@ -190,7 +193,7 @@ function half(i, rows,    project,row,some,east,west,easts,wests,c,mid)
     push(n <= #rows//2 and easts or wests, row) end
   return easts, wests, east, west, mid  end
 
-local mid,div
+local mid,div
 --------------------------------------------------------------------------------
 function Demo.the() oo(the) end
 
