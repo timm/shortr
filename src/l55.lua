@@ -442,6 +442,19 @@ function selects(span,row,    lo,hi,at,x)
   if x=="?" then return true end
   if lo==hi then return x==lo else return lo <= x and x < hi end end
 
+function spanShow(span, negative)
+  if not span then return "" end
+  lo, hi, x, big  = span.lo, span.hi, span.all.name, math.huge
+  if not negative then 
+    if lo ==  hi  then return fmt("%s == %s",x,lo)  end   
+    if hi ==  big then return fmt("%s >= %s",x,lo)  end   
+    if lo == -big then return fmt("%s <  %s",x,hi)  end   
+    return fmt("%s <= %s < %s",lo,x,hi)
+  else
+    if lo ==  hi  then return fmt("%s != %s",x,lo)  end   
+    if hi ==  big then return fmt("%s <= %s",x,lo)  end   
+    if lo == -big then return fmt("%s >  %s",x,lo)  end   
+    return fmt("%s < %s and %x >=  %s", x,lo,x,hi)  end end
 ---    ____ _  _ ___  _    ____ _ _  _ 
 ---    |___  \/  |__] |    |__| | |\ | 
 ---    |___ _/\_ |    |___ |  | | | \| 
@@ -455,24 +468,20 @@ function xplain(i,rows,   here,lefts,rights)
     here.selector = bestSpan(spans(i:clone(lefts0),i:clone(rights0)))
     lefts1,rights1 = {},{}
     if #lefts < #rows then
-      for _,row in pairs(rows) do
-        push(selects(here.selector, row) and lefts1 or rights1,row) end
-      here.lefts = xplain(i,lefts1)
-      here.rights = xplain(icwricwricwri,cwr:WQ
-ilefts1)
-      here.lefts = xplain(i,lefts)
-      here.rights= xplain(i,rights) end end
+      for _,row in pairs(rows) do 
+        push(selects(here.selector, row) and lefts1 or rights1, row) end
+      if #lefts1  > stop then here.lefts  = xplain(i,lefts1) end
+      if #rights1 > stop then here.rights = xplain(i,rights1) end end end
   return here end
 
-function clusters(i,t,pre)
-  pre = pre or ""
+function xplains(i,t,pre,why,    sel)
+  pre, why = pre or "", why or ""
   if t then
-    if not t.lefts and not t.rights then
-      print(fmt("%5s %-20s",#t.all, pre), o(mids(i,t.all)))
-    else 
-      print(fmt("%5s %-20s",#t.all, pre)) 
-      clusters(i,t.lefts,  "|.. ".. pre)
- ---                       _        
+    sel = here.selector
+    print(fmt("%5s %s%s", #t. all,pre,why))
+    xplains(i,t.lefts,  "|..".. pre, spanShow(sel))
+    xplains(i,t.rights, "|..".. pre, spanShow(sel,true)) end end
+---                       _        
 ---     _ __ ___    __ _ (_) _ __  
 ---    | '_ ` _ \  / _` || || '_ \ 
 ---    | | | | | || (_| || || | | |
@@ -510,10 +519,15 @@ function Demo.cluster(   i)
   i = file2Egs(the.file)
   clusters(i,cluster(i)) end
 
-function Demo.spans(    i,j,tmp,easts,wests)
+function Demo.spans(    i,easts,wests)
   i = file2Egs(the.file)
   easts, wests = half(i, i.all) 
   oo(bestSpan(spans(i:clone(easts), i:clone(wests)))) end
+
+function Demo.xplain(    i,j,tmp,easts,wests)
+  i = file2Egs(the.file)
+  explain(i, i.all) end
+
 
 --------------------------------------------------------------------------------
 the = settings(help)
