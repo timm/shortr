@@ -451,9 +451,15 @@ function xplain(i,rows,   here,lefts,rights)
   here = {all=rows}
   stop = (#i.all)^the.leaves 
   if #rows > stop then
-    lefts, rights = half(i, rows)
-    here.on = bestSpan(spans(i:clone(lefts),i:clone(rights)))
+    lefts0, rights0 = half(i, rows)
+    here.selector = bestSpan(spans(i:clone(lefts0),i:clone(rights0)))
+    lefts1,rights1 = {},{}
     if #lefts < #rows then
+      for _,row in pairs(rows) do
+        push(selects(here.selector, row) and lefts1 or rights1,row) end
+      here.lefts = xplain(i,lefts1)
+      here.rights = xplain(icwricwricwri,cwr:WQ
+ilefts1)
       here.lefts = xplain(i,lefts)
       here.rights= xplain(i,rights) end end
   return here end
