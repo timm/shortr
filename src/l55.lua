@@ -81,8 +81,8 @@ function Num:new(at,s) return as({
   m2=0,         -- second moment (updated incrementally)
   sd=0,         -- standard deviation
   all={},       -- a sample of items seen so far
-  lo=1E31,      -- lowest number seen
-  hi=-1E31,     -- highest number seen
+  lo=1E31,      -- lowest number seen; initially, big so 1st num sends it low
+  hi=-1E31,     -- highest number seen;initially, msall to 2st num sends it hi
   w=(s or ""):find"-$" and -1 or 1 -- "-1"= minimize and "1"= maximize
   }, Num) end
 
@@ -111,7 +111,6 @@ function Sym.clone(i) return Sym(i.at, i.name) end
 local data
 function Egs.clone(i,rows,    copy) 
   copy = Egs(i.names)  
-  print("rows",#rows)
   for _,row in pairs(rows or {}) do  data(copy,row)  end
   return copy end
 
@@ -270,6 +269,12 @@ function file2Egs(file,   i)
 ---    [__  |  | |\/| |\/| |__| |__/ |   /  |___ 
 ---    ___] |__| |  | |  | |  | |  \ |  /__ |___ 
 
+local mids
+function mids(i,rows,cols) return i:clone(rows):mid(cols) end
+
+function Egs.mid(i,cols) 
+  return map(cols or i.y,function(col) return col:mid() end) end
+
 function Sym.mid(i) return i.mode end
 function Num.mid(i) return i.mu end
 
@@ -277,17 +282,6 @@ function Num.div(i) return i.sd end
 function Sym.div(i,  e)
   e=0; for _,n in pairs(i.all) do e=e + n/i.n*math.log(n/i.n,2) end
   return -e end
-
-function Egs.mid(i,cols) 
-  print(1)
-  return map(cols or i.y,function(col) print(col.name); return col:mid() end) end
-
-local mids
-function mids(i,rows,cols,    seen,tmp,j)
-  print("size", o(rows))
-  i:clone(rows)
-  print(21)
-  return rnds(i:clone(rows):mid(cols)) end
 ---    ___  _ ____ ___ ____ _  _ ____ ____ 
 ---    |  \ | [__   |  |__| |\ | |    |___ 
 ---    |__/ | ___]  |  |  | | \| |___ |___ 
@@ -326,42 +320,42 @@ function Num.norm(i,x)
 ---    |___ |___ |__| ___]  |  |___ |  \ 
 
 local half, cluster, clusters
-function half(i, rows,    project,row,some,east,west,easts,wests,c,mid)
+function half(i, rows,    project,row,some,left,right,lefts,rights,c,mid)
   function project(row,a,b)
-    a= dist(i,east,row)
-    b= dist(i,west,row)
+    a= dist(i,left,row)
+    b= dist(i,right,row)
     return {(a^2 + c^2 - b^2)/(2*c), row} 
   end ----------------------- 
-  some = many(rows, the.some)
-  east = furthest(i,any(some), some)
-  west = furthest(i,east,         some)
-  c    = dist(i,east,west)
-  easts,wests = {},{}
-  for n, xrow in pairs(sort(map(rows,project),firsts)) do
-    row = xrow[1]
+  some  = many(rows,        the.some)
+  left  = furthest(i,any(some), some)
+  right = furthest(i,left,      some)
+  c     = dist(i,left,right)
+  lefts,rights = {},{}
+  for n, projection in pairs(sort(map(rows,project),firsts)) do
     if n==#rows//2 then mid=row end
-    push(n <= #rows//2 and easts or wests, row) end
-  return easts, wests east, west, mid  end
+    push(n <= #rows//2 and lefts or rights, projection[2]) end
+  return lefts, rights, left, right, mid, c  end
 
 function cluster(i,rows,  here,lefts,rights)
   rows = rows or i.all
   here = {all=rows}
-  if #rows > 2*(#i.all)^the.leaves then
-    lefts, rights = half(i, rows)
+  if #rows >= 2* (#i.all)^the.leaves then
+    lefts, rights, here.left, here.right, here.mid = half(i, rows)
     if #lefts < #rows then
       here.lefts = cluster(i,lefts)
       here.rights= cluster(i,rights) end end
   return here end
 
-function clusters(i,t,pre)
-  pre = pre or ""
+function clusters(i,format,t,pre,   front)
   if t then
+    pre=pre or ""
+    front = fmt("%s%s",pre,#t.all)
     if not t.lefts and not t.rights then
-      print(fmt("%5s %-20s",#t.all, pre), o(mids(i,t.all)))
+      print(fmt("%-20s%s",front, o(rnds(mids(i,t.all),format))))
     else 
-      print(fmt("%5s %-20s",#t.all, pre)) 
-      clusters(i,t.lefts,  "|.. ".. pre)
-      clusters(i,t.rights, "|.. ".. pre) end end end
+      print(front)
+      clusters(i,format,t.lefts, "| ".. pre)
+      clusters(i,format,t.rights,"| ".. pre) end end end
 ---    ___  _ ____ ____ ____ ____ ___ _ ___  ____ 
 ---    |  \ | [__  |    |__/ |___  |  |   /  |___ 
 ---    |__/ | ___] |___ |  \ |___  |  |  /__ |___ 
@@ -369,8 +363,8 @@ function clusters(i,t,pre)
 local merge,merged,spans,bestSpan
 function Sym.spans(i, j)
   local xys,all,one,last,x,y,n = {}, {}
-  for x,n in pairs(i.all) do push(xys, {x,"easts",n}) end
-  for x,n in pairs(j.all) do push(xys, {x,"wests",n}) end
+  for x,n in pairs(i.all) do push(xys, {x,"lefts",n}) end
+  for x,n in pairs(j.all) do push(xys, {x,"rights",n}) end
   for _,tmp in ipairs(sort(xys,firsts)) do
     x,y,n = unpack(tmp)
     if x ~= last then
@@ -383,8 +377,8 @@ function Num.spans(i, j)
   local xys,all,lo,hi,gap,one,x,y,n = {},{}
   lo,hi = math.min(i.lo, j.lo), math.max(i.hi,j.hi)
   gap   = (hi - lo) / (6/the.cohen)
-  for _,n in pairs(i.all) do push(xys, {n,"easts",1}) end
-  for _,n in pairs(j.all) do push(xys, {n,"wests",1}) end
+  for _,n in pairs(i.all) do push(xys, {n,"lefts",1}) end
+  for _,n in pairs(j.all) do push(xys, {n,"rights",1}) end
   one = {lo=lo, hi=lo, all=Sym(i.at,i.name)}
   all = {one}
   for _,tmp in ipairs(sort(xys,firsts)) do
@@ -443,31 +437,37 @@ function bestSpan(spans)
 ---    |___ _/\_ |    |___ |  | | | \| 
 
 local xplain,xplains,selects,spanShow
-function xplain(i,rows,   here,lefts,rights)
+function xplain(i,rows,used,   
+                 stop,here,left,right,lefts0,rights0,lefts1,rights1)
+  used=used or {}
   rows = rows or i.all
   here = {all=rows}
   stop = (#i.all)^the.leaves 
-  if #rows > stop then
-    lefts0, rights0 = half(i, rows)
-    i:clone(lefts0)
-    i:clone(rights0)
-    print("----------------------------")
-    here.selector = bestSpan(spans(i:clone(lefts0),i:clone(rights0)))
-    lefts1,rights1 = {},{}
-    if #lefts < #rows then
+  if #rows >= 2*stop then
+    lefts0, rights0, here.left, here.right, here.mid, here.c  = half(i, rows)
+    if #lefts0 < #rows then
+      here.selector = bestSpan(spans(i:clone(lefts0),i:clone(rights0)))
+      push(used, {here.selector.all.name, here.selector.lo, here.selector.hi})
+      lefts1,rights1 = {},{}
       for _,row in pairs(rows) do 
         push(selects(here.selector, row) and lefts1 or rights1, row) end
-      if #lefts1  > stop then here.lefts  = xplain(i,lefts1) end
-      if #rights1 > stop then here.rights = xplain(i,rights1) end end end
+      if #lefts1  > stop then here.lefts  = xplain(i,lefts1,used) end
+      if #rights1 > stop then here.rights = xplain(i,rights1,used) end end end
   return here end
 
-function xplains(i,t,pre,why,    sel)
-  pre, why = pre or "", why or ""
+function xplains(i,format,t,pre,how,    sel,front)
+  pre, how = pre or "", how or ""
   if t then
-    sel = here.selector
-    print(fmt("%5s %s%s", #t. all,pre,why))
-    xplains(i,t.lefts,  "|..".. pre, spanShow(sel))
-    xplains(i,t.rights, "|..".. pre, spanShow(sel,true)) end end
+    pre=pre or ""
+    front = fmt("%s%s%s %s",pre,how, #t.all, t.c and rnd(t.c) or "")
+    if t.lefts and t.rights then
+      print(fmt("%-35s",front))
+    else
+      print(fmt("%-35s %s",front, o(rnds(mids(i,t.all),format))))
+    end
+    sel = t.selector
+    xplains(i,format,t.lefts,  "| ".. pre, spanShow(sel).." : ")
+    xplains(i,format,t.rights, "| ".. pre, spanShow(sel,true) .." : ") end end
 
 function selects(span,row,    lo,hi,at,x)
   lo, hi, at = span.lo, span.hi, span.all.at
@@ -475,7 +475,7 @@ function selects(span,row,    lo,hi,at,x)
   if x=="?" then return true end
   if lo==hi then return x==lo else return lo <= x and x < hi end end
 
-function spanShow(span, negative)
+function spanShow(span, negative,   hi,lo,x,big)
   if not span then return "" end
   lo, hi, x, big  = span.lo, span.hi, span.all.name, math.huge
   if not negative then 
@@ -485,9 +485,9 @@ function spanShow(span, negative)
     return fmt("%s <= %s < %s",lo,x,hi)
   else
     if lo ==  hi  then return fmt("%s != %s",x,lo)  end   
-    if hi ==  big then return fmt("%s <= %s",x,lo)  end   
-    if lo == -big then return fmt("%s >  %s",x,lo)  end   
-    return fmt("%s < %s and %x >=  %s", x,lo,x,hi)  end end
+    if hi ==  big then return fmt("%s <  %s",x,lo)  end   
+    if lo == -big then return fmt("%s >= %s",x,hi)  end   
+    return fmt("%s < %s and %s >=  %s", x,lo,x,hi)  end end
 ---                       _        
 ---     _ __ ___    __ _ (_) _ __  
 ---    | '_ ` _ \  / _` || || '_ \ 
@@ -516,25 +516,30 @@ function Demo.far(  i,j,row1,row2,row3,d3,d9)
     d3   = dist(i,row1,row3)
     ok(d3 < d9, "closer far") end end 
 
-function Demo.half(  i,easts,wests)
+function Demo.half(  i,lefts,rights)
   i = file2Egs(the.file)
-  easts,wests = half(i, i.all) 
-  oo(mids(i, easts))
-  -- oo(mids(i, wests)) 
+  lefts,rights = half(i, i.all) 
+  oo(mids(i, lefts))
+  oo(mids(i, rights)) 
   end
 
 function Demo.cluster(   i)
   i = file2Egs(the.file)
-  clusters(i,cluster(i)) end
+  clusters(i,"%.0f",cluster(i)) end
 
-function Demo.spans(    i,easts,wests)
+function Demo.spans(    i,lefts,rights)
   i = file2Egs(the.file)
-  easts, wests = half(i, i.all) 
-  oo(bestSpan(spans(i:clone(easts), i:clone(wests)))) end
+  lefts, rights = half(i, i.all) 
+  oo(bestSpan(spans(i:clone(lefts), i:clone(rights)))) end
 
-function Demo.xplain(    i,j,tmp,easts,wests)
+function Demo.xplain(    i,j,tmp,lefts,rights,used)
   i = file2Egs(the.file)
-  xplain(i, i.all) end
+  used={}
+  xplains(i,"%.0f",xplain(i, i.all,used)) 
+  map(sort(used,function(a,b)
+        return ((a[1] < b[1]) or 
+                (a[1]==b[1] and a[2] < b[2]) or
+                (a[1]==b[1] and a[2]==b[2] and a[3] < b[3]))end),oo) end
 
 
 --------------------------------------------------------------------------------
