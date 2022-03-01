@@ -1,30 +1,27 @@
 --------------------------------------------------------------------------------
----     __         ______                              ,:
----    /\ \       /\  ___\                           ,' |
----    \ \ \      \ \ \__/                          /   :
----     \ \ \  __  \ \___``\                     --'   /
----      \ \ \L\ \  \/\ \L\ \                    \/ />/
----       \ \____/   \ \____/                    / /_\
----        \/___/     \/___/                  __/   /
----                                           )'-. /
----    a little LUA learning library          ./  :\
----    (c) Tim Menzies 2022, BSD-2             /.' '
----    Share and enjoy.                      '/'
----    http://menzies.us/l5                  +
----                                         '
----                                       `.
----                                   .-"-
----                                  (    |
----                               . .-'  '.
----                              ( (.   )8:
----                          .'    / (_  )
----                           _. :(.   )8P  `
----                       .  (  `-' (  `.   .
----                        .  :  (   .a8a)
----                       /_`( "a `a. )"'
----                   (  (/  .  ' )=='
----                  (   (    )  .8"   +
-
+---   __         ______                                                   ___
+---  /\ \       /\  ___\                                               ,o88888
+---  \ \ \      \ \ \__/                                            ,o8888888'
+---   \ \ \  __  \ \___``\                    ,:o:o:oooo.        ,8O88Pd8888"
+---    \ \ \L\ \  \/\ \L\ \               ,.::.::o:ooooOoOoO. ,oO8O8Pd888'"
+---     \ \____/   \ \____/             ,.:.::o:ooOoOoOO8O8OOo.8OOPd8O8O"
+---      \/___/     \/___/             , ..:.::o:ooOoOOOO8OOOOo.FdO8O8"
+---                                    , ..:.::o:ooOoOO8O888O8O,COCOO"
+---  L5=a little LUA learning library  , . ..:.::o:ooOoOOOO8OOOOCOCO"
+---  (c) Tim Menzies 2022, BSD-2       . ..:.::o:ooOoOoOO8O8OCCCC"o
+---  Share and enjoy.                   . ..:.::o:ooooOoCoCCC"o:o
+---  https://menzies.us/l5             . ..:.::o:o:,cooooCo"oo:o:
+---                                 `   . . ..:.:cocoooo"'o:o:::'
+---                                 .`   . ..::ccccoc"'o:o:o:::'
+---                                :.:.    ,c:cccc"':.:.:.:.:.'
+---                              ..:.:"'`::::c:"'..:.:.:.:.:.'
+---                            ...:.'.:.::::"'    . . . . .'
+---                           .. . ....:."' `   .  . . ''
+---                          . . . ...."'
+---                          .. . ."'     -hrr-
+---                         .
+---   
+--- 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local the,help={},[[
 
@@ -137,6 +134,7 @@ function Egs.clone(i, rows,    copy)
 --------------------------------------------------------------------------------
 local r   = math.random
 local fmt = string.format
+local unpack = table.unpack
 local function push(t,x) table.insert(t,x); return x end
 ---    ____ ____ ____ ____ ____ ____ 
 ---    |    |  | |___ |__/ |    |___ 
@@ -236,14 +234,14 @@ function add(i,x, inc)
   inc = inc or 1
   if x ~= "?" then
     i.n = i.n + inc
-    i:add1(x,inc) end
+    i:internalAdd(x,inc) end
   return x end
 
-function Sym.add1(i,x,inc)
+function Sym.internalAdd(i,x,inc)
   i.all[x] = inc + (i.all[x] or 0)
   if i.all[x] > i.most then i.most, i.mode = i.all[x], x end end
 
-function Num.add1(i,x,inc,    d)
+function Num.internalAdd(i,x,inc,    d)
   for j=1,inc do
     d     = x - i.mu
     i.mu  = i.mu + d/i.n
@@ -337,7 +335,7 @@ function half(i, rows,    project,row,some,east,west,easts,wests,c,mid)
   c    = dist(i,east,west)
   easts,wests = {},{}
   for n, xrow in pairs(sort(map(rows,project),firsts)) do
-    row = xrow[2]
+    row = xrow[1]
     if n==#rows//2 then mid=row end
     push(n <= #rows//2 and easts or wests, row) end
   return easts, wests, east, west, mid  end
@@ -360,24 +358,24 @@ function clusters(i,t,pre)
     else 
       print(fmt("%5s %-20s",#t.all, pre)) 
       clusters(i,t.lefts,  "|.. ".. pre)
-      clusters(i,t.rights, "|.. ".. pre) end end end
+      clusters(i,t.rights, "|.. ".. pre) end end end
 ---    ___  _ ____ ____ ____ ____ ___ _ ___  ____ 
 ---    |  \ | [__  |    |__/ |___  |  |   /  |___ 
 ---    |__/ | ___] |___ |  \ |___  |  |  /__ |___ 
 
+local merge,merged,spans,bestSpan
 function Sym.spans(i, j)
   local xys,all,one,last,x,y,n = {}, {}
   for x,n in pairs(i.all) do push(xys, {x,"easts",n}) end
   for x,n in pairs(j.all) do push(xys, {x,"wests",n}) end
   for _,tmp in ipairs(sort(xys,firsts)) do
-    x,y,n = table.unpack(tmp)
+    x,y,n = unpack(tmp)
     if x ~= last then
       last = x
-      one  = push(all, {lo=x, hi=x, all=i:clone()}) end
+      one  = push(all, {lo=x, hi=x, all=Sym(i.at,i.name)}) end
     add(one.all, y, n) end
   return all end
 
-local merge,merged
 function Num.spans(i, j)
   local xys,all,lo,hi,gap,one,x,y,n = {},{}
   lo,hi = math.min(i.lo, j.lo), math.max(i.hi,j.hi)
@@ -387,7 +385,7 @@ function Num.spans(i, j)
   one = {lo=lo, hi=lo, all=Sym(i.at,i.name)}
   all = {one}
   for _,tmp in ipairs(sort(xys,firsts)) do
-    x,y,n = table.unpack(tmp) 
+    x,y,n = unpack(tmp) 
     if   one.hi - one.lo > gap then
       one = push(all, {lo=one.hi, hi=x, all=one.all:clone()}) 
     end
@@ -403,26 +401,72 @@ function merge(b4,      j,n,now,a,b,both)
   while j < #b4 do
     j    = j+1
     a, b = b4[j], b4[j+1]
-    if b then
-      print("b",o(b.all))
+    if   b then
       both = a.all:merge(b.all)
-      print("both",o(both))
-      if both then a, j = {lo=a.lo, hi=b.hi, all=both}, j+1 end end
-    push(now,a)
-    j = j+1 end
+      if both then 
+       a = {lo=a.lo, hi=b.hi, all=both} 
+       j = j + 1 end end
+    push(now,a) end
   return #now == #b4 and b4 or merge(now) end
 
-function Sym:merge(i,j,    k,ei,ej,ek)
-  print("i", o(i))
-  print("j",o(j))
-  k = self:clone()
-  for x,n in pairs(i.all) do print(x,n); add(k,x,n) end
+function Sym.merge(i,j,    k,ei,ej,ek)
+  k = i:clone()
+  for x,n in pairs(i.all) do add(k,x,n) end
   for x,n in pairs(j.all) do add(k,x,n) end
-  ei, ej, ek= div(i), div(j), div(k)
-  if i.n==0 or j.n==0 or 1.01*ek <= (i.n*ei + j.n*ej)/(i.n+j.n) then
-    return k end end
---------------------------------------------------------------------------------
----                       _        
+  ei, ej, ek= i:div(), j:div(), k:div()
+  if    ek*.99 <= (i.n*ei + j.n*ej)/k.n then
+    return k end end
+
+function spans(egs1,egs2,      spans,tmp,col1,col2)
+  spans = {}
+  for c,col1 in pairs(egs1.x) do
+    col2 = egs2.x[c]
+    tmp = col1:spans(col2)
+    if #tmp> 1 then
+      for _,one in pairs(tmp) do push(spans,one) end end end
+  return spans end
+
+function bestSpan(spans)  
+  local divs,ns,n,div,stats,dist2heaven = Num(), Num()
+  function dist2heaven(s) return {((1 - n(s))^2 + (0 - div(s))^2)^.5,s} end 
+  function div(s)         return divs:norm( s.all:div() ) end
+  function n(s)           return   ns:norm( s.all.n     ) end
+  for _,s in pairs(spans) do 
+    add(divs, s.all:div())
+    add(ns,   s.all.n) end
+  return sort(map(spans, dist2heaven), firsts)[1][2]  end 
+
+function selects(span,row,    lo,hi,at,x)
+  lo, hi, at = span.lo, span.hi, span.all.at
+  x = row[at]
+  if x=="?" then return true end
+  if lo==hi then return x==lo else return lo <= x and x < hi end end
+
+---    ____ _  _ ___  _    ____ _ _  _ 
+---    |___  \/  |__] |    |__| | |\ | 
+---    |___ _/\_ |    |___ |  | | | \| 
+
+function xplain(i,rows,   here,lefts,rights)
+  rows = rows or i.all
+  here = {all=rows}
+  stop = (#i.all)^the.leaves 
+  if #rows > stop then
+    lefts, rights = half(i, rows)
+    here.on = bestSpan(spans(i:clone(lefts),i:clone(rights)))
+    if #lefts < #rows then
+      here.lefts = xplain(i,lefts)
+      here.rights= xplain(i,rights) end end
+  return here end
+
+function clusters(i,t,pre)
+  pre = pre or ""
+  if t then
+    if not t.lefts and not t.rights then
+      print(fmt("%5s %-20s",#t.all, pre), o(mids(i,t.all)))
+    else 
+      print(fmt("%5s %-20s",#t.all, pre)) 
+      clusters(i,t.lefts,  "|.. ".. pre)
+ ---                       _        
 ---     _ __ ___    __ _ (_) _ __  
 ---    | '_ ` _ \  / _` || || '_ \ 
 ---    | | | | | || (_| || || | | |
@@ -460,14 +504,10 @@ function Demo.cluster(   i)
   i = file2Egs(the.file)
   clusters(i,cluster(i)) end
 
-function Demo.spans(    i,j,easts,wests)
+function Demo.spans(    i,j,tmp,easts,wests)
   i = file2Egs(the.file)
-  easts,wests = half(i, i.all) 
-  easts,wests = i:clone(easts), i:clone(wests)
-  for _,j in pairs{4,1,2} do
-    print(fmt("\n%s",j))
-    for n,span in pairs(easts.x[j]:spans(wests.x[j])) do 
-      print(n,o(span)) end end end
+  easts, wests = half(i, i.all) 
+  oo(bestSpan(spans(i:clone(easts), i:clone(wests)))) end
 
 --------------------------------------------------------------------------------
 the = settings(help)
