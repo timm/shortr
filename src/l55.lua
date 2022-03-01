@@ -109,7 +109,7 @@ function Num.clone(i) return Num(i.at, i.name) end
 function Sym.clone(i) return Sym(i.at, i.name) end
 
 local data
-function Egs.clone(i, rows,    copy) 
+function Egs.clone(i,rows,    copy) 
   copy = Egs(i.names)  
   for _,row in pairs(rows or {}) do data(copy,row)  end
   return copy end
@@ -278,13 +278,11 @@ function Sym.div(i,  e)
   return -e end
 
 function Egs.mid(i,cols) 
-  return map(cols or i.y,function(col) return col:mid() end) end
+  return map(cols or i.y,function(col) print(col.name); return col:mid() end) end
 
 local mids
 function mids(i,rows,cols,    seen,tmp,j)
-  j = i:clone()
-  for _,row in pairs(rows) do data(j, row) end
-  return rnds(j:mid(cols)) end
+  return rnds(i:clone(rows):mid(cols)) end
 ---    ___  _ ____ ___ ____ _  _ ____ ____ 
 ---    |  \ | [__   |  |__| |\ | |    |___ 
 ---    |__/ | ___]  |  |  | | \| |___ |___ 
@@ -434,7 +432,37 @@ function bestSpan(spans)
   for _,s in pairs(spans) do 
     add(divs, s.all:div())
     add(ns,   s.all.n) end
-  return sort(map(spans, dist2heaven), firsts)[1][2]  end 
+  return sort(map(spans, dist2heaven), firsts)[1][2]  end 
+---    ____ _  _ ___  _    ____ _ _  _ 
+---    |___  \/  |__] |    |__| | |\ | 
+---    |___ _/\_ |    |___ |  | | | \| 
+
+local xplain,xplains,selects,spanShow
+function xplain(i,rows,   here,lefts,rights)
+  rows = rows or i.all
+  here = {all=rows}
+  stop = (#i.all)^the.leaves 
+  if #rows > stop then
+    lefts0, rights0 = half(i, rows)
+    i:clone(lefts0)
+    i:clone(rights0)
+    print("----------------------------")
+    here.selector = bestSpan(spans(i:clone(lefts0),i:clone(rights0)))
+    lefts1,rights1 = {},{}
+    if #lefts < #rows then
+      for _,row in pairs(rows) do 
+        push(selects(here.selector, row) and lefts1 or rights1, row) end
+      if #lefts1  > stop then here.lefts  = xplain(i,lefts1) end
+      if #rights1 > stop then here.rights = xplain(i,rights1) end end end
+  return here end
+
+function xplains(i,t,pre,why,    sel)
+  pre, why = pre or "", why or ""
+  if t then
+    sel = here.selector
+    print(fmt("%5s %s%s", #t. all,pre,why))
+    xplains(i,t.lefts,  "|..".. pre, spanShow(sel))
+    xplains(i,t.rights, "|..".. pre, spanShow(sel,true)) end end
 
 function selects(span,row,    lo,hi,at,x)
   lo, hi, at = span.lo, span.hi, span.all.at
@@ -455,32 +483,6 @@ function spanShow(span, negative)
     if hi ==  big then return fmt("%s <= %s",x,lo)  end   
     if lo == -big then return fmt("%s >  %s",x,lo)  end   
     return fmt("%s < %s and %x >=  %s", x,lo,x,hi)  end end
----    ____ _  _ ___  _    ____ _ _  _ 
----    |___  \/  |__] |    |__| | |\ | 
----    |___ _/\_ |    |___ |  | | | \| 
-
-function xplain(i,rows,   here,lefts,rights)
-  rows = rows or i.all
-  here = {all=rows}
-  stop = (#i.all)^the.leaves 
-  if #rows > stop then
-    lefts0, rights0 = half(i, rows)
-    here.selector = bestSpan(spans(i:clone(lefts0),i:clone(rights0)))
-    lefts1,rights1 = {},{}
-    if #lefts < #rows then
-      for _,row in pairs(rows) do 
-        push(selects(here.selector, row) and lefts1 or rights1, row) end
-      if #lefts1  > stop then here.lefts  = xplain(i,lefts1) end
-      if #rights1 > stop then here.rights = xplain(i,rights1) end end end
-  return here end
-
-function xplains(i,t,pre,why,    sel)
-  pre, why = pre or "", why or ""
-  if t then
-    sel = here.selector
-    print(fmt("%5s %s%s", #t. all,pre,why))
-    xplains(i,t.lefts,  "|..".. pre, spanShow(sel))
-    xplains(i,t.rights, "|..".. pre, spanShow(sel,true)) end end
 ---                       _        
 ---     _ __ ___    __ _ (_) _ __  
 ---    | '_ ` _ \  / _` || || '_ \ 
@@ -512,8 +514,9 @@ function Demo.far(  i,j,row1,row2,row3,d3,d9)
 function Demo.half(  i,easts,wests)
   i = file2Egs(the.file)
   easts,wests = half(i, i.all) 
-  oo(mids(i.y, easts))
-  oo(mids(i.y, wests)) end
+  oo(mids(i, easts))
+  oo(mids(i, wests)) 
+  end
 
 function Demo.cluster(   i)
   i = file2Egs(the.file)
@@ -526,7 +529,7 @@ function Demo.spans(    i,easts,wests)
 
 function Demo.xplain(    i,j,tmp,easts,wests)
   i = file2Egs(the.file)
-  explain(i, i.all) end
+  xplain(i, i.all) end
 
 
 --------------------------------------------------------------------------------
