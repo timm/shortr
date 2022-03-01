@@ -111,7 +111,8 @@ function Sym.clone(i) return Sym(i.at, i.name) end
 local data
 function Egs.clone(i,rows,    copy) 
   copy = Egs(i.names)  
-  for _,row in pairs(rows or {}) do data(copy,row)  end
+  print("rows",#rows)
+  for _,row in pairs(rows or {}) do  data(copy,row)  end
   return copy end
 
 --[[
@@ -278,10 +279,14 @@ function Sym.div(i,  e)
   return -e end
 
 function Egs.mid(i,cols) 
+  print(1)
   return map(cols or i.y,function(col) print(col.name); return col:mid() end) end
 
 local mids
 function mids(i,rows,cols,    seen,tmp,j)
+  print("size", o(rows))
+  i:clone(rows)
+  print(21)
   return rnds(i:clone(rows):mid(cols)) end
 ---    ___  _ ____ ___ ____ _  _ ____ ____ 
 ---    |  \ | [__   |  |__| |\ | |    |___ 
@@ -336,7 +341,7 @@ function half(i, rows,    project,row,some,east,west,easts,wests,c,mid)
     row = xrow[1]
     if n==#rows//2 then mid=row end
     push(n <= #rows//2 and easts or wests, row) end
-  return easts, wests, east, west, mid  end
+  return easts, wests east, west, mid  end
 
 function cluster(i,rows,  here,lefts,rights)
   rows = rows or i.all
@@ -515,7 +520,7 @@ function Demo.half(  i,easts,wests)
   i = file2Egs(the.file)
   easts,wests = half(i, i.all) 
   oo(mids(i, easts))
-  oo(mids(i, wests)) 
+  -- oo(mids(i, wests)) 
   end
 
 function Demo.cluster(   i)
