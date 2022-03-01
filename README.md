@@ -121,6 +121,20 @@ a handful of examples (maybe even just one)  from each cluster.
 - Optimization
 - Bias, Fairness mitigation
 
+- classification = Egs + likelihood
+- anomaly detection = clustering + outliers
+   - runtime monitoring = anomaly detection
+- semi-supervised earning (ssl) = clustering + sampling
+- privacy = semi-supervised + mutation
+- optimization = ssl + domination
+   - hyper parameter optimization = optimization
+- Explanation = clustering + discretization
+   - visualization = explanation
+   - contrast = explanation + pruning
+   - planning =  contrast
+   - monitoring = planning (with reversed weights)
+   - bias mitigation = hyper parameter optimization
+
 **ASSiGNMENTS**
 
 - **Instance selection**: filter the data down to just a few samples per
