@@ -4,6 +4,9 @@
 
 #  Do you understand AI?
 
+ <i class="fa fa-cog"></i>
+
+
 How well do  you understand AI? 
 Do you want to understand it better?  Want to practice that skill, a little more?
 
@@ -87,7 +90,7 @@ The need for baselines. XXXX
 
 Standard supervised learners assume that all examples have labels.
 When this is not true, then we need tools to incrementally 
-(a) summarize what has been seen so far; (b) find and focus
+([a](a)) summarize what has been seen so far; (b) find and focus
 on the most interesting part of that summary, (c) collect
 more data in that region, then (d) repeat.
          

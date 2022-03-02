@@ -28,9 +28,8 @@ local the,help={},[[
 
 lua l5.lua [OPTIONS]
 L5 == a very little LUA learning lab
-(c)2022, Tim Menzies, BSD 2-clause license
 
-OPTIONS (inference):                        | DEFAULT
+OPTIONS (inference):                        | DEFAULT  
   -boot   -b P  #bootstrap samples          | 256
   -cohen  -c F  cohen's small effect size   | .35
   -cliffs -C F  threshold on Cliff's delta  | .147
