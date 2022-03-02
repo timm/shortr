@@ -37,82 +37,78 @@ lua l5.lua [OPTIONS]
 L5 == a very little LUA learning lab
 (c)2022, Tim Menzies, BSD 2-clause license
 
-OPTIONS (for changing the inference):
+OPTIONS (inference):
+  -cohen  -c F  cohen&#x27;s small effect size  = .35
+  -far    -F F  look no further than &quot;far&quot; = .9
+  -keep   -k    items to keep in a number  = 512 
+  -leaves -l    leaf size                  = .5 
+  -p      -p P  distance calcs coefficient = 2
+  -seed   -S P  random number seed         = 10019
+  -some   -s    look only at &quot;some&quot; items  = 512
 
-  -cohen  -c  F  cohen&#x27;s small effect size      = .35
-  -far    -F  F  look no further than &quot;far&quot;     = .9
-  -keep   -k     items to keep in a number      = 512 
-  -leaves -l     leaf size                      = .5 
-  -p      -p  P  distance calcs coefficient     = 2
-  -seed   -S  P  random number seed             = 10019
-  -some   -s     look only at &quot;some&quot; items      = 512
+OPTIONS (housekeeping):
+  -dump   -d    on error, exit+ stacktrace = false
+  -file   -f S  where to get data          = ../etc/data/auto93.csv
+  -help   -h    show help                  = false
+  -rnd    -r S  format string              = %5.2f
+  -todo   -t S  start-up action            = nothing
+local as = setmetatable
+local function obj(   t)
+  t={__tostring=o}; t.__index=t
+  return as(t, {__call=function(_,...) return t.new(_,...) end}) end
 
-OPTIONS (for housekeeping):
+local Sym = obj() -- Where to summarize symbols
+function Sym:new(at,s) return as({
+  is=&quot;Sym&quot;,     -- type
+  at=at or 0,   -- column index
+  name=s or &quot;&quot;, -- column name
+  n=0,          -- number of items summarized in this column
+  all={},       -- all[x] = n means we&#x27;ve seen &quot;n&quot; repeats of &quot;x&quot; 
+   most=0,      -- count of the most frequently seen symbol
+   mode=nil     -- the most commonly seen letter
+  }, Sym) end
 
-  -dump   -d     exit on error, with stacktrace = false
-  -file   -f  S  where to get data              = ../etc/data/auto93.csv
-  -help   -h     show help                      = false
-  -rnd    -r  S  format string                  = %5.2f
-  -todo   -t  S  start-up action                = nothing
+local Num = obj() -- Where to summarize numbers
+function Num:new(at,s) return as({
+  is=&quot;Num&quot;,     -- type
+  at=at or 0,   -- column index
+  name=s or &quot;&quot;, -- column name
+  n=0,          -- number of items summarizes in this column
+  mu=0,         -- mean (updated incrementally)
+  m2=0,         -- second moment (updated incrementally)
+  sd=0,         -- standard deviation
+  all={},       -- a sample of items seen so far
+  lo=1E31,      -- lowest number seen; initially, big so 1st num sends it low
+  hi=-1E31,     -- highest number seen;initially, msall to 2st num sends it hi
+  w=(s or &quot;&quot;):find&quot;-$&quot; and -1 or 1 -- &quot;-1&quot;= minimize and &quot;1&quot;= maximize
+  }, Num) end
 
-
-KEY: S=string, P=poisint, F=float
-]]</span>
-<span class="hljs-keyword">local</span> as,o = <span class="hljs-built_in">setmetatable</span>
-<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">obj</span><span class="hljs-params">(   t)</span></span>
-  t={<span class="hljs-built_in">__tostring</span>=o}; t.<span class="hljs-built_in">__index</span>=t
-  <span class="hljs-keyword">return</span> as(t, {<span class="hljs-built_in">__call</span>=<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(_,...)</span></span> <span class="hljs-keyword">return</span> t.new(_,...) <span class="hljs-keyword">end</span>}) <span class="hljs-keyword">end</span>
-
-<span class="hljs-keyword">local</span> Sym = obj() <span class="hljs-comment">-- Where to summarize symbols</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym:new</span><span class="hljs-params">(at,s)</span></span> <span class="hljs-keyword">return</span> as({
-  is=<span class="hljs-string">&quot;Sym&quot;</span>,     <span class="hljs-comment">-- type</span>
-  at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>,   <span class="hljs-comment">-- column index</span>
-  name=s <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">-- column name</span>
-  n=<span class="hljs-number">0</span>,          <span class="hljs-comment">-- number of items summarized in this column</span>
-  all={},       <span class="hljs-comment">-- all[x] = n means we&#x27;ve seen &quot;n&quot; repeats of &quot;x&quot; </span>
-   most=<span class="hljs-number">0</span>,      <span class="hljs-comment">-- count of the most frequently seen symbol</span>
-   mode=<span class="hljs-literal">nil</span>     <span class="hljs-comment">-- the most commonly seen letter</span>
-  }, Sym) <span class="hljs-keyword">end</span>
-
-<span class="hljs-keyword">local</span> Num = obj() <span class="hljs-comment">-- Where to summarize numbers</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num:new</span><span class="hljs-params">(at,s)</span></span> <span class="hljs-keyword">return</span> as({
-  is=<span class="hljs-string">&quot;Num&quot;</span>,     <span class="hljs-comment">-- type</span>
-  at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>,   <span class="hljs-comment">-- column index</span>
-  name=s <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">-- column name</span>
-  n=<span class="hljs-number">0</span>,          <span class="hljs-comment">-- number of items summarizes in this column</span>
-  mu=<span class="hljs-number">0</span>,         <span class="hljs-comment">-- mean (updated incrementally)</span>
-  m2=<span class="hljs-number">0</span>,         <span class="hljs-comment">-- second moment (updated incrementally)</span>
-  sd=<span class="hljs-number">0</span>,         <span class="hljs-comment">-- standard deviation</span>
-  all={},       <span class="hljs-comment">-- a sample of items seen so far</span>
-  lo=<span class="hljs-number">1E31</span>,      <span class="hljs-comment">-- lowest number seen; initially, big so 1st num sends it low</span>
-  hi=<span class="hljs-number">-1E31</span>,     <span class="hljs-comment">-- highest number seen;initially, msall to 2st num sends it hi</span>
-  w=(s <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>):<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-comment">-- &quot;-1&quot;= minimize and &quot;1&quot;= maximize</span>
-  }, Num) <span class="hljs-keyword">end</span>
-
-<span class="hljs-keyword">local</span> Egs = obj() <span class="hljs-comment">-- Where to store examples, summarized into Syms or Nums</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs:new</span><span class="hljs-params">(names,     i,col,here)</span></span>  i=as({
-  is=<span class="hljs-string">&quot;Egs&quot;</span>,     <span class="hljs-comment">-- type</span>
-  all={},       <span class="hljs-comment">-- all the rows</span>
-  names=names,  <span class="hljs-comment">-- list of name </span>
-  cols={},      <span class="hljs-comment">-- list of all columns  (Nums or Syms)</span>
-  x={},         <span class="hljs-comment">-- independent columns (nothing marked as &quot;skip&quot;)</span>
-  y={}          <span class="hljs-comment">-- dependent columns (nothing marked as &quot;skip&quot;)</span>
+local Egs = obj() -- Where to store examples, summarized into Syms or Nums
+function Egs:new(names,     i,col,here)  i=as({
+  is=&quot;Egs&quot;,     -- type
+  all={},       -- all the rows
+  names=names,  -- list of name 
+  cols={},      -- list of all columns  (Nums or Syms)
+  x={},         -- independent columns (nothing marked as &quot;skip&quot;)
+  y={}          -- dependent columns (nothing marked as &quot;skip&quot;)
   },Egs)
-  <span class="hljs-keyword">for</span> at,name <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(names) <span class="hljs-keyword">do</span>
-    col = (name:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">and</span> Num <span class="hljs-keyword">or</span> Sym)(at,name)
-    i.cols[<span class="hljs-number">1</span>+#i.cols] = col
-    here = name:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;[-+]$&quot;</span> <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x
-    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> name:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">then</span> here[<span class="hljs-number">1</span> + #here] = col <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>  
+  for at,name in pairs(names) do
+    col = (name:find&quot;^[A-Z]&quot; and Num or Sym)(at,name)
+    i.cols[1+#i.cols] = col
+    here = name:find&quot;[-+]$&quot; and i.y or i.x
+    if not name:find&quot;:$&quot; then here[1 + #here] = col end end
+  return i end  
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.clone</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> Num(i.at, i.name) <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.clone</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> Sym(i.at, i.name) <span class="hljs-keyword">end</span>
+function Num.clone(i) return Num(i.at, i.name) end
+function Sym.clone(i) return Sym(i.at, i.name) end
 
-<span class="hljs-keyword">local</span> data
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.clone</span><span class="hljs-params">(i,rows,    copy)</span></span> 
+local data
+function Egs.clone(i,rows,    copy) 
   copy = Egs(i.names)  
-  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span>  data(copy,row)  <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> copy <span class="hljs-keyword">end</span></pre></div></div>
+  for _,row in pairs(rows or {}) do  data(copy,row)  end
+  return copy end
+
+</span></pre></div></div>
             
         </li>
         
@@ -138,6 +134,7 @@ KEY: S=string, P=poisint, F=float
 - <span class="hljs-built_in">random</span> seed reset so carefully, just once, at the <span class="hljs-keyword">end</span> of the code.
 - usually, no line with just <span class="hljs-string">&quot;end&quot;</span> on it 
 ]]
+
 <span class="hljs-keyword">local</span> r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span>
 <span class="hljs-keyword">local</span> fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">format</span>
 <span class="hljs-keyword">local</span> <span class="hljs-built_in">unpack</span> = <span class="hljs-built_in">table</span>.<span class="hljs-built_in">unpack</span>
@@ -150,7 +147,7 @@ KEY: S=string, P=poisint, F=float
   <span class="hljs-keyword">return</span> <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">things</span><span class="hljs-params">(x,sep,  t)</span></span>
-  t={}; <span class="hljs-keyword">for</span> y <span class="hljs-keyword">in</span> x:<span class="hljs-built_in">gmatch</span>(sep <span class="hljs-keyword">or</span><span class="hljs-string">&quot;([^,]+)&quot;</span>) <span class="hljs-keyword">do</span> push(t,thing(y)) <span class="hljs-keyword">end</span>
+  t={}; <span class="hljs-keyword">for</span> y <span class="hljs-keyword">in</span> x:<span class="hljs-built_in">gmatch</span>(sep <span class="hljs-keyword">or</span><span class="hljs-string">&quot;([^,]+)&quot;</span>) <span class="hljs-keyword">do</span> t[<span class="hljs-number">1</span>+#t]=thing(y) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">file2things</span><span class="hljs-params">(file,      x)</span></span>
@@ -173,7 +170,7 @@ KEY: S=string, P=poisint, F=float
   <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> s=<span class="hljs-built_in">tostring</span>(k);<span class="hljs-keyword">if</span> s:<span class="hljs-built_in">sub</span>(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)~=<span class="hljs-string">&quot;_&quot;</span> <span class="hljs-keyword">then</span> push(u,k) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(u) <span class="hljs-keyword">end</span>
 
-<span class="hljs-keyword">local</span> oo,rnd, rnds <span class="hljs-comment">-- local o was declared above (in &quot;new&quot;)</span>
+<span class="hljs-keyword">local</span> oo,o, rnd, rnds 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">oo</span><span class="hljs-params">(t)</span></span> <span class="hljs-built_in">print</span>(o(t)) <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">o</span><span class="hljs-params">(t,seen,        key,xseen,u)</span></span>
   seen = seen <span class="hljs-keyword">or</span> {}
@@ -205,15 +202,15 @@ KEY: S=string, P=poisint, F=float
    <span class="hljs-keyword">return</span> Demo.fails <span class="hljs-keyword">end</span>
 
 <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">settings</span><span class="hljs-params">(txt,  d)</span></span>
-  d={}
-  txt:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)&quot;</span>,
+   d={}
+   txt:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)&quot;</span>,
     <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(long,key,short,x)</span></span>
       <span class="hljs-keyword">for</span> n,flag <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">arg</span>) <span class="hljs-keyword">do</span> 
         <span class="hljs-keyword">if</span> flag==short <span class="hljs-keyword">or</span> flag==long <span class="hljs-keyword">then</span>
           x = x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">or</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">arg</span>[n+<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
       <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">then</span> the[key]=<span class="hljs-literal">false</span> <span class="hljs-keyword">elseif</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">then</span> the[key]=<span class="hljs-literal">true</span> <span class="hljs-keyword">else</span>
       d[key] = <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>)
-  <span class="hljs-keyword">if</span> d.help <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(help) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> the.help <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(txt) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> d <span class="hljs-keyword">end</span>
 
 <span class="hljs-keyword">local</span> add

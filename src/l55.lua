@@ -1,27 +1,3 @@
---------------------------------------------------------------------------------
----   __         ______                                                      ___
----  /\ \       /\  ___\                                                 ,o88888
----  \ \ \      \ \ \__/                                              ,o8888888'
----   \ \ \  __  \ \___``\                      ,:o:o:oooo.        ,8O88Pd8888"
----    \ \ \L\ \  \/\ \L\ \                 ,.::.::o:ooooOoOoO. ,oO8O8Pd888'"
----     \ \____/   \ \____/               ,.:.::o:ooOoOoOO8O8OOo.8OOPd8O8O"
----      \/___/     \/___/               , ..:.::o:ooOoOOOO8OOOOo.FdO8O8"
----                                      , ..:.::o:ooOoOO8O888O8O,COCOO"
----  a little LUA learning library       , . ..:.::o:ooOoOOOO8OOOOCOCO"
----  (c) Tim Menzies 2022, BSD-2         . ..:.::o:ooOoOoOO8O8OCCCC"o
----  https://menzies.us/l5                . ..:.::o:ooooOoCoCCC"o:o
----  Share and enjoy                      . ..:.::o:o:,cooooCo"oo:o:
----                                   `   . . ..:.:cocoooo"'o:o:::'
----                                   .`   . ..::ccccoc"'o:o:o:::'
----                                  :.:.    ,c:cccc"':.:.:.:.:.'
----                                ..:.:"'`::::c:"'..:.:.:.:.:.'
----                              ...:.'.:.::::"'    . . . . .'
----                             .. . ....:."' `   .  . . ''
----                            . . . ...."'
----                            .. . ."'     -hrr-
----                           .
----   
---- 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local the,help={},[[
 
@@ -29,36 +5,35 @@ lua l5.lua [OPTIONS]
 L5 == a very little LUA learning lab
 (c)2022, Tim Menzies, BSD 2-clause license
 
-OPTIONS (for changing the inference):
+OPTIONS (inference):
+  -boot   -b P  #bootstrap samples         = 256
+  -cohen  -c F  cohen's small effect size  = .35
+  -cliffs -C F  threshold on Cliff's delta = .147
+  -far    -F F  look no further than "far" = .9
+  -keep   -k    items to keep in a number  = 512 
+  -leaves -l    leaf size                  = .5 
+  -p      -p P  distance calcs coefficient = 2
+  -seed   -S P  random number seed         = 10019
+  -some   -s    look only at "some" items  = 512
 
-  -cohen  -c  F  cohen's small effect size      = .35
-  -far    -F  F  look no further than "far"     = .9
-  -keep   -k     items to keep in a number      = 512 
-  -leaves -l     leaf size                      = .5 
-  -p      -p  P  distance calcs coefficient     = 2
-  -seed   -S  P  random number seed             = 10019
-  -some   -s     look only at "some" items      = 512
+OPTIONS (housekeeping):
+  -dump   -d    on error, exit+ stacktrace = false
+  -file   -f S  where to get data          = ../etc/data/auto93.csv
+  -help   -h    show help                  = false
+  -rnd    -r S  format string              = %5.2f
+  -todo   -t S  start-up action            = nothing
+]]------------------------------------------------------------------------------
+---            _        _              _        
+---      ___  | |__    (_)  ___   ___ | |_  ___ 
+---     / _ \ | '_ \   | | / _ \ / __|| __|/ __|
+---    | (_) || |_) |  | ||  __/| (__ | |_ \__ \
+---     \___/ |_.__/  _/ | \___| \___| \__||___/
+---                  |__/                       
 
-OPTIONS (for housekeeping):
-
-  -dump   -d     exit on error, with stacktrace = false
-  -file   -f  S  where to get data              = ../etc/data/auto93.csv
-  -help   -h     show help                      = false
-  -rnd    -r  S  format string                  = %5.2f
-  -todo   -t  S  start-up action                = nothing
-
-
-KEY: S=string, P=poisint, F=float
-]]
-local as,o = setmetatable
+local as = setmetatable
 local function obj(   t)
   t={__tostring=o}; t.__index=t
   return as(t, {__call=function(_,...) return t.new(_,...) end}) end
----         _         _          
----      __| |  __ _ | |_   __ _ 
----     / _` | / _` || __| / _` |
----    | (_| || (_| || |_ | (_| |
----     \__,_| \__,_| \__| \__,_|
 
 local Sym = obj() -- Where to summarize symbols
 function Sym:new(at,s) return as({
@@ -126,12 +101,12 @@ function Egs.clone(i,rows,    copy)
 - random seed reset so carefully, just once, at the end of the code.
 - usually, no line with just "end" on it 
 ]]
----            _    _  _      
----     _   _ | |_ (_)| | ___ 
----    | | | || __|| || |/ __|
----    | |_| || |_ | || |\__ \
----     \__,_| \__||_||_||___/
---------------------------------------------------------------------------------
+---     _                  _      
+---    | |_   ___    ___  | | ___ 
+---    | __| / _ \  / _ \ | |/ __|
+---    | |_ | (_) || (_) || |\__ \
+---     \__| \___/  \___/ |_||___/
+
 local r   = math.random
 local fmt = string.format
 local unpack = table.unpack
@@ -147,7 +122,7 @@ function thing(x)
   return tonumber(x) or x end
 
 function things(x,sep,  t)
-  t={}; for y in x:gmatch(sep or"([^,]+)") do push(t,thing(y)) end
+  t={}; for y in x:gmatch(sep or"([^,]+)") do t[1+#t]=thing(y) end
   return t end
 
 function file2things(file,      x)
@@ -180,7 +155,7 @@ function slots(t, u,s)
 ---    |__] |__/ | |\ |  |  
 ---    |    |  \ | | \|  |  
 
-local oo,rnd, rnds -- local o was declared above (in "new")
+local oo,o, rnd, rnds 
 function oo(t) print(o(t)) end
 function o(t,seen,        key,xseen,u)
   seen = seen or {}
@@ -215,16 +190,17 @@ function Demo.main(todo,seed)
    return Demo.fails end
 
 local function settings(txt,  d)
-  d={}
-  txt:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+   d={}
+   txt:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
     function(long,key,short,x)
       for n,flag in ipairs(arg) do 
         if flag==short or flag==long then
           x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
       if x=="false" then the[key]=false elseif x=="true" then the[key]=true else
       d[key] = tonumber(x) or x end end)
-  if d.help then print(help) end
+  if the.help then print(txt) end
   return d end
+
 ---    _  _ ___  ___  ____ ___ ____    ____ ____ _    ____ 
 ---    |  | |__] |  \ |__|  |  |___    |    |  | |    [__  
 ---    |__| |    |__/ |  |  |  |___    |___ |__| |___ ___] 
@@ -398,19 +374,23 @@ function merge(b4,      j,n,now,a,b,both)
     j    = j+1
     a, b = b4[j], b4[j+1]
     if   b then
-      both = a.all:merge(b.all)
+      both = a.all:merged(b.all)
       if    both 
       then  a = {lo=a.lo, hi=b.hi, all=both} 
             j = j + 1 end end
     push(now,a) end
   return #now == #b4 and b4 or merge(now) end
 
-function Sym.merge(i,j,    k,ei,ej,ek)
+function Sym.merge(i,j,    k)
   k = i:clone()
   for x,n in pairs(i.all) do add(k,x,n) end
   for x,n in pairs(j.all) do add(k,x,n) end
+  return k end
+
+function Sym.merged(i,j,   k,ei,ej,ek)
+  k = i:marge(j)
   ei, ej, ek= i:div(), j:div(), k:div()
-  if    ek*.99 <= (i.n*ei + j.n*ej)/k.n then return k end end
+  if ek*.99 <= (i.n*ei + j.n*ej)/k.n then return k end end
 
 function spans(egs1,egs2,      spans,tmp,col1,col2)
   spans = {}
@@ -483,6 +463,82 @@ function spanShow(span, negative,   hi,lo,x,big)
        if hi ==  big then return fmt("%s <  %s",x,lo)  end   
        if lo == -big then return fmt("%s >= %s",x,hi)  end   
        return fmt("%s < %s and %s >=  %s", x,lo,x,hi)  end end
+---    ____ ___ ____ ___ ____ 
+---    [__   |  |__|  |  [__  
+---    ___]  |  |  |  |  ___] 
+
+-- function Num:same(i,j, xs,ys,       lt,gt)
+--   lt,gt  = 0, 0
+--   for _,x in pairs(i.all) do
+--     for _,y in pairs(i.all) do
+--       if y > x then gt = gt + 1 end
+--       if y < x then lt = lt + 1 end end end
+--   return math.abs(gt - lt)/(#xs * #ys) <= the.cliffs end
+--
+-- -- ## Significance
+-- -- Non parametric "significance"  test (i.e. is it possible to
+-- -- distinguish if an item belongs to one population of
+-- -- another).  Two populations are the same if no difference can be
+-- -- seen in numerous samples from those populations.
+-- -- Warning: very
+-- -- slow for large populations. Consider sub-sampling  for large
+-- -- lists. Also, test the effect size (and maybe shortcut the
+-- -- test) before applying  this test.  From p220 to 223 of the
+-- -- Efron text  'introduction to the boostrap'.
+-- -- https://bit.ly/3iSJz8B Typically, conf=0.05 and b is 100s to
+-- -- 1000s.
+-- -- Translate both samples so that they have mean x, 
+-- -- The re-sample each population separately.
+-- function bootstrap(y0,z0,my)
+--   local x,y,z,xmu,ymu,zmu,yhat,zhat,tobs,ns, bootstraps, confidence
+--   bootstraps = my and my.bootstrap or 512
+--   confidence = my and my.conf or .05
+--   x, y, z, yhat, zhat = Num.new(), Num.new(), Num.new(), {}, {}
+--   for _,y1 in pairs(y0) do x:summarize(y1); y:summarize(y1) end
+--   for _,z1 in pairs(z0) do x:summarize(z1); z:summarize(z1) end
+--   xmu, ymu, zmu = x.mu, y.mu, z.mu
+--   for _,y1 in pairs(y0) do yhat[1+#yhat] = y1 - ymu + xmu end
+--   for _,z1 in pairs(z0) do zhat[1+#zhat] = z1 - zmu + xmu end
+--   tobs = y:delta(z)
+--   n = 0
+--   for _= 1,bootstraps do
+--     if adds(samples(yhat)):delta(adds(samples(zhat))) > tobs 
+--     then n = n + 1 end end
+--   return n / bootstraps >= conf end
+--
+-- function scottKnot(nums,the,      all,cohen)
+--   local mid = function (z) return z.some:mid() 
+--   end --------------------------------
+--   local function summary(i,j,    out)
+--     out = copy( nums[i] )
+--     for k = i+1, j do out = out:merge(nums[k]) end
+--     return out 
+--   end --------------------------- 
+--   local function div(lo,hi,rank,b4,       cut,best,l,l1,r,r1,now)
+--     best = 0
+--     for j = lo,hi do
+--       if j < hi  then
+--         l   = summary(lo,  j)
+--         r   = summary(j+1, hi)
+--         now = (l.n*(mid(l) - mid(b4))^2 + r.n*(mid(r) - mid(b4))^2
+--               ) / (l.n + r.n)
+--         if now > best then
+--           if math.abs(mid(l) - mid(r)) >= cohen then
+--             cut, best, l1, r1 = j, now, copy(l), copy(r) 
+--     end end end end
+--     if cut and not l1:same(r1,the) then
+--       rank = div(lo,    cut, rank, l1) + 1
+--       rank = div(cut+1, hi,  rank, r1) 
+--     else
+--       for i = lo,hi do nums[i].rank = rank end end
+--     return rank 
+--   end ------------------------------------------------------ 
+--   table.sort(nums, function(x,y) return mid(x) < mid(y) end)
+--   all   = summary(1,#nums)
+--   cohen = all.sd * the.iota
+--   div(1, #nums, 1, all)
+--   return nums end
+
 ---                       _        
 ---     _ __ ___    __ _ (_) _ __  
 ---    | '_ ` _ \  / _` || || '_ \ 
@@ -539,4 +595,4 @@ function Demo.xplain(    i,j,tmp,lefts,rights,used)
 
 --------------------------------------------------------------------------------
 the = settings(help)
-Demo.main(the.todo, the.seed) 
+Demo.main(the.todo, the.seed)
