@@ -30,11 +30,22 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> the={a=<span class="hljs-number">1</span>,b=<span class="hljs-number">2</span>}
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bsearch</span><span class="hljs-params">(t,want,firstp,  lo,mid,hi,out)</span></span>
+  out, lo, hi = <span class="hljs-number">1</span>, lo <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>, #t
+  <span class="hljs-keyword">while</span> lo &lt;= hi <span class="hljs-keyword">do</span>
+    mid = (lo + hi)//<span class="hljs-number">2</span>;
+    <span class="hljs-keyword">if</span> want == t[mid] <span class="hljs-keyword">then</span> 
+      out = mid
+      <span class="hljs-keyword">if</span> firstp <span class="hljs-keyword">then</span> hi=mid<span class="hljs-number">-1</span> <span class="hljs-keyword">else</span> lo=mid+<span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">else</span> 
+      <span class="hljs-keyword">if</span> want &lt; t[mid] <span class="hljs-keyword">then</span> hi=mid<span class="hljs-number">-1</span> <span class="hljs-keyword">else</span> lo=mid+<span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span> 
 
-<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">aa</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x+the.b <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">local</span> key,t = <span class="hljs-number">20</span>,{<span class="hljs-number">10</span>,<span class="hljs-number">20</span>,<span class="hljs-number">20</span>,<span class="hljs-number">20</span>,<span class="hljs-number">40</span>,<span class="hljs-number">50</span>}
 
-areturn {the=the,aa=aa}</pre></div></div>
+lo = bsearch(t,key,<span class="hljs-literal">true</span>)
+hi = bsearch(t,key,<span class="hljs-literal">false</span>,lo)
+<span class="hljs-built_in">print</span>(lo,hi)</pre></div></div>
             
         </li>
         

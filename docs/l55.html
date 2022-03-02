@@ -30,7 +30,8 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span> 
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span> 
 <span class="hljs-keyword">local</span> the,help={},<span class="hljs-string">[[
 
 lua l5.lua [OPTIONS]
@@ -38,7 +39,9 @@ L5 == a very little LUA learning lab
 (c)2022, Tim Menzies, BSD 2-clause license
 
 OPTIONS (inference):
+  -boot   -b P  #bootstrap samples         = 256
   -cohen  -c F  cohen&#x27;s small effect size  = .35
+  -cliffs -C F  threshold on Cliff&#x27;s delta = .147
   -far    -F F  look no further than &quot;far&quot; = .9
   -keep   -k    items to keep in a number  = 512 
   -leaves -l    leaf size                  = .5 
@@ -52,63 +55,7 @@ OPTIONS (housekeeping):
   -help   -h    show help                  = false
   -rnd    -r S  format string              = %5.2f
   -todo   -t S  start-up action            = nothing
-local as = setmetatable
-local function obj(   t)
-  t={__tostring=o}; t.__index=t
-  return as(t, {__call=function(_,...) return t.new(_,...) end}) end
-
-local Sym = obj() -- Where to summarize symbols
-function Sym:new(at,s) return as({
-  is=&quot;Sym&quot;,     -- type
-  at=at or 0,   -- column index
-  name=s or &quot;&quot;, -- column name
-  n=0,          -- number of items summarized in this column
-  all={},       -- all[x] = n means we&#x27;ve seen &quot;n&quot; repeats of &quot;x&quot; 
-   most=0,      -- count of the most frequently seen symbol
-   mode=nil     -- the most commonly seen letter
-  }, Sym) end
-
-local Num = obj() -- Where to summarize numbers
-function Num:new(at,s) return as({
-  is=&quot;Num&quot;,     -- type
-  at=at or 0,   -- column index
-  name=s or &quot;&quot;, -- column name
-  n=0,          -- number of items summarizes in this column
-  mu=0,         -- mean (updated incrementally)
-  m2=0,         -- second moment (updated incrementally)
-  sd=0,         -- standard deviation
-  all={},       -- a sample of items seen so far
-  lo=1E31,      -- lowest number seen; initially, big so 1st num sends it low
-  hi=-1E31,     -- highest number seen;initially, msall to 2st num sends it hi
-  w=(s or &quot;&quot;):find&quot;-$&quot; and -1 or 1 -- &quot;-1&quot;= minimize and &quot;1&quot;= maximize
-  }, Num) end
-
-local Egs = obj() -- Where to store examples, summarized into Syms or Nums
-function Egs:new(names,     i,col,here)  i=as({
-  is=&quot;Egs&quot;,     -- type
-  all={},       -- all the rows
-  names=names,  -- list of name 
-  cols={},      -- list of all columns  (Nums or Syms)
-  x={},         -- independent columns (nothing marked as &quot;skip&quot;)
-  y={}          -- dependent columns (nothing marked as &quot;skip&quot;)
-  },Egs)
-  for at,name in pairs(names) do
-    col = (name:find&quot;^[A-Z]&quot; and Num or Sym)(at,name)
-    i.cols[1+#i.cols] = col
-    here = name:find&quot;[-+]$&quot; and i.y or i.x
-    if not name:find&quot;:$&quot; then here[1 + #here] = col end end
-  return i end  
-
-function Num.clone(i) return Num(i.at, i.name) end
-function Sym.clone(i) return Sym(i.at, i.name) end
-
-local data
-function Egs.clone(i,rows,    copy) 
-  copy = Egs(i.names)  
-  for _,row in pairs(rows or {}) do  data(copy,row)  end
-  return copy end
-
-</span></pre></div></div>
+]]</span></pre></div></div>
             
         </li>
         
@@ -118,6 +65,201 @@ function Egs.clone(i,rows,    copy)
               
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
+              </div>
+              <p>This code reads data from csv files. In those files, “?” denotes
+“missing value”.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> is={}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.missing</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-3">&#x00a7;</a>
+              </div>
+              <p>The names on  row1 of that file define the role of that column.
+Names in row1 ending with “:” are to be ignored</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.skip</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-4">&#x00a7;</a>
+              </div>
+              <p>Names in row1 starting in upper case are numbers </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.num</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-5">&#x00a7;</a>
+              </div>
+              <p>Names in row1 ending with “!” are classes.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.class</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;!$&quot;</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-6">&#x00a7;</a>
+              </div>
+              <p>Names in row1 ending with “-“ are objectives to be minimized.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.less</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-7">&#x00a7;</a>
+              </div>
+              <p>Names in row1 ending with “+” are objectives to be maximized.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.more</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;+$&quot;</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-8">&#x00a7;</a>
+              </div>
+              <p>Objectives or classes are dependent variables.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.dependent</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> is.more(x) <span class="hljs-keyword">or</span> is.less(x) <span class="hljs-keyword">or</span> is.class(x) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-9">&#x00a7;</a>
+              </div>
+              <p>For example, in this data file, we will ignore column 3 (Hp:),
+try to minimize weight (Lbs-) and maximize acceleration and 
+miles per hour (Acc+, Mpg+). Also, with one exception (origin),
+everything is numeric. Finally,  there are some missing values on
+lines 3 and lines 7.</p>
+<pre><code> Clndrs, Weight, Hp:, Lbs-, Acc+, Model, origin, Mpg+
+ <span class="hljs-number">8</span>,      <span class="hljs-number">304.0</span>,  <span class="hljs-number">193</span>, <span class="hljs-number">4732</span>, <span class="hljs-number">18.5</span>, <span class="hljs-number">70</span>,    <span class="hljs-number">1</span>,      <span class="hljs-number">10</span>
+ <span class="hljs-number">8</span>,      ?,      <span class="hljs-number">215</span>, <span class="hljs-number">4615</span>, <span class="hljs-number">14</span>,   <span class="hljs-number">70</span>,    <span class="hljs-number">1</span>,      <span class="hljs-number">10</span>
+ <span class="hljs-number">4</span>,      <span class="hljs-number">85</span>,     <span class="hljs-number">70</span>,  <span class="hljs-number">2070</span>, <span class="hljs-number">18.6</span>, <span class="hljs-number">78</span>,    <span class="hljs-number">3</span>,      <span class="hljs-number">40</span>
+ <span class="hljs-number">4</span>,      <span class="hljs-number">85</span>,     <span class="hljs-number">65</span>,  <span class="hljs-number">2110</span>, <span class="hljs-number">19.2</span>, <span class="hljs-number">80</span>,    <span class="hljs-number">3</span>,      <span class="hljs-number">40</span>
+ <span class="hljs-number">4</span>,      <span class="hljs-number">85</span>,     ?,   <span class="hljs-number">1835</span>, <span class="hljs-number">17.3</span>, <span class="hljs-number">80</span>,    <span class="hljs-number">2</span>,      <span class="hljs-number">40</span>
+ <span class="hljs-number">4</span>,     <span class="hljs-number">98</span>,      <span class="hljs-number">76</span>,  <span class="hljs-number">2144</span>, <span class="hljs-number">14.7</span>, <span class="hljs-number">80</span>,    <span class="hljs-number">2</span>,      <span class="hljs-number">40</span>
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">local</span> as = <span class="hljs-built_in">setmetatable</span>
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">obj</span><span class="hljs-params">(   t)</span></span>
+  t={<span class="hljs-built_in">__tostring</span>=o}; t.<span class="hljs-built_in">__index</span>=t
+  <span class="hljs-keyword">return</span> as(t, {<span class="hljs-built_in">__call</span>=<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(_,...)</span></span> <span class="hljs-keyword">return</span> t.new(_,...) <span class="hljs-keyword">end</span>}) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> Sym = obj() <span class="hljs-comment">-- Where to summarize symbols</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym:new</span><span class="hljs-params">(at,s)</span></span> <span class="hljs-keyword">return</span> as({
+  is=<span class="hljs-string">&quot;Sym&quot;</span>,     <span class="hljs-comment">-- type</span>
+  at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>,   <span class="hljs-comment">-- column index</span>
+  name=s <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">-- column name</span>
+  n=<span class="hljs-number">0</span>,          <span class="hljs-comment">-- number of items summarized in this column</span>
+  all={},       <span class="hljs-comment">-- all[x] = n means we&#x27;ve seen &quot;n&quot; repeats of &quot;x&quot; </span>
+   most=<span class="hljs-number">0</span>,      <span class="hljs-comment">-- count of the most frequently seen symbol</span>
+   mode=<span class="hljs-literal">nil</span>     <span class="hljs-comment">-- the most commonly seen letter</span>
+  }, Sym) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> Num = obj() <span class="hljs-comment">-- Where to summarize numbers</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num:new</span><span class="hljs-params">(at,s)</span></span> <span class="hljs-keyword">return</span> as({
+  is=<span class="hljs-string">&quot;Num&quot;</span>,     <span class="hljs-comment">-- type</span>
+  at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>,   <span class="hljs-comment">-- column index</span>
+  name=s <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">-- column name</span>
+  n=<span class="hljs-number">0</span>,          <span class="hljs-comment">-- number of items summarizes in this column</span>
+  mu=<span class="hljs-number">0</span>,         <span class="hljs-comment">-- mean (updated incrementally)</span>
+  m2=<span class="hljs-number">0</span>,         <span class="hljs-comment">-- second moment (updated incrementally)</span>
+  sd=<span class="hljs-number">0</span>,         <span class="hljs-comment">-- standard deviation</span>
+  all={},       <span class="hljs-comment">-- a sample of items seen so far</span>
+  lo=<span class="hljs-number">1E31</span>,      <span class="hljs-comment">-- lowest number seen; initially, big so 1st num sends it low</span>
+  hi=<span class="hljs-number">-1E31</span>,     <span class="hljs-comment">-- highest number seen;initially, msall to 2st num sends it hi</span>
+  w=(s <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>):<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-comment">-- &quot;-1&quot;= minimize and &quot;1&quot;= maximize</span>
+  }, Num) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> Egs = obj() <span class="hljs-comment">-- Where to store examples, summarized into Syms or Nums</span>
+<span class="hljs-keyword">local</span> is = {}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs:new</span><span class="hljs-params">(names,     i,col,here)</span></span>  i=as({
+  is=<span class="hljs-string">&quot;Egs&quot;</span>,     <span class="hljs-comment">-- type</span>
+  all={},       <span class="hljs-comment">-- all the rows</span>
+  names=names,  <span class="hljs-comment">-- list of name </span>
+  cols={},      <span class="hljs-comment">-- list of all columns  (Nums or Syms)</span>
+  x={},         <span class="hljs-comment">-- independent columns (nothing marked as &quot;skip&quot;)</span>
+  y={},         <span class="hljs-comment">-- dependent columns (nothing marked as &quot;skip&quot;)</span>
+  class=<span class="hljs-literal">nil</span>     <span class="hljs-comment">--  classes</span>
+  },Egs)
+  <span class="hljs-keyword">for</span> at,name <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(names) <span class="hljs-keyword">do</span>
+    col = (is.nump(name) <span class="hljs-keyword">and</span> Num <span class="hljs-keyword">or</span> Sym)(at,name)
+    i.cols[<span class="hljs-number">1</span>+#i.cols] = col
+    here = is.goal(name) <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> is.skip(x) <span class="hljs-keyword">then</span> 
+      here[<span class="hljs-number">1</span> + #here] = col 
+      <span class="hljs-keyword">if</span> is.class(name) <span class="hljs-keyword">then</span> i.class=col <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>  
+
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.clone</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> Num(i.at, i.name) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.clone</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> Sym(i.at, i.name) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> data
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.clone</span><span class="hljs-params">(i,rows,    copy)</span></span> 
+  copy = Egs(i.names)  
+  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span>  data(copy,row)  <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> copy <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-10">&#x00a7;</a>
               </div>
               <p>[[</p>
 
@@ -212,6 +354,7 @@ function Egs.clone(i,rows,    copy)
       d[key] = <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>)
   <span class="hljs-keyword">if</span> the.help <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(txt) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> d <span class="hljs-keyword">end</span>
+
 
 <span class="hljs-keyword">local</span> add
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span><span class="hljs-params">(i,x, inc)</span></span>
@@ -366,19 +509,23 @@ function Egs.clone(i,rows,    copy)
     j    = j+<span class="hljs-number">1</span>
     a, b = b4[j], b4[j+<span class="hljs-number">1</span>]
     <span class="hljs-keyword">if</span>   b <span class="hljs-keyword">then</span>
-      both = a.all:merge(b.all)
+      both = a.all:merged(b.all)
       <span class="hljs-keyword">if</span>    both 
       <span class="hljs-keyword">then</span>  a = {lo=a.lo, hi=b.hi, all=both} 
             j = j + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
     push(now,a) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> #now == #b4 <span class="hljs-keyword">and</span> b4 <span class="hljs-keyword">or</span> merge(now) <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.merge</span><span class="hljs-params">(i,j,    k,ei,ej,ek)</span></span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.merge</span><span class="hljs-params">(i,j,    k)</span></span>
   k = i:clone()
   <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> add(k,x,n) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.all) <span class="hljs-keyword">do</span> add(k,x,n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.merged</span><span class="hljs-params">(i,j,   k,ei,ej,ek)</span></span>
+  k = i:marge(j)
   ei, ej, ek= i:div(), j:div(), k:div()
-  <span class="hljs-keyword">if</span>    ek*<span class="hljs-number">.99</span> &lt;= (i.n*ei + j.n*ej)/k.n <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> ek*<span class="hljs-number">.99</span> &lt;= (i.n*ei + j.n*ej)/k.n <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">spans</span><span class="hljs-params">(egs1,egs2,      spans,tmp,col1,col2)</span></span>
   spans = {}
@@ -447,7 +594,87 @@ function Egs.clone(i,rows,    copy)
   <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s != %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
        <span class="hljs-keyword">if</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;  %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
        <span class="hljs-keyword">if</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x,hi)  <span class="hljs-keyword">end</span>   
-       <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s and %s &gt;=  %s&quot;</span>, x,lo,x,hi)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+       <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s and %s &gt;=  %s&quot;</span>, x,lo,x,hi)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-11">&#x00a7;</a>
+              </div>
+              <p>function Num:same(i,j, xs,ys,       lt,gt)
+  lt,gt  = 0, 0
+  for _,x in pairs(i.all) do
+    for _,y in pairs(i.all) do
+      if y &gt; x then gt = gt + 1 end
+      if y &lt; x then lt = lt + 1 end end end
+  return math.abs(gt - lt)/(#xs * #ys) &lt;= the.cliffs end</p>
+<p>– ## Significance
+– Non parametric “significance”  test (i.e. is it possible to
+– distinguish if an item belongs to one population of
+– another).  Two populations are the same if no difference can be
+– seen in numerous samples from those populations.
+– Warning: very
+– slow for large populations. Consider sub-sampling  for large
+– lists. Also, test the effect size (and maybe shortcut the
+– test) before applying  this test.  From p220 to 223 of the
+– Efron text  ‘introduction to the boostrap’.
+– <a href="https://bit.ly/3iSJz8B">https://bit.ly/3iSJz8B</a> Typically, conf=0.05 and b is 100s to
+– 1000s.
+– Translate both samples so that they have mean x, 
+– The re-sample each population separately.
+function bootstrap(y0,z0,my)
+  local x,y,z,xmu,ymu,zmu,yhat,zhat,tobs,ns, bootstraps, confidence
+  bootstraps = my and my.bootstrap or 512
+  confidence = my and my.conf or .05
+  x, y, z, yhat, zhat = Num.new(), Num.new(), Num.new(), {}, {}
+  for _,y1 in pairs(y0) do x:summarize(y1); y:summarize(y1) end
+  for _,z1 in pairs(z0) do x:summarize(z1); z:summarize(z1) end
+  xmu, ymu, zmu = x.mu, y.mu, z.mu
+  for _,y1 in pairs(y0) do yhat[1+#yhat] = y1 - ymu + xmu end
+  for _,z1 in pairs(z0) do zhat[1+#zhat] = z1 - zmu + xmu end
+  tobs = y:delta(z)
+  n = 0
+  for _= 1,bootstraps do
+    if adds(samples(yhat)):delta(adds(samples(zhat))) &gt; tobs 
+    then n = n + 1 end end
+  return n / bootstraps &gt;= conf end</p>
+<p>function scottKnot(nums,the,      all,cohen)
+  local mid = function (z) return z.some:mid() 
+  local function summary(i,j,    out)
+    out = copy( nums[i] )
+    for k = i+1, j do out = out:merge(nums[k]) end
+    return out 
+  local function div(lo,hi,rank,b4,       cut,best,l,l1,r,r1,now)
+    best = 0
+    for j = lo,hi do
+      if j &lt; hi  then
+        l   = summary(lo,  j)
+        r   = summary(j+1, hi)
+        now = (l.n*(mid(l) - mid(b4))^2 + r.n*(mid(r) - mid(b4))^2
+              ) / (l.n + r.n)
+        if now &gt; best then
+          if math.abs(mid(l) - mid(r)) &gt;= cohen then
+            cut, best, l1, r1 = j, now, copy(l), copy(r) 
+    end end end end
+    if cut and not l1:same(r1,the) then
+      rank = div(lo,    cut, rank, l1) + 1
+      rank = div(cut+1, hi,  rank, r1) 
+    else
+      for i = lo,hi do nums[i].rank = rank end end
+    return rank 
+  table.sort(nums, function(x,y) return mid(x) &lt; mid(y) end)
+  all   = summary(1,#nums)
+  cohen = all.sd * the.iota
+  div(1, #nums, 1, all)
+  return nums end</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo.the</span><span class="hljs-params">()</span></span> oo(the) <span class="hljs-keyword">end</span>
 

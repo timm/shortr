@@ -1,3 +1,29 @@
+--------------------------------------------------------------------------------
+---   __         ______                                                      ___
+---  /\ \       /\  ___\                                                 ,o88888
+---  \ \ \      \ \ \__/                                              ,o8888888'
+---   \ \ \  __  \ \___``\                      ,:o:o:oooo.        ,8O88Pd8888"
+---    \ \ \L\ \  \/\ \L\ \                 ,.::.::o:ooooOoOoO. ,oO8O8Pd888'"
+---     \ \____/   \ \____/               ,.:.::o:ooOoOoOO8O8OOo.8OOPd8O8O"
+---      \/___/     \/___/               , ..:.::o:ooOoOOOO8OOOOo.FdO8O8"
+---                                      , ..:.::o:ooOoOO8O888O8O,COCOO"
+---  a little LUA learning library       , . ..:.::o:ooOoOOOO8OOOOCOCO"
+---  (c) Tim Menzies 2022, BSD-2         . ..:.::o:ooOoOoOO8O8OCCCC"o
+---  https://menzies.us/l5                . ..:.::o:ooooOoCoCCC"o:o
+---  Share and enjoy                      . ..:.::o:o:,cooooCo"oo:o:
+---                                   `   . . ..:.:cocoooo"'o:o:::'
+---                                   .`   . ..::ccccoc"'o:o:o:::'
+---                                  :.:.    ,c:cccc"':.:.:.:.:.'
+---                                ..:.:"'`::::c:"'..:.:.:.:.:.'
+---                              ...:.'.:.::::"'    . . . . .'
+---                             .. . ....:."' `   .  . . ''
+---                            . . . ...."'
+---                            .. . ."'     -hrr-
+---                           .
+---   
+--- 
+--------------------------------------------------------------------------------
+
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local the,help={},[[
 
@@ -22,7 +48,52 @@ OPTIONS (housekeeping):
   -help   -h    show help                  = false
   -rnd    -r S  format string              = %5.2f
   -todo   -t S  start-up action            = nothing
-]]------------------------------------------------------------------------------
+]]
+
+--------------------------------------------------------------------------------
+---         _         _          
+---      __| |  __ _ | |_   __ _ 
+---     / _` | / _` || __| / _` |
+---    | (_| || (_| || |_ | (_| |
+---     \__,_| \__,_| \__| \__,_|
+
+-- This code reads data from csv files. In those files, "?" denotes
+-- "missing value".
+local is={}
+function is.missing(x) return x=="?" end
+
+-- The names on  row1 of that file define the role of that column.
+-- Names in row1 ending with ":" are to be ignored
+function is.skip(x) return x:find":$" end
+
+-- Names in row1 starting in upper case are numbers 
+function is.num(x) return x:find"^[A-Z]" end
+
+-- Names in row1 ending with "!" are classes.
+function is.class(x) return x:find"!$" end
+
+-- Names in row1 ending with "-" are objectives to be minimized.
+function is.less(x) return x:find"-$" end
+
+-- Names in row1 ending with "+" are objectives to be maximized.
+function is.more(x) return x:find"+$" end
+
+-- Objectives or classes are dependent variables.
+function is.dependent(x) return is.more(x) or is.less(x) or is.class(x) end
+
+-- For example, in this data file, we will ignore column 3 (Hp:),
+-- try to minimize weight (Lbs-) and maximize acceleration and 
+-- miles per hour (Acc+, Mpg+). Also, with one exception (origin),
+-- everything is numeric. Finally,  there are some missing values on
+-- lines 3 and lines 7.
+--
+--      Clndrs, Weight, Hp:, Lbs-, Acc+, Model, origin, Mpg+
+--      8,      304.0,  193, 4732, 18.5, 70,    1,      10
+--      8,      ?,      215, 4615, 14,   70,    1,      10
+--      4,      85,     70,  2070, 18.6, 78,    3,      40
+--      4,      85,     65,  2110, 19.2, 80,    3,      40
+--      4,      85,     ?,   1835, 17.3, 80,    2,      40
+--      4,     98,      76,  2144, 14.7, 80,    2,      40
 ---            _        _              _        
 ---      ___  | |__    (_)  ___   ___ | |_  ___ 
 ---     / _ \ | '_ \   | | / _ \ / __|| __|/ __|
@@ -58,7 +129,7 @@ function Num:new(at,s) return as({
   all={},       -- a sample of items seen so far
   lo=1E31,      -- lowest number seen; initially, big so 1st num sends it low
   hi=-1E31,     -- highest number seen;initially, msall to 2st num sends it hi
-  w=(s or ""):find"-$" and -1 or 1 -- "-1"= minimize and "1"= maximize
+  w=is.less(s or "") and -1 or 1 -- "-1"= minimize and "1"= maximize
   }, Num) end
 
 local Egs = obj() -- Where to store examples, summarized into Syms or Nums
@@ -68,14 +139,18 @@ function Egs:new(names,     i,col,here)  i=as({
   names=names,  -- list of name 
   cols={},      -- list of all columns  (Nums or Syms)
   x={},         -- independent columns (nothing marked as "skip")
-  y={}          -- dependent columns (nothing marked as "skip")
+  y={},         -- dependent columns (nothing marked as "skip")
+  class=nil     --  classes
   },Egs)
   for at,name in pairs(names) do
-    col = (name:find"^[A-Z]" and Num or Sym)(at,name)
+    col = (is.nump(name) and Num or Sym)(at,name)
     i.cols[1+#i.cols] = col
-    here = name:find"[-+]$" and i.y or i.x
-    if not name:find":$" then here[1 + #here] = col end end
+    here = is.goal(name) and i.y or i.x
+    if not is.skip(x) then 
+      here[1 + #here] = col 
+      if is.class(name) then i.class=col end end end
   return i end  
+
 ---    ____ _    ____ _  _ _ _  _ ____ 
 ---    |    |    |  | |\ | | |\ | | __ 
 ---    |___ |___ |__| | \| | | \| |__] 
@@ -208,7 +283,7 @@ local function settings(txt,  d)
 local add
 function add(i,x, inc)
   inc = inc or 1
-  if x ~= "?" then
+  if not is.missing(x) then
     i.n = i.n + inc
     i:internalAdd(x,inc) end
   return x end
@@ -276,7 +351,7 @@ function dist(i,row1,row2,    d,n,a,b,inc)
   d,n = 0,0    
   for _,col in pairs(i.x) do
     a,b = row1[col.at], row2[col.at]
-    inc = a=="?" and b=="?" and 1 or col:dist1(a,b) 
+    inc = is.missing(a) and is.missing(b) and 1 or col:dist1(a,b) 
     d = d + inc^the.p
     n = n + 1 end 
   return (d/n)^(1/the.p) end
@@ -284,8 +359,8 @@ function dist(i,row1,row2,    d,n,a,b,inc)
 function Sym.dist1(i,a,b) return a==b and 0 or 1 end
 
 function Num.dist1(i,a,b)
-  if     a=="?" then b=i:norm(b); a=b<.5 and 1 or 0 
-  elseif b=="?" then a=i:norm(a); b=a<.5 and 1 or 0
+  if     is.missing(a) then b=i:norm(b); a=b<.5 and 1 or 0 
+  elseif is.missing(b) then a=i:norm(a); b=a<.5 and 1 or 0
   else   a,b = i:norm(a), i:norm(b)  end
   return math.abs(a - b) end
 
@@ -448,7 +523,7 @@ function xplains(i,format,t,pre,how,    sel,front)
 function selects(span,row,    lo,hi,at,x)
   lo, hi, at = span.lo, span.hi, span.all.at
   x = row[at]
-  if x=="?" then return true end
+  if is.mising(x) then return true end
   if lo==hi then return x==lo else return lo <= x and x < hi end end
 
 function spanShow(span, negative,   hi,lo,x,big)

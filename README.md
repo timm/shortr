@@ -109,7 +109,7 @@ a handful of examples (maybe even just one)  from each cluster.
 
 
 - **Scripting**: little languages (e.g. regular expressions); test-drive-development, 
-  pseudo-random numbers (and seeds), CLI design, version control, GitHub workflows, test-driven development, open science
+  pseudo-random numbers (and seeds), dialog independence, CLI design, version control, GitHub workflows, test-driven development, open science
 - Data layer: summarize text files as samples of data
 - Anomaly detection: Nearest-neighbor, Clustering
 - Validation: effect size, significance texts
