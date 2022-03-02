@@ -1,25 +1,25 @@
 --------------------------------------------------------------------------------
----   __         ______                                                   ___
----  /\ \       /\  ___\                                               ,o88888
----  \ \ \      \ \ \__/                                            ,o8888888'
----   \ \ \  __  \ \___``\                    ,:o:o:oooo.        ,8O88Pd8888"
----    \ \ \L\ \  \/\ \L\ \               ,.::.::o:ooooOoOoO. ,oO8O8Pd888'"
----     \ \____/   \ \____/             ,.:.::o:ooOoOoOO8O8OOo.8OOPd8O8O"
----      \/___/     \/___/             , ..:.::o:ooOoOOOO8OOOOo.FdO8O8"
----                                    , ..:.::o:ooOoOO8O888O8O,COCOO"
----  L5=a little LUA learning library  , . ..:.::o:ooOoOOOO8OOOOCOCO"
----  (c) Tim Menzies 2022, BSD-2       . ..:.::o:ooOoOoOO8O8OCCCC"o
----  Share and enjoy.                   . ..:.::o:ooooOoCoCCC"o:o
----  https://menzies.us/l5             . ..:.::o:o:,cooooCo"oo:o:
----                                 `   . . ..:.:cocoooo"'o:o:::'
----                                 .`   . ..::ccccoc"'o:o:o:::'
----                                :.:.    ,c:cccc"':.:.:.:.:.'
----                              ..:.:"'`::::c:"'..:.:.:.:.:.'
----                            ...:.'.:.::::"'    . . . . .'
----                           .. . ....:."' `   .  . . ''
----                          . . . ...."'
----                          .. . ."'     -hrr-
----                         .
+---   __         ______                                                      ___
+---  /\ \       /\  ___\                                                 ,o88888
+---  \ \ \      \ \ \__/                                              ,o8888888'
+---   \ \ \  __  \ \___``\                      ,:o:o:oooo.        ,8O88Pd8888"
+---    \ \ \L\ \  \/\ \L\ \                 ,.::.::o:ooooOoOoO. ,oO8O8Pd888'"
+---     \ \____/   \ \____/               ,.:.::o:ooOoOoOO8O8OOo.8OOPd8O8O"
+---      \/___/     \/___/               , ..:.::o:ooOoOOOO8OOOOo.FdO8O8"
+---                                      , ..:.::o:ooOoOO8O888O8O,COCOO"
+---  a little LUA learning library       , . ..:.::o:ooOoOOOO8OOOOCOCO"
+---  (c) Tim Menzies 2022, BSD-2         . ..:.::o:ooOoOoOO8O8OCCCC"o
+---  https://menzies.us/l5                . ..:.::o:ooooOoCoCCC"o:o
+---  Share and enjoy                      . ..:.::o:o:,cooooCo"oo:o:
+---                                   `   . . ..:.:cocoooo"'o:o:::'
+---                                   .`   . ..::ccccoc"'o:o:o:::'
+---                                  :.:.    ,c:cccc"':.:.:.:.:.'
+---                                ..:.:"'`::::c:"'..:.:.:.:.:.'
+---                              ...:.'.:.::::"'    . . . . .'
+---                             .. . ....:."' `   .  . . ''
+---                            . . . ...."'
+---                            .. . ."'     -hrr-
+---                           .
 ---   
 --- 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
@@ -383,9 +383,8 @@ function Num.spans(i, j)
   all = {one}
   for _,tmp in ipairs(sort(xys,firsts)) do
     x,y,n = unpack(tmp) 
-    if   one.hi - one.lo > gap then
-      one = push(all, {lo=one.hi, hi=x, all=one.all:clone()}) 
-    end
+    if   one.hi - one.lo > gap 
+    then one = push(all, {lo=one.hi, hi=x, all=one.all:clone()}) end 
     one.hi = x
     add(one.all, y, n) end
   all          = merge(all)
@@ -400,9 +399,9 @@ function merge(b4,      j,n,now,a,b,both)
     a, b = b4[j], b4[j+1]
     if   b then
       both = a.all:merge(b.all)
-      if both then 
-       a = {lo=a.lo, hi=b.hi, all=both} 
-       j = j + 1 end end
+      if    both 
+      then  a = {lo=a.lo, hi=b.hi, all=both} 
+            j = j + 1 end end
     push(now,a) end
   return #now == #b4 and b4 or merge(now) end
 
@@ -411,8 +410,7 @@ function Sym.merge(i,j,    k,ei,ej,ek)
   for x,n in pairs(i.all) do add(k,x,n) end
   for x,n in pairs(j.all) do add(k,x,n) end
   ei, ej, ek= i:div(), j:div(), k:div()
-  if    ek*.99 <= (i.n*ei + j.n*ej)/k.n then
-    return k end end
+  if    ek*.99 <= (i.n*ei + j.n*ej)/k.n then return k end end
 
 function spans(egs1,egs2,      spans,tmp,col1,col2)
   spans = {}
@@ -460,14 +458,12 @@ function xplains(i,format,t,pre,how,    sel,front)
   if t then
     pre=pre or ""
     front = fmt("%s%s%s %s",pre,how, #t.all, t.c and rnd(t.c) or "")
-    if t.lefts and t.rights then
-      print(fmt("%-35s",front))
-    else
-      print(fmt("%-35s %s",front, o(rnds(mids(i,t.all),format))))
+    if t.lefts and t.rights then print(fmt("%-35s",front)) else
+      print(fmt("%-35s %s",front, o(rnds(mids(i,t.all),format)))) 
     end
     sel = t.selector
     xplains(i,format,t.lefts,  "| ".. pre, spanShow(sel).." : ")
-    xplains(i,format,t.rights, "| ".. pre, spanShow(sel,true) .." : ") end end
+    xplains(i,format,t.rights, "| ".. pre, spanShow(sel,true) .." : ") end end
 
 function selects(span,row,    lo,hi,at,x)
   lo, hi, at = span.lo, span.hi, span.all.at
@@ -478,16 +474,15 @@ function selects(span,row,    lo,hi,at,x)
 function spanShow(span, negative,   hi,lo,x,big)
   if not span then return "" end
   lo, hi, x, big  = span.lo, span.hi, span.all.name, math.huge
-  if not negative then 
-    if lo ==  hi  then return fmt("%s == %s",x,lo)  end   
-    if hi ==  big then return fmt("%s >= %s",x,lo)  end   
-    if lo == -big then return fmt("%s <  %s",x,hi)  end   
-    return fmt("%s <= %s < %s",lo,x,hi)
-  else
-    if lo ==  hi  then return fmt("%s != %s",x,lo)  end   
-    if hi ==  big then return fmt("%s <  %s",x,lo)  end   
-    if lo == -big then return fmt("%s >= %s",x,hi)  end   
-    return fmt("%s < %s and %s >=  %s", x,lo,x,hi)  end end
+  if   not negative 
+  then if lo ==  hi  then return fmt("%s == %s",x,lo)  end   
+       if hi ==  big then return fmt("%s >= %s",x,lo)  end   
+       if lo == -big then return fmt("%s <  %s",x,hi)  end   
+       return fmt("%s <= %s < %s",lo,x,hi)
+  else if lo ==  hi  then return fmt("%s != %s",x,lo)  end   
+       if hi ==  big then return fmt("%s <  %s",x,lo)  end   
+       if lo == -big then return fmt("%s >= %s",x,hi)  end   
+       return fmt("%s < %s and %s >=  %s", x,lo,x,hi)  end end
 ---                       _        
 ---     _ __ ___    __ _ (_) _ __  
 ---    | '_ ` _ \  / _` || || '_ \ 

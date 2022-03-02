@@ -354,9 +354,8 @@ KEY: S=string, P=poisint, F=float
   all = {one}
   <span class="hljs-keyword">for</span> _,tmp <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">sort</span>(xys,firsts)) <span class="hljs-keyword">do</span>
     x,y,n = <span class="hljs-built_in">unpack</span>(tmp) 
-    <span class="hljs-keyword">if</span>   one.hi - one.lo &gt; gap <span class="hljs-keyword">then</span>
-      one = push(all, {lo=one.hi, hi=x, all=one.all:clone()}) 
-    <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span>   one.hi - one.lo &gt; gap 
+    <span class="hljs-keyword">then</span> one = push(all, {lo=one.hi, hi=x, all=one.all:clone()}) <span class="hljs-keyword">end</span> 
     one.hi = x
     add(one.all, y, n) <span class="hljs-keyword">end</span>
   all          = merge(all)
@@ -371,9 +370,9 @@ KEY: S=string, P=poisint, F=float
     a, b = b4[j], b4[j+<span class="hljs-number">1</span>]
     <span class="hljs-keyword">if</span>   b <span class="hljs-keyword">then</span>
       both = a.all:merge(b.all)
-      <span class="hljs-keyword">if</span> both <span class="hljs-keyword">then</span> 
-       a = {lo=a.lo, hi=b.hi, all=both} 
-       j = j + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">if</span>    both 
+      <span class="hljs-keyword">then</span>  a = {lo=a.lo, hi=b.hi, all=both} 
+            j = j + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
     push(now,a) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> #now == #b4 <span class="hljs-keyword">and</span> b4 <span class="hljs-keyword">or</span> merge(now) <span class="hljs-keyword">end</span>
 
@@ -382,8 +381,7 @@ KEY: S=string, P=poisint, F=float
   <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> add(k,x,n) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.all) <span class="hljs-keyword">do</span> add(k,x,n) <span class="hljs-keyword">end</span>
   ei, ej, ek= i:div(), j:div(), k:div()
-  <span class="hljs-keyword">if</span>    ek*<span class="hljs-number">.99</span> &lt;= (i.n*ei + j.n*ej)/k.n <span class="hljs-keyword">then</span>
-    <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span>    ek*<span class="hljs-number">.99</span> &lt;= (i.n*ei + j.n*ej)/k.n <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">spans</span><span class="hljs-params">(egs1,egs2,      spans,tmp,col1,col2)</span></span>
   spans = {}
@@ -428,14 +426,12 @@ KEY: S=string, P=poisint, F=float
   <span class="hljs-keyword">if</span> t <span class="hljs-keyword">then</span>
     pre=pre <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
     front = fmt(<span class="hljs-string">&quot;%s%s%s %s&quot;</span>,pre,how, #t.all, t.c <span class="hljs-keyword">and</span> rnd(t.c) <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>)
-    <span class="hljs-keyword">if</span> t.lefts <span class="hljs-keyword">and</span> t.rights <span class="hljs-keyword">then</span>
-      <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;%-35s&quot;</span>,front))
-    <span class="hljs-keyword">else</span>
-      <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;%-35s %s&quot;</span>,front, o(rnds(mids(i,t.all),<span class="hljs-built_in">format</span>))))
+    <span class="hljs-keyword">if</span> t.lefts <span class="hljs-keyword">and</span> t.rights <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;%-35s&quot;</span>,front)) <span class="hljs-keyword">else</span>
+      <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;%-35s %s&quot;</span>,front, o(rnds(mids(i,t.all),<span class="hljs-built_in">format</span>)))) 
     <span class="hljs-keyword">end</span>
     sel = t.selector
     xplains(i,<span class="hljs-built_in">format</span>,t.lefts,  <span class="hljs-string">&quot;| &quot;</span>.. pre, spanShow(sel)..<span class="hljs-string">&quot; : &quot;</span>)
-    xplains(i,<span class="hljs-built_in">format</span>,t.rights, <span class="hljs-string">&quot;| &quot;</span>.. pre, spanShow(sel,<span class="hljs-literal">true</span>) ..<span class="hljs-string">&quot; : &quot;</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    xplains(i,<span class="hljs-built_in">format</span>,t.rights, <span class="hljs-string">&quot;| &quot;</span>.. pre, spanShow(sel,<span class="hljs-literal">true</span>) ..<span class="hljs-string">&quot; : &quot;</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">selects</span><span class="hljs-params">(span,row,    lo,hi,at,x)</span></span>
   lo, hi, at = span.lo, span.hi, span.all.at
@@ -446,16 +442,15 @@ KEY: S=string, P=poisint, F=float
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">spanShow</span><span class="hljs-params">(span, negative,   hi,lo,x,big)</span></span>
   <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> span <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span> <span class="hljs-keyword">end</span>
   lo, hi, x, big  = span.lo, span.hi, span.all.name, <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
-  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> negative <span class="hljs-keyword">then</span> 
-    <span class="hljs-keyword">if</span> lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
-    <span class="hljs-keyword">if</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
-    <span class="hljs-keyword">if</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;  %s&quot;</span>,x,hi)  <span class="hljs-keyword">end</span>   
-    <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s &lt; %s&quot;</span>,lo,x,hi)
-  <span class="hljs-keyword">else</span>
-    <span class="hljs-keyword">if</span> lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s != %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
-    <span class="hljs-keyword">if</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;  %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
-    <span class="hljs-keyword">if</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x,hi)  <span class="hljs-keyword">end</span>   
-    <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s and %s &gt;=  %s&quot;</span>, x,lo,x,hi)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span>   <span class="hljs-keyword">not</span> negative 
+  <span class="hljs-keyword">then</span> <span class="hljs-keyword">if</span> lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
+       <span class="hljs-keyword">if</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
+       <span class="hljs-keyword">if</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;  %s&quot;</span>,x,hi)  <span class="hljs-keyword">end</span>   
+       <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s &lt; %s&quot;</span>,lo,x,hi)
+  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s != %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
+       <span class="hljs-keyword">if</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;  %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
+       <span class="hljs-keyword">if</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x,hi)  <span class="hljs-keyword">end</span>   
+       <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s and %s &gt;=  %s&quot;</span>, x,lo,x,hi)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo.the</span><span class="hljs-params">()</span></span> oo(the) <span class="hljs-keyword">end</span>
 
