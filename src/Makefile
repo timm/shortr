@@ -4,7 +4,7 @@ D      = ..
 LUA    = $(shell ls *.lua)
 PDF    = $(addsuffix .pdf, $(addprefix $D/docs/,$(basename $(LUA))))
 HTML   = $(addsuffix .html,$(addprefix $D/docs/,$(basename $(LUA))))
-COMMENT= gawk '/^[ \t]*$$/ {next} {print "---    "$$0}'
+COMMENT= gawk '/^[ \t]*$$/ {next} {print "---    "$$0} END{print}'
 
 top:; echo $(LUA)
 
@@ -15,8 +15,8 @@ help:
 	| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%10s :\033[0m %s\n", $$1, $$2}'
 
 h1:; @figlet -W -flarry3d     $t | $(COMMENT)
-h2:; @figlet -W -fogre        $t | $(COMMENT)
-h3:; @figlet -W -fcybermedium $t | $(COMMENT)
+h3:; @figlet -W -fthreepoint        $t | $(COMMENT)
+h2:; @figlet -W -fcybermedium $t | $(COMMENT)
 
 doc: $(PDF) $(HTML) $D/docs/index.html ## generate pdfs
 
