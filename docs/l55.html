@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>l55.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>l55.lua</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span> 
+<span class="hljs-keyword">local</span> the,help={},<span class="hljs-string">[[
+
+lua l5.lua [OPTIONS]
+L5 == a very little LUA learning lab
+(c)2022, Tim Menzies, BSD 2-clause license
+
+OPTIONS (for changing the inference):
+
+  -cohen  -c  F  cohen&#x27;s small effect size      = .35
+  -far    -F  F  look no further than &quot;far&quot;     = .9
+  -keep   -k     items to keep in a number      = 512 
+  -leaves -l     leaf size                      = .5 
+  -p      -p  P  distance calcs coefficient     = 2
+  -seed   -S  P  random number seed             = 10019
+  -some   -s     look only at &quot;some&quot; items      = 512
+
+OPTIONS (for housekeeping):
+
+  -dump   -d     exit on error, with stacktrace = false
+  -file   -f  S  where to get data              = ../etc/data/auto93.csv
+  -help   -h     show help                      = false
+  -rnd    -r  S  format string                  = %5.2f
+  -todo   -t  S  start-up action                = nothing
+
+
+KEY: S=string, P=poisint, F=float
+]]</span>
+<span class="hljs-keyword">local</span> as,o = <span class="hljs-built_in">setmetatable</span>
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">obj</span><span class="hljs-params">(   t)</span></span>
+  t={<span class="hljs-built_in">__tostring</span>=o}; t.<span class="hljs-built_in">__index</span>=t
+  <span class="hljs-keyword">return</span> as(t, {<span class="hljs-built_in">__call</span>=<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(_,...)</span></span> <span class="hljs-keyword">return</span> t.new(_,...) <span class="hljs-keyword">end</span>}) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> Sym = obj() <span class="hljs-comment">-- Where to summarize symbols</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym:new</span><span class="hljs-params">(at,s)</span></span> <span class="hljs-keyword">return</span> as({
+  is=<span class="hljs-string">&quot;Sym&quot;</span>,     <span class="hljs-comment">-- type</span>
+  at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>,   <span class="hljs-comment">-- column index</span>
+  name=s <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">-- column name</span>
+  n=<span class="hljs-number">0</span>,          <span class="hljs-comment">-- number of items summarized in this column</span>
+  all={},       <span class="hljs-comment">-- all[x] = n means we&#x27;ve seen &quot;n&quot; repeats of &quot;x&quot; </span>
+   most=<span class="hljs-number">0</span>,      <span class="hljs-comment">-- count of the most frequently seen symbol</span>
+   mode=<span class="hljs-literal">nil</span>     <span class="hljs-comment">-- the most commonly seen letter</span>
+  }, Sym) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> Num = obj() <span class="hljs-comment">-- Where to summarize numbers</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num:new</span><span class="hljs-params">(at,s)</span></span> <span class="hljs-keyword">return</span> as({
+  is=<span class="hljs-string">&quot;Num&quot;</span>,     <span class="hljs-comment">-- type</span>
+  at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>,   <span class="hljs-comment">-- column index</span>
+  name=s <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">-- column name</span>
+  n=<span class="hljs-number">0</span>,          <span class="hljs-comment">-- number of items summarizes in this column</span>
+  mu=<span class="hljs-number">0</span>,         <span class="hljs-comment">-- mean (updated incrementally)</span>
+  m2=<span class="hljs-number">0</span>,         <span class="hljs-comment">-- second moment (updated incrementally)</span>
+  sd=<span class="hljs-number">0</span>,         <span class="hljs-comment">-- standard deviation</span>
+  all={},       <span class="hljs-comment">-- a sample of items seen so far</span>
+  lo=<span class="hljs-number">1E31</span>,      <span class="hljs-comment">-- lowest number seen; initially, big so 1st num sends it low</span>
+  hi=<span class="hljs-number">-1E31</span>,     <span class="hljs-comment">-- highest number seen;initially, msall to 2st num sends it hi</span>
+  w=(s <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>):<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-comment">-- &quot;-1&quot;= minimize and &quot;1&quot;= maximize</span>
+  }, Num) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> Egs = obj() <span class="hljs-comment">-- Where to store examples, summarized into Syms or Nums</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs:new</span><span class="hljs-params">(names,     i,col,here)</span></span>  i=as({
+  is=<span class="hljs-string">&quot;Egs&quot;</span>,     <span class="hljs-comment">-- type</span>
+  all={},       <span class="hljs-comment">-- all the rows</span>
+  names=names,  <span class="hljs-comment">-- list of name </span>
+  cols={},      <span class="hljs-comment">-- list of all columns  (Nums or Syms)</span>
+  x={},         <span class="hljs-comment">-- independent columns (nothing marked as &quot;skip&quot;)</span>
+  y={}          <span class="hljs-comment">-- dependent columns (nothing marked as &quot;skip&quot;)</span>
+  },Egs)
+  <span class="hljs-keyword">for</span> at,name <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(names) <span class="hljs-keyword">do</span>
+    col = (name:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">and</span> Num <span class="hljs-keyword">or</span> Sym)(at,name)
+    i.cols[<span class="hljs-number">1</span>+#i.cols] = col
+    here = name:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;[-+]$&quot;</span> <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> name:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">then</span> here[<span class="hljs-number">1</span> + #here] = col <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>  
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.clone</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> Num(i.at, i.name) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.clone</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> Sym(i.at, i.name) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> data
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.clone</span><span class="hljs-params">(i,rows,    copy)</span></span> 
+  copy = Egs(i.names)  
+  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span>  data(copy,row)  <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> copy <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-2">&#x00a7;</a>
+              </div>
+              <p>[[</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>## Coding Conventions
+- <span class="hljs-string">&quot;i&quot;</span> <span class="hljs-keyword">not</span> <span class="hljs-string">&quot;self&quot;</span>
+- <span class="hljs-keyword">if</span> something holds a list of thing, name the holding variable <span class="hljs-string">&quot;all&quot;</span>
+- no inheritance
+- only define a method <span class="hljs-keyword">if</span> that is <span class="hljs-keyword">for</span> polymorphism
+- when you can, <span class="hljs-built_in">write</span> functions down on one line
+- all <span class="hljs-built_in">config</span> items into a global <span class="hljs-string">&quot;the&quot;</span> variable
+- all the test cases (<span class="hljs-keyword">or</span> demos) are <span class="hljs-string">&quot;function Demo.xxx&quot;</span>.
+- <span class="hljs-built_in">random</span> seed reset so carefully, just once, at the <span class="hljs-keyword">end</span> of the code.
+- usually, no line with just <span class="hljs-string">&quot;end&quot;</span> on it 
+]]
+<span class="hljs-keyword">local</span> r   = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span>
+<span class="hljs-keyword">local</span> fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">format</span>
+<span class="hljs-keyword">local</span> <span class="hljs-built_in">unpack</span> = <span class="hljs-built_in">table</span>.<span class="hljs-built_in">unpack</span>
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">push</span><span class="hljs-params">(t,x)</span></span> <span class="hljs-built_in">table</span>.<span class="hljs-built_in">insert</span>(t,x); <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> thing,things,file2things
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">thing</span><span class="hljs-params">(x)</span></span>
+  x = x:<span class="hljs-built_in">match</span><span class="hljs-string">&quot;^%s*(.-)%s*$&quot;</span>
+  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">elseif</span> x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">things</span><span class="hljs-params">(x,sep,  t)</span></span>
+  t={}; <span class="hljs-keyword">for</span> y <span class="hljs-keyword">in</span> x:<span class="hljs-built_in">gmatch</span>(sep <span class="hljs-keyword">or</span><span class="hljs-string">&quot;([^,]+)&quot;</span>) <span class="hljs-keyword">do</span> push(t,thing(y)) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">file2things</span><span class="hljs-params">(file,      x)</span></span>
+  file = <span class="hljs-built_in">io</span>.<span class="hljs-built_in">input</span>(file)
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>
+    x=<span class="hljs-built_in">io</span>.<span class="hljs-built_in">read</span>(); 
+    <span class="hljs-keyword">if</span> x <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> things(x) <span class="hljs-keyword">else</span> <span class="hljs-built_in">io</span>.<span class="hljs-built_in">close</span>(file) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">local</span> last,per,any,many
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">last</span><span class="hljs-params">(a)</span></span>       <span class="hljs-keyword">return</span> a[ #a ] <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">per</span><span class="hljs-params">(a,p)</span></span>      <span class="hljs-keyword">return</span> a[ (p*#a)//<span class="hljs-number">1</span> ] <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">any</span><span class="hljs-params">(a)</span></span>        <span class="hljs-keyword">return</span> a[ <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span>(#a) ] <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">many</span><span class="hljs-params">(a,n,  u)</span></span> u={}; <span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,n <span class="hljs-keyword">do</span> push(u,any(a)) <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> firsts,<span class="hljs-built_in">sort</span>,map,slots
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">firsts</span><span class="hljs-params">(a,b)</span></span>  <span class="hljs-keyword">return</span> a[<span class="hljs-number">1</span>] &lt; b[<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sort</span><span class="hljs-params">(t,f)</span></span>    <span class="hljs-built_in">table</span>.<span class="hljs-built_in">sort</span>(t,f); <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">map</span><span class="hljs-params">(t,f, u)</span></span>  u={};<span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> push(u,f(v)) <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">slots</span><span class="hljs-params">(t, u,s)</span></span>
+  u={}
+  <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> s=<span class="hljs-built_in">tostring</span>(k);<span class="hljs-keyword">if</span> s:<span class="hljs-built_in">sub</span>(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)~=<span class="hljs-string">&quot;_&quot;</span> <span class="hljs-keyword">then</span> push(u,k) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(u) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> oo,rnd, rnds <span class="hljs-comment">-- local o was declared above (in &quot;new&quot;)</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">oo</span><span class="hljs-params">(t)</span></span> <span class="hljs-built_in">print</span>(o(t)) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">o</span><span class="hljs-params">(t,seen,        key,xseen,u)</span></span>
+  seen = seen <span class="hljs-keyword">or</span> {}
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">type</span>(t)~=<span class="hljs-string">&quot;table&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">tostring</span>(t) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> seen[t]          <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;...&quot;</span> <span class="hljs-keyword">end</span>
+  seen[t] = t
+  key   = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(k)</span></span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;:%s %s&quot;</span>,k,o(t[k],seen)) <span class="hljs-keyword">end</span>
+  xseen = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> o(x,seen) <span class="hljs-keyword">end</span>
+  u = #t&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> map(t,xseen) <span class="hljs-keyword">or</span> map(slots(t),key)
+  <span class="hljs-keyword">return</span> (t.is <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>)..<span class="hljs-string">&#x27;{&#x27;</span>..<span class="hljs-built_in">table</span>.<span class="hljs-built_in">concat</span>(u,<span class="hljs-string">&quot; &quot;</span>)..<span class="hljs-string">&quot;}&quot;</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rnds</span><span class="hljs-params">(t,f)</span></span> <span class="hljs-keyword">return</span> map(t, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> rnd(x,f) <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rnd</span><span class="hljs-params">(x,f)</span></span> 
+  <span class="hljs-keyword">return</span> fmt(<span class="hljs-built_in">type</span>(x)==<span class="hljs-string">&quot;number&quot;</span> <span class="hljs-keyword">and</span> (x~=x//<span class="hljs-number">1</span> <span class="hljs-keyword">and</span> f <span class="hljs-keyword">or</span> the.rnd) <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;%s&quot;</span>,x) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> Demo, ok = {fails=<span class="hljs-number">0</span>}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ok</span><span class="hljs-params">(test,msg)</span></span>
+  <span class="hljs-built_in">print</span>(test <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;PASS: &quot;</span><span class="hljs-keyword">or</span> <span class="hljs-string">&quot;FAIL: &quot;</span>,msg <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>) 
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> test <span class="hljs-keyword">then</span> 
+    Demo.fails=Demo.fails+<span class="hljs-number">1</span> 
+    <span class="hljs-keyword">if</span> the.<span class="hljs-built_in">dump</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">assert</span>(test,msg) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo.main</span><span class="hljs-params">(todo,seed)</span></span>
+   <span class="hljs-keyword">for</span> k,one <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(todo==<span class="hljs-string">&quot;all&quot;</span> <span class="hljs-keyword">and</span> slots(Demo) <span class="hljs-keyword">or</span> {todo}) <span class="hljs-keyword">do</span>
+     <span class="hljs-keyword">if</span> k ~= <span class="hljs-string">&quot;main&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">type</span>(Demo[one]) == <span class="hljs-string">&quot;function&quot;</span> <span class="hljs-keyword">then</span>
+       <span class="hljs-built_in">math</span>.<span class="hljs-built_in">randomseed</span>(seed)
+       Demo[one]() <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+   <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> b4[k] <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;?&quot;</span>,k,<span class="hljs-built_in">type</span>(v)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>  
+   <span class="hljs-keyword">return</span> Demo.fails <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">settings</span><span class="hljs-params">(txt,  d)</span></span>
+  d={}
+  txt:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)&quot;</span>,
+    <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(long,key,short,x)</span></span>
+      <span class="hljs-keyword">for</span> n,flag <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">arg</span>) <span class="hljs-keyword">do</span> 
+        <span class="hljs-keyword">if</span> flag==short <span class="hljs-keyword">or</span> flag==long <span class="hljs-keyword">then</span>
+          x = x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">or</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">arg</span>[n+<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+      <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">then</span> the[key]=<span class="hljs-literal">false</span> <span class="hljs-keyword">elseif</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">then</span> the[key]=<span class="hljs-literal">true</span> <span class="hljs-keyword">else</span>
+      d[key] = <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>)
+  <span class="hljs-keyword">if</span> d.help <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(help) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> d <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> add
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span><span class="hljs-params">(i,x, inc)</span></span>
+  inc = inc <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>
+  <span class="hljs-keyword">if</span> x ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
+    i.n = i.n + inc
+    i:internalAdd(x,inc) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.internalAdd</span><span class="hljs-params">(i,x,inc)</span></span>
+  i.all[x] = inc + (i.all[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>)
+  <span class="hljs-keyword">if</span> i.all[x] &gt; i.most <span class="hljs-keyword">then</span> i.most, i.mode = i.all[x], x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.internalAdd</span><span class="hljs-params">(i,x,inc,    d)</span></span>
+  <span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,inc <span class="hljs-keyword">do</span>
+    d     = x - i.mu
+    i.mu  = i.mu + d/i.n
+    i.m2  = i.m2 + d*(x - i.mu)
+    i.sd  = (i.m2&lt;<span class="hljs-number">0</span> <span class="hljs-keyword">or</span> i.n&lt;<span class="hljs-number">2</span>) <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> ((i.m2/(i.n<span class="hljs-number">-1</span>))^<span class="hljs-number">0.5</span>)
+    i.lo  = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(x, i.lo)
+    i.hi  = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(x, i.hi) 
+    <span class="hljs-keyword">if</span>     #i.all &lt; the.keep      <span class="hljs-keyword">then</span> push(i.all,x)  
+    <span class="hljs-keyword">elseif</span> r()    &lt; they.keep/i.n <span class="hljs-keyword">then</span> i.all[r(#i.all)]=x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> file2Egs <span class="hljs-comment">-- not &quot;local data&quot; (since defined above)</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">data</span><span class="hljs-params">(i,row)</span></span>
+  push(i.all, row)
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols) <span class="hljs-keyword">do</span> add(col, row[col.at]) <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">file2Egs</span><span class="hljs-params">(file,   i)</span></span>
+  <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> file2things(file) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">if</span> i <span class="hljs-keyword">then</span> data(i,row) <span class="hljs-keyword">else</span> i = Egs(row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> mids
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">mids</span><span class="hljs-params">(i,rows,cols)</span></span> <span class="hljs-keyword">return</span> i:clone(rows):mid(cols) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.mid</span><span class="hljs-params">(i,cols)</span></span> 
+  <span class="hljs-keyword">return</span> map(cols <span class="hljs-keyword">or</span> i.y,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(col)</span></span> <span class="hljs-keyword">return</span> col:mid() <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.mid</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.mode <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.mid</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.mu <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.div</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.sd <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.div</span><span class="hljs-params">(i,  e)</span></span>
+  e=<span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> _,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> e=e + n/i.n*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(n/i.n,<span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> -e <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> far,furthest,neighbors,dist
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">far</span><span class="hljs-params">(      i,r1,rows,far)</span></span> 
+  <span class="hljs-keyword">return</span> per(neighbors(i,r1,rows),far <span class="hljs-keyword">or</span> the.far)[<span class="hljs-number">2</span>] <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">furthest</span><span class="hljs-params">( i,r1,rows)</span></span> 
+  <span class="hljs-keyword">return</span> last(neighbors(i,r1,rows))[<span class="hljs-number">2</span>] <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">neighbors</span><span class="hljs-params">(i,r1,rows)</span></span> 
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(map(rows, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(r2)</span></span> <span class="hljs-keyword">return</span> {dist(i,r1,r2),r2} <span class="hljs-keyword">end</span>),firsts) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dist</span><span class="hljs-params">(i,row1,row2,    d,n,a,b,inc)</span></span>
+  d,n = <span class="hljs-number">0</span>,<span class="hljs-number">0</span>    
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.x) <span class="hljs-keyword">do</span>
+    a,b = row1[col.at], row2[col.at]
+    inc = a==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> b==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> col:dist1(a,b) 
+    d = d + inc^the.p
+    n = n + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> (d/n)^(<span class="hljs-number">1</span>/the.p) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.dist1</span><span class="hljs-params">(i,a,b)</span></span> <span class="hljs-keyword">return</span> a==b <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.dist1</span><span class="hljs-params">(i,a,b)</span></span>
+  <span class="hljs-keyword">if</span>     a==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> b=i:norm(b); a=b&lt;<span class="hljs-number">.5</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">0</span> 
+  <span class="hljs-keyword">elseif</span> b==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> a=i:norm(a); b=a&lt;<span class="hljs-number">.5</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>
+  <span class="hljs-keyword">else</span>   a,b = i:norm(a), i:norm(b)  <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">abs</span>(a - b) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.norm</span><span class="hljs-params">(i,x)</span></span>
+  <span class="hljs-keyword">return</span> i.hi - i.lo &lt; <span class="hljs-number">1E-32</span> <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> (x - i.lo)/(i.hi - i.lo) <span class="hljs-keyword">end</span> 
+
+<span class="hljs-keyword">local</span> half, cluster, clusters
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">half</span><span class="hljs-params">(i, rows,    project,row,some,left,right,lefts,rights,c,mid)</span></span>
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">project</span><span class="hljs-params">(row,a,b)</span></span>
+    a= dist(i,left,row)
+    b= dist(i,right,row)
+    <span class="hljs-keyword">return</span> {(a^<span class="hljs-number">2</span> + c^<span class="hljs-number">2</span> - b^<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*c), row} 
+  some  = many(rows,        the.some)
+  left  = furthest(i,any(some), some)
+  right = furthest(i,left,      some)
+  c     = dist(i,left,right)
+  lefts,rights = {},{}
+  <span class="hljs-keyword">for</span> n, projection <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(map(rows,project),firsts)) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">if</span> n==#rows//<span class="hljs-number">2</span> <span class="hljs-keyword">then</span> mid=row <span class="hljs-keyword">end</span>
+    push(n &lt;= #rows//<span class="hljs-number">2</span> <span class="hljs-keyword">and</span> lefts <span class="hljs-keyword">or</span> rights, projection[<span class="hljs-number">2</span>]) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> lefts, rights, left, right, mid, c  <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">cluster</span><span class="hljs-params">(i,rows,  here,lefts,rights)</span></span>
+  rows = rows <span class="hljs-keyword">or</span> i.all
+  here = {all=rows}
+  <span class="hljs-keyword">if</span> #rows &gt;= <span class="hljs-number">2</span>* (#i.all)^the.leaves <span class="hljs-keyword">then</span>
+    lefts, rights, here.left, here.right, here.mid = half(i, rows)
+    <span class="hljs-keyword">if</span> #lefts &lt; #rows <span class="hljs-keyword">then</span>
+      here.lefts = cluster(i,lefts)
+      here.rights= cluster(i,rights) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> here <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">clusters</span><span class="hljs-params">(i,format,t,pre,   front)</span></span>
+  <span class="hljs-keyword">if</span> t <span class="hljs-keyword">then</span>
+    pre=pre <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
+    front = fmt(<span class="hljs-string">&quot;%s%s&quot;</span>,pre,#t.all)
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> t.lefts <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> t.rights <span class="hljs-keyword">then</span>
+      <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;%-20s%s&quot;</span>,front, o(rnds(mids(i,t.all),<span class="hljs-built_in">format</span>))))
+    <span class="hljs-keyword">else</span> 
+      <span class="hljs-built_in">print</span>(front)
+      clusters(i,<span class="hljs-built_in">format</span>,t.lefts, <span class="hljs-string">&quot;| &quot;</span>.. pre)
+      clusters(i,<span class="hljs-built_in">format</span>,t.rights,<span class="hljs-string">&quot;| &quot;</span>.. pre) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> merge,merged,spans,bestSpan
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.spans</span><span class="hljs-params">(i, j)</span></span>
+  <span class="hljs-keyword">local</span> xys,all,one,last,x,y,n = {}, {}
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> push(xys, {x,<span class="hljs-string">&quot;lefts&quot;</span>,n}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.all) <span class="hljs-keyword">do</span> push(xys, {x,<span class="hljs-string">&quot;rights&quot;</span>,n}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _,tmp <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">sort</span>(xys,firsts)) <span class="hljs-keyword">do</span>
+    x,y,n = <span class="hljs-built_in">unpack</span>(tmp)
+    <span class="hljs-keyword">if</span> x ~= last <span class="hljs-keyword">then</span>
+      last = x
+      one  = push(all, {lo=x, hi=x, all=Sym(i.at,i.name)}) <span class="hljs-keyword">end</span>
+    add(one.all, y, n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> all <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.spans</span><span class="hljs-params">(i, j)</span></span>
+  <span class="hljs-keyword">local</span> xys,all,lo,hi,gap,one,x,y,n = {},{}
+  lo,hi = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(i.lo, j.lo), <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(i.hi,j.hi)
+  gap   = (hi - lo) / (<span class="hljs-number">6</span>/the.cohen)
+  <span class="hljs-keyword">for</span> _,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> push(xys, {n,<span class="hljs-string">&quot;lefts&quot;</span>,<span class="hljs-number">1</span>}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.all) <span class="hljs-keyword">do</span> push(xys, {n,<span class="hljs-string">&quot;rights&quot;</span>,<span class="hljs-number">1</span>}) <span class="hljs-keyword">end</span>
+  one = {lo=lo, hi=lo, all=Sym(i.at,i.name)}
+  all = {one}
+  <span class="hljs-keyword">for</span> _,tmp <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">sort</span>(xys,firsts)) <span class="hljs-keyword">do</span>
+    x,y,n = <span class="hljs-built_in">unpack</span>(tmp) 
+    <span class="hljs-keyword">if</span>   one.hi - one.lo &gt; gap <span class="hljs-keyword">then</span>
+      one = push(all, {lo=one.hi, hi=x, all=one.all:clone()}) 
+    <span class="hljs-keyword">end</span>
+    one.hi = x
+    add(one.all, y, n) <span class="hljs-keyword">end</span>
+  all          = merge(all)
+  all[<span class="hljs-number">1</span>   ].lo = -<span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
+  all[#all].hi =  <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
+  <span class="hljs-keyword">return</span> all <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">merge</span><span class="hljs-params">(b4,      j,n,now,a,b,both)</span></span>
+  j, n, now = <span class="hljs-number">0</span>, #b4, {}
+  <span class="hljs-keyword">while</span> j &lt; #b4 <span class="hljs-keyword">do</span>
+    j    = j+<span class="hljs-number">1</span>
+    a, b = b4[j], b4[j+<span class="hljs-number">1</span>]
+    <span class="hljs-keyword">if</span>   b <span class="hljs-keyword">then</span>
+      both = a.all:merge(b.all)
+      <span class="hljs-keyword">if</span> both <span class="hljs-keyword">then</span> 
+       a = {lo=a.lo, hi=b.hi, all=both} 
+       j = j + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    push(now,a) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> #now == #b4 <span class="hljs-keyword">and</span> b4 <span class="hljs-keyword">or</span> merge(now) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.merge</span><span class="hljs-params">(i,j,    k,ei,ej,ek)</span></span>
+  k = i:clone()
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> add(k,x,n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.all) <span class="hljs-keyword">do</span> add(k,x,n) <span class="hljs-keyword">end</span>
+  ei, ej, ek= i:div(), j:div(), k:div()
+  <span class="hljs-keyword">if</span>    ek*<span class="hljs-number">.99</span> &lt;= (i.n*ei + j.n*ej)/k.n <span class="hljs-keyword">then</span>
+    <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">spans</span><span class="hljs-params">(egs1,egs2,      spans,tmp,col1,col2)</span></span>
+  spans = {}
+  <span class="hljs-keyword">for</span> c,col1 <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(egs1.x) <span class="hljs-keyword">do</span>
+    col2 = egs2.x[c]
+    tmp = col1:spans(col2)
+    <span class="hljs-keyword">if</span> #tmp&gt; <span class="hljs-number">1</span> <span class="hljs-keyword">then</span>
+      <span class="hljs-keyword">for</span> _,one <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(tmp) <span class="hljs-keyword">do</span> push(spans,one) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> spans <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bestSpan</span><span class="hljs-params">(spans)</span></span>  
+  <span class="hljs-keyword">local</span> divs,ns,n,div,stats,dist2heaven = Num(), Num()
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dist2heaven</span><span class="hljs-params">(s)</span></span> <span class="hljs-keyword">return</span> {((<span class="hljs-number">1</span> - n(s))^<span class="hljs-number">2</span> + (<span class="hljs-number">0</span> - div(s))^<span class="hljs-number">2</span>)^<span class="hljs-number">.5</span>,s} <span class="hljs-keyword">end</span> 
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">div</span><span class="hljs-params">(s)</span></span>         <span class="hljs-keyword">return</span> divs:norm( s.all:div() ) <span class="hljs-keyword">end</span>
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">n</span><span class="hljs-params">(s)</span></span>           <span class="hljs-keyword">return</span>   ns:norm( s.all.n     ) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _,s <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(spans) <span class="hljs-keyword">do</span> 
+    add(divs, s.all:div())
+    add(ns,   s.all.n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(map(spans, dist2heaven), firsts)[<span class="hljs-number">1</span>][<span class="hljs-number">2</span>]  <span class="hljs-keyword">end</span> 
+
+<span class="hljs-keyword">local</span> xplain,xplains,selects,spanShow
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">xplain</span><span class="hljs-params">(i,rows,used,   
+                 stop,here,left,right,lefts0,rights0,lefts1,rights1)</span></span>
+  used=used <span class="hljs-keyword">or</span> {}
+  rows = rows <span class="hljs-keyword">or</span> i.all
+  here = {all=rows}
+  stop = (#i.all)^the.leaves 
+  <span class="hljs-keyword">if</span> #rows &gt;= <span class="hljs-number">2</span>*stop <span class="hljs-keyword">then</span>
+    lefts0, rights0, here.left, here.right, here.mid, here.c  = half(i, rows)
+    <span class="hljs-keyword">if</span> #lefts0 &lt; #rows <span class="hljs-keyword">then</span>
+      here.selector = bestSpan(spans(i:clone(lefts0),i:clone(rights0)))
+      push(used, {here.selector.all.name, here.selector.lo, here.selector.hi})
+      lefts1,rights1 = {},{}
+      <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span> 
+        push(selects(here.selector, row) <span class="hljs-keyword">and</span> lefts1 <span class="hljs-keyword">or</span> rights1, row) <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">if</span> #lefts1  &gt; stop <span class="hljs-keyword">then</span> here.lefts  = xplain(i,lefts1,used) <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">if</span> #rights1 &gt; stop <span class="hljs-keyword">then</span> here.rights = xplain(i,rights1,used) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> here <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">xplains</span><span class="hljs-params">(i,format,t,pre,how,    sel,front)</span></span>
+  pre, how = pre <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, how <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
+  <span class="hljs-keyword">if</span> t <span class="hljs-keyword">then</span>
+    pre=pre <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
+    front = fmt(<span class="hljs-string">&quot;%s%s%s %s&quot;</span>,pre,how, #t.all, t.c <span class="hljs-keyword">and</span> rnd(t.c) <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>)
+    <span class="hljs-keyword">if</span> t.lefts <span class="hljs-keyword">and</span> t.rights <span class="hljs-keyword">then</span>
+      <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;%-35s&quot;</span>,front))
+    <span class="hljs-keyword">else</span>
+      <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;%-35s %s&quot;</span>,front, o(rnds(mids(i,t.all),<span class="hljs-built_in">format</span>))))
+    <span class="hljs-keyword">end</span>
+    sel = t.selector
+    xplains(i,<span class="hljs-built_in">format</span>,t.lefts,  <span class="hljs-string">&quot;| &quot;</span>.. pre, spanShow(sel)..<span class="hljs-string">&quot; : &quot;</span>)
+    xplains(i,<span class="hljs-built_in">format</span>,t.rights, <span class="hljs-string">&quot;| &quot;</span>.. pre, spanShow(sel,<span class="hljs-literal">true</span>) ..<span class="hljs-string">&quot; : &quot;</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">selects</span><span class="hljs-params">(span,row,    lo,hi,at,x)</span></span>
+  lo, hi, at = span.lo, span.hi, span.all.at
+  x = row[at]
+  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> lo==hi <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x==lo <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span> lo &lt;= x <span class="hljs-keyword">and</span> x &lt; hi <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">spanShow</span><span class="hljs-params">(span, negative,   hi,lo,x,big)</span></span>
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> span <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span> <span class="hljs-keyword">end</span>
+  lo, hi, x, big  = span.lo, span.hi, span.all.name, <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> negative <span class="hljs-keyword">then</span> 
+    <span class="hljs-keyword">if</span> lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
+    <span class="hljs-keyword">if</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
+    <span class="hljs-keyword">if</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;  %s&quot;</span>,x,hi)  <span class="hljs-keyword">end</span>   
+    <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s &lt; %s&quot;</span>,lo,x,hi)
+  <span class="hljs-keyword">else</span>
+    <span class="hljs-keyword">if</span> lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s != %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
+    <span class="hljs-keyword">if</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;  %s&quot;</span>,x,lo)  <span class="hljs-keyword">end</span>   
+    <span class="hljs-keyword">if</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x,hi)  <span class="hljs-keyword">end</span>   
+    <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s and %s &gt;=  %s&quot;</span>, x,lo,x,hi)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo.the</span><span class="hljs-params">()</span></span> oo(the) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo.many</span><span class="hljs-params">(a)</span></span> 
+  a={<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>,<span class="hljs-number">9</span>,<span class="hljs-number">10</span>}; ok(<span class="hljs-string">&quot;{10 2 3}&quot;</span> == o(many(a,<span class="hljs-number">3</span>)), <span class="hljs-string">&quot;manys&quot;</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo.egs</span><span class="hljs-params">()</span></span> 
+  ok(<span class="hljs-number">5140</span>==file2Egs(the.file).y[<span class="hljs-number">1</span>].hi,<span class="hljs-string">&quot;reading&quot;</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo.dist</span><span class="hljs-params">(i)</span></span>
+  i = file2Egs(the.file)
+  <span class="hljs-keyword">for</span> n,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> <span class="hljs-built_in">print</span>(n,dist(i, i.all[<span class="hljs-number">1</span>], row)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo.far</span><span class="hljs-params">(  i,j,row1,row2,row3,d3,d9)</span></span>
+  i = file2Egs(the.file)
+  <span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,<span class="hljs-number">10</span> <span class="hljs-keyword">do</span>
+    row1 = any(i.all)
+    row2 = far(i,row1, i.all, <span class="hljs-number">.9</span>)
+    d9   = dist(i,row1,row2)
+    row3 = far(i,row1, i.all, <span class="hljs-number">.3</span>)
+    d3   = dist(i,row1,row3)
+    ok(d3 &lt; d9, <span class="hljs-string">&quot;closer far&quot;</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo.half</span><span class="hljs-params">(  i,lefts,rights)</span></span>
+  i = file2Egs(the.file)
+  lefts,rights = half(i, i.all) 
+  oo(mids(i, lefts))
+  oo(mids(i, rights)) 
+  <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo.cluster</span><span class="hljs-params">(   i)</span></span>
+  i = file2Egs(the.file)
+  clusters(i,<span class="hljs-string">&quot;%.0f&quot;</span>,cluster(i)) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo.spans</span><span class="hljs-params">(    i,lefts,rights)</span></span>
+  i = file2Egs(the.file)
+  lefts, rights = half(i, i.all) 
+  oo(bestSpan(spans(i:clone(lefts), i:clone(rights)))) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo.xplain</span><span class="hljs-params">(    i,j,tmp,lefts,rights,used)</span></span>
+  i = file2Egs(the.file)
+  used={}
+  xplains(i,<span class="hljs-string">&quot;%.0f&quot;</span>,xplain(i, i.all,used)) 
+  map(<span class="hljs-built_in">sort</span>(used,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span>
+        <span class="hljs-keyword">return</span> ((a[<span class="hljs-number">1</span>] &lt; b[<span class="hljs-number">1</span>]) <span class="hljs-keyword">or</span> 
+                (a[<span class="hljs-number">1</span>]==b[<span class="hljs-number">1</span>] <span class="hljs-keyword">and</span> a[<span class="hljs-number">2</span>] &lt; b[<span class="hljs-number">2</span>]) <span class="hljs-keyword">or</span>
+                (a[<span class="hljs-number">1</span>]==b[<span class="hljs-number">1</span>] <span class="hljs-keyword">and</span> a[<span class="hljs-number">2</span>]==b[<span class="hljs-number">2</span>] <span class="hljs-keyword">and</span> a[<span class="hljs-number">3</span>] &lt; b[<span class="hljs-number">3</span>]))<span class="hljs-keyword">end</span>),oo) <span class="hljs-keyword">end</span>
+
+
+the = settings(help)
+Demo.main(the.todo, the.seed)</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
