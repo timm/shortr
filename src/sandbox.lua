@@ -1,5 +1,5 @@
 function bsearch(t,want,firstp,  lo,mid,hi,out)
-  out, lo, hi = 1, 1, #t
+  out, lo, hi = 1, lo or 1, #t
   while lo <= hi do
     mid = (lo + hi)//2;
     if want == t[mid] then 
@@ -10,5 +10,7 @@ function bsearch(t,want,firstp,  lo,mid,hi,out)
   return out end 
 
 local key,t = 20,{10,20,20,20,40,50}
-print(bsearch(t,key,true))
-print(bsearch(t,key,false))
+
+lo = bsearch(t,key,true)
+hi = bsearch(t,key,false,lo)
+print(lo,hi)
