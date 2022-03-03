@@ -9,15 +9,9 @@ jobs:
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Install lua
-        run: |
-          cd ${{ github.workspace }}; \
-          curl -R -O http://www.lua.org/ftp/lua-5.4.4.tar.gz; \
-          tar zxf lua-5.4.4.tar.gz; \
-          cd lua-5.4.4; \
-          make linux test 
-      - name: Run tests  
+      - uses: xpol/setup-lua@v1
+      - name: run 
         run: |
           cd ${{ github.workspace }}/src; pwd; ls ..; \
-          ../lua-5.4.4/src/lua l5.lua -t all 
+          lua l5.lua -t all 
       - run: echo "🍏 This job's status is ${{ job.status }}."
