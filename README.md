@@ -1,7 +1,8 @@
-<img src="https://img.shields.io/badge/purpose-se,ai-informational?style=flat&logo=hyper&logoColor=white&color=blueviolet"> <img 
-src="https://img.shields.io/badge/language-lua-informational?style=flat&logo=lua&logoColor=white&color=orange"> <img 
-src="https://img.shields.io/badge/platform-osx,linux-informational?style=flat&logo=linux&logoColor=white&color=blue"><a 
-href="https://github.com/timm/l5/actions"><img src="https://github.com/timm/l5/workflows/tests/badge.svg"></a>
+<img src="https://img.shields.io/badge/purpose-se,ai-informational?style=flat&logo=hyper&logoColor=white&color=ff69b4"> <img 
+src="https://img.shields.io/badge/language-lua-informational?style=flat&logo=lua&logoColor=white&color=yellow"> <img 
+src="https://img.shields.io/badge/platform-osx,linux-informational?style=flat&logo=linux&logoColor=white&color=orange"><a 
+href="https://github.com/timm/l5/actions"> <img src="https://github.com/timm/l5/workflows/tests/badge.svg"></a><a 
+href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 
 
 <img align=right width=175 src=docs/head.png>
