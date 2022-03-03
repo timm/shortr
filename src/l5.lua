@@ -578,7 +578,7 @@ function spanShow(span, negative,   hi,lo,x,big)
   else if lo ==  hi  then return fmt("%s != %s",x,lo)  end   
        if hi ==  big then return fmt("%s <  %s",x,lo)  end   
        if lo == -big then return fmt("%s >= %s",x,hi)  end   
-       return fmt("%s < %s and %s >=  %s", x,lo,x,hi)  end end
+       return fmt("%s < %s and %s >=  %s", x,lo,x,hi)  end end
 ---     __|_ _ _|_ _
 ---    _\ | (_| | _\
              
