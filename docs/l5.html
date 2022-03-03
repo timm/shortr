@@ -284,6 +284,7 @@ lines 3 and lines 7.</p>
   mu=<span class="hljs-number">0</span>,         <span class="hljs-comment">-- mean (updated incrementally)</span>
   m2=<span class="hljs-number">0</span>,         <span class="hljs-comment">-- second moment (updated incrementally)</span>
   sd=<span class="hljs-number">0</span>,         <span class="hljs-comment">-- standard deviation</span>
+  ok=<span class="hljs-literal">false</span>,     <span class="hljs-comment">-- true if &quot;all&quot; is sorted</span>
   all={},       <span class="hljs-comment">-- a sample of items seen so far</span>
   lo=<span class="hljs-number">1E31</span>,      <span class="hljs-comment">-- lowest number seen; initially, big so 1st num sends it low</span>
   hi=<span class="hljs-number">-1E31</span>,     <span class="hljs-comment">-- highest number seen;initially, msall to 2st num sends it hi</span>
@@ -301,10 +302,10 @@ lines 3 and lines 7.</p>
   class=<span class="hljs-literal">nil</span>     <span class="hljs-comment">--  classes</span>
   },Egs)
   <span class="hljs-keyword">for</span> at,name <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(names) <span class="hljs-keyword">do</span>
-    col = (is.nump(name) <span class="hljs-keyword">and</span> Num <span class="hljs-keyword">or</span> Sym)(at,name)
+    col = (is.num(name) <span class="hljs-keyword">and</span> Num <span class="hljs-keyword">or</span> Sym)(at,name)
     i.cols[<span class="hljs-number">1</span>+#i.cols] = col
-    here = is.goal(name) <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x
-    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> is.skip(x) <span class="hljs-keyword">then</span> 
+    here = is.dependent(name) <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> is.skip(name) <span class="hljs-keyword">then</span> 
       here[<span class="hljs-number">1</span> + #here] = col 
       <span class="hljs-keyword">if</span> is.class(name) <span class="hljs-keyword">then</span> i.class=col <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>  
@@ -314,7 +315,7 @@ lines 3 and lines 7.</p>
 
 <span class="hljs-keyword">local</span> data
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.clone</span><span class="hljs-params">(i,rows,    copy)</span></span> 
-  copy = Egs(i.names)  
+  copy = Egs(i.names) 
   <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span>  data(copy,row)  <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> copy <span class="hljs-keyword">end</span>
                                             
@@ -418,8 +419,13 @@ lines 3 and lines 7.</p>
     i.sd  = (i.m2&lt;<span class="hljs-number">0</span> <span class="hljs-keyword">or</span> i.n&lt;<span class="hljs-number">2</span>) <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> ((i.m2/(i.n<span class="hljs-number">-1</span>))^<span class="hljs-number">0.5</span>)
     i.lo  = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(x, i.lo)
     i.hi  = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(x, i.hi) 
-    <span class="hljs-keyword">if</span>     #i.all &lt; the.keep      <span class="hljs-keyword">then</span> push(i.all,x)  
-    <span class="hljs-keyword">elseif</span> r()    &lt; they.keep/i.n <span class="hljs-keyword">then</span> i.all[r(#i.all)]=x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span>     #i.all &lt; the.keep   <span class="hljs-keyword">then</span> i.ok=<span class="hljs-literal">false</span>; push(i.all,x)  
+    <span class="hljs-keyword">elseif</span> r() &lt; they.keep/i.n <span class="hljs-keyword">then</span> i.ok=<span class="hljs-literal">false</span>; i.all[r(#i.all)]=x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.sorted</span><span class="hljs-params">(i)</span></span>
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.ok <span class="hljs-keyword">then</span> i.all = <span class="hljs-built_in">sort</span>(i.all) <span class="hljs-keyword">end</span>
+  i.ok=<span class="hljs-literal">true</span> 
+  <span class="hljs-keyword">return</span> i.all <span class="hljs-keyword">end</span>
                            
 <span class="hljs-keyword">local</span> file2Egs <span class="hljs-comment">-- not &quot;local data&quot; (since defined above)</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">data</span><span class="hljs-params">(i,row)</span></span>
@@ -565,7 +571,7 @@ lines 3 and lines 7.</p>
   <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.merged</span><span class="hljs-params">(i,j,   k,ei,ej,ek)</span></span>
-  k = i:marge(j)
+  k = i:merge(j)
   ei, ej, ek= i:div(), j:div(), k:div()
   <span class="hljs-keyword">if</span> ek*<span class="hljs-number">.99</span> &lt;= (i.n*ei + j.n*ej)/k.n <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
@@ -622,7 +628,7 @@ lines 3 and lines 7.</p>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">selects</span><span class="hljs-params">(span,row,    lo,hi,at,x)</span></span>
   lo, hi, at = span.lo, span.hi, span.all.at
   x = row[at]
-  <span class="hljs-keyword">if</span> is.mising(x) <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> is.missing(x) <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">if</span> lo==hi <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x==lo <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span> lo &lt;= x <span class="hljs-keyword">and</span> x &lt; hi <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">spanShow</span><span class="hljs-params">(span, negative,   hi,lo,x,big)</span></span>

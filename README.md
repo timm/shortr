@@ -1,3 +1,9 @@
+<img src="https://img.shields.io/badge/purpose-se,ai-informational?style=flat&logo=hyper&logoColor=white&color=blueviolet">
+<img src="https://img.shields.io/badge/language-lua-informational?style=flat&logo=lua&logoColor=white&color=orange">
+<img src="https://img.shields.io/badge/platform-osx,linux-informational?style=flat&logo=linux&logoColor=white&color=blue">
+<a href="https://github.com/timm/l5/actions"><img src="https://github.com/timm/l5/workflows/tests/badge.svg"></a>
+
+
 <img align=right width=175 src=docs/head.png>
 
 **[Docs](https://menzies.us/l5) •  [&copy;2022](http://github.com/timm/l5.LICENSE.md).** Tim Menzies
@@ -49,7 +55,7 @@ But that's ok-- we can add that i and still not break
 1000 lines of code).
 
 
-I use this exercise  to teach software engineers what goes on inside AI.
+[I](I) use this exercise  to teach software engineers what goes on inside AI.
 My premise is that
 the AI-literate engineering should be able to mix and match AI tools
   to create specific solutions for specific problems.  
