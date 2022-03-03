@@ -68,6 +68,7 @@ lu() { f=$1; lua $f.lua $*; }
 mytmux() {
   if [ -z "$TMUX" ]; then
     session=$RANDOM
+#    tmux -f $here/etc/dottmux
     tmux start-server
     sleep 1
     tmux new-session -d -s $session  
