@@ -11,6 +11,7 @@ function bsearch(t,want,firstp,  lo,mid,hi,out)
 
 local key,t = 20,{10,20,20,20,40,50}
 
+
 lo = bsearch(t,key,true)
 hi = bsearch(t,key,false,lo)
 print(lo,hi)

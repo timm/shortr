@@ -36,6 +36,7 @@ OPTIONS (inference):                        | DEFAULT
   -far    -F F  look no further than "far"  | .9
   -keep   -k    items to keep in a number   | 512 
   -leaves -l    leaf size                   | .5 
+  -conf   -n F  confidence for stats tests  | .95
   -p      -p P  distance calcs coefficient  | 2
   -seed   -S P  random number seed          | 10019
   -some   -s    look only at "some" items   | 512
@@ -247,6 +248,19 @@ function slots(t, u,s)
   u={}
   for k,v in pairs(t) do s=tostring(k);if s:sub(1,1)~="_" then push(u,k) end end
   return sort(u) end
+---    |_ . _  _  _     _ _  _  _ _|_ 
+---    |_)|| |(_|| \/  _\(/_(_|| (_| |
+---                /                  
+local bsearch
+function bsearch(t,want,firstp,  lo,mid,hi,out)
+  out, lo, hi = 1, lo or 1, #t
+  while lo <= hi do
+    mid = (lo + hi) // 2
+    if want == t[mid] then 
+      out = mid
+      if firstp then hi=mid-1 else lo=mid+1 end
+    else if want < t[mid] then hi=mid-1 else lo=mid+1 end end end
+  return out end 
 ---     _  _ . _ _|_
 ---    |_)|  || | | 
 ---    |           
@@ -568,32 +582,21 @@ function spanShow(span, negative,   hi,lo,x,big)
 ---     __|_ _ _|_ _
 ---    _\ | (_| | _\
              
--- function Num:same(i,j, xs,ys,       lt,gt)
---   lt,gt  = 0, 0
---   for _,x in pairs(i.all) do
---     for _,y in pairs(i.all) do
---       if y > x then gt = gt + 1 end
---       if y < x then lt = lt + 1 end end end
---   return math.abs(gt - lt)/(#xs * #ys) <= the.cliffs end
+function smallEffect(num1,num2,       lt,gt,left,right)
+  lt,gt  = 0, 0
+  for _,key in pairs(num1.all) do
+    left  = bsearch(num2:sorted(), key, true)
+    right = bsearch(num2:sorted(), key, false, left) 
+    lt    = lt + left - 1
+    gt    = gt + j.n  - right end
+  return math.abs(gt - lt) / (num1.n * num2.n) > the.cliffs end
+
+function delta(num1, num2)
+  return math.abs(num2 - num1)/(
+           (1E-32 + num1:div()/num1.n + num2:div()/num2.n)^.5) end
 --
--- -- ## Significance
--- -- Non parametric "significance"  test (i.e. is it possible to
--- -- distinguish if an item belongs to one population of
--- -- another).  Two populations are the same if no difference can be
--- -- seen in numerous samples from those populations.
--- -- Warning: very
--- -- slow for large populations. Consider sub-sampling  for large
--- -- lists. Also, test the effect size (and maybe shortcut the
--- -- test) before applying  this test.  From p220 to 223 of the
--- -- Efron text  'introduction to the boostrap'.
--- -- https://bit.ly/3iSJz8B Typically, conf=0.05 and b is 100s to
--- -- 1000s.
--- -- Translate both samples so that they have mean x, 
--- -- The re-sample each population separately.
--- function bootstrap(y0,z0,my)
---   local x,y,z,xmu,ymu,zmu,yhat,zhat,tobs,ns, bootstraps, confidence
---   bootstraps = my and my.bootstrap or 512
---   confidence = my and my.conf or .05
+-- function  significanceDifferece(y0,z0,my)
+--   local function adds(num,t) map(x,y,z,xmu,ymu,zmu,yhat,zhat,tobs,ns, bootstraps, confidence
 --   x, y, z, yhat, zhat = Num.new(), Num.new(), Num.new(), {}, {}
 --   for _,y1 in pairs(y0) do x:summarize(y1); y:summarize(y1) end
 --   for _,z1 in pairs(z0) do x:summarize(z1); z:summarize(z1) end
@@ -602,10 +605,10 @@ function spanShow(span, negative,   hi,lo,x,big)
 --   for _,z1 in pairs(z0) do zhat[1+#zhat] = z1 - zmu + xmu end
 --   tobs = y:delta(z)
 --   n = 0
---   for _= 1,bootstraps do
+--   for _= 1,the.boot do
 --     if adds(samples(yhat)):delta(adds(samples(zhat))) > tobs 
 --     then n = n + 1 end end
---   return n / bootstraps >= conf end
+--   return n / bootstraps >= the.conf end
 --
 -- function scottKnot(nums,the,      all,cohen)
 --   local mid = function (z) return z.some:mid() 
@@ -649,6 +652,13 @@ function Demo.the() oo(the) end
 
 function Demo.many(a) 
   a={1,2,3,4,5,6,7,8,9,10}; ok("{10 2 3}" == o(many(a,3)), "manys") end
+
+function Demo.bsearch(    key,t,lo,hi)
+  t = {10,20,20,20,30,40,41,25,50}
+  for _,key in pairs{10,20,50} do
+    lo = bsearch(t,key,true)
+    hi = bsearch(t,key,false,lo) 
+    print(#t,key, lo-1,#t-hi) end end
 
 function Demo.egs() 
   ok(5140==file2Egs(the.file).y[1].hi,"reading") end
