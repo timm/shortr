@@ -15,10 +15,9 @@ jobs:
           curl -R -O http://www.lua.org/ftp/lua-5.4.4.tar.gz; \
           tar zxf lua-5.4.4.tar.gz; \
           cd lua-5.4.4; \
-          make linux test; \
-          cd ..
+          make linux test 
       - name: Run tests  
         run: |
           cd ${{ github.workspace }}/src; pwd; ls ..; \
-          lua-5.4.4/src/lua l5.lua -t all 
+          ../lua-5.4.4/src/lua l5.lua -t all 
       - run: echo "🍏 This job's status is ${{ job.status }}."
