@@ -4,7 +4,7 @@ src="https://img.shields.io/badge/platform-osx,linux-informational?style=flat&lo
 href="https://github.com/timm/l5/actions"> <img src="https://github.com/timm/l5/workflows/tests/badge.svg"></a><a 
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a><br><img 
 align=right width=175 src=docs/head.png>
-<b><a href="https://menzies.us/l5">Docs</a> •  <a href="https://github.com/timm/l5/LICENSE.md">&copy;2022</a></b> Tim Menzies
+<b><a href="https://menzies.us/l5">Docs</a> •  <a href="https://github.com/timm/l5/blob/master/LICENSE.md">&copy;2022</a></b> Tim Menzies
 
 #  Do you understand AI?
 
