@@ -163,6 +163,7 @@ function Num:new(at,s) return as({
   mu=0,         -- mean (updated incrementally)
   m2=0,         -- second moment (updated incrementally)
   sd=0,         -- standard deviation
+  ok=false,     -- true if "all" is sorted
   all={},       -- a sample of items seen so far
   lo=1E31,      -- lowest number seen; initially, big so 1st num sends it low
   hi=-1E31,     -- highest number seen;initially, msall to 2st num sends it hi
@@ -180,10 +181,10 @@ function Egs:new(names,     i,col,here)  i=as({
   class=nil     --  classes
   },Egs)
   for at,name in pairs(names) do
-    col = (is.nump(name) and Num or Sym)(at,name)
+    col = (is.num(name) and Num or Sym)(at,name)
     i.cols[1+#i.cols] = col
-    here = is.goal(name) and i.y or i.x
-    if not is.skip(x) then 
+    here = is.dependent(name) and i.y or i.x
+    if not is.skip(name) then 
       here[1 + #here] = col 
       if is.class(name) then i.class=col end end end
   return i end  
@@ -196,7 +197,7 @@ function Sym.clone(i) return Sym(i.at, i.name) end
 
 local data
 function Egs.clone(i,rows,    copy) 
-  copy = Egs(i.names)  
+  copy = Egs(i.names) 
   for _,row in pairs(rows or {}) do  data(copy,row)  end
   return copy end
 --------------------------------------------------------------------------------
@@ -265,10 +266,9 @@ function o(t,seen,        key,xseen,u)
 function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or "%s",x) end
----     _ _|_ _  _ _|__     _ 
----    _\  | (_||   |   |_||_)
----                      |  
-
+---    _|_ _  __|_   _   ._|_ _  _
+---     | (/__\ |   _\|_|| | (/__\
+                           
 local Demo, ok = {fails=0}
 function ok(test,msg)
   print(test and "PASS: "or "FAIL: ",msg or "") 
@@ -283,6 +283,9 @@ function Demo.main(todo,seed)
        Demo[one]() end end 
    for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  
    return Demo.fails end
+---     _  _  _ _ _   |_  _ | _    __|_ _. _  _ 
+---    |_)(_|| _\(/_  | |(/_||_)  _\ | | || |(_|
+---    |                     |                _|
 
 local function settings(txt,  d)
    d={}
@@ -324,8 +327,13 @@ function Num.internalAdd(i,x,inc,    d)
     i.sd  = (i.m2<0 or i.n<2) and 0 or ((i.m2/(i.n-1))^0.5)
     i.lo  = math.min(x, i.lo)
     i.hi  = math.max(x, i.hi) 
-    if     #i.all < the.keep      then push(i.all,x)  
-    elseif r()    < they.keep/i.n then i.all[r(#i.all)]=x end end end
+    if     #i.all < the.keep   then i.ok=false; push(i.all,x)  
+    elseif r() < they.keep/i.n then i.ok=false; i.all[r(#i.all)]=x end end end
+
+function Num.sorted(i)
+  if not i.ok then i.all = sort(i.all) end
+  i.ok=true 
+  return i.all end
 ---     _ _  _ |  _    _| _ _|_ _ 
 ---    | | |(_||<(/_  (_|(_| | (_|
                            
@@ -482,7 +490,7 @@ function Sym.merge(i,j,    k)
   return k end
 
 function Sym.merged(i,j,   k,ei,ej,ek)
-  k = i:marge(j)
+  k = i:merge(j)
   ei, ej, ek= i:div(), j:div(), k:div()
   if ek*.99 <= (i.n*ei + j.n*ej)/k.n then return k end end
 
@@ -542,7 +550,7 @@ function xplains(i,format,t,pre,how,    sel,front)
 function selects(span,row,    lo,hi,at,x)
   lo, hi, at = span.lo, span.hi, span.all.at
   x = row[at]
-  if is.mising(x) then return true end
+  if is.missing(x) then return true end
   if lo==hi then return x==lo else return lo <= x and x < hi end end
 
 function spanShow(span, negative,   hi,lo,x,big)

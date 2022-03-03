@@ -369,7 +369,7 @@ lines 3 and lines 7.</p>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rnds</span><span class="hljs-params">(t,f)</span></span> <span class="hljs-keyword">return</span> map(t, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> rnd(x,f) <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rnd</span><span class="hljs-params">(x,f)</span></span> 
   <span class="hljs-keyword">return</span> fmt(<span class="hljs-built_in">type</span>(x)==<span class="hljs-string">&quot;number&quot;</span> <span class="hljs-keyword">and</span> (x~=x//<span class="hljs-number">1</span> <span class="hljs-keyword">and</span> f <span class="hljs-keyword">or</span> the.rnd) <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;%s&quot;</span>,x) <span class="hljs-keyword">end</span>
-
+                           
 <span class="hljs-keyword">local</span> Demo, ok = {fails=<span class="hljs-number">0</span>}
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ok</span><span class="hljs-params">(test,msg)</span></span>
   <span class="hljs-built_in">print</span>(test <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;PASS: &quot;</span><span class="hljs-keyword">or</span> <span class="hljs-string">&quot;FAIL: &quot;</span>,msg <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>) 

@@ -8,17 +8,10 @@ jobs:
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
+      - uses: leafo/gh-actions-lua@v8.0.0
         uses: actions/checkout@v2
-      - name: Install lua
-        run: |
-          cd ${{ github.workspace }}; \
-          curl -R -O http://www.lua.org/ftp/lua-5.4.4.tar.gz; \
-          tar zxf lua-5.4.4.tar.gz; \
-          cd lua-5.4.4; \
-          make linux test \
-          cd ..
       - name: Run tests  
         run: |
           cd ${{ github.workspace }}; pwd; ls ..; \
-          lua-5.4.4/src/lua sl.lua -t all 
+          lua l5.lua -t all 
       - run: echo "🍏 This job's status is ${{ job.status }}."
