@@ -6,9 +6,12 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
-      - uses: xpol/setup-lua@v2
+      - uses: MunifTanjim/luver-action@v1
+      - run: |
+         luver install lua 5.4.3
+         luver use 5.4.3
       - name: run 
         run: |
-          cd ${{ github.workspace }}/src; pwd; ls ..; \
+          cd ${{ github.workspace }}/src; \
           lua l5.lua -t all 
       - run: echo "🍏 This job's status is ${{ job.status }}."
