@@ -36,7 +36,7 @@ OPTIONS (inference):                        | DEFAULT
   -far    -F F  look no further than "far"  | .9
   -keep   -k    items to keep in a number   | 512 
   -leaves -l    leaf size                   | .5 
-  -conf   -n F  confidence for stats tests  | .95
+  -conf   -n F  confidence for stats tests  | .05
   -p      -p P  distance calcs coefficient  | 2
   -seed   -S P  random number seed          | 10019
   -some   -s    look only at "some" items   | 512
@@ -242,7 +242,7 @@ function many(a,n,  u) u={}; for j=1,n do push(u,any(a)) end; return u end
 ---    |. __|_
 ---    ||_\ | 
        
-local firsts,sort,map,slots
+local firsts,sort,map,slots,copy
 function firsts(a,b)  return a[1] < b[1] end
 function sort(t,f)    table.sort(t,f); return t end
 function map(t,f, u)  u={};for k,v in pairs(t) do push(u,f(v)) end; return u end
@@ -251,6 +251,10 @@ function slots(t, u,s)
   for k,v in pairs(t) do s=tostring(k);if s:sub(1,1)~="_" then push(u,k) end end
   return sort(u) end
 
+function copy(t,   u)
+  if type(t)~="table" then return t end
+  u={}; for k,v in pairs(t) do u[copy(k)]=copy(v) end
+  return setmetatable(u, getmetatable(t)) end
      
 ---     _  _ . _ _|_
 ---    |_)|  || | | 
@@ -333,7 +337,7 @@ function Num.internalAdd(i,x,inc,    d)
     i.lo  = math.min(x, i.lo)
     i.hi  = math.max(x, i.hi) 
     if     #i.all < the.keep   then i.ok=false; push(i.all,x)  
-    elseif r() < they.keep/i.n then i.ok=false; i.all[r(#i.all)]=x end end end
+    elseif r() < the.keep/i.n then i.ok=false; i.all[r(#i.all)]=x end end end
 
 function Num.sorted(i)
   if not i.ok then i.all = sort(i.all) end
@@ -399,7 +403,7 @@ function Num.dist1(i,a,b)
   return math.abs(a - b) end
 
 function Num.norm(i,x)
-  return i.hi - i.lo < 1E-32 and 0 or (x - i.lo)/(i.hi - i.lo) end 
+  return i.hi - i.lo < 1E-32 and 0 or (x - i.lo)/(i.hi - i.lo) end 
 ---     _ |    __|_ _  _
 ---    (_ ||_|_\ | (/_| 
                 
@@ -488,6 +492,13 @@ function merge(b4,      j,n,now,a,b,both)
     push(now,a) end
   return #now == #b4 and b4 or merge(now) end
 
+-- XXX make .marged and function
+function Num.merge(i,j,    k)
+  k=i:clone()
+  for _,x in pairs(i.all) do add(k,x) end
+  for _,x in pairs(j.all) do add(k,x) end
+  return k end
+
 function Sym.merge(i,j,    k)
   k = i:clone()
   for x,n in pairs(i.all) do add(k,x,n) end
@@ -572,8 +583,27 @@ function spanShow(span, negative,   hi,lo,x,big)
        return fmt("%s < %s and %s >=  %s", x,lo,x,hi)  end end
 ---     __|_ _ _|_ _
 ---    _\ | (_| | _\
+
+local quintiles,smallfx,bootstrap
+function quintiles(ts,width,  nums,out,all,n,m)
+  width=width or 32
+  nums=Num(); for _,t in pairs(ts) do
+                for _,x in pairs(sort(t)) do add(nums,x) end end
+  all,out = nums.all, {}
+  for _,t in pairs(ts) do
+     local s, where = {}
+     where = function(n) return (width*nums:norm(n))//1 end
+     for j = 1, width do s[j]=" " end
+     for j = where(per(t,.1)), where(per(t,.3)) do s[j]="-" end
+     for j = where(per(t,.7)), where(per(t,.9)) do s[j]="-" end
+     s[where(per(t, .5))] = "|"
+     push(out,{display=table.concat(s),
+               data = t,
+               pers = map({.1,.3,.5,.7,.9},
+                           function(p) return rnd(per(t,p))end)}) end
+  return out end
              
-function smallEffect(xs,ys,     x,y,lt,gt,n)
+function smallfx(xs,ys,     x,y,lt,gt,n)
   lt,gt,n = 0,0,0
   if #ys > #xs then xs,ys=ys,xs end
   for _,x in pairs(xs) do
@@ -584,57 +614,58 @@ function smallEffect(xs,ys,     x,y,lt,gt,n)
       n = n+1 end end
   return math.abs(gt - lt) / n <= the.cliffs end 
 
-function delta(num1, num2)
-  return math.abs(num2 - num1)/(
-           (1E-32 + num1:div()/num1.n + num2:div()/num2.n)^.5) end
+function bootstrap(y0,z0)
+  local x, y, z, b4, yhat, zhat, bigger
+  local function obs(a,b,    c)
+    c = math.abs(a.mu - b.mu)
+    return (a.sd + b.sd) == 0 and c or c/((x.sd^2/x.n + y.sd^2/y.n)^.5) end
+  local function adds(t, num) 
+    num = num or Num(); map(t, function(x) add(num,x) end); return num end
+  y,z    = adds(y0), adds(z0)
+  x      = adds(y0, adds(z0))
+  b4     = obs(y,z)
+  yhat   = map(y.all, function(y1) return y1 - y.mu + x.mu end)
+  zhat   = map(z.all, function(z1) return z1 - z.mu + x.mu end)
+  bigger = 0
+  for j=1,the.boot do 
+    if obs( adds(many(yhat,#yhat)),  adds(many(zhat,#zhat))) > b4 
+    then bigger = bigger + 1/the.boot end end
+  return bigger >= the.conf end
 
--- function  significanceDifferece(y0,z0,my)
---   local function adds(num,t) map(x,y,z,xmu,ymu,zmu,yhat,zhat,tobs,ns, bootstraps, confidence
---   x, y, z, yhat, zhat = Num.new(), Num.new(), Num.new(), {}, {}
---   for _,y1 in pairs(y0) do x:summarize(y1); y:summarize(y1) end
---   for _,z1 in pairs(z0) do x:summarize(z1); z:summarize(z1) end
---   xmu, ymu, zmu = x.mu, y.mu, z.mu
---   for _,y1 in pairs(y0) do yhat[1+#yhat] = y1 - ymu + xmu end
---   for _,z1 in pairs(z0) do zhat[1+#zhat] = z1 - zmu + xmu end
---   tobs = y:delta(z)
---   n = 0
---   for _= 1,the.boot do
---     if adds(samples(yhat)):delta(adds(samples(zhat))) > tobs 
---     then n = n + 1 end end
---   return n / bootstraps >= the.conf end
---
--- function scottKnot(nums,the,      all,cohen)
---   local mid = function (z) return z.some:mid() 
---   end --------------------------------
---   local function summary(i,j,    out)
---     out = copy( nums[i] )
---     for k = i+1, j do out = out:merge(nums[k]) end
---     return out 
---   end --------------------------- 
---   local function div(lo,hi,rank,b4,       cut,best,l,l1,r,r1,now)
---     best = 0
---     for j = lo,hi do
---       if j < hi  then
---         l   = summary(lo,  j)
---         r   = summary(j+1, hi)
---         now = (l.n*(mid(l) - mid(b4))^2 + r.n*(mid(r) - mid(b4))^2
---               ) / (l.n + r.n)
---         if now > best then
---           if math.abs(mid(l) - mid(r)) >= cohen then
---             cut, best, l1, r1 = j, now, copy(l), copy(r) 
---     end end end end
---     if cut and not l1:same(r1,the) then
---       rank = div(lo,    cut, rank, l1) + 1
---       rank = div(cut+1, hi,  rank, r1) 
---     else
---       for i = lo,hi do nums[i].rank = rank end end
---     return rank 
---   end ------------------------------------------------------ 
---   table.sort(nums, function(x,y) return mid(x) < mid(y) end)
---   all   = summary(1,#nums)
---   cohen = all.sd * the.iota
---   div(1, #nums, 1, all)
---   return nums end
+--- xxx mid has to be per and 
+-- XXX implement same
+function scottKnot(nums,      all,cohen)
+  local mid = function (z) return z.some:mid() 
+  end --------------------------------
+  local function summary(i,j,    out)
+    out = copy( nums[i] )
+    for k = i+1, j do out = out:merge(nums[k]) end
+    return out 
+  end --------------------------- 
+  local function div(lo,hi,rank,b4,       cut,best,l,l1,r,r1,now)
+    best = 0
+    for j = lo,hi do
+      if j < hi  then
+        l   = summary(lo,  j)
+        r   = summary(j+1, hi)
+        now = (l.n*(mid(l) - mid(b4))^2 + r.n*(mid(r) - mid(b4))^2
+              ) / (l.n + r.n)
+        if now > best then
+          if math.abs(mid(l) - mid(r)) >= cohen then
+            cut, best, l1, r1 = j, now, copy(l), copy(r) 
+    end end end end
+    if cut and not l1:same(r1,the) then
+      rank = div(lo,    cut, rank, l1) + 1
+      rank = div(cut+1, hi,  rank, r1) 
+    else
+      for i = lo,hi do nums[i].rank = rank end end
+    return rank 
+  end ------------------------------------------------------ 
+  table.sort(nums, function(x,y) return mid(x) < mid(y) end)
+  all   = summary(1,#nums)
+  cohen = all.sd * the.cohen
+  div(1, #nums, 1, all)
+  return nums end
 
 --------------------------------------------------------------------------------
 ---    _  _ ____ _ _  _ 
@@ -646,15 +677,46 @@ function Demo.the() oo(the) end
 function Demo.many(a) 
   a={1,2,3,4,5,6,7,8,9,10}; ok("{10 2 3}" == o(many(a,3)), "manys") end
 
-function Demo.stats(  t1,t2,inc,n)
-  for _,n in pairs{10,25,50,100,250,500,1000} do
-    print""
+local function normal(m,s)
+  local pi, sqrt, cos, log = math.pi, math.sqrt, math.cos, math.log
+  local function z() return sqrt(-2*log(r())) * cos(2* pi * r()) end
+  return m + s*z() end
+
+function Demo.tiles()
+  local function ns(m,s,r,     u)
+    u={}; for j=1,r do u[1+#u] = normal(m,s) end; return u end
+  local ts={}
+  local m=100
+  for mu=8,12,.25 do ts[1+#ts] = ns(mu, 5, m) end
+  ts= sort(map(ts,sort), function(a,b) return per(a,.5) < per(b,.5) end)
+  for j,one in pairs(quintiles(ts,20)) do
+    print(fmt("[%s]",one.display),o(one.pers),
+                     smallfx(  ts[1], ts[j]),
+                     bootstrap(ts[1], ts[j])) end end
+
+function Demo.stats(  t1,t2,inc,n,a,b)
+  for _,n in pairs{20} do --25,50,100,250,500,1000} do
     inc=1
-    while inc < 2 do
-      t1={}; for j=1,n do push(t1, r()^2) end
-      t2={}; for j,x in pairs(t1) do t2[j]=x*inc end
-      print(n, rnd(inc), smallEffect(t1,t2))
-      inc = inc*1.05 end end end
+    while inc < 3 do
+      print("")
+      t1={}; for j=1,n            do push(t1, j*r()) end
+      t2={}; for j,x in pairs(t1) do t2[j]=x+inc end
+      a,b = smallfx(t1,t2), bootstrap(t1,t2)
+      for _,x in pairs(quintiles{t1,t2}) do print(rnd(inc), x.display,a,b) end
+      inc = inc*1.1 end end end
+
+function Demo.stats1(x)
+  x1={0.34, 0.49 , 0.51 , 0.6}
+  x2={  0.6,  0.7 ,  0.8 ,  0.9}
+  x3={ 0.15 , 0.25 , 0.4 ,  0.35}
+  x4={ 0.6 ,  0.7 ,  0.8  , 0.9}
+  x5={0.1 ,  0.2 ,  0.3 ,  0.4}
+  print(bootstrap(x5,x3))
+  print(bootstrap(x3,x1))
+  print(bootstrap(x1,x2))
+  print(bootstrap(x2,x4))
+end
+
 
 function Demo.egs() 
   ok(5140==file2Egs(the.file).y[1].hi,"reading") end
