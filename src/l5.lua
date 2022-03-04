@@ -634,6 +634,7 @@ function bootstrap(y0,z0)
 
 --- xxx mid has to be per and 
 -- XXX implement same
+-- XXX need tests for stats
 function scottKnot(nums,      all,cohen)
   local mid = function (z) return z.some:mid() 
   end --------------------------------
