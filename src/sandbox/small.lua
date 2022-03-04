@@ -29,15 +29,16 @@ local function Egs(row, i)
            col.ok = false
            col.lo = math.min(cell, col.lo) 
            col.hi = math.max(cell, col.hi)
-      else col.all[cell] = 1 + (col.all[cell] or 0) end end end
+      else col.all[cell] = 1 + (col.all[cell] or 0) end end 
+  end -----------------------------------------------------
   local function header(col, at, name,    now,here)
     now = (name:find"^[A-Z]" and Num or Sym)(at,name)
     i.cols[1 + #i.cols] = now
     if not name:find":$" then
       here = name:find"[+-!]$" and i.y    or i.x   ; here[1 + #here] = now
       here = name:find"^[A-Z]" and i.nums or i.syms; here[1 + #here] = now
-      if name:find"!$" then i.class = now end end end
-  ---------------------------------------------------
+      if name:find"!$" then i.class = now end end 
+  end -------------------------------------------
   if   #i.cols==0 
   then i.rows[1 + #i.rows] = row
        for at,col  in pairs(i.cols) do datum(col,  at, row[col.at]) end
