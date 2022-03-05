@@ -562,6 +562,22 @@ function go.egs(   egs)
   ok(ish(egs.cols.x[1].mu, 5.455,0.001),"loadmu")
   ok(ish(egs.cols.x[1].sd, 1.701,0.001),"loadsd") end
 
+function go.dist(  ds,egs,one,d1,d2,d3,r1,r2,r3)
+  egs = csv2egs(the.file)
+  one = egs._all[1]
+  ds={};for j=1,20 do 
+         push(ds,egs:dist(any(egs._all), any(egs._all))) end
+  oo(rnds(sort(ds),"%5.3f"))
+  for j=1,10 do
+    r1,r2,r3 = any(egs._all), any(egs._all), any(egs._all)
+    d1=egs:dist(r1,r2)
+    d2=egs:dist(r2,r3)
+    d3=egs:dist(r1,r3)
+    ok(d1<= 1 and d2 <= 1 and d3 <= 1 and d1>=0 and d2>=0 and d3>=0 and
+       egs:dist(r1,r2) == egs:dist(r2,r1) and
+       egs:dist(r1,r1) == 0               and
+       d3 <= d1+d2,                       "dist"..j)  end end
+
 --------------------------------------------------------------------------------
 the = settings(help)
 go.main(the.todo, the.seed)
