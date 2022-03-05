@@ -13,5 +13,5 @@ jobs:
           tar zxf lua-5.4.4.tar.gz; cd lua-5.4.4;  make linux test 
       - name: Run tests  
         run: |
-          cd ${{ github.workspace }}/src; ../lua-5.4.4/src/lua l5.lua -t all 
+          cd ${{ github.workspace }}/src; ../lua-5.4.4/src/lua brknbad.lua -t all 
       - run: echo "🍏 This job's status is ${{ job.status }}."

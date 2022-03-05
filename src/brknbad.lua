@@ -92,8 +92,7 @@ function Num:new(at,name)
 function Egs:new(names,  i,col)
   i = new({all={}, cols={names=names, all={}, x={}, y={}}}, Egs)
   for at,name in pairs(names) do
-    col = (name:find"^[A-Z].-" and Num or Sym)(at,name)
-    push(i.cols.all, col)
+    col = push(i.cols.all, (name:find"^[A-Z]" and Num or Sym)(at,name) )
     if not name:find":$" then
       if name:find"!$" then i.cols.class = col end 
       push(name:find"[-+!]$" and i.cols.y or i.cols.x, col) end end
@@ -169,7 +168,7 @@ function Num.div(i) return i.sd end
 function Sym.div(i,  e)
   e=0
   for _,n in pairs(i.all) do
-    if n > 0 then e = n/i.n * math.log(n/i.n,2) end end
+    if n > 0 then e = e + n/i.n * math.log(n/i.n,2) end end
   return -e end
 
 function Num.norm(i,x)
@@ -475,7 +474,7 @@ local go, ok = {fails=0}
 function ok(test,msg)
   print(test and "      PASS: "or "      FAIL: ",msg or "") 
   if not test then 
-    go.fails=go.fails+1 
+    go.fails = go.fails+1 
     if the.dump then assert(test,msg) end end end
 
 function go.main(todo,seed)
@@ -485,7 +484,7 @@ function go.main(todo,seed)
       print(fmt(":%s",one))
       go[one]() end end 
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  
-  return go.fails end
+  return go.fails end
 --------------------------------------------------------------------------------
 ---    ____ ____ 
 ---    | __ |  | 
@@ -504,8 +503,8 @@ function go.many(  t)
 function go.sum(  t) 
   t={};for i=1,100 do push(t,i) end; ok(5050==sum(t),"sum")end
 
--- function go.things(  t)
---   t={}; for row in things(the.file) do oo(row) end end
+function go.egsShow(  t)
+  oo(Egs{"name","Age","Weigh-"}) end
 
 function go.egs( ) 
   ok(Egs({"name","age","Weight!"}).cols.x,"Egs")  end
@@ -544,4 +543,5 @@ function go.syms( t,b4,s,sym)
   
 --------------------------------------------------------------------------------
 the = settings(help)
-if the.help then print(help) else go.main(the.todo, the.seed) end
+if the.help then print(help) else 
+  os.exit(go.main(the.todo, the.seed)) end

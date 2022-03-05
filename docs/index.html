@@ -115,6 +115,23 @@ I ask them to:</p>
 that change can spread to the other space. Ditto with any other
 global defined in the background LUA libraries.</p>
 <p><br clear=all><hr></p>
+<h2 id="framework">Framework</h2>
+<p>Divide the world then look for differences between the divisions.</p>
+<pre><code> .-------.  
+ | Ba    | Bad &lt;----.  planning= (better - bad)
+ |    56 |          |  monitor = (bad - better)
+ .-------.------.   |  
+         | B    |   v  
+         |    5 | Better  
+         .------.
+</code></pre>
+<p>Technical detail: useful to keep sub-dividing the world into a tree of
+nested clusters</p>
+<p>Once we got all those divisions then:</p>
+<ul>
+<li>anomaly detection (what instances are out)</li>
+<li>instance selection (what instances are in)</li>
+</ul>
 <p>The need for baselines. XXXX</p>
 <p>Standard supervised learners assume that all examples have labels.
 When this is not true, then we need tools to incrementally 
@@ -135,7 +152,7 @@ clustering. And after clustering, reasoning just means reason about
 a handful of examples (maybe even just one)  from each cluster.</p>
 <p><strong>HOMEWORKS</strong></p>
 <ul>
-<li><strong>Scripting</strong>: little languages (e.g. regular expressions); test-drive-development, 
+<li><strong>Scripting</strong>: licenses, little languages (e.g. regular expressions); test-drive-development, 
   pseudo-random numbers (and seeds), dialog independence, CLI design, version control, GitHub workflows, test-driven development, open science</li>
 <li>Data layer: summarize text files as samples of data</li>
 <li>Anomaly detection: Nearest-neighbor, Clustering</li>
