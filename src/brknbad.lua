@@ -20,7 +20,8 @@ local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local the, help = {}, [[
 
 lua brknbad.lua [OPTIONS]
-(c) 2022, Tim Menzies, opensource.org/licenses/BSD-2-Clause
+(c) 2022, Tim Menzies, BSD-2-Clause
+Divide things. Show deltas between things.
 
 OPTIONS:
   -cohen     -c cohen                 = .35
@@ -38,9 +39,10 @@ OPTIONS, other:
   -todo      -t start-up action       = nothing
 ]]
 
-local any, bestSpan, bins, bins1, bootstrap, firsts, fmt, last
+local any, bestSpan, bins, bins1, bootstrap, csv2egs, firsts, fmt, ish, last
 local many, map, new, o, obj, oo, per, push, quintiles, r, rnd, rnds, scottKnot
 local selects, settings,slots, smallfx, sort, sum, thing, things, xplains
+local Num, Sym, Egs
 
 -- Copyright 2022 Tim Menzies
 --
@@ -68,16 +70,127 @@ local selects, settings,slots, smallfx, sort, sum, thing, things, xplains
 -- ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 -- POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------
+---    _  _ _ ____ ____    ___ ____ ____ _    ____ 
+---    |\/| | [__  |        |  |  | |  | |    [__  
+---    |  | | ___] |___     |  |__| |__| |___ ___] 
+
+---     _ _  _ _|_|_  _
+---    | | |(_| | | |_\
+
+r=math.random
+function ish(x,y,z) return math.abs(y -x ) < z end 
+
+---    | __|_ _
+---    |_\ | _\
+        
+
+function any(a)        return a[ math.random(#a) ] end
+function firsts(a,b)   return a[1] < b[1] end
+function last(a)       return a[ #a ] end
+function many(a,n,  u) u={}; for j=1,n do push(u,any(a)) end; return u end
+function map(t,f, u)   u={};for _,v in pairs(t) do push(u,f(v)) end;return u end
+function per(a,p)      return a[ (p*#a)//1 ] end
+function push(t,x)     t[1 + #t] = x; return x end
+function sort(t,f)     table.sort(t,f); return t end
+function sum(t,f, n) 
+  f = f or function(x) return x end
+  n=0; for _,v in pairs(t) do n = n + f(v) end; return n end
+
+
+---     __|_ _. _  _   '~)  _|_|_ . _  _ 
+---    _\ | | || |(_|   /_   | | ||| |(_|
+---                _|                  _|
+
+function thing(x)
+  x = x:match"^%s*(.-)%s*$"
+  if x=="true" then return true elseif x=="false" then return false end
+  return tonumber(x) or x end
+
+function things(file,      x)
+  local function cells(x,  t)
+    t={}; for y in x:gmatch("([^,]+)") do push(t, thing(y)) end; return t end
+  file = io.input(file)
+  return function()
+    x=io.read(); if x then return cells(x) else io.close(file) end end end
+
+function csv2egs(file,  egs)
+  for row in things(the.file) do 
+    if egs then egs:add(row) else egs=Egs(row) end end 
+  return egs end
+
+---    _|_|_ . _  _   '~)   __|_ _. _  _ 
+---     | | ||| |(_|   /_  _\ | | || |(_|
+---               _|                   _|
+
+fmt = string.format
+
+function oo(t) print(o(t)) end
+
+function o(t,  seen, u)  
+  if type(t)~="table" then return tostring(t) end
+  seen = seen or {}
+  if seen[t] then return "..." end
+  seen[t] = t
+  local function show1(x) return o(x, seen) end
+  local function show2(k) return fmt(":%s %s",k,o(t[k],seen)) end
+  u = #t>0 and map(t,show1) or map(slots(t),show2)
+  return (t._is or "").."{"..table.concat(u," ").."}" end
+
+function slots(t, u)
+  u={};for k,v in pairs(t) do if tostring(k):sub(1,1)~="_" then push(u,k)end end
+  return sort(u) end
+
+function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
+function rnd(x,f) 
+  return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or "%s",x) end
+
+---     _ _ _|__|_. _  _  _
+---    _\(/_ |  | || |(_|_\
+---                    _|  
+
+function settings(txt,    d)
+  d={}
+  txt:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+    function(long,key,short,x)
+      for n,flag in ipairs(arg) do 
+        if flag==short or flag==long then
+          x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
+       d[key] = x==true and true or thing(x) end)
+  if d.help then print(txt) end
+  return d end
+
+---     _ _  _ _|_ _ _ |
+---    (_(_)| | | | (_)|
+                 
+local go, ok = {fails=0}
+function ok(test,msg)
+  print(test and "      PASS: "or "      FAIL: ",msg or "") 
+  if not test then 
+    go.fails = go.fails+1 
+    if the.dump then assert(test,msg) end end end
+
+function go.main(todo,seed)
+  for k,one in pairs(todo=="all" and slots(go) or {todo}) do
+    if k ~= "main" and type(go[one]) == "function" then
+      math.randomseed(seed)
+      print(fmt(":%s",one))
+      go[one]() end end 
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  end
+
+---     _ |_  . _  __|_ _
+---    (_)|_) |(/_(_ | _\
+---          L|          
+
+new = setmetatable
+function obj(s,   t)
+  t={__tostring=o,_is=s or ""}; t.__index=t
+  return new(t, {__call=function(_,...) return t.new(_,...) end}) end
+-----------------------------------------------------------------------
 ---    ____ _    ____ ____ ____ ____ ____ 
 ---    |    |    |__| [__  [__  |___ [__  
 ---    |___ |___ |  | ___] ___] |___ ___] 
                                 
-new = setmetatable
-function obj(s,   t)
-  t={__tostring=o,_is=s or ""}; t.__index=t
-  return new(t, {__call=function(_,...) return t.new(_,...) end}) end
-
-local Num, Sym, Egs = obj"Num", obj"Sym", obj"Egs"
+Num, Sym, Egs = obj"Num", obj"Sym", obj"Egs"
 
 ---     _ _ _  _ _|_ _ 
 ---    (_| (/_(_| | (/_
@@ -90,7 +203,7 @@ function Num:new(at,name)
                n=0, sd=0, mu=0, m2=0, lo=math.huge, hi=-math.huge}, Num) end
 
 function Egs:new(names,  i,col)
-  i = new({all={}, cols={names=names, all={}, x={}, y={}}}, Egs)
+  i = new({_all={}, cols={names=names, all={}, x={}, y={}}}, Egs)
   for at,name in pairs(names) do
     col = push(i.cols.all, (name:find"^[A-Z]" and Num or Sym)(at,name) )
     if not name:find":$" then
@@ -116,8 +229,8 @@ function Egs.copy(i,all,    j)
 ---       |              
 
 function Egs.add(i,row)
-  i.all[1 + #i.all] = row
-  for at,col in pairs(i.cols) do col:add(row[col.at]) end end 
+  push(i._all,  row)
+  for at,col in pairs(i.cols.all) do col:add(row[col.at]) end end 
 
 function Sym.add(i,x,inc)
   if x ~= "?" then
@@ -157,7 +270,7 @@ function Num.sub(i,x,_,    d)
 ---    (_| |_|(/_| \/
 ---      |/        / 
 
-function Num.sorted(i)
+function Num.all(i)
   if not i.ok then table.sort(i._all); i.ok=true end
   return i._all end
 
@@ -191,18 +304,18 @@ function Egs.dist(i,row1,row2,    d)
   return (d/#i.cols.x)^(1/the.p) end
 
 function Egs.dists(i,r1,rows)
-   return sort(map(rows,function(s) return{i:dist(r1,r2),r2} end),firsts) end
+   return sort(map(rows,function(s) return {i:dist(r1,r2),r2} end),firsts) end
  
 function Egs.half(i, rows)
   local project,far,some,left,right,c,lefts,rights
-  far    = function(r,t)  return per(i:dists(r,t), the.far)[2] end
-  project= function(r1,  a,b)
-             a,b = i:dist(left,r1), i:dist(right,r1)
-             return {(a^2 + c^2 - b^2)/(2*c), r1} end
-  some   = many(rows,       the.some)
-  left   = i:far(any(some), some)
-  right  = i:far(left,      some)
-  c      = i:dist(left,right)
+  far     = function(r,t)  return per(i:dists(r,t), the.far)[2] end
+  project = function(r1,  a,b)
+              a,b = i:dist(left,r1), i:dist(right,r1)
+              return {(a^2 + c^2 - b^2)/(2*c), r1} end
+  some    = many(rows,       the.some)
+  left    = i:far(any(some), some)
+  right   = i:far(left,      some)
+  c       = i:dist(left,right)
   lefts,rights = i:copy(), i:copy()
   for n, projection in pairs(sort(map(rows,project),firsts)) do
     if n==#rows//2 then mid=row end
@@ -252,12 +365,12 @@ function bins1(xys, minItems, cohen, yclass, cuts, b4)
 local xplain,xplains,selects,spanShow
 function Egs.xplain(i,rows)
   local stop,here,left,right,lefts0,rights0,lefts1,rights1
-  rows = rows or i.all
+  rows = rows or i._all
   here = {all=rows}
-  stop = (#i.all)^the.minItems 
+  stop = (#i._all)^the.minItems 
   if #rows >= 2*stop then
     lefts0, rights0, here.left, here.right, here.mid, here.c  = half(i, rows)
-    if #lefts0.all < #rows then
+    if #lefts0._all < #rows then
       cuts = {}
       for j,col in pairs(lefs0.col.x) do col:spans(rights0.col.x[j],cuts) end
       lefts1,rights1 = {},{}
@@ -267,7 +380,7 @@ function Egs.xplain(i,rows)
       if #rights1 > stop then here.rights = xplain(i,rights1) end end end
   return here end
 
-function bestSpan(spans)  
+function xbestSpan(spans)  
   local divs,ns,n,div,stats,dist2heaven = Num(), Num()
   function dist2heaven(s) return {((1 - n(s))^2 + (0 - div(s))^2)^.5,s} end 
   function div(s)         return divs:norm( s.all:div() ) end
@@ -336,8 +449,8 @@ function bootstrap(y0,z0)
   y,z    = adds(y0), adds(z0)
   x      = adds(y0, adds(z0))
   b4     = obs(y,z)
-  yhat   = map(y.all, function(y1) return y1 - y.mu + x.mu end)
-  zhat   = map(z.all, function(z1) return z1 - z.mu + x.mu end)
+  yhat   = map(y._all, function(y1) return y1 - y.mu + x.mu end)
+  zhat   = map(z._all, function(z1) return z1 - z.mu + x.mu end)
   bigger = 0
   for j=1,the.boot do 
     if obs( adds(many(yhat,#yhat)),  adds(many(zhat,#zhat))) > b4 
@@ -379,112 +492,6 @@ function scottKnot(nums,      all,cohen)
   cohen = all.sd * the.cohen
   div(1, #nums, 1, all)
   return nums end
------------------------------------------------------------------------
----    _  _ _ ____ ____    ___ ____ ____ _    ____ 
----    |\/| | [__  |        |  |  | |  | |    [__  
----    |  | | ___] |___     |  |__| |__| |___ ___] 
-
----     _ _  _ _|_|_  _
----    | | |(_| | | |_\
-
-r=math.random
-
----    |. __|_   _      _  _  
----    ||_\ |   (_| |_|(/_| \/
----               |/        / 
-
-function last(a)       return a[ #a ] end
-function per(a,p)      return a[ (p*#a)//1 ] end
-function any(a)        return a[ math.random(#a) ] end
-function many(a,n,  u) u={}; for j=1,n do push(u,any(a)) end; return u end
-
----    |. __|_      _  _| _ _|_ _ 
----    ||_\ |   |_||_)(_|(_| | (/_
----                |              
-
-function push(t,x)   t[1 + #t] = x; return x end
-function map(t,f, u) u={};for _,v in pairs(t) do push(u,f(v)) end; return u end
-function sum(t,f, n) 
-  f = f or function(x) return x end
-  n=0; for _,v in pairs(t) do n = n + f(v) end; return n end
-
-function sort(t,f)   table.sort(t,f); return t end
-function firsts(a,b) return a[1] < b[1] end
-
----     __|_ _. _  _   '~)  _|_|_ . _  _ 
----    _\ | | || |(_|   /_   | | ||| |(_|
----                _|                  _|
-
-function thing(x)
-  x = x:match"^%s*(.-)%s*$"
-  if x=="true" then return true elseif x=="false" then return false end
-  return tonumber(x) or x end
-
-function things(file,      x)
-  local function cells(x,  t)
-    t={}; for y in x:gmatch("([^,]+)") do push(t, thing(y)) end; return t end
-  file = io.input(file)
-  return function()
-    x=io.read(); if x then return cells(x) else io.close(file) end end end
-
----      _  _. _ _|_
----     |_)| || | | 
----     |           
-
-fmt = string.format
-
-function oo(t) print(o(t)) end
-
-function o(t,  seen, u)  
-  if type(t)~="table" then return tostring(t) end
-  seen = seen or {}
-  if seen[t] then return "..." end
-  seen[t] = t
-  local function show1(x) return o(x, seen) end
-  local function show2(k) return fmt(":%s %s",k,o(t[k],seen)) end
-  u = #t>0 and map(t,show1) or map(slots(t),show2)
-  return (t._is or "").."{"..table.concat(u," ").."}" end
-
-function slots(t, u)
-  u={};for k,v in pairs(t) do if tostring(k):sub(1,1)~="_" then push(u,k)end end
-  return sort(u) end
-
-function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
-function rnd(x,f) 
-  return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or "%s",x) end
-
----     _ _ _|__|_. _  _  _
----    _\(/_ |  | || |(_|_\
----                    _|  
-
-function settings(txt,    d)
-  d={}
-  txt:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
-    function(long,key,short,x)
-      for n,flag in ipairs(arg) do 
-        if flag==short or flag==long then
-          x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
-       d[key] = x==true and true or thing(x) end)
-  return d end
-
----     _ _  _ _|_ _ _ |
----    (_(_)| | | | (_)|
-                 
-local go, ok = {fails=0}
-function ok(test,msg)
-  print(test and "      PASS: "or "      FAIL: ",msg or "") 
-  if not test then 
-    go.fails = go.fails+1 
-    if the.dump then assert(test,msg) end end end
-
-function go.main(todo,seed)
-  for k,one in pairs(todo=="all" and slots(go) or {todo}) do
-    if k ~= "main" and type(go[one]) == "function" then
-      math.randomseed(seed)
-      print(fmt(":%s",one))
-      go[one]() end end 
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  
-  return go.fails end
 --------------------------------------------------------------------------------
 ---    ____ ____ 
 ---    | __ |  | 
@@ -503,24 +510,23 @@ function go.many(  t)
 function go.sum(  t) 
   t={};for i=1,100 do push(t,i) end; ok(5050==sum(t),"sum")end
 
-function go.egsShow(  t)
-  oo(Egs{"name","Age","Weigh-"}) end
-
-function go.egs( ) 
-  ok(Egs({"name","age","Weight!"}).cols.x,"Egs")  end
+function go.sample(   m,n)
+  m,n = 10^5,Num(); for i=1,m do n:add(i) end
+  for j=.1,.9,.1 do 
+    print(j,per(n:all(),j),ish(per(n:all(),j),m*j,m*0.05)) end end
 
 function go.sym(  s)
   s=Sym(); map({1,1,1,1,2,2,3}, function(x) s:add(x) end)
-  ok(1.378 < s:div() and s:div() < 1.379, "ent") end
+  ok(ish(s:div(),1.378, 0.001), "ent") end
 
 function go.num( n)
-  n=Num(); map({10, 12, 23, 23, 16, 23, 21, 16},function(x) n:add(x) end)
-  ok( 4.89 < n:div() and 4.90 < n:div(), "div") end
+  n=Num(); map({10, 12, 23, 23, 16, 23, 21, 16}, function(x) n:add(x) end)
+  print(n:div())
+  ok(ish(n:div(),5.895,0.001), "div") end
 
 function go.nums( num,t,b4)
-  t={};for j=1,1000 do push(t,100*r()*j) end
-  num=Num()
-  b4={};
+  b4,t,num={},{},Num()
+  for j=1,1000 do push(t,100*r()*j) end
   for j=1,#t  do  
     num:add(t[j])
     if j%100==0 then    b4[j] =  fmt("%.5f",num:div()) end end
@@ -529,10 +535,8 @@ function go.nums( num,t,b4)
     num:sub(t[j]) end end
 
 function go.syms( t,b4,s,sym)
-  s="I have gone to seek a great perhaps."
+  b4,t,sym, s={},{},Sym(), "I have gone to seek a great perhaps."
   t={}; for j=1,20 do s:gsub('.',function(x) t[#t+1]=x end) end
-  sym=Sym()
-  b4={};
   for j=1,#t  do  
     sym:add(t[j])
     if j%100==0 then    b4[j] =  fmt("%.5f",sym:div()) end end
@@ -540,8 +544,25 @@ function go.syms( t,b4,s,sym)
     if j%100==0 then ok(b4[j] == fmt("%.5f",sym:div()),"div"..j) end
     sym:sub(t[j]) end 
   end
-  
+
+function go.loader(  num)
+  for row in things(the.file) do
+    if num then num:add(row[1]) else num=Num() end end
+  ok(ish(num.mu, 5.455,0.001),"loadmu")
+  ok(ish(num.sd, 1.701,0.001),"loadsd") end
+
+function go.egsShow(  t)
+  oo(Egs{"name","Age","Weigh-"}) end
+
+function go.egsHead( ) 
+  ok(Egs({"name","age","Weight!"}).cols.x,"Egs")  end
+
+function go.egs(   egs)
+  egs = csv2egs(the.file)
+  ok(ish(egs.cols.x[1].mu, 5.455,0.001),"loadmu")
+  ok(ish(egs.cols.x[1].sd, 1.701,0.001),"loadsd") end
+
 --------------------------------------------------------------------------------
 the = settings(help)
-if the.help then print(help) else 
-  os.exit(go.main(the.todo, the.seed)) end
+go.main(the.todo, the.seed)
+os.exit(go.fails)

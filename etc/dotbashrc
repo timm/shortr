@@ -48,7 +48,7 @@ alias gp="git add *;git commit -am save;git push;git status"
 alias grep='grep --color=auto'
 alias h="history"
 alias hello="git pull"
-alias brknbad="lua brknbad.lua "
+alias bad="lua brknbad.lua "
 alias ls="ls -G"
 alias tmux="tmux -f $here/etc/dottmux"
 alias vi="vim -u $here/etc/dotvimrc "
