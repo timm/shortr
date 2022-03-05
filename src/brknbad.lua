@@ -522,7 +522,7 @@ function go.sym(  s)
 function go.num( n)
   n=Num(); map({10, 12, 23, 23, 16, 23, 21, 16}, function(x) n:add(x) end)
   print(n:div())
-  ok(ish(n:div(),5.895,0.001), "div") end
+  ok(ish(n:div(),5.2373, .001), "div") end
 
 function go.nums( num,t,b4)
   b4,t,num={},{},Num()

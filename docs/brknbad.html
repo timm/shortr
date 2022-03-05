@@ -548,6 +548,22 @@ XXX need tests for stats</p>
   ok(ish(egs.cols.x[<span class="hljs-number">1</span>].mu, <span class="hljs-number">5.455</span>,<span class="hljs-number">0.001</span>),<span class="hljs-string">&quot;loadmu&quot;</span>)
   ok(ish(egs.cols.x[<span class="hljs-number">1</span>].sd, <span class="hljs-number">1.701</span>,<span class="hljs-number">0.001</span>),<span class="hljs-string">&quot;loadsd&quot;</span>) <span class="hljs-keyword">end</span>
 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.dist</span><span class="hljs-params">(  ds,egs,one,d1,d2,d3,r1,r2,r3)</span></span>
+  egs = csv2egs(the.file)
+  one = egs._all[<span class="hljs-number">1</span>]
+  ds={};<span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,<span class="hljs-number">20</span> <span class="hljs-keyword">do</span> 
+         push(ds,egs:dist(any(egs._all), any(egs._all))) <span class="hljs-keyword">end</span>
+  oo(rnds(<span class="hljs-built_in">sort</span>(ds),<span class="hljs-string">&quot;%5.3f&quot;</span>))
+  <span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,<span class="hljs-number">10</span> <span class="hljs-keyword">do</span>
+    r1,r2,r3 = any(egs._all), any(egs._all), any(egs._all)
+    d1=egs:dist(r1,r2)
+    d2=egs:dist(r2,r3)
+    d3=egs:dist(r1,r3)
+    ok(d1&lt;= <span class="hljs-number">1</span> <span class="hljs-keyword">and</span> d2 &lt;= <span class="hljs-number">1</span> <span class="hljs-keyword">and</span> d3 &lt;= <span class="hljs-number">1</span> <span class="hljs-keyword">and</span> d1&gt;=<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> d2&gt;=<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> d3&gt;=<span class="hljs-number">0</span> <span class="hljs-keyword">and</span>
+       egs:dist(r1,r2) == egs:dist(r2,r1) <span class="hljs-keyword">and</span>
+       egs:dist(r1,r1) == <span class="hljs-number">0</span>               <span class="hljs-keyword">and</span>
+       d3 &lt;= d1+d2,                       <span class="hljs-string">&quot;dist&quot;</span>..j)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
 the = settings(help)
 go.main(the.todo, the.seed)
 <span class="hljs-built_in">os</span>.<span class="hljs-built_in">exit</span>(go.fails)</pre></div></div>
