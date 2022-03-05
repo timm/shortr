@@ -25,15 +25,21 @@ OPTIONS, other:
   -dump      -d stackdump on error    = false
   -file      -f data file             = ../etc/data/auto93.csv
   -help      -h show help             = false
+  -rnd       -r round numbers         = %5.2f
   -seed      -s random number seed    = 10019
   -todo      -t start-up action       = nothing
 ]]
 local any, bestSpan, bins, bins1, bootstrap, firsts, fmt, last
-local many, map, new, o, obj, oo, per, push, quintiles, scottKnot
+local many, map, new, o, obj, oo, per, push, quintiles, r, rnd, rnds, scottKnot
 local selects, slots, smallfx, sort, sum, thing, things, xplains
 ---    _  _ _ ____ ____    ___ ____ ____ _    ____ 
 ---    |\/| | [__  |        |  |  | |  | |    [__  
 ---    |  | | ___] |___     |  |__| |__| |___ ___] 
+
+---     _ _  _ _|_|_  _
+---    | | |(_| | | |_\
+
+r=math.random
 
 ---    |. __|_   _      _  _  
 ---    ||_\ |   (_| |_|(/_| \/
@@ -95,9 +101,13 @@ function slots(t, u)
   u={};for k,v in pairs(t) do if tostring(k):sub(1,1)~="_" then push(u,k)end end
   return sort(u) end
 
----    _|_ _  __|_   _   ._|_ _  _
----     | (/__\ |   _\|_|| | (/__\
-                           
+function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
+function rnd(x,f) 
+  return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or "%s",x) end
+
+---     _ _  _ _|_ _ _ |
+---    (_(_)| | | | (_)|
+                 
 local go, ok = {fails=0}
 function ok(test,msg)
   print(test and "      PASS: "or "      FAIL: ",msg or "") 
@@ -216,8 +226,11 @@ function Num.mid(i) return i.mu end
 function Sym.mid(i) return i.mode end
 
 function Num.div(i) return i.sd end
-function Sym.div(i)
-  return -sum(i.all,function(n) return n/i.n*math.log(n/i.n,2) end) end
+function Sym.div(i,  e)
+  e=0
+  for _,n in pairs(i.all) do
+    if n > 0 then e = n/i.n * math.log(n/i.n,2) end end
+  return -e end
 
 function Num.norm(i,x)
   return i.hi - i.lo < 1E-32 and 0 or (x - i.lo)/(i.hi - i.lo) end 
@@ -459,6 +472,31 @@ function go.num( n)
   n=Num(); map({10, 12, 23, 23, 16, 23, 21, 16},function(x) n:add(x) end)
   ok( 4.89 < n:div() and 4.90 < n:div(), "div") end
 
+function go.nums( num,t,b4)
+  t={};for j=1,1000 do push(t,100*r()*j) end
+  num=Num()
+  b4={};
+  for j=1,#t  do  
+    num:add(t[j])
+    if j%100==0 then    b4[j] =  fmt("%.5f",num:div()) end end
+  oo(b4)
+  for j=#t,1,-1 do  
+    if j%100==0 then ok(b4[j] == fmt("%.5f",num:div()),"div"..j) end
+    num:sub(t[j]) end end
+
+function go.syms( t,b4,s,sym)
+  s="I have gone to seek a great perhaps."
+  t={}; for j=1,20 do s:gsub('.',function(x) t[#t+1]=x end) end
+  sym=Sym()
+  b4={};
+  for j=1,#t  do  
+    sym:add(t[j])
+    if j%100==0 then    b4[j] =  fmt("%.5f",sym:div()) end end
+  for j=#t,1,-1 do  
+    if j%100==0 then ok(b4[j] == fmt("%.5f",sym:div()),"div"..j) end
+    sym:sub(t[j]) end 
+  end
+  
 --------------------------------------------------------------------------------
 help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
   function(long,key,short,x)
