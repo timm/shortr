@@ -10,8 +10,8 @@ jobs:
         run: |
           cd ${{ github.workspace }}; \
           curl -R -O http://www.lua.org/ftp/lua-5.4.4.tar.gz; \
-          tar zxf lua-5.4.4.tar.gz; cd lua-5.4.4;  make linux test 
-      - name: Run tests  
+          tar zxf lua-5.4.4.tar.gz; cd lua-5.4.4;  time make linux test 
+      - name: Test my lua code
         run: |
           cd ${{ github.workspace }}/src; ../lua-5.4.4/src/lua brknbad.lua -t all 
       - run: echo "🍏 This job's status is ${{ job.status }}."
