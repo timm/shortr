@@ -88,7 +88,29 @@ that change can spread to the other space. Ditto with any other
 global defined in the background LUA libraries.
 
 <br clear=all><hr>
+
+## Framework
+
+Divide the world then look for differences between the divisions.
+
+     .-------.  
+     | Ba    | Bad <----.  planning= (better - bad)
+     |    56 |          |  monitor = (bad - better)
+     .-------.------.   |  
+             | B    |   v  
+             |    5 | Better  
+             .------.  
     
+Technical detail: useful to keep sub-dividing the world into a tree of
+nested clusters
+
+Once we got all those divisions then:
+
+- anomaly detection (what instances are out)
+- instance selection (what instances are in)
+
+
+
 The need for baselines. XXXX
 
 Standard supervised learners assume that all examples have labels.
@@ -114,7 +136,7 @@ a handful of examples (maybe even just one)  from each cluster.
 
 
 
-- **Scripting**: little languages (e.g. regular expressions); test-drive-development, 
+- **Scripting**: licenses, little languages (e.g. regular expressions); test-drive-development, 
   pseudo-random numbers (and seeds), dialog independence, CLI design, version control, GitHub workflows, test-driven development, open science
 - Data layer: summarize text files as samples of data
 - Anomaly detection: Nearest-neighbor, Clustering
