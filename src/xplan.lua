@@ -431,6 +431,7 @@ function scottKnot(nums,      all,cohen)
 ---    ____ ____ 
 ---    | __ |  | 
 ---    |__] |__| 
+
 function go.last() 
   ok( 30 == last{10,20,30}, "lasts") end
 
@@ -458,6 +459,7 @@ function go.num( n)
   n=Num(); map({10, 12, 23, 23, 16, 23, 21, 16},function(x) n:add(x) end)
   ok( 4.89 < n:div() and 4.90 < n:div(), "div") end
 
+--------------------------------------------------------------------------------
 help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
   function(long,key,short,x)
     for n,flag in ipairs(arg) do 
