@@ -7,7 +7,6 @@
 ---       \ \_,__/\ \_\ \_\   \ \_,__/\ \__/.\_\\ \___,_\
 ---        \/___/  \/_/\/_/    \/___/  \/__/\/_/ \/__,_ /
 
-
 ---     .-------.  
 ---     | Ba    | Bad <----.  planning= (better - bad)
 ---     |    56 |          |  monitor = (bad - better)
@@ -39,7 +38,10 @@ OPTIONS, other:
   -todo      -t start-up action       = nothing
 ]]
 
------------------------------------------------------------------------
+local any, bestSpan, bins, bins1, bootstrap, firsts, fmt, last
+local many, map, new, o, obj, oo, per, push, quintiles, r, rnd, rnds, scottKnot
+local selects, settings,slots, smallfx, sort, sum, thing, things, xplains
+
 -- Copyright 2022 Tim Menzies
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -64,132 +66,17 @@ OPTIONS, other:
 -- CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 -- LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 -- ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
--- POSSIBILITY OF SUCH DAMAGE.
-
-local any, bestSpan, bins, bins1, bootstrap, firsts, fmt, last
-local many, map, new, o, obj, oo, per, push, quintiles, r, rnd, rnds, scottKnot
-local selects, settings,slots, smallfx, sort, sum, thing, things, xplains
------------------------------------------------------------------------
----    _  _ _ ____ ____    ___ ____ ____ _    ____ 
----    |\/| | [__  |        |  |  | |  | |    [__  
----    |  | | ___] |___     |  |__| |__| |___ ___] 
-
----     _ _  _ _|_|_  _
----    | | |(_| | | |_\
-
-r=math.random
-
----    |. __|_   _      _  _  
----    ||_\ |   (_| |_|(/_| \/
----               |/        / 
-
-function last(a)       return a[ #a ] end
-function per(a,p)      return a[ (p*#a)//1 ] end
-function any(a)        return a[ math.random(#a) ] end
-function many(a,n,  u) u={}; for j=1,n do push(u,any(a)) end; return u end
-
----    |. __|_      _  _| _ _|_ _ 
----    ||_\ |   |_||_)(_|(_| | (/_
----                |              
-
-function push(t,x)   t[1 + #t] = x; return x end
-function map(t,f, u) u={};for _,v in pairs(t) do push(u,f(v)) end; return u end
-function sum(t,f, n) 
-  f = f or function(x) return x end
-  n=0; for _,v in pairs(t) do n = n + f(v) end; return n end
-
-function sort(t,f)   table.sort(t,f); return t end
-function firsts(a,b) return a[1] < b[1] end
-
----     __|_ _. _  _   '~)  _|_|_ . _  _ 
----    _\ | | || |(_|   /_   | | ||| |(_|
----                _|                  _|
-
-function thing(x)
-  x = x:match"^%s*(.-)%s*$"
-  if x=="true" then return true elseif x=="false" then return false end
-  return tonumber(x) or x end
-
-function things(file,      x)
-  local function cells(x,  t)
-    t={}; for y in x:gmatch("([^,]+)") do push(t, thing(y)) end; return t end
-  file = io.input(file)
-  return function()
-    x=io.read(); if x then return cells(x) else io.close(file) end end end
-
----      _  _. _ _|_
----     |_)| || | | 
----     |           
-
-fmt = string.format
-
-function oo(t) print(o(t)) end
-
-function o(t,  seen, u)  
-  if type(t)~="table" then return tostring(t) end
-  seen = seen or {}
-  if seen[t] then return "..." end
-  seen[t] = t
-  local function show1(x) return o(x, seen) end
-  local function show2(k) return fmt(":%s %s",k,o(t[k],seen)) end
-  u = #t>0 and map(t,show1) or map(slots(t),show2)
-  return (t._is or "").."{"..table.concat(u," ").."}" end
-
-function slots(t, u)
-  u={};for k,v in pairs(t) do if tostring(k):sub(1,1)~="_" then push(u,k)end end
-  return sort(u) end
-
-function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
-function rnd(x,f) 
-  return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or "%s",x) end
-
----     _ _ _|__|_. _  _  _
----    _\(/_ |  | || |(_|_\
----                    _|  
-
-function settings(txt,    d)
-  d={}
-  txt:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
-    function(long,key,short,x)
-      for n,flag in ipairs(arg) do 
-        if flag==short or flag==long then
-          x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
-       d[key] = x==true and true or thing(x) end)
-  return d end
-
-
----     _ _  _ _|_ _ _ |
----    (_(_)| | | | (_)|
-                 
-local go, ok = {fails=0}
-function ok(test,msg)
-  print(test and "      PASS: "or "      FAIL: ",msg or "") 
-  if not test then 
-    go.fails=go.fails+1 
-    if the.dump then assert(test,msg) end end end
-
-function go.main(todo,seed)
-  for k,one in pairs(todo=="all" and slots(go) or {todo}) do
-    if k ~= "main" and type(go[one]) == "function" then
-      math.randomseed(seed)
-      print(fmt(":%s",one))
-      go[one]() end end 
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  
-  return go.fails end
-
----     _ |_  . _  __|_ _
----    (_)|_) |(/_(_ | _\
----          L|          
-
-new = setmetatable
-function obj(s,   t)
-  t={__tostring=o,_is=s or ""}; t.__index=t
-  return new(t, {__call=function(_,...) return t.new(_,...) end}) end
+-- POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------
 ---    ____ _    ____ ____ ____ ____ ____ 
 ---    |    |    |__| [__  [__  |___ [__  
 ---    |___ |___ |  | ___] ___] |___ ___] 
                                 
+new = setmetatable
+function obj(s,   t)
+  t={__tostring=o,_is=s or ""}; t.__index=t
+  return new(t, {__call=function(_,...) return t.new(_,...) end}) end
+
 local Num, Sym, Egs = obj"Num", obj"Sym", obj"Egs"
 
 ---     _ _ _  _ _|_ _ 
@@ -493,6 +380,112 @@ function scottKnot(nums,      all,cohen)
   cohen = all.sd * the.cohen
   div(1, #nums, 1, all)
   return nums end
+-----------------------------------------------------------------------
+---    _  _ _ ____ ____    ___ ____ ____ _    ____ 
+---    |\/| | [__  |        |  |  | |  | |    [__  
+---    |  | | ___] |___     |  |__| |__| |___ ___] 
+
+---     _ _  _ _|_|_  _
+---    | | |(_| | | |_\
+
+r=math.random
+
+---    |. __|_   _      _  _  
+---    ||_\ |   (_| |_|(/_| \/
+---               |/        / 
+
+function last(a)       return a[ #a ] end
+function per(a,p)      return a[ (p*#a)//1 ] end
+function any(a)        return a[ math.random(#a) ] end
+function many(a,n,  u) u={}; for j=1,n do push(u,any(a)) end; return u end
+
+---    |. __|_      _  _| _ _|_ _ 
+---    ||_\ |   |_||_)(_|(_| | (/_
+---                |              
+
+function push(t,x)   t[1 + #t] = x; return x end
+function map(t,f, u) u={};for _,v in pairs(t) do push(u,f(v)) end; return u end
+function sum(t,f, n) 
+  f = f or function(x) return x end
+  n=0; for _,v in pairs(t) do n = n + f(v) end; return n end
+
+function sort(t,f)   table.sort(t,f); return t end
+function firsts(a,b) return a[1] < b[1] end
+
+---     __|_ _. _  _   '~)  _|_|_ . _  _ 
+---    _\ | | || |(_|   /_   | | ||| |(_|
+---                _|                  _|
+
+function thing(x)
+  x = x:match"^%s*(.-)%s*$"
+  if x=="true" then return true elseif x=="false" then return false end
+  return tonumber(x) or x end
+
+function things(file,      x)
+  local function cells(x,  t)
+    t={}; for y in x:gmatch("([^,]+)") do push(t, thing(y)) end; return t end
+  file = io.input(file)
+  return function()
+    x=io.read(); if x then return cells(x) else io.close(file) end end end
+
+---      _  _. _ _|_
+---     |_)| || | | 
+---     |           
+
+fmt = string.format
+
+function oo(t) print(o(t)) end
+
+function o(t,  seen, u)  
+  if type(t)~="table" then return tostring(t) end
+  seen = seen or {}
+  if seen[t] then return "..." end
+  seen[t] = t
+  local function show1(x) return o(x, seen) end
+  local function show2(k) return fmt(":%s %s",k,o(t[k],seen)) end
+  u = #t>0 and map(t,show1) or map(slots(t),show2)
+  return (t._is or "").."{"..table.concat(u," ").."}" end
+
+function slots(t, u)
+  u={};for k,v in pairs(t) do if tostring(k):sub(1,1)~="_" then push(u,k)end end
+  return sort(u) end
+
+function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
+function rnd(x,f) 
+  return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or "%s",x) end
+
+---     _ _ _|__|_. _  _  _
+---    _\(/_ |  | || |(_|_\
+---                    _|  
+
+function settings(txt,    d)
+  d={}
+  txt:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+    function(long,key,short,x)
+      for n,flag in ipairs(arg) do 
+        if flag==short or flag==long then
+          x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
+       d[key] = x==true and true or thing(x) end)
+  return d end
+
+---     _ _  _ _|_ _ _ |
+---    (_(_)| | | | (_)|
+                 
+local go, ok = {fails=0}
+function ok(test,msg)
+  print(test and "      PASS: "or "      FAIL: ",msg or "") 
+  if not test then 
+    go.fails=go.fails+1 
+    if the.dump then assert(test,msg) end end end
+
+function go.main(todo,seed)
+  for k,one in pairs(todo=="all" and slots(go) or {todo}) do
+    if k ~= "main" and type(go[one]) == "function" then
+      math.randomseed(seed)
+      print(fmt(":%s",one))
+      go[one]() end end 
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  
+  return go.fails end
 --------------------------------------------------------------------------------
 ---    ____ ____ 
 ---    | __ |  | 
