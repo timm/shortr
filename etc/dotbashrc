@@ -49,6 +49,7 @@ alias grep='grep --color=auto'
 alias h="history"
 alias hello="git pull"
 alias l5="lua l5.lua "
+alias xplan="lua xplan.lua "
 alias ls="ls -G"
 alias tmux="tmux -f $here/etc/dottmux"
 alias vi="vim -u $here/etc/dotvimrc "
