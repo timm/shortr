@@ -1,17 +1,26 @@
----                      ___                         
----                     /\_ \                        
----     __  _   _____   \//\ \       __       ___    
----    /\ \/'\ /\ '__`\   \ \ \    /'__`\   /' _ `\  
----    \/>  </ \ \ \L\ \   \_\ \_ /\ \L\.\_ /\ \/\ \ 
----     /\_/\_\ \ \ ,__/   /\____\\ \__/.\_\\ \_\ \_\
----     \//\/_/  \ \ \/    \/____/ \/__/\/_/ \/_/\/_/
----               \ \_\                              
----                \/_/                              
+-----------------------------------------------------------------------
+---     __                  __                    __     
+---    /\ \                /\ \                  /\ \    
+---    \ \ \____    ___    \ \ \____     __      \_\ \   
+---     \ \ '__`\ /' _ `\   \ \ '__`\  /'__`\    /'_` \  
+---      \ \ \L\ \/\ \/\ \   \ \ \L\ \/\ \L\.\_ /\ \L\ \ 
+---       \ \_,__/\ \_\ \_\   \ \_,__/\ \__/.\_\\ \___,_\
+---        \/___/  \/_/\/_/    \/___/  \/__/\/_/ \/__,_ /
+
+
+---     .-------.  
+---     | Ba    | Bad <----.  planning= (better - bad)
+---     |    56 |          |  monitor = (bad - better)
+---     .-------.------.   |  
+---             | B    |   v  
+---             |    5 | Better  
+---             .------.  
+---    
 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local the, help = {}, [[
 
-lua xplan.lua [OPTIONS]
+lua bnbad.lua [OPTIONS]
 (c) 2022, Tim Menzies, opensource.org/licenses/BSD-2-Clause
 
 OPTIONS:
@@ -29,9 +38,38 @@ OPTIONS, other:
   -seed      -s random number seed    = 10019
   -todo      -t start-up action       = nothing
 ]]
+
+-----------------------------------------------------------------------
+-- Copyright 2022 Tim Menzies
+--
+-- Redistribution and use in source and binary forms, with or without
+-- modification, are permitted provided that the following conditions
+-- are met:
+--
+-- 1. Redistributions of source code must retain the above copyright
+-- notice, this list of conditions and the following disclaimer.
+--
+-- 2. Redistributions in binary form must reproduce the above copyright
+-- notice, this list of conditions and the following disclaimer in the
+-- documentation and/or other materials provided with the distribution.
+--
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+-- "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+-- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+-- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+-- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+-- CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+-- LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+-- ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+-- POSSIBILITY OF SUCH DAMAGE.
+
 local any, bestSpan, bins, bins1, bootstrap, firsts, fmt, last
 local many, map, new, o, obj, oo, per, push, quintiles, r, rnd, rnds, scottKnot
-local selects, slots, smallfx, sort, sum, thing, things, xplains
+local selects, settings,slots, smallfx, sort, sum, thing, things, xplains
+-----------------------------------------------------------------------
 ---    _  _ _ ____ ____    ___ ____ ____ _    ____ 
 ---    |\/| | [__  |        |  |  | |  | |    [__  
 ---    |  | | ___] |___     |  |__| |__| |___ ___] 
@@ -104,6 +142,21 @@ function slots(t, u)
 function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or "%s",x) end
+
+---     _ _ _|__|_. _  _  _
+---    _\(/_ |  | || |(_|_\
+---                    _|  
+
+function settings(txt,    d)
+  d={}
+  txt:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+    function(long,key,short,x)
+      for n,flag in ipairs(arg) do 
+        if flag==short or flag==long then
+          x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
+       d[key] = x==true and true or thing(x) end)
+  return d end
+
 
 ---     _ _  _ _|_ _ _ |
 ---    (_(_)| | | | (_)|
@@ -479,7 +532,6 @@ function go.nums( num,t,b4)
   for j=1,#t  do  
     num:add(t[j])
     if j%100==0 then    b4[j] =  fmt("%.5f",num:div()) end end
-  oo(b4)
   for j=#t,1,-1 do  
     if j%100==0 then ok(b4[j] == fmt("%.5f",num:div()),"div"..j) end
     num:sub(t[j]) end end
@@ -498,11 +550,5 @@ function go.syms( t,b4,s,sym)
   end
   
 --------------------------------------------------------------------------------
-help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
-  function(long,key,short,x)
-    for n,flag in ipairs(arg) do 
-      if flag==short or flag==long then
-        x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
-    the[key] = x==true and true or thing(x) end)
-
+the = settings(help)
 if the.help then print(help) else go.main(the.todo, the.seed) end
