@@ -400,11 +400,19 @@ function Bin.selects(i,row,  x)
   x = row[i.col.at]
   return x=="?" or i.lo==i.hi and x==i.lo or i.lo<=x and x<i.hi end
 
-function Bin.show(i)
-  if i.lo==i.hi       then return fmt("%s = %s",  i.col.name, i.lo) end
-  if i.lo==-math.huge then return fmt("%s < %s,", i.col.name, i.lo) end
-  if i.hi== math.huge then return fmt("%s >= %s,",i.col.name, i.hi) end
-  return fmt("%s <= %s < %s", i.lo, i.col.name, i.hi) end
+function Bin.show(i,negative)
+  local x, big, s = i.col.name, math.huge
+  if negative then
+    if     lo==hi  then s=fmt("%s != %s",x,i.lo)  
+    elseif hi==big then s=fmt("%s <  %s",x,i.lo) 
+    elseif lo==big then s=fmt("%s >= %s",x,i.hi)  
+    else                s=fmt("%s < %s and %s >= %s",x,i.lo,x,i.hi) end 
+  else
+    if     lo==hi  then s=fmt("%s == %s",x,i.lo)  
+    elseif hi==big then s=fmt("%s >= %s",x,i.lo)  
+    elseif lo==big then s=fmt("%s <  %s",x,i.hi)  
+    else                s=fmt("%s <= %s < %s",i.lo,x,i.hi) end end
+  return s end
 
 function Bin.distance2heaven(i, divs, ns)
   return ((1 - ns:norm(i.n))^2 + (0 - divs:norm(i.div))^2)^0.5 end
