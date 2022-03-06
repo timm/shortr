@@ -109,9 +109,8 @@ local Num, Sym, Egs, Bin
 r=math.random
 function ish(x,y,z) return math.abs(y -x ) < z end 
 
----    | __|_ _
----    |_\ | _\
-        
+---    |. __|_ _
+---    ||_\ | _\
 
 function any(a)        return a[ math.random(#a) ] end
 function firsts(a,b)   return a[1] < b[1] end
@@ -173,19 +172,19 @@ function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or "%s",x) end
 
----     _ _ _|__|_. _  _  _
----    _\(/_ |  | || |(_|_\
----                    _|  
+---    |_  _ | _   _|_ _   _|_  '~)   _ _ _|__|_. _  _  _
+---    | |(/_||_)   | (/_>< |    /_  _\(/_ |  | || |(_|_\
+---           |                                      _|  
 
-function settings(txt,    d)
+function settings(help,    d)
   d={}
-  txt:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+  help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
     function(long,key,short,x)
       for n,flag in ipairs(arg) do 
         if flag==short or flag==long then
           x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
        d[key] = x==true and true or thing(x) end)
-  if d.help then print(txt) end
+  if d.help then print(help) end
   return d end
 
 ---     _ _  _ _|_ _ _ |
@@ -216,9 +215,9 @@ function obj(s,   t)
   return new(t, {__call=function(_,...) return t.new(_,...) end}) end
 
 -----------------------------------------------------------------------
----    ____ _    ____ ____ ____ ____ ____ 
----    |    |    |__| [__  [__  |___ [__  
----    |___ |___ |  | ___] ___] |___ ___] 
+---    ___  ____ ___ ____    ____ _    ____ ____ ____ ____ ____ 
+---    |  \ |__|  |  |__|    |    |    |__| [__  [__  |___ [__  
+---    |__/ |  |  |  |  |    |___ |___ |  | ___] ___] |___ ___] 
                                 
 Num, Sym, Egs = obj"Num", obj"Sym", obj"Egs"
 
@@ -396,9 +395,9 @@ function Sym.bins(i,j)
   local xys= {}
   for x,n in pairs(i.all) do push(xys, {x=x,y="left", n=n}) end
   for x,n in pairs(j.all) do push(xys, {x=x,y="right",n=n}) end
-  return Bin:syms(i, Sym, xys) end
+  return Bin:new4Syms(i, Sym, xys) end
 
-function Bin:syms(col, yclass, xys) 
+function Bin:new4Syms(col, yclass, xys) 
   local out,all={}, {}
   for _,xy in pairs(xys) do
      all[xy.x] = all[xy.x] or yclass()
@@ -414,11 +413,11 @@ function Num.bins(i,j)
   local xys, all = {}, Num()
   for _,n in pairs(i._all) do all:add(n); push(xys,{x=n,y="left"}) end
   for _,n in pairs(j._all) do all:add(n); push(xys,{x=n,y="right"}) end
-  return Bin:nums(i, Sym, sort(xys,function(a,b) return a.x < b.x end), 
-                          (#xys)^the.minItems, 
-                          all.sd*the.cohen) end
+  return Bin:new4Nums(i, Sym, sort(xys,function(a,b) return a.x < b.x end), 
+                              (#xys)^the.minItems, 
+                              all.sd*the.cohen) end
 
-function Bin:nums(col, yclass, xys, minItems, cohen)
+function Bin:new4Nums(col, yclass, xys, minItems, cohen)
   local out,b4= {}, -math.huge
   local function bins1(lo,hi)
     local lhs, rhs, cut, div, xpect, xy = yclass(), yclass()
@@ -427,16 +426,20 @@ function Bin:nums(col, yclass, xys, minItems, cohen)
     for j=lo,hi do
       lhs:add(xys[j].y)
       rhs:sub(xys[j].y)
-      if lhs.n > minItems and rhs.n > minItems then
-        if xys[j].x ~= xys[j+1].x then
-          if xys[j].x - xys[lo].x > cohen and xys[hi].x - xys[j].x > cohen then
-            xpect = (lhs.n*lhs:div() + rhs.n*rhs:div()) / (lhs.n+rhs.n) 
-            if xpect < div then 
-              cut, div = j, xpect end end end end end
+      if lhs.n     > minItems and          -- enough items  (on left)
+         rhs.n     > minItems and          -- enough items (on right)
+         xys[j].x ~= xys[j+1].x and        -- there is a break here
+         xys[j].x  - xys[lo].x > cohen and -- not trivially small (on left) 
+         xys[hi].x - xys[j].x  > cohen     -- not trivially small (on right)
+      then                                 
+         xpect = (lhs.n*lhs:div() + rhs.n*rhs:div()) / (lhs.n+rhs.n) 
+         if xpect < div then               -- cutting here simplifies things
+           cut, div = j, xpect end end 
+    end
     if   cut 
     then bins1(lo,    cut)
          bins1(cut+1, hi )
-    else b4 = push(out, Bin(col, b4, xys[hi].x, #xys, div)).hi end
+    else b4 = push(out, Bin(col, b4, xys[hi].x, hi-lo+1, div)).hi end
   end -----------------------------------------------
   bins1(1,#xys)
   out[#out].hi =  math.huge 
