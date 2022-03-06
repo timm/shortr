@@ -378,8 +378,8 @@ function Num.bins(i,j,   out)
   bins(i, xys, (#xys)^the.minItems, all.sd*the.cohen, Sym, out) end
 
 function bins(col, xys, minItems, cohen, yclass, out)
-  local tmp, b4, bins = {}
-  function bins1(xys)
+  local tmp, b4 = {}
+  local function bins1(xys)
     local lhs, rhs, cut, div = yclass(), yclass()
     local function xpect(i,j) return (i.n*i:div() + j.n*j:div()) / (i.n+j.n) end
     for _,xy in pairs(xys) do rhs:add(xy.y) end
@@ -398,10 +398,10 @@ function bins(col, xys, minItems, cohen, yclass, out)
          bins1(upto)
          bins1(after)
     else push(tmp, {col=col, lo=xys[1].x, hi=xys[#xys].x, n=#xys, div=div}) end 
-  end ----------------------------
-  bins1(sort(xys,function(a,b) return a.x < b.x end))
+  end -----------------------------------------------
+  bins1(sort(xys, function(a,b) return a.x < b.x end))
   if #tmp>1 then 
-    tmp[1].lo   = -math.huge
+    tmp[1].lo    = -math.huge
     tmp[#tmp].hi =  math.huge
     for _,bin in pairs(tmp) do 
       if b4 then bin.lo = b4.hi end
