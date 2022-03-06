@@ -7,6 +7,8 @@
 ---     \ \_,__/ \ \_\    \ \_\ \_\\ \_\ \_\   \ \_,__/\ \__/.\_\\ \___,_\
 ---      \/___/   \/_/     \/_/\/_/ \/_/\/_/    \/___/  \/__/\/_/ \/__,_ /
                                                                      
+
+                                                                     
 ---     .-------.  
 ---     | Ba    | Bad <----.  planning= (better - bad)
 ---     |    56 |          |  monitor = (bad - better)
@@ -14,7 +16,8 @@
 ---             | B    |   v  
 ---             |    5 | Better  
 ---             .------.  
----    
+
+
 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local the, help = {}, [[
@@ -45,6 +48,8 @@ local many, map, new, o, obj, oo, per, push, quintiles, r, rnd, rnds, scottKnot
 local selects, settings,slots, smallfx, sort, sum, thing, things, xplains
 local Num, Sym, Egs, Bin, Cluster
 
+
+
 -- Copyright 2022 Tim Menzies
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -71,38 +76,25 @@ local Num, Sym, Egs, Bin, Cluster
 -- ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 -- POSSIBILITY OF SUCH DAMAGE.
 
----                            ,
----                            |'.             ,
----                            |  '-._        / )
----                          .'  .._  ',     /_'-,
----                         '   /  _'.'_\   /._)')
----                        :   /  '_' '_'  /  _.'
----                        |E |   |Q| |Q| /   /
----                       .'  _\  '-' '-'    /
----                     .'--.(S     ,__` )  /
----                           '-.     _.'  /
----                         __.--'----(   /
----                     _.-'     :   __\ /
----                    (      __.' :'  :Y
----                     '.   '._,  :   :|
----                       '.     ) :.__:|
----                         \    \______/
----                          '._L/_H____]
----                           /_        /
----                          /  '-.__.-')
----                         :      /   /
----                         :     /   /
----                       ,/_____/----;
----                       '._____)----'
----                       /     /   /
----                      /     /   /
----                    .'     /    \
----               snd (______(-.____)
------------------------------------------------------------------------
----    _  _ _ ____ ____    ____ ___ _  _ ____ ____ 
----    |\/| | [__  |       [__   |  |  | |___ |___ 
----    |  | | ___] |___    ___]  |  |__| |    |    
 
+
+---             .---------.
+---             |         |
+---           -= _________ =-
+---              ___   ___
+---             |   )=(   |
+---              ---   --- 
+---            
+---                 ###
+---               #  =  #            "This ain't chemistry. 
+---               #######             This is art."
+---                 ###
+
+-----------------------------------------------------------------------
+---    _  _ _ ____ ____ 
+---    |\/| | [__  |    
+---    |  | | ___] |___ 
+                 
 ---     _ _  _ _|_|_  _
 ---    | | |(_| | | |_\
 
@@ -356,21 +348,9 @@ function Cluster.show(i,   pre, front)
        if i.lefts  then i.lefts:show( "| "..pre)
        if i.rights then i.rights:show("| "..pre) end end end end
 
-function Egs.dists(i,r1,rows)
-   return sort(map(rows,function(r2) return {i:dist(r1,r2),r2} end),firsts) end
-
-function Egs.dist(i,row1,row2,    d)
-  d = sum(i.cols.x, function(c) return c:dist(row1[c.at], row2[c.at])^the.p end)
-  return (d/#i.cols.x)^(1/the.p) end
-
-function Num.dist(i,a,b)
-  if     a=="?" and b=="?" then return 1 end
-  if     a=="?" then b=i:norm(b); a=b<.5 and 1 or 0 
-  elseif b=="?" then a=i:norm(a); b=a<.5 and 1 or 0
-  else   a,b = i:norm(a), i:norm(b)  end
-  return math.abs(a - b) end
-
-function Sym.dist(i,a,b) return a=="?" and b=="?" and 1 or a==b and 0 or 1 end
+---     _ _  _  _| _  _ _    _  _ _  . _  __|_. _  _  _
+---    | (_|| |(_|(_)| | |  |_)| (_) |(/_(_ | |(_)| |_\
+---                         |       L|                 
 
 function Egs.half(i, rows)
   local project,far,some,left,right,c,lefts,rights
@@ -388,6 +368,26 @@ function Egs.half(i, rows)
     (n <= #rows//2 and lefts or rights):add( projection[2] ) end
   return lefts, rights, left, right, mid, c  end
 
+---     _|. __|_ _  _  _ _  _  . _    _| _ _|_ _ 
+---    (_||_\ | (_|| |(_(/__\  || |  (_|(_| | (_|
+                                          
+function Egs.dists(i,r1,rows)
+   return sort(map(rows,function(r2) return {i:dist(r1,r2),r2} end),firsts) end
+
+function Egs.dist(i,row1,row2,    d)
+  d = sum(i.cols.x, function(c) return c:dist(row1[c.at], row2[c.at])^the.p end)
+  return (d/#i.cols.x)^(1/the.p) end
+
+function Num.dist(i,a,b)
+  if     a=="?" and b=="?" then return 1 end
+  if     a=="?" then b=i:norm(b); a=b<.5 and 1 or 0 
+  elseif b=="?" then a=i:norm(a); b=a<.5 and 1 or 0
+  else   a,b = i:norm(a), i:norm(b)  end
+  return math.abs(a - b) end
+
+function Sym.dist(i,a,b) return a=="?" and b=="?" and 1 or a==b and 0 or 1 end
+
+-----------------------------------------------------------------------
 ---    ___  _ ____ ____ ____ ____ ___ _ ___  ____ 
 ---    |  \ | [__  |    |__/ |___  |  |   /  |___ 
 ---    |__/ | ___] |___ |  \ |___  |  |  /__ |___ 
