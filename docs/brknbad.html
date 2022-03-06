@@ -44,7 +44,7 @@ OPTIONS:
   -far       -f how far to seek poles = .9
   -keep      -k items to keep         = 256
   -minItems  -m min items in a rang e = .5
-  -p         -p euclidean coefficient = 3
+  -p         -p euclidean coefficient = 2
   -some      -S sample size for rows  = 512
 
 OPTIONS, other:
@@ -59,7 +59,7 @@ OPTIONS, other:
 <span class="hljs-keyword">local</span> any, bestSpan, bins, bins1, bootstrap, csv2egs, firsts, fmt, ish, last
 <span class="hljs-keyword">local</span> many, map, new, o, obj, oo, per, push, quintiles, r, rnd, rnds, scottKnot
 <span class="hljs-keyword">local</span> selects, settings,slots, smallfx, <span class="hljs-built_in">sort</span>, sum, thing, things, xplains
-<span class="hljs-keyword">local</span> Num, Sym, Egs</pre></div></div>
+<span class="hljs-keyword">local</span> Num, Sym, Egs, Bin</pre></div></div>
             
         </li>
         
@@ -192,7 +192,8 @@ fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">form
 new = <span class="hljs-built_in">setmetatable</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">obj</span><span class="hljs-params">(s,   t)</span></span>
   t={<span class="hljs-built_in">__tostring</span>=o,_is=s <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>}; t.<span class="hljs-built_in">__index</span>=t
-  <span class="hljs-keyword">return</span> new(t, {<span class="hljs-built_in">__call</span>=<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(_,...)</span></span> <span class="hljs-keyword">return</span> t.new(_,...) <span class="hljs-keyword">end</span>}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> new(t, {<span class="hljs-built_in">__call</span>=<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(_,...)</span></span> <span class="hljs-keyword">return</span> t.new(_,...) <span class="hljs-keyword">end</span>}) <span class="hljs-keyword">end</span>
+
                                 
 Num, Sym, Egs = obj<span class="hljs-string">&quot;Num&quot;</span>, obj<span class="hljs-string">&quot;Sym&quot;</span>, obj<span class="hljs-string">&quot;Egs&quot;</span>
 
@@ -327,57 +328,71 @@ Num, Sym, Egs = obj<span class="hljs-string">&quot;Num&quot;</span>, obj<span cl
     (n &lt;= #rows//<span class="hljs-number">2</span> <span class="hljs-keyword">and</span> lefts <span class="hljs-keyword">or</span> rights):add( projection[<span class="hljs-number">2</span>] ) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> lefts, rights, left, right, mid, c  <span class="hljs-keyword">end</span>
 
+                                           
+Bin=obj<span class="hljs-string">&quot;Bin&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin:new</span><span class="hljs-params">(col,lo,hi,n,div)</span></span>
+  <span class="hljs-keyword">return</span> new({col=col, lo=lo, hi=hi, n=n, div=div},Bin) <span class="hljs-keyword">end</span>
 
-<span class="hljs-keyword">local</span> bins,xbestSpan
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.bins</span><span class="hljs-params">(i,j,   out)</span></span>
-  <span class="hljs-keyword">local</span> xys,all,one,last,x,y,n = {}, {}
-  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> push(xys, {x=x,y=<span class="hljs-string">&quot;lefts&quot;</span>, n=n}) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.all) <span class="hljs-keyword">do</span> push(xys, {x=x,y=<span class="hljs-string">&quot;rights&quot;</span>,n=n}) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> _,tmp <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(xys,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> a.x &lt; b.x <span class="hljs-keyword">end</span>)) <span class="hljs-keyword">do</span>
-    x,y,n = tmp.x, tmp.y, tmp.n
-    <span class="hljs-keyword">if</span> x ~= last <span class="hljs-keyword">then</span>
-      last = x
-      one  = push(all, {lo=x, hi=x, all=Sym(i.at,i.name)}) <span class="hljs-keyword">end</span>
-    one.all:add(y,n) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> _,cut <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(all) <span class="hljs-keyword">do</span>
-    push(out, {col=col, lo=cut.lo, hi=cut.hi,
-               n=cut.all.n, div=cut.all:div()}) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.selects</span><span class="hljs-params">(i,row,  x)</span></span>
+  x = row[i.col.at]
+  <span class="hljs-keyword">return</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">or</span> i.lo==i.hi <span class="hljs-keyword">and</span> x==i.lo <span class="hljs-keyword">or</span> i.lo&lt;=x <span class="hljs-keyword">and</span> x&lt;i.hi <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.bins</span><span class="hljs-params">(i,j,   out)</span></span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.show</span><span class="hljs-params">(i)</span></span>
+  <span class="hljs-keyword">if</span> i.lo==i.hi       <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s = %s&quot;</span>,  i.col.name, i.lo) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> i.lo==-<span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s,&quot;</span>, i.col.name, i.lo) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> i.hi== <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s,&quot;</span>,i.col.name, i.hi) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s &lt; %s&quot;</span>, i.lo, i.col.name, i.hi) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.distance2heaven</span><span class="hljs-params">(i, divs, ns)</span></span>
+  <span class="hljs-keyword">return</span> ((<span class="hljs-number">1</span> - ns:norm(i.n))^<span class="hljs-number">2</span> + (<span class="hljs-number">0</span> - divs:norm(i.div))^<span class="hljs-number">2</span>)^<span class="hljs-number">0.5</span> <span class="hljs-keyword">end</span>
+
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.bins</span><span class="hljs-params">(i,j)</span></span>
+  <span class="hljs-keyword">local</span> xys= {}
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> push(xys, {x=x,y=<span class="hljs-string">&quot;left&quot;</span>, n=n}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.all) <span class="hljs-keyword">do</span> push(xys, {x=x,y=<span class="hljs-string">&quot;right&quot;</span>,n=n}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> Bin:syms(i, Sym, xys) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin:syms</span><span class="hljs-params">(col, yclass, xys)</span></span> 
+  <span class="hljs-keyword">local</span> out,all={}, {}
+  <span class="hljs-keyword">for</span> _,xy <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(xys) <span class="hljs-keyword">do</span>
+     all[xy.x] = all[xy.x] <span class="hljs-keyword">or</span> yclass()
+     all[xy.x]:add(xy.y, xy.n)  <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,one <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(all) <span class="hljs-keyword">do</span>
+    push(out,Bin(col, x, x, one.n, one:div())) <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span>
+
+                                     
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.bins</span><span class="hljs-params">(i,j)</span></span>
   <span class="hljs-keyword">local</span> xys, all = {}, Num()
   <span class="hljs-keyword">for</span> _,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i._all) <span class="hljs-keyword">do</span> all:add(n); push(xys,{x=n,y=<span class="hljs-string">&quot;left&quot;</span>}) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> _,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j._all) <span class="hljs-keyword">do</span> all:add(n); push(xys,{x=n,y=<span class="hljs-string">&quot;right&quot;</span>})  <span class="hljs-keyword">end</span>
-  bins(i, xys, (#xys)^the.minItems, all.sd*the.cohen, Sym, out) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j._all) <span class="hljs-keyword">do</span> all:add(n); push(xys,{x=n,y=<span class="hljs-string">&quot;right&quot;</span>}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> Bin:nums(i, Sym, <span class="hljs-built_in">sort</span>(xys,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> a.x &lt; b.x <span class="hljs-keyword">end</span>), 
+                       (#xys)^the.minItems, 
+                       all.sd*the.cohen) <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bins</span><span class="hljs-params">(col, xys, minItems, cohen, yclass, out)</span></span>
-  <span class="hljs-keyword">local</span> tmp, b4 = {}
-  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bins1</span><span class="hljs-params">(xys)</span></span>
-    <span class="hljs-keyword">local</span> lhs, rhs, cut, div = yclass(), yclass()
-    <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">xpect</span><span class="hljs-params">(i,j)</span></span> <span class="hljs-keyword">return</span> (i.n*i:div() + j.n*j:div()) / (i.n+j.n) <span class="hljs-keyword">end</span>
-    <span class="hljs-keyword">for</span> _,xy <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(xys) <span class="hljs-keyword">do</span> rhs:add(xy.y) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin:nums</span><span class="hljs-params">(col, yclass, xys, minItems, cohen)</span></span>
+  <span class="hljs-keyword">local</span> out,b4= {}, -<span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
+  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bins1</span><span class="hljs-params">(lo,hi)</span></span>
+    <span class="hljs-keyword">local</span> lhs, rhs, cut, div, xpect, xy = yclass(), yclass()
+    <span class="hljs-keyword">for</span> j=lo,hi <span class="hljs-keyword">do</span>  rhs:add(xys[j].y) <span class="hljs-keyword">end</span>
     div = rhs:div()
-    <span class="hljs-keyword">for</span> j,xy <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(xys) <span class="hljs-keyword">do</span>
-      lhs:add(xy.y)
-      rhs:<span class="hljs-built_in">sub</span>(xy.y)
-      <span class="hljs-keyword">if</span> lhs.n &gt;= minItems <span class="hljs-keyword">and</span> rhs.n &gt;= minItems <span class="hljs-keyword">then</span>
-        <span class="hljs-keyword">if</span> xy.x ~= xys[j+<span class="hljs-number">1</span>].x <span class="hljs-keyword">then</span>
-          <span class="hljs-keyword">if</span> xy.x - xys[<span class="hljs-number">1</span>].x &gt;= cohen <span class="hljs-keyword">and</span> xys[#xys].x - xy.x &gt;= cohen <span class="hljs-keyword">then</span>
-            <span class="hljs-keyword">if</span> xpect(lhs,rhs) &lt; div <span class="hljs-keyword">then</span> 
-              cut, div = j, xpect(lhs,rhs) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">for</span> j=lo,hi <span class="hljs-keyword">do</span>
+      lhs:add(xys[j].y)
+      rhs:<span class="hljs-built_in">sub</span>(xys[j].y)
+      <span class="hljs-keyword">if</span> lhs.n &gt; minItems <span class="hljs-keyword">and</span> rhs.n &gt; minItems <span class="hljs-keyword">then</span>
+        <span class="hljs-keyword">if</span> xys[j].x ~= xys[j+<span class="hljs-number">1</span>].x <span class="hljs-keyword">then</span>
+          <span class="hljs-keyword">if</span> xys[j].x - xys[lo].x &gt; cohen <span class="hljs-keyword">and</span> xys[hi].x - xys[j].x &gt; cohen <span class="hljs-keyword">then</span>
+            xpect = (lhs.n*lhs:div() + rhs.n*rhs:div()) / (lhs.n+rhs.n) 
+            <span class="hljs-keyword">if</span> xpect &lt; div <span class="hljs-keyword">then</span> 
+              cut, div = j, xpect <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
     <span class="hljs-keyword">if</span>   cut 
-    <span class="hljs-keyword">then</span> <span class="hljs-keyword">local</span> upto,after = {},{}
-         <span class="hljs-keyword">for</span> n,xy <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(xys) <span class="hljs-keyword">do</span> push(n&lt;=cut <span class="hljs-keyword">and</span> upto <span class="hljs-keyword">or</span> after, xy) <span class="hljs-keyword">end</span>
-         bins1(upto)
-         bins1(after)
-    <span class="hljs-keyword">else</span> push(tmp, {col=col, lo=xys[<span class="hljs-number">1</span>].x, hi=xys[#xys].x, n=#xys, div=div}) <span class="hljs-keyword">end</span> 
-  bins1(<span class="hljs-built_in">sort</span>(xys, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> a.x &lt; b.x <span class="hljs-keyword">end</span>))
-  <span class="hljs-keyword">if</span> #tmp&gt;<span class="hljs-number">1</span> <span class="hljs-keyword">then</span> 
-    tmp[<span class="hljs-number">1</span>].lo    = -<span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
-    tmp[#tmp].hi =  <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
-    <span class="hljs-keyword">for</span> _,bin <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(tmp) <span class="hljs-keyword">do</span> 
-      <span class="hljs-keyword">if</span> b4 <span class="hljs-keyword">then</span> bin.lo = b4.hi <span class="hljs-keyword">end</span>
-      b4 = push(out,bin) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-
+    <span class="hljs-keyword">then</span> bins1(lo,    cut)
+         bins1(cut+<span class="hljs-number">1</span>, hi )
+    <span class="hljs-keyword">else</span> b4 = push(out, Bin(col, b4, xys[hi].x, #xys, div)).hi <span class="hljs-keyword">end</span>
+  bins1(<span class="hljs-number">1</span>,#xys)
+  out[#out].hi =  <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span> 
+  <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span>
 
 <span class="hljs-keyword">local</span> xplain,xplains,selects,spanShow
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.xplain</span><span class="hljs-params">(i,rows)</span></span>
@@ -610,9 +625,8 @@ XXX need tests for stats</p>
   egs = csv2egs(the.file)
   lefts, rights = egs:half(egs._all)
   <span class="hljs-keyword">for</span> n,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(lefts.cols.x) <span class="hljs-keyword">do</span>
-    cuts={}
-    col:bins(rights.cols.x[n],cuts)
-    map(cuts,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(cut)</span></span> <span class="hljs-built_in">print</span>(col.name, cut.lo, cut.hi) <span class="hljs-keyword">end</span>);  <span class="hljs-keyword">end</span>  <span class="hljs-keyword">end</span>
+    cuts= col:bins(rights.cols.x[n])
+    map(cuts,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(cut)</span></span> <span class="hljs-built_in">print</span>(col.name, cut.lo, cut.hi,cut.n, cut.div) <span class="hljs-keyword">end</span>);  <span class="hljs-keyword">end</span>  <span class="hljs-keyword">end</span>
  
 the = settings(help)
 go.main(the.todo, the.seed)

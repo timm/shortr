@@ -43,7 +43,7 @@ OPTIONS, other:
 local any, bestSpan, bins, bins1, bootstrap, csv2egs, firsts, fmt, ish, last
 local many, map, new, o, obj, oo, per, push, quintiles, r, rnd, rnds, scottKnot
 local selects, settings,slots, smallfx, sort, sum, thing, things, xplains
-local Num, Sym, Egs
+local Num, Sym, Egs, Bin
 
 -- Copyright 2022 Tim Menzies
 --
@@ -97,8 +97,8 @@ local Num, Sym, Egs
 ---                       /     /   /
 ---                      /     /   /
 ---                    .'     /    \
----               snd (______(-.____) 
------------------------------------------------------------------------
+---               snd (______(-.____)
+-----------------------------------------------------------------------
 ---    _  _ _ ____ ____    ____ ___ _  _ ____ ____ 
 ---    |\/| | [__  |       [__   |  |  | |___ |___ 
 ---    |  | | ___] |___    ___]  |  |__| |    |    
@@ -213,8 +213,9 @@ function go.main(todo,seed)
 new = setmetatable
 function obj(s,   t)
   t={__tostring=o,_is=s or ""}; t.__index=t
-  return new(t, {__call=function(_,...) return t.new(_,...) end}) end
------------------------------------------------------------------------
+  return new(t, {__call=function(_,...) return t.new(_,...) end}) end
+
+-----------------------------------------------------------------------
 ---    ____ _    ____ ____ ____ ____ ____ 
 ---    |    |    |__| [__  [__  |___ [__  
 ---    |___ |___ |  | ___] ___] |___ ___] 
@@ -365,63 +366,81 @@ function Egs.half(i, rows)
     (n <= #rows//2 and lefts or rights):add( projection[2] ) end
   return lefts, rights, left, right, mid, c  end
 
----     _|. _ _ _ _ _|_._  _ 
----    (_||_\(_| (/_ | |/_(/_
+-----------------------------------------------------------------------
+---    ___  _ ____ ____ ____ ____ ___ _ ___  ____ 
+---    |  \ | [__  |    |__/ |___  |  |   /  |___ 
+---    |__/ | ___] |___ |  \ |___  |  |  /__ |___ 
+                                           
+Bin=obj"Bin"
+function Bin:new(col,lo,hi,n,div)
+  return new({col=col, lo=lo, hi=hi, n=n, div=div},Bin) end
 
-local numbins, symbins
-function Sym.bins(i,j,   out)
+function Bin.selects(i,row,  x)
+  x = row[i.col.at]
+  return x=="?" or i.lo==i.hi and x==i.lo or i.lo<=x and x<i.hi end
+
+function Bin.show(i)
+  if i.lo==i.hi       then return fmt("%s = %s",  i.col.name, i.lo) end
+  if i.lo==-math.huge then return fmt("%s < %s,", i.col.name, i.lo) end
+  if i.hi== math.huge then return fmt("%s >= %s,",i.col.name, i.hi) end
+  return fmt("%s <= %s < %s", i.lo, i.col.name, i.hi) end
+
+function Bin.distance2heaven(i, divs, ns)
+  return ((1 - ns:norm(i.n))^2 + (0 - divs:norm(i.div))^2)^0.5 end
+
+---     _|. _ _ _ _ _|_._  _      _   _ _  _
+---    (_||_\(_| (/_ | |/_(/_    _\\/| | |_\
+---                                /        
+
+function Sym.bins(i,j)
   local xys= {}
-  for x,n in pairs(i.all) do push(xys, {x=x,y="lefts", n=n}) end
-  for x,n in pairs(j.all) do push(xys, {x=x,y="rights",n=n}) end
-  symbins(i,xys,out) end
+  for x,n in pairs(i.all) do push(xys, {x=x,y="left", n=n}) end
+  for x,n in pairs(j.all) do push(xys, {x=x,y="right",n=n}) end
+  return Bin:syms(i, Sym, xys) end
 
-function Num.bins(i,j,   out)
+function Bin:syms(col, yclass, xys) 
+  local out,all={}, {}
+  for _,xy in pairs(xys) do
+     all[xy.x] = all[xy.x] or yclass()
+     all[xy.x]:add(xy.y, xy.n)  end
+  for x,one in pairs(all) do
+    push(out,Bin(col, x, x, one.n, one:div())) end 
+  return out end
+
+---     _|. _ _ _ _ _|_._  _      _     _ _  _
+---    (_||_\(_| (/_ | |/_(/_    | ||_|| | |_\
+                                     
+function Num.bins(i,j)
   local xys, all = {}, Num()
   for _,n in pairs(i._all) do all:add(n); push(xys,{x=n,y="left"}) end
-  for _,n in pairs(j._all) do all:add(n); push(xys,{x=n,y="right"})  end
-  numbins(i, xys, (#xys)^the.minItems, all.sd*the.cohen, Sym, out) end
+  for _,n in pairs(j._all) do all:add(n); push(xys,{x=n,y="right"}) end
+  return Bin:nums(i, Sym, sort(xys,function(a,b) return a.x < b.x end), 
+                          (#xys)^the.minItems, 
+                          all.sd*the.cohen) end
 
-function symbins(col,xys,out) 
-  local all,one,last,x,y,n = {}
-  for _,tmp in pairs(sort(xys,function(a,b) return a.x < b.x end)) do
-    x,y,n = tmp.x, tmp.y, tmp.n
-    if x ~= last then
-      last= x
-      one = push(all, {lo=x, hi=x, all=Sym()}) end
-    one.all:add(y,n) end
-  for _,cut in pairs(all) do
-    push(out,{col=col,lo=cut.lo,hi=cut.hi,n=cut.all.n,div=cut.all:div()}) end end
-
-function numbins(col, xys, minItems, cohen, yclass, out)
-  local tmp, b4 = {}
-  local function bins1(xys)
-    local lhs, rhs, cut, div = yclass(), yclass()
-    local function xpect(i,j) return (i.n*i:div() + j.n*j:div()) / (i.n+j.n) end
-    for _,xy in pairs(xys) do rhs:add(xy.y) end
+function Bin:nums(col, yclass, xys, minItems, cohen)
+  local out,b4= {}, -math.huge
+  local function bins1(lo,hi)
+    local lhs, rhs, cut, div, xpect, xy = yclass(), yclass()
+    for j=lo,hi do  rhs:add(xys[j].y) end
     div = rhs:div()
-    for j,xy in pairs(xys) do
-      lhs:add(xy.y)
-      rhs:sub(xy.y)
-      if lhs.n >= minItems and rhs.n >= minItems then
-        if xy.x ~= xys[j+1].x then
-          if xy.x - xys[1].x >= cohen and xys[#xys].x - xy.x >= cohen then
-            if xpect(lhs,rhs) < div then 
-              cut, div = j, xpect(lhs,rhs) end end end end end
+    for j=lo,hi do
+      lhs:add(xys[j].y)
+      rhs:sub(xys[j].y)
+      if lhs.n > minItems and rhs.n > minItems then
+        if xys[j].x ~= xys[j+1].x then
+          if xys[j].x - xys[lo].x > cohen and xys[hi].x - xys[j].x > cohen then
+            xpect = (lhs.n*lhs:div() + rhs.n*rhs:div()) / (lhs.n+rhs.n) 
+            if xpect < div then 
+              cut, div = j, xpect end end end end end
     if   cut 
-    then local upto,after = {},{}
-         for n,xy in pairs(xys) do push(n<=cut and upto or after, xy) end
-         bins1(upto)
-         bins1(after)
-    else push(tmp, {col=col, lo=xys[1].x, hi=xys[#xys].x, n=#xys, div=div}) end 
+    then bins1(lo,    cut)
+         bins1(cut+1, hi )
+    else b4 = push(out, Bin(col, b4, xys[hi].x, #xys, div)).hi end
   end -----------------------------------------------
-  bins1(sort(xys, function(a,b) return a.x < b.x end))
-  if #tmp>1 then 
-    tmp[1].lo    = -math.huge
-    tmp[#tmp].hi =  math.huge
-    for _,bin in pairs(tmp) do 
-      if b4 then bin.lo = b4.hi end
-      b4 = push(out,bin) end end end
-
+  bins1(1,#xys)
+  out[#out].hi =  math.huge 
+  return out end
 ---       _ | _ . _ 
 ---    ><|_)|(_||| |
 ---      |          
@@ -655,9 +674,8 @@ function go.bin(  egs,lefts,rights,cuts)
   egs = csv2egs(the.file)
   lefts, rights = egs:half(egs._all)
   for n,col in pairs(lefts.cols.x) do
-    cuts={}
-    col:bins(rights.cols.x[n],cuts)
-    map(cuts,function(cut) print(col.name, cut.lo, cut.hi) end);  end  end
+    cuts= col:bins(rights.cols.x[n])
+    map(cuts,function(cut) print(col.name, cut.lo, cut.hi,cut.n, cut.div) end);  end  end
  
 --------------------------------------------------------------------------------
 the = settings(help)
