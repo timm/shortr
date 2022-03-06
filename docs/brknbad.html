@@ -329,6 +329,20 @@ Num, Sym, Egs = obj<span class="hljs-string">&quot;Num&quot;</span>, obj<span cl
 
 
 <span class="hljs-keyword">local</span> bins,xbestSpan
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.bins</span><span class="hljs-params">(i,j,   out)</span></span>
+  <span class="hljs-keyword">local</span> xys,all,one,last,x,y,n = {}, {}
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> push(xys, {x=x,y=<span class="hljs-string">&quot;lefts&quot;</span>, n=n}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.all) <span class="hljs-keyword">do</span> push(xys, {x=x,y=<span class="hljs-string">&quot;rights&quot;</span>,n=n}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _,tmp <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(xys,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> a.x &lt; b.x <span class="hljs-keyword">end</span>)) <span class="hljs-keyword">do</span>
+    x,y,n = tmp.x, tmp.y, tmp.n
+    <span class="hljs-keyword">if</span> x ~= last <span class="hljs-keyword">then</span>
+      last = x
+      one  = push(all, {lo=x, hi=x, all=Sym(i.at,i.name)}) <span class="hljs-keyword">end</span>
+    one.all:add(y,n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _,cut <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(all) <span class="hljs-keyword">do</span>
+    push(out, {col=col, lo=cut.lo, hi=cut.hi,
+               n=cut.all.n, div=cut.all:div()}) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.bins</span><span class="hljs-params">(i,j,   out)</span></span>
   <span class="hljs-keyword">local</span> xys, all = {}, Num()
   <span class="hljs-keyword">for</span> _,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i._all) <span class="hljs-keyword">do</span> all:add(n); push(xys,{x=n,y=<span class="hljs-string">&quot;left&quot;</span>}) <span class="hljs-keyword">end</span>

@@ -28,7 +28,7 @@ OPTIONS:
   -far       -f how far to seek poles = .9
   -keep      -k items to keep         = 256
   -minItems  -m min items in a rang e = .5
-  -p         -p euclidean coefficient = 3
+  -p         -p euclidean coefficient = 2
   -some      -S sample size for rows  = 512
 
 OPTIONS, other:
@@ -368,28 +368,31 @@ function Egs.half(i, rows)
 ---     _|. _ _ _ _ _|_._  _ 
 ---    (_||_\(_| (/_ | |/_(/_
 
-local bins,xbestSpan
+local numbins, symbins
 function Sym.bins(i,j,   out)
-  local xys,all,one,last,x,y,n = {}, {}
+  local xys= {}
   for x,n in pairs(i.all) do push(xys, {x=x,y="lefts", n=n}) end
   for x,n in pairs(j.all) do push(xys, {x=x,y="rights",n=n}) end
-  for _,tmp in pairs(sort(xys,function(a,b) return a.x < b.x end)) do
-    x,y,n = tmp.x, tmp.y, tmp.n
-    if x ~= last then
-      last = x
-      one  = push(all, {lo=x, hi=x, all=Sym(i.at,i.name)}) end
-    one.all:add(y,n) end
-  for _,cut in pairs(all) do
-    push(out, {col=col, lo=cut.lo, hi=cut.hi,
-               n=cut.all.n, div=cut.all:div()}) end end
+  symbins(i,xys,out) end
 
 function Num.bins(i,j,   out)
   local xys, all = {}, Num()
   for _,n in pairs(i._all) do all:add(n); push(xys,{x=n,y="left"}) end
   for _,n in pairs(j._all) do all:add(n); push(xys,{x=n,y="right"})  end
-  bins(i, xys, (#xys)^the.minItems, all.sd*the.cohen, Sym, out) end
+  numbins(i, xys, (#xys)^the.minItems, all.sd*the.cohen, Sym, out) end
 
-function bins(col, xys, minItems, cohen, yclass, out)
+function symbins(col,xys,out) 
+  local all,one,last,x,y,n = {}
+  for _,tmp in pairs(sort(xys,function(a,b) return a.x < b.x end)) do
+    x,y,n = tmp.x, tmp.y, tmp.n
+    if x ~= last then
+      last= x
+      one = push(all, {lo=x, hi=x, all=Sym()}) end
+    one.all:add(y,n) end
+  for _,cut in pairs(all) do
+    push(out,{col=col,lo=cut.lo,hi=cut.hi,n=cut.all.n,div=cut.all:div()}) end end
+
+function numbins(col, xys, minItems, cohen, yclass, out)
   local tmp, b4 = {}
   local function bins1(xys)
     local lhs, rhs, cut, div = yclass(), yclass()
