@@ -43,7 +43,7 @@ OPTIONS, other:
 local any, bestSpan, bins, bins1, bootstrap, csv2egs, firsts, fmt, ish, last
 local many, map, new, o, obj, oo, per, push, quintiles, r, rnd, rnds, scottKnot
 local selects, settings,slots, smallfx, sort, sum, thing, things, xplains
-local Num, Sym, Egs, Bin
+local Num, Sym, Egs, Bin, Cluster
 
 -- Copyright 2022 Tim Menzies
 --
@@ -328,9 +328,40 @@ function Num.norm(i,x)
 
 function Num.all(i)
   if not i.ok then table.sort(i._all); i.ok=true end
-  return i._all end
----     _ |    __|_ _  _
----    (_ ||_|_\ | (/_| 
+  return i._all end
+-----------------------------------------------------------------------
+---    ____ _    _  _ ____ ___ ____ ____ 
+---    |    |    |  | [__   |  |___ |__/ 
+---    |___ |___ |__| ___]  |  |___ |  \ 
+
+Cluster=obj"Cluster"
+function Cluster:new(top,egs,      i,lefts,rights)
+  egs = egs or top
+  i   = new({egs=egs, top=top},Cluster)
+  if #egs._all >= 2*(#top._all)^the.minItems then
+    lefts, rights, i.left, i.right, i.mid, i.c = top:half(egs._all)
+    if #lefts._all < #egs._all then
+      i.lefts = Cluster(top, lefts)
+      i.rights= Cluster(top, rights) end end
+  return i end
+
+function Cluster.leaf(i) return not (i.lefts or i.rights) end
+
+function Cluster.show(i,   pre, front)
+  pre = pre or ""
+  local front = fmt("%s%s",pre,#i.egs._all)
+  if   i:leaf() 
+  then print(fmt("%-20s%s",front, o(rnds(i.egs:mid(i.egs.cols.y)))))
+  else print(front)
+       if i.lefts  then i.lefts:show( "| "..pre)
+       if i.rights then i.rights:show("| "..pre) end end end end
+
+function Egs.dists(i,r1,rows)
+   return sort(map(rows,function(r2) return {i:dist(r1,r2),r2} end),firsts) end
+
+function Egs.dist(i,row1,row2,    d)
+  d = sum(i.cols.x, function(c) return c:dist(row1[c.at], row2[c.at])^the.p end)
+  return (d/#i.cols.x)^(1/the.p) end
 
 function Num.dist(i,a,b)
   if     a=="?" and b=="?" then return 1 end
@@ -339,16 +370,8 @@ function Num.dist(i,a,b)
   else   a,b = i:norm(a), i:norm(b)  end
   return math.abs(a - b) end
 
-function Sym.dist(i,a,b) 
-  return a=="?" and b=="?" and 1 or a==b and 0 or 1 end
+function Sym.dist(i,a,b) return a=="?" and b=="?" and 1 or a==b and 0 or 1 end
 
-function Egs.dist(i,row1,row2,    d)
-  d = sum(i.cols.x, function(c) return c:dist(row1[c.at], row2[c.at])^the.p end)
-  return (d/#i.cols.x)^(1/the.p) end
-
-function Egs.dists(i,r1,rows)
-   return sort(map(rows,function(r2) return {i:dist(r1,r2),r2} end),firsts) end
- 
 function Egs.half(i, rows)
   local project,far,some,left,right,c,lefts,rights
   far     = function(r,t)  return per(i:dists(r,t), the.far)[2] end
@@ -365,7 +388,6 @@ function Egs.half(i, rows)
     (n <= #rows//2 and lefts or rights):add( projection[2] ) end
   return lefts, rights, left, right, mid, c  end
 
------------------------------------------------------------------------
 ---    ___  _ ____ ____ ____ ____ ___ _ ___  ____ 
 ---    |  \ | [__  |    |__/ |___  |  |   /  |___ 
 ---    |__/ | ___] |___ |  \ |___  |  |  /__ |___ 
@@ -402,8 +424,7 @@ function Bin:new4Syms(col, yclass, xys)
   for _,xy in pairs(xys) do
      all[xy.x] = all[xy.x] or yclass()
      all[xy.x]:add(xy.y, xy.n)  end
-  for x,one in pairs(all) do
-    push(out,Bin(col, x, x, one.n, one:div())) end 
+  for x,one in pairs(all) do push(out,Bin(col, x, x, one.n, one:div())) end 
   return out end
 
 ---     _|. _ _ _ _ _|_._  _      _     _ _  _
@@ -414,8 +435,7 @@ function Num.bins(i,j)
   for _,n in pairs(i._all) do all:add(n); push(xys,{x=n,y="left"}) end
   for _,n in pairs(j._all) do all:add(n); push(xys,{x=n,y="right"}) end
   return Bin:new4Nums(i, Sym, sort(xys,function(a,b) return a.x < b.x end), 
-                              (#xys)^the.minItems, 
-                              all.sd*the.cohen) end
+                      (#xys)^the.minItems, all.sd*the.cohen) end
 
 function Bin:new4Nums(col, yclass, xys, minItems, cohen)
   local out,b4= {}, -math.huge
@@ -426,15 +446,14 @@ function Bin:new4Nums(col, yclass, xys, minItems, cohen)
     for j=lo,hi do
       lhs:add(xys[j].y)
       rhs:sub(xys[j].y)
-      if lhs.n     > minItems and          -- enough items  (on left)
-         rhs.n     > minItems and          -- enough items (on right)
-         xys[j].x ~= xys[j+1].x and        -- there is a break here
-         xys[j].x  - xys[lo].x > cohen and -- not trivially small (on left) 
-         xys[hi].x - xys[j].x  > cohen     -- not trivially small (on right)
-      then                                 
-         xpect = (lhs.n*lhs:div() + rhs.n*rhs:div()) / (lhs.n+rhs.n) 
-         if xpect < div then               -- cutting here simplifies things
-           cut, div = j, xpect end end 
+      if   lhs.n     > minItems and          -- enough items  (on left)
+           rhs.n     > minItems and          -- enough items (on right)
+           xys[j].x ~= xys[j+1].x and        -- there is a break here
+           xys[j].x  - xys[lo].x > cohen and -- not trivially small (on left) 
+           xys[hi].x - xys[j].x  > cohen     -- not trivially small (on right)
+      then xpect = (lhs.n*lhs:div() + rhs.n*rhs:div()) / (lhs.n+rhs.n) 
+           if xpect < div then               -- cutting here simplifies things
+             cut, div = j, xpect end end 
     end
     if   cut 
     then bins1(lo,    cut)
@@ -637,8 +656,9 @@ function go.loader(  num)
   ok(ish(num.mu, 5.455,0.001),"loadmu")
   ok(ish(num.sd, 1.701,0.001),"loadsd") end
 
-function go.egsShow(  t)
-  oo(Egs{"name","Age","Weigh-"}) end
+function go.egsShow(  e)
+  e=Egs{"name","Age","Weigh-"} 
+  print(#e) end
 
 function go.egsHead( ) 
   ok(Egs({"name","age","Weight!"}).cols.x,"Egs")  end
@@ -673,13 +693,9 @@ function go.far(  egs,lefts,rights)
   oo(rnds(lefts:mid()))
   oo(rnds(rights:mid())) end 
 
-function go.bin(  egs,lefts,rights,cuts)
-  egs = csv2egs(the.file)
-  lefts, rights = egs:half(egs._all)
-  for n,col in pairs(lefts.cols.x) do
-    cuts= col:bins(rights.cols.x[n])
-    map(cuts,function(cut) print(col.name, cut.lo, cut.hi,cut.n, cut.div) end);  end  end
- 
+function go.cluster(   cl)
+  Cluster(csv2egs(the.file)):show()  end
+
 --------------------------------------------------------------------------------
 the = settings(help)
 go.main(the.todo, the.seed)
