@@ -45,6 +45,7 @@ OPTIONS:
   -keep      -k items to keep         = 256
   -minItems  -m min items in a rang e = .5
   -p         -p euclidean coefficient = 3
+  -some      -S sample size for rows  = 512
 
 OPTIONS, other:
   -dump      -d stackdump on error    = false
@@ -93,11 +94,12 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.</p>
+POSSIBILITY OF SUCH DAMAGE.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>
+
 
 r=<span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ish</span><span class="hljs-params">(x,y,z)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">abs</span>(y -x ) &lt; z <span class="hljs-keyword">end</span> 
@@ -216,9 +218,9 @@ Num, Sym, Egs = obj<span class="hljs-string">&quot;Num&quot;</span>, obj<span cl
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.copy</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> Num(i.at, i.name) <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.copy</span><span class="hljs-params">(i,all,    j)</span></span> 
-  j = Egs(i.cols.name)
-  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> i:add(row) <span class="hljs-keyword">end</span> 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.copy</span><span class="hljs-params">(i,rows,    j)</span></span> 
+  j = Egs(i.cols.names)
+  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> j:add(row) <span class="hljs-keyword">end</span> 
   <span class="hljs-keyword">return</span> j <span class="hljs-keyword">end</span>
 
 
@@ -261,9 +263,20 @@ Num, Sym, Egs = obj<span class="hljs-string">&quot;Num&quot;</span>, obj<span cl
     i.sd  = (i.m2&lt;<span class="hljs-number">0</span> <span class="hljs-keyword">or</span> i.n&lt;<span class="hljs-number">2</span>) <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> ((i.m2/(i.n - <span class="hljs-number">1</span>))^<span class="hljs-number">0.5</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.all</span><span class="hljs-params">(i)</span></span>
-  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.ok <span class="hljs-keyword">then</span> <span class="hljs-built_in">table</span>.<span class="hljs-built_in">sort</span>(i._all); i.ok=<span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> i._all <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.better</span><span class="hljs-params">(i,row1,row2)</span></span>
+  <span class="hljs-keyword">local</span> s1, s2, n, a, b = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, #i.cols.y
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.y) <span class="hljs-keyword">do</span>
+    a  = col:norm( row1[col.at] )
+    b  = col:norm( row2[col.at] )
+    s1 = s1 - <span class="hljs-number">2.7183</span>^(col.w * (a - b) / n)
+    s2 = s2 - <span class="hljs-number">2.7183</span>^(col.w * (b - a) / n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> s1 / n &lt; s2 / n <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.betters</span><span class="hljs-params">(i,j)</span></span>
+  <span class="hljs-keyword">return</span> Egs:better(i:mid(i.cols.all), j:mid(j.cols.all)) <span class="hljs-keyword">end</span>
+  
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.mid</span><span class="hljs-params">(i,cols)</span></span>
+  <span class="hljs-keyword">return</span> map(cols <span class="hljs-keyword">or</span> i.cols.y, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(col)</span></span> <span class="hljs-keyword">return</span> col:mid() <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.mid</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.mu <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sym.mid</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.mode <span class="hljs-keyword">end</span>
@@ -277,6 +290,11 @@ Num, Sym, Egs = obj<span class="hljs-string">&quot;Num&quot;</span>, obj<span cl
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.norm</span><span class="hljs-params">(i,x)</span></span>
   <span class="hljs-keyword">return</span> i.hi - i.lo &lt; <span class="hljs-number">1E-32</span> <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> (x - i.lo)/(i.hi - i.lo) <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.all</span><span class="hljs-params">(i)</span></span>
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.ok <span class="hljs-keyword">then</span> <span class="hljs-built_in">table</span>.<span class="hljs-built_in">sort</span>(i._all); i.ok=<span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> i._all <span class="hljs-keyword">end</span>
+
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Num.dist</span><span class="hljs-params">(i,a,b)</span></span>
   <span class="hljs-keyword">if</span>     a==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> b==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
@@ -293,7 +311,7 @@ Num, Sym, Egs = obj<span class="hljs-string">&quot;Num&quot;</span>, obj<span cl
   <span class="hljs-keyword">return</span> (d/#i.cols.x)^(<span class="hljs-number">1</span>/the.p) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.dists</span><span class="hljs-params">(i,r1,rows)</span></span>
-   <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(map(rows,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(s)</span></span> <span class="hljs-keyword">return</span> {i:dist(r1,r2),r2} <span class="hljs-keyword">end</span>),firsts) <span class="hljs-keyword">end</span>
+   <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(map(rows,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(r2)</span></span> <span class="hljs-keyword">return</span> {i:dist(r1,r2),r2} <span class="hljs-keyword">end</span>),firsts) <span class="hljs-keyword">end</span>
  
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.half</span><span class="hljs-params">(i, rows)</span></span>
   <span class="hljs-keyword">local</span> project,far,some,left,right,c,lefts,rights
@@ -302,8 +320,8 @@ Num, Sym, Egs = obj<span class="hljs-string">&quot;Num&quot;</span>, obj<span cl
               a,b = i:dist(left,r1), i:dist(right,r1)
               <span class="hljs-keyword">return</span> {(a^<span class="hljs-number">2</span> + c^<span class="hljs-number">2</span> - b^<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*c), r1} <span class="hljs-keyword">end</span>
   some    = many(rows,       the.some)
-  left    = i:far(any(some), some)
-  right   = i:far(left,      some)
+  left    = far(any(some), some)
+  right   = far(left,      some)
   c       = i:dist(left,right)
   lefts,rights = i:copy(), i:copy()
   <span class="hljs-keyword">for</span> n, projection <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(map(rows,project),firsts)) <span class="hljs-keyword">do</span>
@@ -508,7 +526,7 @@ XXX need tests for stats</p>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.num</span><span class="hljs-params">( n)</span></span>
   n=Num(); map({<span class="hljs-number">10</span>, <span class="hljs-number">12</span>, <span class="hljs-number">23</span>, <span class="hljs-number">23</span>, <span class="hljs-number">16</span>, <span class="hljs-number">23</span>, <span class="hljs-number">21</span>, <span class="hljs-number">16</span>}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> n:add(x) <span class="hljs-keyword">end</span>)
   <span class="hljs-built_in">print</span>(n:div())
-  ok(ish(n:div(),<span class="hljs-number">5.895</span>,<span class="hljs-number">0.001</span>), <span class="hljs-string">&quot;div&quot;</span>) <span class="hljs-keyword">end</span>
+  ok(ish(n:div(),<span class="hljs-number">5.2373</span>, <span class="hljs-number">.001</span>), <span class="hljs-string">&quot;div&quot;</span>) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.nums</span><span class="hljs-params">( num,t,b4)</span></span>
   b4,t,num={},{},Num()
@@ -564,6 +582,13 @@ XXX need tests for stats</p>
        egs:dist(r1,r1) == <span class="hljs-number">0</span>               <span class="hljs-keyword">and</span>
        d3 &lt;= d1+d2,                       <span class="hljs-string">&quot;dist&quot;</span>..j)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.far</span><span class="hljs-params">(  egs,lefts,rights)</span></span>
+  egs = csv2egs(the.file)
+  lefts,rights = egs:half(egs._all)
+  oo(rnds(egs:mid()))
+  oo(rnds(lefts:mid()))
+  oo(rnds(rights:mid())) <span class="hljs-keyword">end</span>
+ 
 the = settings(help)
 go.main(the.todo, the.seed)
 <span class="hljs-built_in">os</span>.<span class="hljs-built_in">exit</span>(go.fails)</pre></div></div>

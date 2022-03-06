@@ -29,6 +29,7 @@ OPTIONS:
   -keep      -k items to keep         = 256
   -minItems  -m min items in a rang e = .5
   -p         -p euclidean coefficient = 3
+  -some      -S sample size for rows  = 512
 
 OPTIONS, other:
   -dump      -d stackdump on error    = false
@@ -51,11 +52,11 @@ local Num, Sym, Egs
 -- are met:
 --
 -- 1. Redistributions of source code must retain the above copyright
--- notice, this list of conditions and the following disclaimer.
+--    notice, this list of conditions and the following disclaimer.
 --
 -- 2. Redistributions in binary form must reproduce the above copyright
--- notice, this list of conditions and the following disclaimer in the
--- documentation and/or other materials provided with the distribution.
+--    notice, this list of conditions and the following disclaimer in the
+--    documentation and/or other materials provided with the distribution.
 --
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -68,11 +69,39 @@ local Num, Sym, Egs
 -- CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 -- LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 -- ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
--- POSSIBILITY OF SUCH DAMAGE.
+-- POSSIBILITY OF SUCH DAMAGE.
+
+---                            ,
+---                            |'.             ,
+---                            |  '-._        / )
+---                          .'  .._  ',     /_'-,
+---                         '   /  _'.'_\   /._)')
+---                        :   /  '_' '_'  /  _.'
+---                        |E |   |Q| |Q| /   /
+---                       .'  _\  '-' '-'    /
+---                     .'--.(S     ,__` )  /
+---                           '-.     _.'  /
+---                         __.--'----(   /
+---                     _.-'     :   __\ /
+---                    (      __.' :'  :Y
+---                     '.   '._,  :   :|
+---                       '.     ) :.__:|
+---                         \    \______/
+---                          '._L/_H____]
+---                           /_        /
+---                          /  '-.__.-')
+---                         :      /   /
+---                         :     /   /
+---                       ,/_____/----;
+---                       '._____)----'
+---                       /     /   /
+---                      /     /   /
+---                    .'     /    \
+---               snd (______(-.____) 
 -----------------------------------------------------------------------
----    _  _ _ ____ ____    ___ ____ ____ _    ____ 
----    |\/| | [__  |        |  |  | |  | |    [__  
----    |  | | ___] |___     |  |__| |__| |___ ___] 
+---    _  _ _ ____ ____    ____ ___ _  _ ____ ____ 
+---    |\/| | [__  |       [__   |  |  | |___ |___ 
+---    |  | | ___] |___    ___]  |  |__| |    |    
 
 ---     _ _  _ _|_|_  _
 ---    | | |(_| | | |_\
@@ -219,9 +248,9 @@ function Sym.copy(i) return Sym(i.at, i.name) end
 
 function Num.copy(i) return Num(i.at, i.name) end
 
-function Egs.copy(i,all,    j) 
-  j = Egs(i.cols.name)
-  for _,row in pairs(rows or {}) do i:add(row) end 
+function Egs.copy(i,rows,    j) 
+  j = Egs(i.cols.names)
+  for _,row in pairs(rows or {}) do j:add(row) end 
   return j end
 
 ---        _  _| _ _|_ _ 
@@ -270,9 +299,20 @@ function Num.sub(i,x,_,    d)
 ---    (_| |_|(/_| \/
 ---      |/        / 
 
-function Num.all(i)
-  if not i.ok then table.sort(i._all); i.ok=true end
-  return i._all end
+function Egs.better(i,row1,row2)
+  local s1, s2, n, a, b = 0, 0, #i.cols.y
+  for _,col in pairs(i.cols.y) do
+    a  = col:norm( row1[col.at] )
+    b  = col:norm( row2[col.at] )
+    s1 = s1 - 2.7183^(col.w * (a - b) / n)
+    s2 = s2 - 2.7183^(col.w * (b - a) / n) end
+  return s1 / n < s2 / n end
+
+function Egs.betters(i,j,k)
+  return i:better(j:mid(j.cols.all), k:mid(k.cols.all)) end
+  
+function Egs.mid(i,cols)
+  return map(cols or i.cols.y, function(col) return col:mid() end) end
 
 function Num.mid(i) return i.mu end
 function Sym.mid(i) return i.mode end
@@ -286,6 +326,11 @@ function Sym.div(i,  e)
 
 function Num.norm(i,x)
   return i.hi - i.lo < 1E-32 and 0 or (x - i.lo)/(i.hi - i.lo) end 
+
+function Num.all(i)
+  if not i.ok then table.sort(i._all); i.ok=true end
+  return i._all end
+
 ---     _ |    __|_ _  _
 ---    (_ ||_|_\ | (/_| 
 
@@ -304,7 +349,7 @@ function Egs.dist(i,row1,row2,    d)
   return (d/#i.cols.x)^(1/the.p) end
 
 function Egs.dists(i,r1,rows)
-   return sort(map(rows,function(s) return {i:dist(r1,r2),r2} end),firsts) end
+   return sort(map(rows,function(r2) return {i:dist(r1,r2),r2} end),firsts) end
  
 function Egs.half(i, rows)
   local project,far,some,left,right,c,lefts,rights
@@ -313,8 +358,8 @@ function Egs.half(i, rows)
               a,b = i:dist(left,r1), i:dist(right,r1)
               return {(a^2 + c^2 - b^2)/(2*c), r1} end
   some    = many(rows,       the.some)
-  left    = i:far(any(some), some)
-  right   = i:far(left,      some)
+  left    = far(any(some), some)
+  right   = far(left,      some)
   c       = i:dist(left,right)
   lefts,rights = i:copy(), i:copy()
   for n, projection in pairs(sort(map(rows,project),firsts)) do
@@ -325,38 +370,42 @@ function Egs.half(i, rows)
 ---     _|. _ _ _ _ _|_._  _ 
 ---    (_||_\(_| (/_ | |/_(/_
 
-function Num.spans(i,j, cuts)
-  local xys,all = {}, Num
+local bins,xbestSpan
+function Num.bins(i,j,   out)
+  local xys, all = {}, Num()
   for _,n in pairs(i._all) do all:add(n); push(xys,{x=n,y="left"}) end
   for _,n in pairs(j._all) do all:add(n); push(xys,{x=n,y="right"})  end
-  return bins(i,cuts,
-         bins1(sort(xys,first),(#xys)^the.minItems,all.sd*the.cohen,Sym,{})) end
+  bins(i, xys, (#xys)^the.minItems, all.sd*the.cohen, Sym, out) end
 
-function bins1(col, old,new)
-  if #new>1 then 
-    new[1].lo    = -math.huge
-    new[#new].hi =  math.huge
-    for _,cut in pairs(new) do cut.col= col; push(old,cut) end end end
-
-function bins1(xys, minItems, cohen, yclass, cuts, b4)
-  local lhs, rhs, b4, cut, div, xpect = yclass(), yclass(), b4 or xys[1].x
-  function xpect(i,j) return (i.n*i:div() + j.n*j.div()) / (i.n + j.n) end
-  for _,xy in pairs(xys) do rhs:add(xy.y) end
-  div = rhs:div()
-  for j,xy in pairs(xys) do
-    lhs:add(xy.y)
-    rhs:sub(xy.y)
-    if lhs.n >= minItems and rhs.n >= minItems then
-      if xy.x ~= xys[j+1].x then
-        if xy.x - xys[1].x >= cohen and xys[#xys].x - xy.x >= cohen then
-          if xpect(lhs,rhs) < div then 
-            cut, div = j, xpect(lhs,rhs) end end end end end
-  if   cut 
-  then local l,r = {},{}
-       for n,xy in pairs(xys) do push(n<=cut and l or r, xy) end
-       bins1(l, minItems, cohen, yclass, cuts, b4)
-       bins1(r, minItems, cohen, yclass, cuts, xys[cut].x)
-  else push(cuts, {lo=b4, hi=xys[#xys].x, n=#xys, div=div}) end end
+function bins(col, xys, minItems, cohen, yclass, out)
+  local tmp, b4, bins = {}
+  function bins1(xys)
+    local lhs, rhs, cut, div = yclass(), yclass()
+    local function xpect(i,j) return (i.n*i:div() + j.n*j:div()) / (i.n+j.n) end
+    for _,xy in pairs(xys) do rhs:add(xy.y) end
+    div = rhs:div()
+    for j,xy in pairs(xys) do
+      lhs:add(xy.y)
+      rhs:sub(xy.y)
+      if lhs.n >= minItems and rhs.n >= minItems then
+        if xy.x ~= xys[j+1].x then
+          if xy.x - xys[1].x >= cohen and xys[#xys].x - xy.x >= cohen then
+            if xpect(lhs,rhs) < div then 
+              cut, div = j, xpect(lhs,rhs) end end end end end
+    if   cut 
+    then local upto,after = {},{}
+         for n,xy in pairs(xys) do push(n<=cut and upto or after, xy) end
+         bins1(upto)
+         bins1(after)
+    else push(tmp, {col=col, lo=xys[1].x, hi=xys[#xys].x, n=#xys, div=div}) end 
+  end ----------------------------
+  bins1(sort(xys,function(a,b) return a.x < b.x end))
+  if #tmp>1 then 
+    tmp[1].lo   = -math.huge
+    tmp[#tmp].hi =  math.huge
+    for _,bin in pairs(tmp) do 
+      if b4 then bin.lo = b4.hi end
+      b4 = push(out,bin) end end end
 
 ---       _ | _ . _ 
 ---    ><|_)|(_||| |
@@ -578,6 +627,23 @@ function go.dist(  ds,egs,one,d1,d2,d3,r1,r2,r3)
        egs:dist(r1,r1) == 0               and
        d3 <= d1+d2,                       "dist"..j)  end end
 
+function go.far(  egs,lefts,rights)
+  egs = csv2egs(the.file)
+  lefts, rights = egs:half(egs._all)
+  oo(rnds(egs:mid())) 
+  print(egs:betters(lefts, rights))
+  print(egs:betters(rights, lefts))
+  oo(rnds(lefts:mid()))
+  oo(rnds(rights:mid())) end 
+
+function go.bin(  egs,lefts,rights,cuts)
+  egs = csv2egs(the.file)
+  lefts, rights = egs:half(egs._all)
+  for n,col in pairs(lefts.cols.x) do
+    cuts={}
+    col:bins(rights.cols.x[n],cuts)
+    map(cuts,function(cut) print(col.name, cut.lo, cut.hi) end);  end  end
+ 
 --------------------------------------------------------------------------------
 the = settings(help)
 go.main(the.todo, the.seed)

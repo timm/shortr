@@ -76,12 +76,17 @@ I ask them to:
 - Because LUA supports multiple programming methods, including procedural, 
   object-oriented, functional, and data-driven programming. You can also use it to
   write you own [domain-specific alnguages](https://www.lua.org/wshop11/luaws11_ag.pdf).
-- Also, for hyperparameter optimziation, LUA has an interesting special advantage
-  - A LUA name space is a very simple, very regular thing.
-    If I load  a file twice (using `dofile`) then I get **two** copies of the namespace of that code. 
-  - Which means I can write an optimizer in LUA
-    and use that optimizer to optimize itself (in another namespace) 
-    which almost no chance (\*)  of variables  in one space messing with the other
+- Also, LUA has these neat feature: methods for a class do not need to be listed all
+  in the same place. So if discussing N  tasks (e.g. 
+  task1=clustering and distance calculations;
+  task2=bayes classification and likelihood calculations) then the source code can be
+  divided into those tasks (which simplifies teaching that stuff).
+- Also,also, for hyperparameter optimziation, LUA has an interesting special advantage
+   -  A LUA name space is a very simple, very regular thing.
+      If I load  a file twice (using `dofile`) then I get **two** copies of the namespace of that code. 
+   -  Which means I can write an optimizer in LUA
+      and use that optimizer to optimize itself (in another namespace) 
+      which almost no chance (\*)  of variables  in one space messing with the other
 
 (\*) Of course, nothing is 100% safe. If one namespace reset the random number seed, 
 that change can spread to the other space. Ditto with any other
