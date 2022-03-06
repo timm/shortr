@@ -7,8 +7,6 @@
 ---     \ \_,__/ \ \_\    \ \_\ \_\\ \_\ \_\   \ \_,__/\ \__/.\_\\ \___,_\
 ---      \/___/   \/_/     \/_/\/_/ \/_/\/_/    \/___/  \/__/\/_/ \/__,_ /
                                                                      
-
-                                                                     
 ---     .-------.  
 ---     | Ba    | Bad <----.  planning= (better - bad)
 ---     |    56 |          |  monitor = (bad - better)
@@ -16,9 +14,6 @@
 ---             | B    |   v  
 ---             |    5 | Better  
 ---             .------.  
-
-
-
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local the, help = {}, [[
 
@@ -28,7 +23,7 @@ Divide things. Show deltas between things.
 
 OPTIONS:
   -cohen     -c cohen                 = .35
-  -far       -f how far to seek poles = .9
+  -far       -F how far to seek poles = .9
   -keep      -k items to keep         = 256
   -minItems  -m min items in a rang e = .5
   -p         -p euclidean coefficient = 2
@@ -42,53 +37,70 @@ OPTIONS, other:
   -seed      -s random number seed    = 10019
   -todo      -t start-up action       = nothing
 ]]
-
-local any, bestSpan, bins, bins1, bootstrap, csv2egs, firsts, fmt, ish, last
-local many, map, new, o, obj, oo, per, push, quintiles, r, rnd, rnds, scottKnot
+local any, bestBin, bins, bins1, bootstrap, class, csv2egs, firsts, fmt, ish 
+local last, many, map, new, o, oo, per, push, quintiles, r, rnd, rnds, scottKnot
 local selects, settings,slots, smallfx, sort, sum, thing, things, xplains
 local Num, Sym, Egs, Bin, Cluster
 
+-- ## Conventions:
 
+-- ### Inference
+-- - Recursive bi-clustering using random projections
+-- - Inference via most distinguishing deltas between clusters
+-- - Explanation = clustering + discretization
 
--- Copyright 2022 Tim Menzies
---
--- Redistribution and use in source and binary forms, with or without
--- modification, are permitted provided that the following conditions
--- are met:
---
--- 1. Redistributions of source code must retain the above copyright
---    notice, this list of conditions and the following disclaimer.
---
--- 2. Redistributions in binary form must reproduce the above copyright
---    notice, this list of conditions and the following disclaimer in the
---    documentation and/or other materials provided with the distribution.
---
--- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
--- "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
--- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
--- COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
--- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
--- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
--- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
--- CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
--- LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
--- ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
--- POSSIBILITY OF SUCH DAMAGE.
+-- ### Data classes
+-- - First row of data are names that describe each column.
+-- - Names ending with `[+-]` are dependent goals to be minimized or maximized.
+-- - Names ending with `!` are dependent classes.
+-- - Dependent columns are `y` columns (the rest are independent `x` columns).
+-- - Uppercase names are numeric (so the rest are symbolic).
+-- - Names ending with `:`' are columns to be skipped.
+-- - Data is read as rows,  stored in a `Egs` instance.
+-- - With a `Egs`, row columns are summarized into `Num` or `Sym` instances.
 
+-- ### Code conventions
+-- - No globals (so everything is `local`).
+-- - Code 80 characters wide indent with two spaces.  
+-- - Format to be read a two-pages-per-page portrait pdf.
+-- - Divide code into section and subsection headings (e.g using figlet)
+-- - Sections are less than 120 lines long (one column in the pdf).
+-- - No lines containing only the word `end` (unless marking the end of a
+--   complex for loop or function).
 
+-- ### Class conventions
+-- - Spread class code across different sections (so don't overload reader
+--   with all details, at one time).
+-- - Show simpler stuff before complex stuff.
+-- - Reserve `i` for `self` (to fit more code per line). 
+-- - Don't use inheritance (to simplify readability). 
+-- - Use polymorphism (using LUA's  delegation trick).    
+-- - Define an class of objects with `Thing=class"thing"` and 
+--   a `function:Thing(args)` creation method.
+-- - Define instances with `new({slot1=value1,slot2=value2,...},Thing)`.
+-- - Instance methods use `.`; e.g. `function Thing.show(i) ... end`.
+-- - Class methods using `:`; e.g.  `Thing:new4strings`. Class methods
+--   do things like instance creation or manage a set of instances.
 
----             .---------.
----             |         |
----           -= _________ =-
----              ___   ___
----             |   )=(   |
----              ---   --- 
----            
----                 ###
----               #  =  #            "This ain't chemistry. 
----               #######             This is art."
----                 ###
+-- ### Test suites (demos)
+-- - Define start-up actions as `go` functions.  
+-- - In `go` functions, check for errors with `ok(test,mdf)` 
+--   (that updates an `fails` counter when not `ok`).
+
+-- ### Top of file 
+-- - Trap known globals in `b4`.
+-- - Define all locals at top-of-file (so everyone can access everything).
+-- - Define options in a help string at top of file.
+-- - Define command line options -h (for help); -s (for seeding random numbers)
+--  `-t` (for startup actions, so `-t all` means "run everything").
+
+-- ### End of file
+-- - Using `settings`, parse help string to set options,
+--   maybe updating from command-line.
+-- - Using `go.main`, run the actions listed on command line.
+-- - `go.main`  resets random number generator before running an action 
+-- - After everything else, look for `rogues` (any global not in `b4`)
+-- - Finally, return the `fails` as the exit status of this code.
 
 -----------------------------------------------------------------------
 ---    _  _ _ ____ ____ 
@@ -116,7 +128,6 @@ function sum(t,f, n)
   f = f or function(x) return x end
   n=0; for _,v in pairs(t) do n = n + f(v) end; return n end
 
-
 ---     __|_ _. _  _   '~)  _|_|_ . _  _ 
 ---    _\ | | || |(_|   /_   | | ||| |(_|
 ---                _|                  _|
@@ -132,11 +143,6 @@ function things(file,      x)
   file = io.input(file)
   return function()
     x=io.read(); if x then return cells(x) else io.close(file) end end end
-
-function csv2egs(file,  egs)
-  for row in things(the.file) do 
-    if egs then egs:add(row) else egs=Egs(row) end end 
-  return egs end
 
 ---    _|_|_ . _  _   '~)   __|_ _. _  _ 
 ---     | | ||| |(_|   /_  _\ | | || |(_|
@@ -202,7 +208,7 @@ function go.main(todo,seed)
 ---          L|          
 
 new = setmetatable
-function obj(s,   t)
+function class(s,   t)
   t={__tostring=o,_is=s or ""}; t.__index=t
   return new(t, {__call=function(_,...) return t.new(_,...) end}) end
 
@@ -211,7 +217,7 @@ function obj(s,   t)
 ---    |  \ |__|  |  |__|    |    |    |__| [__  [__  |___ [__  
 ---    |__/ |  |  |  |  |    |___ |___ |  | ___] ___] |___ ___] 
                                 
-Num, Sym, Egs = obj"Num", obj"Sym", obj"Egs"
+Num, Sym, Egs = class"Num", class"Sym", class"Egs"
 
 ---     _ _ _  _ _|_ _ 
 ---    (_| (/_(_| | (/_
@@ -220,8 +226,9 @@ function Sym:new(at,name)
     return new({at=at, name=name, most=0,n=0,all={}}, Sym) end
 
 function Num:new(at,name) 
-    return new({at=at, name=name, _all={}, w=(name or ""):find"-$" and -1 or 1,
-               n=0, sd=0, mu=0, m2=0, lo=math.huge, hi=-math.huge}, Num) end
+    return new({at=at, name=name, _all={}, 
+                w=(name or ""):find"-$" and -1 or 1,
+                n=0, sd=0, mu=0, m2=0, lo=math.huge, hi=-math.huge}, Num) end
 
 function Egs:new(names,  i,col)
   i = new({_all={}, cols={names=names, all={}, x={}, y={}}}, Egs)
@@ -230,6 +237,11 @@ function Egs:new(names,  i,col)
     if not name:find":$" then
       if name:find"!$" then i.cols.class = col end 
       push(name:find"[-+!]$" and i.cols.y or i.cols.x, col) end end
+  return i end
+
+function Egs:new4file(file,  i)
+  for row in things(the.file) do 
+    if i then i:add(row) else i = Egs(row) end end 
   return i end
 
 ---     _ _  _   
@@ -326,7 +338,7 @@ function Num.all(i)
 ---    |    |    |  | [__   |  |___ |__/ 
 ---    |___ |___ |__| ___]  |  |___ |  \ 
 
-Cluster=obj"Cluster"
+Cluster=class"Cluster"
 function Cluster:new(top,egs,      i,lefts,rights)
   egs = egs or top
   i   = new({egs=egs, top=top},Cluster)
@@ -387,12 +399,46 @@ function Num.dist(i,a,b)
 
 function Sym.dist(i,a,b) return a=="?" and b=="?" and 1 or a==b and 0 or 1 end
 
+--    $ lua brknbad.lua -t cluster
+--    
+--    :cluster
+--    398
+--    | 199
+--    | | 99
+--    | | | 49
+--    | | | | 24          {2542.50 15.68 26.25}
+--    | | | | 25          {2408.48 17.72 35.20}
+--    | | | 50
+--    | | | | 25          {2432.12 16.04 28.80}
+--    | | | | 25          {2504.20 16.52 30.80}
+--    | | 100
+--    | | | 50
+--    | | | | 25          {2189.64 16.25 34.00} <== best
+--    | | | | 25          {2261.56 16.24 28.80}
+--    | | | 50
+--    | | | | 25          {2309.24 16.74 26.00}
+--    | | | | 25          {2194.60 16.10 26.00}
+--    | 199
+--    | | 99
+--    | | | 49
+--    | | | | 24          {3959.83 13.06 14.17}
+--    | | | | 25          {4257.64 11.28 12.00} <== worst
+--    | | | 50
+--    | | | | 25          {3940.24 13.84 19.60}
+--    | | | | 25          {4375.32 12.84 13.20} 
+--    | | 100
+--    | | | 50
+--    | | | | 25          {3220.32 17.40 21.20}
+--    | | | | 25          {3259.04 16.39 22.00}
+--    | | | 50
+--    | | | | 25          {3189.96 16.32 20.00}
+--    | | | | 25          {2504.56 16.56 23.20}
 -----------------------------------------------------------------------
 ---    ___  _ ____ ____ ____ ____ ___ _ ___  ____ 
 ---    |  \ | [__  |    |__/ |___  |  |   /  |___ 
 ---    |__/ | ___] |___ |  \ |___  |  |  /__ |___ 
                                            
-Bin=obj"Bin"
+Bin=class"Bin"
 function Bin:new(col,lo,hi,n,div)
   return new({col=col, lo=lo, hi=hi, n=n, div=div},Bin) end
 
@@ -416,6 +462,14 @@ function Bin.show(i,negative)
 
 function Bin.distance2heaven(i, divs, ns)
   return ((1 - ns:norm(i.n))^2 + (0 - divs:norm(i.div))^2)^0.5 end
+
+function Bin:best(bins)  
+  local divs,ns, distance2heaven = Num(), Num()
+  function distance2heaven(bin) return {bin:distance2heaven(divs,ns),bin} end
+  for _,bin in pairs(bins) do 
+    divs:add(bin.div)
+    ns:add(  bin.ns) end
+  return sort(map(bins, distance2heaven), firsts)[1][2]  end 
 
 ---     _|. _ _ _ _ _|_._  _      _   _ _  _
 ---    (_||_\(_| (/_ | |/_(/_    _\\/| | |_\
@@ -492,16 +546,6 @@ function Egs.xplain(i,rows)
       if #lefts1  > stop then here.lefts  = xplain(i,lefts1) end
       if #rights1 > stop then here.rights = xplain(i,rights1) end end end
   return here end
-
-function xbestSpan(spans)  
-  local divs,ns,n,div,stats,dist2heaven = Num(), Num()
-  function dist2heaven(s) return {((1 - n(s))^2 + (0 - div(s))^2)^.5,s} end 
-  function div(s)         return divs:norm( s.all:div() ) end
-  function n(s)           return   ns:norm( s.all.n     ) end
-  for _,s in pairs(spans) do 
-    add(divs, s.all:div())
-    add(ns,   s.all.n) end
-  return sort(map(spans, dist2heaven), firsts)[1][2]  end 
 
 function selects(span,row,    lo,hi,at,x)
   lo, hi, at = span.lo, span.hi, span.col.at
@@ -665,19 +709,18 @@ function go.loader(  num)
   ok(ish(num.sd, 1.701,0.001),"loadsd") end
 
 function go.egsShow(  e)
-  e=Egs{"name","Age","Weigh-"} 
-  print(#e) end
+  ok(Egs{"name","Age","Weigh-"},"can make Egs?") end
 
 function go.egsHead( ) 
   ok(Egs({"name","age","Weight!"}).cols.x,"Egs")  end
 
 function go.egs(   egs)
-  egs = csv2egs(the.file)
+  egs = Egs:new4file(the.file)
   ok(ish(egs.cols.x[1].mu, 5.455,0.001),"loadmu")
   ok(ish(egs.cols.x[1].sd, 1.701,0.001),"loadsd") end
 
 function go.dist(  ds,egs,one,d1,d2,d3,r1,r2,r3)
-  egs = csv2egs(the.file)
+  egs = Egs:new4file(the.file)
   one = egs._all[1]
   ds={};for j=1,20 do 
          push(ds,egs:dist(any(egs._all), any(egs._all))) end
@@ -692,8 +735,8 @@ function go.dist(  ds,egs,one,d1,d2,d3,r1,r2,r3)
        egs:dist(r1,r1) == 0               and
        d3 <= d1+d2,                       "dist"..j)  end end
 
-function go.far(  egs,lefts,rights)
-  egs = csv2egs(the.file)
+function go.half(  egs,lefts,rights)
+  egs = Egs:new4file(the.file)
   lefts, rights = egs:half(egs._all)
   oo(rnds(egs:mid())) 
   print(egs:betters(lefts, rights))
@@ -702,9 +745,23 @@ function go.far(  egs,lefts,rights)
   oo(rnds(rights:mid())) end 
 
 function go.cluster(   cl)
-  Cluster(csv2egs(the.file)):show()  end
+  Cluster(Egs:new4file(the.file)):show()  end
 
 --------------------------------------------------------------------------------
 the = settings(help)
 go.main(the.todo, the.seed)
 os.exit(go.fails)
+
+
+---             .---------.
+---             |         |
+---           -= _________ =-
+---              ___   ___
+---             |   )=(   |
+---              ---   --- 
+---            
+---                 ###
+---               #  =  #            "This ain't chemistry. 
+---               #######             This is art."
+---                 ###
+
