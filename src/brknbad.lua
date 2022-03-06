@@ -319,18 +319,16 @@ function Sym.mid(i) return i.mode end
 
 function Num.div(i) return i.sd end
 function Sym.div(i,  e)
-  e=0
-  for _,n in pairs(i.all) do
-    if n > 0 then e = e + n/i.n * math.log(n/i.n,2) end end
+  e=0; for _,n in pairs(i.all) do
+         if n > 0 then e = e + n/i.n * math.log(n/i.n,2) end end
   return -e end
 
 function Num.norm(i,x)
-  return i.hi - i.lo < 1E-32 and 0 or (x - i.lo)/(i.hi - i.lo) end 
+  return i.hi - i.lo < 1E-32 and 0 or (x - i.lo)/(i.hi - i.lo) end 
 
 function Num.all(i)
   if not i.ok then table.sort(i._all); i.ok=true end
-  return i._all end
-
+  return i._all end
 ---     _ |    __|_ _  _
 ---    (_ ||_|_\ | (/_| 
 
