@@ -14,6 +14,7 @@
 ---             | B    |   v  
 ---             |    5 | Better  
 ---             .------.  
+
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local the, help = {}, [[
 
@@ -37,13 +38,15 @@ OPTIONS, other:
   -seed      -s random number seed    = 10019
   -todo      -t start-up action       = nothing
 ]]
+
 local any, bestBin, bins, bins1, bootstrap, class, csv2egs, firsts, fmt, ish 
 local last, many, map, new, o, oo, per, push, quintiles, r, rnd, rnds, scottKnot
 local selects, settings,slots, smallfx, sort, sum, thing, things, xplains
 local NUM, SYM, EGS, BIN, CLUSTER, XPLAIN, GO
 
 --[[
-## Conventions:
+
+## Conventions
 
 ### Data classes
 - First row of data are names that describe each column.
@@ -109,9 +112,8 @@ local NUM, SYM, EGS, BIN, CLUSTER, XPLAIN, GO
 - Using `GO.main`, run the actions listed on command line.
 - `GO.main`  resets random number generator before running an action 
 - After everything else, look for `rogues` (any global not in `b4`)
-- Finally, return the `fails` as the exit status of this code.
---]]
------------------------------------------------------------------------
+- Finally, return the `fails` as the exit status of this code. --]]
+----------------------------------------------------------------------
 ---    _  _ _ ____ ____ 
 ---    |\/| | [__  |    
 ---    |  | | ___] |___ 
@@ -220,7 +222,6 @@ new = setmetatable
 function class(s,   t)
   t={__tostring=o,_is=s or ""}; t.__index=t
   return new(t, {__call=function(_,...) return t.new(_,...) end}) end
-
 -----------------------------------------------------------------------
 ---    ___  ____ ___ ____    ____ _    ____ ____ ____ ____ ____ 
 ---    |  \ |__|  |  |__|    |    |    |__| [__  [__  |___ [__  
@@ -451,13 +452,13 @@ function SYM.dist(i,a,b) return a=="?" and b=="?" and 1 or a==b and 0 or 1 end
 --    
 --                       selects  diversity
 --                       =======  ========
---    -inf <= Clndrs < 5    211   0.48
---    Clndrs >= 5           187   0.30
+--    -inf <= Clndrs < 5    211   0.48  
+--    Clndrs >= 5           187   0.30   <== best overall
 --    
 --    -inf <= Volume < 121  158   0.23
 --    121 <= Volume < 168    63   0.84
 --    168 <= Volume < 225    32   0.20
---    Volume >= 225         145   0.00   <== best
+--    Volume >= 225         145   0.00   <== pretty good
 --    
 --    -inf <= Model < 73    125   0.87
 --    73 <= Model < 76       91   0.97
@@ -479,15 +480,15 @@ function BIN.selects(i,row,  x)
 function BIN.show(i,negative)
   local x, lo,hi,big, s = i.col.name, i.lo, i.hi, math.huge
   if negative then
-    if     lo==hi  then s=fmt("%s != %s",x,lo)  
-    elseif hi==big then s=fmt("%s <  %s",x,lo) 
-    elseif lo==big then s=fmt("%s >= %s",x,hi)  
-    else                s=fmt("%s < %s and %s >= %s",x,lo,x,hi) end 
+    if     lo== hi  then s=fmt("%s != %s",x,lo)  
+    elseif hi== big then s=fmt("%s <  %s",x,lo) 
+    elseif lo==-big then s=fmt("%s >= %s",x,hi)  
+    else                 s=fmt("%s < %s and %s >= %s",x,lo,x,hi) end 
   else
-    if     lo==hi  then s=fmt("%s == %s",x,lo)  
-    elseif hi==big then s=fmt("%s >= %s",x,lo)  
-    elseif lo==big then s=fmt("%s <  %s",x,hi)  
-    else                s=fmt("%s <= %s < %s",lo,x,hi) end end
+    if     lo== hi  then s=fmt("%s == %s",x,lo)  
+    elseif hi== big then s=fmt("%s >= %s",x,lo)  
+    elseif lo==-big then s=fmt("%s <  %s",x,hi)  
+    else                 s=fmt("%s <= %s < %s",lo,x,hi) end end
   return s end
 
 function BIN.distance2heaven(i, divs, ns)
@@ -497,8 +498,8 @@ function BIN:best(bins)
   local divs,ns, distance2heaven = NUM(), NUM()
   function distance2heaven(bin) return {bin:distance2heaven(divs,ns),bin} end
   for _,bin in pairs(bins) do 
-    divs:add(bin.div)
-    ns:add(  bin.ns) end
+    divs:add(bin.div); ns:add(  bin.n) 
+  end
   return sort(map(bins, distance2heaven), firsts)[1][2]  end 
 
 ---     _|. _ _ _ _ _|_._  _      _   _ _  _
@@ -560,40 +561,71 @@ function BIN:new4NUMs(col, yclass, xys, minItems, cohen)
 ---     \/  |__] |    |__| | |\ | 
 ---    _/\_ |    |___ |  | | | \| 
 
+--    % lua brknbad.lua -r xplain
+--
+--                                              Weight- Acc+  Mpg+
+--                                              ======= ===== =====
+--    398
+--    | Clndrs >= 5 : 190
+--    | | Model <  73 : 50
+--    | | | Volume >= 318 : 29                 {4213.93 11.52 12.41}
+--    | | | Volume <  318 : 21                 {3412.71 14.38 18.10}
+--    | | Model >= 73 : 140
+--    | | | Model >= 78 : 50                   {3354.20 15.68 22.40}
+--    | | | | Volume >= 225 : 32               {3554.53 15.69 20.94}
+--    | | | Model <  78 : 90
+--    | | | | Volume <  262 : 43               {3298.33 16.97 20.00}
+--    | | | | | Model >= 75 : 28               {3401.82 17.36 20.00}
+--    | | | | Volume >= 262 : 47
+--    | | | | | Model <  74 : 20               {4279.05 12.25 12.00} <== worst
+--    | | | | | Model >= 74 : 27               {4177.30 13.40 15.93}
+--    | Clndrs <  5 : 208
+--    | | origin == 3 : 73
+--    | | | Model >= 78 : 41                   {2176.20 16.37 33.66}
+--    | | | | Model >= 80 : 31                 {2176.10 16.36 34.84} <=== best
+--    | | | Model <  78 : 32                   {2155.03 16.41 26.87}
+--    | | origin != 3 : 135
+--    | | | origin == 2 : 63
+--    | | | | Model >= 75 : 36                 {2363.81 16.76 30.83}
+--    | | | | Model <  75 : 27                 {2284.96 16.67 26.30}
+--    | | | origin != 2 : 72
+--    | | | | Model <  78 : 28                 {2319.25 17.11 26.07}
+--    | | | | Model >= 78 : 44                 {2512.20 16.16 29.77}
+--    | | | | | Model >= 80 : 31               {2547.77 16.51 30.00}
+
 XPLAIN=class"XPLAIN"
 function XPLAIN:new(top,egs)
   local i,stop,lefts,rights,yes, no
   egs  = egs or top
   i    = new({egs=egs,top=top},XPLAIN)
-  lefts, rights= top:half(egs._all)
-  if #lefts._all < #egs._all then
-    i.bin   = BIN:best( lefts:bins(rights) ) 
-    yes, no = top:copy(), top:copy()
-    for _,row in pairs(egs._all) do 
-      (i.bin:selects(row) and yes or no):add(row) end
-    stop = (#top._all)^the.minItems 
-    if #yes._all > stop then i.yes  = XPLAIN(top, yes) end
-    if #no._all  > stop then i.no   = XPLAIN(top, no) end end 
+  stop = (#top._all)^the.minItems 
+  if #egs._all > 2*stop then
+    lefts, rights= top:half(egs._all)
+    if #lefts._all < #egs._all then
+      i.bin   = BIN:best( lefts:bins(rights) ) 
+      yes, no = top:copy(), top:copy()
+      for _,row in pairs(egs._all) do 
+        (i.bin:selects(row) and yes or no):add(row) end
+      if #yes._all > stop then i.yes  = XPLAIN(top, yes) end
+      if #no._all  > stop then i.no   = XPLAIN(top, no) end end end
   return i end
 
 function EGS.bins(i,j,  bins)
   bins = {}
   for n,col in pairs(i.cols.x) do 
-    print(n)
     for _,bin in pairs(col:bins(j.cols.x[n])) do push(bins, bin) end end 
   return bins end
 
-function xplains(i,format,t,pre,how,    sel,front)
+function XPLAIN.show(i, pre,how)
   pre, how = pre or "", how or ""
-  if t then
-    pre=pre or ""
-    front = fmt("%s%s%s %s",pre,how, #t.all, t.c and rnd(t.c) or "")
-    if t.lefts and t.rights then print(fmt("%-35s",front)) else
-      print(fmt("%-35s %s",front, o(rnds(mids(i,t.all),format)))) 
-    end
-    sel = t.selector
-    xplains(i,format,t.lefts,  "| ".. pre, spanShow(sel).." : ")
-    xplains(i,format,t.rights, "| ".. pre, spanShow(sel,true) .." : ") end end
+  local front = fmt("%s%s%s", pre, how, #i.egs._all)
+  if   i.yes and i.no 
+  then print(fmt("%-40s",front))
+  else print(fmt("%-40s %s",front, o(rnds(i.egs:mid()))))
+  end
+  if i.yes then i.yes:show("| ".. pre, i.bin:show()     .." : ") end
+  if i.no  then i.no:show( "| ".. pre, i.bin:show(true) .." : ") end end
+-------------------------------------------------------------------------------
 ---     __|_ _ _|_ _
 ---    _\ | (_| | _\
 
@@ -787,7 +819,7 @@ function GO.bins(    egs,rights,lefts,col2)
       print(bin:show(), bin.n, rnd(bin.div)) end end end
 
 function GO.xplain()
-  XPLAIN(EGS:new4file(the.file)) end
+  XPLAIN(EGS:new4file(the.file)):show() end
 
 --------------------------------------------------------------------------------
 the = settings(help)
