@@ -40,7 +40,7 @@ OPTIONS, other:
 ]]
 
 local any,bestBin,bins,bins1,bootstrap,class,cosine,csv2egs,firsts,fmt,ish
-local last,many,map,new,o,oo,optimize,per,push,quintiles,r,rnd,rnds,scottKnot
+local last,many,map,new,o,oo,optimize,per,pop,push,quintiles,r,rnd,rnds,scottKnot
 local selects,settings,shuffle,slots,smallfx,sort,sum,thing,things,xplains
 local NUM,SYM,EGS,BIN,CLUSTER,XPLAIN,GO
 
@@ -141,6 +141,7 @@ function last(a)       return a[ #a ] end
 function many(a,n,  u) u={}; for j=1,n do push(u,any(a)) end; return u end
 function map(t,f, u)   u={};for _,v in pairs(t) do push(u,f(v)) end;return u end
 function per(a,p)      return a[ (p*#a)//1 ] end
+function pop(a)        return table.remove(a) end
 function push(t,x)     t[1 + #t] = x; return x end
 function sort(t,f)     table.sort(t,f); return t end
 function sum(t,f, n) 
@@ -869,9 +870,12 @@ function GO.bins(    egs,rights,lefts,col2)
 function GO.xplain()
   XPLAIN(EGS:new4file(the.file)):show() end
 
-function GO.optimize(     b4)
-  for _,row in things(the.file) do
-  end
+function GO.optimize(     b4,rows,egs)
+  rows = {}
+  for _,row in things(the.file) do 
+    if egs then push(rows,row) else egs=EGS(row) end end
+  rows = shuffle(rows)
+  for j=1,#rows/2 do egs:add(pop(rows)) end
   b4 = EGS:new4file(the.file)
   optimize(b4)
   end
