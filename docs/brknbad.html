@@ -56,10 +56,10 @@ OPTIONS, other:
   -todo      -t start-up action       = nothing
 ]]</span>
 
-<span class="hljs-keyword">local</span> any, bestBin, bins, bins1, bootstrap, class, csv2egs, firsts, fmt, ish 
-<span class="hljs-keyword">local</span> last, many, map, new, o, oo, per, push, quintiles, r, rnd, rnds, scottKnot
-<span class="hljs-keyword">local</span> selects, settings,slots, smallfx, <span class="hljs-built_in">sort</span>, sum, thing, things, xplains
-<span class="hljs-keyword">local</span> NUM, SYM, EGS, BIN, CLUSTER, XPLAIN, GO</pre></div></div>
+<span class="hljs-keyword">local</span> any,bestBin,bins,bins1,bootstrap,class,cosine,csv2egs,firsts,fmt,ish
+<span class="hljs-keyword">local</span> last,many,map,new,o,oo,optimize,per,pop,push,quintiles,r,rnd,rnds,scottKnot
+<span class="hljs-keyword">local</span> selects,settings,shuffle,slots,smallfx,<span class="hljs-built_in">sort</span>,sum,thing,things,xplains
+<span class="hljs-keyword">local</span> NUM,SYM,EGS,BIN,CLUSTER,XPLAIN,GO,NO</pre></div></div>
             
         </li>
         
@@ -80,12 +80,12 @@ OPTIONS, other:
 ### Data 
 
 - First row of data are names that describe each column.
-- Names ending with `[+-]` are dependent goals to be minimized <span class="hljs-keyword">or</span> maximized.
+- Names ending with `-` <span class="hljs-keyword">or</span> `+` are dependent goals to be minimized <span class="hljs-keyword">or</span> maximized.
 - Names ending with `!` are dependent classes.
 - Dependent columns are `y` columns (the rest are independent `x` columns).
 - Uppercase names are numeric (so the rest are symbolic).
 - Names ending with `:`<span class="hljs-string">&#x27; are columns to be skipped.
-- Data is read as rows,  stored in a EGS instance.
+- Data is read as rows,  and stored in a EGS instance.
 - Within a EGS, row columns are summarized into NUM or SYM instances.
 
 ### Inference
@@ -98,7 +98,7 @@ OPTIONS, other:
 - An XPLAIN tree runs the same clustering processing, but data is divided
   at level using the BIN that most separates the clusters.
 
-### Code c
+### Coding
 
 - No globals (so everything is `<span class="hljs-keyword">local</span>`).
 - Code <span class="hljs-number">80</span> characters wide indent with two spaces.  
@@ -129,9 +129,11 @@ OPTIONS, other:
 
 ### Test suites (and demos)
 
-- Define start-up actions as `go` functions.  
-- In `go` functions, check for errors with `ok(test,mdf)` 
+- Define start-up actions as GO functions.  
+- In GO functions, check for errors with `ok(test,mdf)` 
   (that updates an `fails` counter when not `ok`).
+- Define another table called NO so a test can be quickly disabled just 
+  by renaming it from `GO.xx` to `NO.xx`.
 
 ### At top of file 
 
@@ -152,7 +154,8 @@ OPTIONS, other:
                  
 
 r=math.random
-function ish(x,y,z) return math.abs(y -x ) &lt; z end 
+function ish(x,y,z)    return math.abs(y -x ) &lt; z end 
+function cosine(a,b,c) return (a^2 + c^2 - b^2)/(2*c) end
 
 
 function any(a)        return a[ math.random(#a) ] end
@@ -161,11 +164,15 @@ function last(a)       return a[ #a ] end
 function many(a,n,  u) u={}; for j=1,n do push(u,any(a)) end; return u end
 function map(t,f, u)   u={};for _,v in pairs(t) do push(u,f(v)) end;return u end
 function per(a,p)      return a[ (p*#a)//1 ] end
+function pop(a)        return table.remove(a) end
 function push(t,x)     t[1 + #t] = x; return x end
 function sort(t,f)     table.sort(t,f); return t end
 function sum(t,f, n) 
   f = f or function(x) return x end
   n=0; for _,v in pairs(t) do n = n + f(v) end; return n end
+
+function shuffle(t,   j)
+  for i=#t,2,-1 do j=math.random(i); t[i],t[j]=t[j],t[i] end; return t end
 
 
 function thing(x)
@@ -216,7 +223,7 @@ function settings(help,    d)
   return d end
 
                  
-local GO, ok = {fails=0}
+GO, NO = {fails=0}, {}
 function ok(test,msg)
   print(test and &quot;      PASS: &quot;or &quot;      FAIL: &quot;,msg or &quot;&quot;) 
   if not test then 
@@ -311,21 +318,12 @@ function NUM.sub(i,x,_,    d)
     i.m2  = i.m2 - d*(x - i.mu)
     i.sd  = (i.m2&lt;0 or i.n&lt;2) and 0 or ((i.m2/(i.n - 1))^0.5) end end
 
-
-function EGS.better(i,row1,row2)
-  local s1, s2, n, a, b = 0, 0, #i.cols.y
-  for _,col in pairs(i.cols.y) do
-    a  = col:norm( row1[col.at] )
-    b  = col:norm( row2[col.at] )
-    s1 = s1 - 2.7183^(col.w * (a - b) / n)
-    s2 = s2 - 2.7183^(col.w * (b - a) / n) end
-  return s1 / n &lt; s2 / n end
-
-function EGS.betters(i,j,k)
-  return i:better(j:mid(j.cols.all), k:mid(k.cols.all)) end
   
 function EGS.mid(i,cols)
   return map(cols or i.cols.y, function(col) return col:mid() end) end
+
+function EGS.div(i,cols)
+  return map(cols or i.cols.y, function(col) return col:div() end) end
 
 function NUM.mid(i) return i.mu end
 function SYM.mid(i) return i.mode end
@@ -414,19 +412,18 @@ CLUSTER=class<span class="hljs-string">&quot;CLUSTER&quot;</span>
 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.half</span><span class="hljs-params">(i, rows)</span></span>
-  <span class="hljs-keyword">local</span> project,far,some,left,right,c,lefts,rights
+  <span class="hljs-keyword">local</span> project,far,some,left,right,c,lefts,rights,mid
   rows    = rows <span class="hljs-keyword">or</span> i._all
   far     = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(r,t)</span></span>  <span class="hljs-keyword">return</span> per(i:dists(r,t), the.far)[<span class="hljs-number">2</span>] <span class="hljs-keyword">end</span>
-  project = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(r1,  a,b)</span></span>
-              a,b = i:dist(left,r1), i:dist(right,r1)
-              <span class="hljs-keyword">return</span> {(a^<span class="hljs-number">2</span> + c^<span class="hljs-number">2</span> - b^<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*c), r1} <span class="hljs-keyword">end</span>
+  project = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(r1)</span></span> 
+              <span class="hljs-keyword">return</span> {cosine(i:dist(left,r1), i:dist(right,r1), c),r1} <span class="hljs-keyword">end</span>
   some    = many(rows,       the.some)
   left    = far(any(some), some)
   right   = far(left,      some)
   c       = i:dist(left,right)
   lefts,rights = i:copy(), i:copy()
   <span class="hljs-keyword">for</span> n, projection <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(map(rows,project),firsts)) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">if</span> n==#rows//<span class="hljs-number">2</span> <span class="hljs-keyword">then</span> mid=row <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> n==#rows//<span class="hljs-number">2</span> <span class="hljs-keyword">then</span> mid = projection[<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span>
     (n &lt;= #rows//<span class="hljs-number">2</span> <span class="hljs-keyword">and</span> lefts <span class="hljs-keyword">or</span> rights):add( projection[<span class="hljs-number">2</span>] ) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> lefts, rights, left, right, mid, c  <span class="hljs-keyword">end</span>
 
@@ -549,19 +546,19 @@ BIN=class<span class="hljs-string">&quot;BIN&quot;</span>
     <span class="hljs-keyword">local</span> lhs, rhs, cut, div, xpect, xy = yclass(), yclass()
     <span class="hljs-keyword">for</span> j=lo,hi <span class="hljs-keyword">do</span>  rhs:add(xys[j].y) <span class="hljs-keyword">end</span>
     div = rhs:div()
-    <span class="hljs-keyword">if</span> hi-lo+<span class="hljs-number">1</span> &gt; <span class="hljs-number">2</span>*minItems <span class="hljs-keyword">then</span>
-      <span class="hljs-keyword">for</span> j=lo,hi <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">if</span> hi-lo+<span class="hljs-number">1</span> &gt; <span class="hljs-number">2</span>*minItems 
+    <span class="hljs-keyword">then</span>
+      <span class="hljs-keyword">for</span> j=lo,hi - minItems <span class="hljs-keyword">do</span>
         lhs:add(xys[j].y)
         rhs:<span class="hljs-built_in">sub</span>(xys[j].y)
-        <span class="hljs-keyword">if</span>   lhs.n     &gt; minItems <span class="hljs-keyword">and</span>          <span class="hljs-comment">-- enough items  (on left)</span>
-             rhs.n     &gt; minItems <span class="hljs-keyword">and</span>          <span class="hljs-comment">-- enough items (on right)</span>
+        <span class="hljs-keyword">if</span>   lhs.n     &gt; minItems <span class="hljs-keyword">and</span>          <span class="hljs-comment">-- enough items (on left)</span>
              xys[j].x ~= xys[j+<span class="hljs-number">1</span>].x <span class="hljs-keyword">and</span>        <span class="hljs-comment">-- there is a break here</span>
              xys[j].x  - xys[lo].x &gt; cohen <span class="hljs-keyword">and</span> <span class="hljs-comment">-- not trivially small (on left) </span>
              xys[hi].x - xys[j].x  &gt; cohen     <span class="hljs-comment">-- not trivially small (on right)</span>
         <span class="hljs-keyword">then</span> xpect = (lhs.n*lhs:div() + rhs.n*rhs:div()) / (lhs.n+rhs.n) 
              <span class="hljs-keyword">if</span> xpect &lt; div <span class="hljs-keyword">then</span>               <span class="hljs-comment">-- cutting here simplifies things</span>
-               cut, div = j, xpect <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-    <span class="hljs-keyword">end</span>
+               cut, div = j, xpect <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-comment">--end for</span>
+    <span class="hljs-keyword">end</span> <span class="hljs-comment">-- end if</span>
     <span class="hljs-keyword">if</span>   cut 
     <span class="hljs-keyword">then</span> argmin(lo,    cut)
          argmin(cut+<span class="hljs-number">1</span>, hi )
@@ -580,36 +577,36 @@ BIN=class<span class="hljs-string">&quot;BIN&quot;</span>
                 <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
               <p>   % lua brknbad.lua -r xplain</p>
-<pre><code>                                         Weight- Acc+  Mpg+
-                                         ======= ===== =====
+<pre><code>                                  Weight- Acc+  Mpg+
+                                  ======= ===== =====
 </code></pre>
 <p>   398
    | Clndrs &gt;= 5 : 190
    | | Model &lt;  73 : 50
-   | | | Volume &gt;= 318 : 29                 {4213.93 11.52 12.41}
-   | | | Volume &lt;  318 : 21                 {3412.71 14.38 18.10}
+   | | | Volume &gt;= 318 : 29          {4213.93 11.52 12.41}
+   | | | Volume &lt;  318 : 21          {3412.71 14.38 18.10}
    | | Model &gt;= 73 : 140
-   | | | Model &gt;= 78 : 50                   {3354.20 15.68 22.40}
-   | | | | Volume &gt;= 225 : 32               {3554.53 15.69 20.94}
+   | | | Model &gt;= 78 : 50            {3354.20 15.68 22.40}
+   | | | | Volume &gt;= 225 : 32        {3554.53 15.69 20.94}
    | | | Model &lt;  78 : 90
-   | | | | Volume &lt;  262 : 43               {3298.33 16.97 20.00}
-   | | | | | Model &gt;= 75 : 28               {3401.82 17.36 20.00}
+   | | | | Volume &lt;  262 : 43        {3298.33 16.97 20.00}
+   | | | | | Model &gt;= 75 : 28        {3401.82 17.36 20.00}
    | | | | Volume &gt;= 262 : 47
-   | | | | | Model &lt;  74 : 20               {4279.05 12.25 12.00} &lt;== worst
-   | | | | | Model &gt;= 74 : 27               {4177.30 13.40 15.93}
+   | | | | | Model &lt;  74 : 20        {4279.05 12.25 12.00} &lt;== worst
+   | | | | | Model &gt;= 74 : 27        {4177.30 13.40 15.93}
    | Clndrs &lt;  5 : 208
    | | origin == 3 : 73
-   | | | Model &gt;= 78 : 41                   {2176.20 16.37 33.66}
-   | | | | Model &gt;= 80 : 31                 {2176.10 16.36 34.84} &lt;=== best
-   | | | Model &lt;  78 : 32                   {2155.03 16.41 26.87}
+   | | | Model &gt;= 78 : 41            {2176.20 16.37 33.66}
+   | | | | Model &gt;= 80 : 31          {2176.10 16.36 34.84} &lt;=== best
+   | | | Model &lt;  78 : 32            {2155.03 16.41 26.87}
    | | origin != 3 : 135
    | | | origin == 2 : 63
-   | | | | Model &gt;= 75 : 36                 {2363.81 16.76 30.83}
-   | | | | Model &lt;  75 : 27                 {2284.96 16.67 26.30}
+   | | | | Model &gt;= 75 : 36          {2363.81 16.76 30.83}
+   | | | | Model &lt;  75 : 27          {2284.96 16.67 26.30}
    | | | origin != 2 : 72
-   | | | | Model &lt;  78 : 28                 {2319.25 17.11 26.07}
-   | | | | Model &gt;= 78 : 44                 {2512.20 16.16 29.77}
-   | | | | | Model &gt;= 80 : 31               {2547.77 16.51 30.00}</p>
+   | | | | Model &lt;  78 : 28          {2319.25 17.11 26.07}
+   | | | | Model &gt;= 78 : 44          {2512.20 16.16 29.77}
+   | | | | | Model &gt;= 80 : 31        {2547.77 16.51 30.00}</p>
 
             </div>
             
@@ -641,6 +638,48 @@ XPLAIN=class<span class="hljs-string">&quot;XPLAIN&quot;</span>
   <span class="hljs-keyword">if</span> i.yes <span class="hljs-keyword">then</span> i.yes:show(<span class="hljs-string">&quot;| &quot;</span>.. pre, i.bin:show()     ..<span class="hljs-string">&quot; : &quot;</span>) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">if</span> i.no  <span class="hljs-keyword">then</span> i.no:show( <span class="hljs-string">&quot;| &quot;</span>.. pre, i.bin:show(<span class="hljs-literal">true</span>) ..<span class="hljs-string">&quot; : &quot;</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">optimize</span><span class="hljs-params">(egs,    cluster,leaves,row1,row2)</span></span>
+  cluster = CLUSTER(egs) 
+  leaves = <span class="hljs-built_in">sort</span>(cluster:leaves(),<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> a.egs:betters(b.egs) <span class="hljs-keyword">end</span>)
+  <span class="hljs-keyword">for</span> rank,leaf <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(leaves) <span class="hljs-keyword">do</span> leaf.rank = rank <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">200</span> <span class="hljs-keyword">do</span>
+    row1= any(egs._all) 
+    row2= any(egs._all) 
+    <span class="hljs-keyword">if</span> egs:better(row1,row2) ~= cluster:better(row1,row2) <span class="hljs-keyword">then</span>
+       <span class="hljs-built_in">print</span>(<span class="hljs-number">2</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">CLUSTER.project</span><span class="hljs-params">(i,row)</span></span>
+  <span class="hljs-keyword">return</span> cosine(i.top:dist(row, i.left), i.top:dist(row, i.right), i.c) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">CLUSTER.where</span><span class="hljs-params">(i,row)</span></span>
+  <span class="hljs-keyword">if</span>   i:leaf() <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span>   i:project(row) &lt;= i.mid 
+  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> i.lefts  <span class="hljs-keyword">and</span> i.lefts:where( row) <span class="hljs-keyword">or</span> i.egs
+  <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span> i.rights <span class="hljs-keyword">and</span> i.rights:where(row) <span class="hljs-keyword">or</span> i.egs <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">CLUSTER.better</span><span class="hljs-params">(i,row1,row2)</span></span>
+  <span class="hljs-keyword">return</span> i:where(row1).rank &lt; i:where(row2).rank <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">CLUSTER.leaves</span><span class="hljs-params">(i, out)</span></span>
+  out = out <span class="hljs-keyword">or</span> {}
+  <span class="hljs-keyword">if</span> i:leaf() <span class="hljs-keyword">then</span> push(out,i) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> i.lefts  <span class="hljs-keyword">then</span> i.lefts:leaves(out) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> i.rights <span class="hljs-keyword">then</span> i.rights:leaves(out) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> out
+<span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.better</span><span class="hljs-params">(i,row1,row2)</span></span>
+  <span class="hljs-keyword">local</span> s1, s2, n, a, b = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, #i.cols.y
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.y) <span class="hljs-keyword">do</span>
+    a  = col:norm( row1[col.at] )
+    b  = col:norm( row2[col.at] )
+    s1 = s1 - <span class="hljs-number">2.7183</span>^(col.w * (a - b) / n)
+    s2 = s2 - <span class="hljs-number">2.7183</span>^(col.w * (b - a) / n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> s1 / n &lt; s2 / n <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.betters</span><span class="hljs-params">(i,j)</span></span>
+  <span class="hljs-keyword">return</span> i:better(i:mid(i.cols.all), j:mid(j.cols.all)) <span class="hljs-keyword">end</span>
+
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">quintiles</span><span class="hljs-params">(ts,width,  nums,out,all,n,m)</span></span>
   width=width <span class="hljs-keyword">or</span> <span class="hljs-number">32</span>
   nums=NUM(); <span class="hljs-keyword">for</span> _,t <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(ts) <span class="hljs-keyword">do</span>
@@ -671,11 +710,11 @@ XPLAIN=class<span class="hljs-string">&quot;XPLAIN&quot;</span>
   <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">abs</span>(gt - lt) / n &lt;= the.cliffs <span class="hljs-keyword">end</span> 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bootstrap</span><span class="hljs-params">(y0,z0)</span></span>
-  <span class="hljs-keyword">local</span> x, y, z, b4, yhat, zhat, bigger
-  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">obs</span><span class="hljs-params">(a,b,    c)</span></span>
+  <span class="hljs-keyword">local</span> x, y, z, b4, yhat, zhat, bigger, obs, adds
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">obs</span><span class="hljs-params">(a,b,    c)</span></span>
     c = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">abs</span>(a.mu - b.mu)
     <span class="hljs-keyword">return</span> (a.sd + b.sd) == <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> c <span class="hljs-keyword">or</span> c/((x.sd^<span class="hljs-number">2</span>/x.n + y.sd^<span class="hljs-number">2</span>/y.n)^<span class="hljs-number">.5</span>) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">adds</span><span class="hljs-params">(t, num)</span></span> 
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">adds</span><span class="hljs-params">(t, num)</span></span> 
     num = num <span class="hljs-keyword">or</span> NUM(); map(t, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> add(num,x) <span class="hljs-keyword">end</span>); <span class="hljs-keyword">return</span> num <span class="hljs-keyword">end</span>
   y,z    = adds(y0), adds(z0)
   x      = adds(y0, adds(z0))
@@ -828,11 +867,24 @@ XXX need tests for stats</p>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.bins</span><span class="hljs-params">(    egs,rights,lefts,col2)</span></span>
   egs= EGS:new4file(the.file)
   lefts, rights = egs:half(egs._all) 
+  <span class="hljs-keyword">local</span> b4
   <span class="hljs-keyword">for</span> _,bin <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(lefts:bins(rights)) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">if</span> bin.col.name ~= b4 <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span><span class="hljs-string">&quot;&quot;</span> <span class="hljs-keyword">end</span>
+    b4 = bin.col.name
     <span class="hljs-built_in">print</span>(bin:show(), bin.n, rnd(bin.div)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.xplain</span><span class="hljs-params">()</span></span>
   XPLAIN(EGS:new4file(the.file)):show() <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NO.optimize</span><span class="hljs-params">(     b4,rows,egs)</span></span>
+  rows = {}
+  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> things(the.file) <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">if</span> egs <span class="hljs-keyword">then</span> push(rows,row) <span class="hljs-keyword">else</span> egs=EGS(row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  rows = shuffle(rows)
+  <span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,#rows/<span class="hljs-number">2</span> <span class="hljs-keyword">do</span> egs:add(pop(rows)) <span class="hljs-keyword">end</span>
+  b4 = EGS:new4file(the.file)
+  optimize(b4)
+  <span class="hljs-keyword">end</span>
 
 the = settings(help)
 GO.main(the.todo, the.seed)
