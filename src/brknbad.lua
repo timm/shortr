@@ -37,6 +37,8 @@ OPTIONS, other:
   -rnd       -r round numbers         = %5.2f
   -seed      -s random number seed    = 10019
   -todo      -t start-up action       = nothing
+  -n1        -n1 #repeated trials     = 20
+  -n2        -n2 samples per trial    = 100
 ]]
 
 local any,bestBin,bins,bins1,bootstrap,class,cosine,csv2egs,firsts,fmt,ish
@@ -391,8 +393,8 @@ function NUM.all(i)
 CLUSTER=class"CLUSTER"
 function CLUSTER:new(top,egs,      i,lefts,rights)
   egs = egs or top
-  i   = new({egs=egs, top=top},CLUSTER)
-  lefts, rights, i.left, i.right, i.mid, i.c = top:half(egs._all)
+  i   = new({egs=egs, top=top,rank=0},CLUSTER)
+  lefts, rights, i.left, i.right, i.border, i.c = top:half(egs._all)
   if #egs._all >= 2*(#top._all)^the.minItems then
     if #lefts._all < #egs._all then
       i.lefts = CLUSTER(top, lefts)
@@ -415,7 +417,7 @@ function CLUSTER.show(i,   pre, front)
 ---                         |       L|                 
 
 function EGS.half(i, rows)
-  local project,far,some,left,right,c,lefts,rights,mid
+  local project,far,some,left,right,c,lefts,rights,border
   rows    = rows or i._all
   far     = function(r,t)  return per(i:dists(r,t), the.far)[2] end
   project = function(r1) 
@@ -426,9 +428,9 @@ function EGS.half(i, rows)
   c       = i:dist(left,right)
   lefts,rights = i:copy(), i:copy()
   for n, projection in pairs(sort(map(rows,project),firsts)) do
-    if n==#rows//2 then mid = projection[1] end
+    if n==#rows//2 then border = projection[1] end
     (n <= #rows//2 and lefts or rights):add( projection[2] ) end
-  return lefts, rights, left, right, mid, c  end
+  return lefts, rights, left, right, border, c  end
 
 ---     _|. __|_ _  _  _ _  _  . _    _| _ _|_ _ 
 ---    (_||_\ | (_|| |(_(/__\  || |  (_|(_| | (_|
@@ -638,8 +640,17 @@ function XPLAIN.show(i, pre,how)
 
 local function optimize(egs,    cluster,leaves,row1,row2)
   cluster = CLUSTER(egs) 
-  for rank,leaf in pairs(sort(cluster:leaves(),
-                         function(a,b) return a.egs:betters(b.egs) end)) do
+  local function order(...) 
+    local t={...}
+    oo(t)
+    local a,b = t[1],t[2]
+    print(1)
+    local n= a.egs:betters(b.egs) 
+    print(2)
+    print(n,type(n)) 
+    return n
+  end
+  for rank,leaf in pairs(sort(cluster:leaves(), order)) do
     leaf.rank = rank end                     
   return cluster end
 
@@ -648,19 +659,19 @@ function CLUSTER.project(i,row)
  
 function CLUSTER.where(i,row)
   if   i:leaf() then return i end
-  if   i:project(row) <= i.mid 
+  if   i:project(row) <= i.border 
   then return i.lefts  and i.lefts:where( row) or i
   else return i.rights and i.rights:where(row) or i end end 
 
 function CLUSTER.better(i,row1,row2,    where1, where2)
   where1, where2 = i:where(row1), i:where(row2)
-  return where1.rank <  where2.rank or
-        (where1.rank == where2.rank and where1:xbetter(row1,row2)) end
+  if     where1.rank > where2.rank then return false 
+  elseif where1.rank < where2.rank then return true 
+  else   return where1:xbetter(row1,row2) end end
 
 function CLUSTER.xbetter(i,row1,row2,  x1,x2)
   x1,x2 = i:project(row1), i:project(row2)
-  return i.egs:better(i.left, i.right) and x1 < x2 or x1 > x2 end
-
+  return i.egs:better(i.left, i.right) and x1 <= x2 or x1 > x2 end
 
 function CLUSTER.leaves(i, out)
   out = out or {}
@@ -889,22 +900,22 @@ function GO.optimize(     r,rows,header)
   rows = {}
   for row in things(the.file) do 
     if header then push(rows,row) else header=row end end
-  r=20
-  for j=1,r do
+  for j=1,the.n1 do
+    rows = shuffle(rows)
     local train = EGS(header)
     local test  = EGS(header)
-    rows  = shuffle(rows)
-    for j,row in pairs(shuffle(rows)) do
-      (j< #rows/2 and train or test):add(row) end end
+    for j,row in pairs(rows) do
+      (j< #rows/2 and train or test):add(row) end 
+    CLUSTER(train):leaves()
     local guesses = optimize(train)
-    local m,n=0,256
-    for i=1,n do
+    local m=0
+    for i=1,the.n2 do
        local row1= any(test._all)
        local row2= any(test._all)
        if test:better(row1,row2)==guesses:better(row1,row2) then
          m =m + 1
        end end
-    print(m/n)
+    print(m/the.n2) end
   end
 
 --------------------------------------------------------------------------------
