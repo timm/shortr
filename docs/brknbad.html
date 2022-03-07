@@ -98,7 +98,7 @@ OPTIONS, other:
 - An XPLAIN tree runs the same clustering processing, but data is divided
   at level using the BIN that most separates the clusters.
 
-### Code c
+### Coding
 
 - No globals (so everything is `<span class="hljs-keyword">local</span>`).
 - Code <span class="hljs-number">80</span> characters wide indent with two spaces.  
@@ -549,19 +549,19 @@ BIN=class<span class="hljs-string">&quot;BIN&quot;</span>
     <span class="hljs-keyword">local</span> lhs, rhs, cut, div, xpect, xy = yclass(), yclass()
     <span class="hljs-keyword">for</span> j=lo,hi <span class="hljs-keyword">do</span>  rhs:add(xys[j].y) <span class="hljs-keyword">end</span>
     div = rhs:div()
-    <span class="hljs-keyword">if</span> hi-lo+<span class="hljs-number">1</span> &gt; <span class="hljs-number">2</span>*minItems <span class="hljs-keyword">then</span>
-      <span class="hljs-keyword">for</span> j=lo,hi <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">if</span> hi-lo+<span class="hljs-number">1</span> &gt; <span class="hljs-number">2</span>*minItems 
+    <span class="hljs-keyword">then</span>
+      <span class="hljs-keyword">for</span> j=lo,hi - minItems <span class="hljs-keyword">do</span>
         lhs:add(xys[j].y)
         rhs:<span class="hljs-built_in">sub</span>(xys[j].y)
-        <span class="hljs-keyword">if</span>   lhs.n     &gt; minItems <span class="hljs-keyword">and</span>          <span class="hljs-comment">-- enough items  (on left)</span>
-             rhs.n     &gt; minItems <span class="hljs-keyword">and</span>          <span class="hljs-comment">-- enough items (on right)</span>
+        <span class="hljs-keyword">if</span>   lhs.n     &gt; minItems <span class="hljs-keyword">and</span>          <span class="hljs-comment">-- enough items (on left)</span>
              xys[j].x ~= xys[j+<span class="hljs-number">1</span>].x <span class="hljs-keyword">and</span>        <span class="hljs-comment">-- there is a break here</span>
              xys[j].x  - xys[lo].x &gt; cohen <span class="hljs-keyword">and</span> <span class="hljs-comment">-- not trivially small (on left) </span>
              xys[hi].x - xys[j].x  &gt; cohen     <span class="hljs-comment">-- not trivially small (on right)</span>
         <span class="hljs-keyword">then</span> xpect = (lhs.n*lhs:div() + rhs.n*rhs:div()) / (lhs.n+rhs.n) 
              <span class="hljs-keyword">if</span> xpect &lt; div <span class="hljs-keyword">then</span>               <span class="hljs-comment">-- cutting here simplifies things</span>
-               cut, div = j, xpect <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-    <span class="hljs-keyword">end</span>
+               cut, div = j, xpect <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-comment">--end for</span>
+    <span class="hljs-keyword">end</span> <span class="hljs-comment">-- end if</span>
     <span class="hljs-keyword">if</span>   cut 
     <span class="hljs-keyword">then</span> argmin(lo,    cut)
          argmin(cut+<span class="hljs-number">1</span>, hi )
@@ -828,7 +828,10 @@ XXX need tests for stats</p>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.bins</span><span class="hljs-params">(    egs,rights,lefts,col2)</span></span>
   egs= EGS:new4file(the.file)
   lefts, rights = egs:half(egs._all) 
+  <span class="hljs-keyword">local</span> b4
   <span class="hljs-keyword">for</span> _,bin <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(lefts:bins(rights)) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">if</span> bin.col.name ~= b4 <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span><span class="hljs-string">&quot;&quot;</span> <span class="hljs-keyword">end</span>
+    b4 = bin.col.name
     <span class="hljs-built_in">print</span>(bin:show(), bin.n, rnd(bin.div)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.xplain</span><span class="hljs-params">()</span></span>
