@@ -77,7 +77,8 @@ OPTIONS, other:
             <div class="content"><div class='highlight'><pre>
 ## Conventions
 
-### Data classes
+### Data 
+
 - First row of data are names that describe each column.
 - Names ending with `[+-]` are dependent goals to be minimized <span class="hljs-keyword">or</span> maximized.
 - Names ending with `!` are dependent classes.
@@ -88,6 +89,7 @@ OPTIONS, other:
 - Within a EGS, row columns are summarized into NUM or SYM instances.
 
 ### Inference
+
 - The rows within an EGS are recursive bi-clustered into CLUSTERs
   using random projections (Fastmap) and Aha&#x27;</span>s distance metric
   (that can process numbers <span class="hljs-keyword">and</span> symbols).
@@ -96,7 +98,8 @@ OPTIONS, other:
 - An XPLAIN tree runs the same clustering processing, but data is divided
   at level using the BIN that most separates the clusters.
 
-### Code conventions
+### Code c
+
 - No globals (so everything is `<span class="hljs-keyword">local</span>`).
 - Code <span class="hljs-number">80</span> characters wide indent with two spaces.  
 - Format to be <span class="hljs-built_in">read</span> a two-pages-per-page portrait pdf.
@@ -109,7 +112,8 @@ OPTIONS, other:
 - If a slot is too big to display, it is declared private (<span class="hljs-keyword">not</span> to be printed)
   by renaming (e.g.) `slotx` to `_slotx` (so often, `all` becomes `_all`).
 
-### Class conventions
+### Classes
+
 - Spread class code across different sections (so don<span class="hljs-string">&#x27;t overload reader
   with all details, at one time).
 - Show simpler stuff before complex stuff.
@@ -123,12 +127,14 @@ OPTIONS, other:
 - Class methods using `:`; e.g.  `Thing:new4strings`. Class methods
   do things like instance creation or manage a set of instances.
 
-### Test suites (demos)
+### Test suites (and demos)
+
 - Define start-up actions as `go` functions.  
 - In `go` functions, check for errors with `ok(test,mdf)` 
   (that updates an `fails` counter when not `ok`).
 
 ### At top of file 
+
 - Trap known globals in `b4`.
 - Define all locals at top-of-file (so everyone can access everything).
 - Define options in a help string at top of file.
@@ -136,6 +142,7 @@ OPTIONS, other:
  `-t` (for startup actions, so `-t all` means &quot;run everything&quot;).
 
 ### At end of file
+
 - Using `settings`, parse help string to set options,
   maybe updating from command-line.
 - Using `GO.main`, run the actions listed on command line.
@@ -451,21 +458,25 @@ CLUSTER=class<span class="hljs-string">&quot;CLUSTER&quot;</span>
               </div>
               <pre><code>$ lua brknbad.lua -t bins
 
-                  selects  diversity
-                  =======  ========
+                     selects  diversity
+                     =======  ========
+      Clndrs   &lt; <span class="hljs-number">5</span>       <span class="hljs-number">211</span>   <span class="hljs-number">0.48</span>  
+      Clndrs  &gt;= <span class="hljs-number">5</span>       <span class="hljs-number">187</span>   <span class="hljs-number">0.30</span>   &lt;== best overall
+
+       Volume  &lt; <span class="hljs-number">121</span>     <span class="hljs-number">158</span>   <span class="hljs-number">0.23</span>
 </code></pre>
-<p>   -inf &lt;= Clndrs &lt; 5    211   0.48<br>   Clndrs &gt;= 5           187   0.30   &lt;== best overall</p>
-<p>   -inf &lt;= Volume &lt; 121  158   0.23
-   121 &lt;= Volume &lt; 168    63   0.84
-   168 &lt;= Volume &lt; 225    32   0.20
-   Volume &gt;= 225         145   0.00   &lt;== pretty good</p>
-<p>   -inf &lt;= Model &lt; 73    125   0.87
-   73 &lt;= Model &lt; 76       91   0.97
-   76 &lt;= Model &lt; 79       93   1.00
-   Model &gt;= 79            89   0.47</p>
-<p>   origin == 1           249   0.72   &lt;== pretty bad
-   origin == 2            70   0.00
-   origin == 3            79   0.00</p>
+<p>   121  &lt;= Volume  &lt; 168      63   0.84
+   168  &lt;= Volume  &lt; 225      32   0.20
+           Volume &gt;= 225     145   0.00   &lt;== pretty good</p>
+<pre><code>       Model   &lt; <span class="hljs-number">73</span>      <span class="hljs-number">125</span>   <span class="hljs-number">0.87</span>
+</code></pre>
+<p>   73   &lt;= Model   &lt; 76       91   0.97
+   76   &lt;= Model   &lt; 79       93   1.00
+   Model &gt;= 79                89   0.47</p>
+<pre><code>      origin == <span class="hljs-number">1</span>        <span class="hljs-number">249</span>   <span class="hljs-number">0.72</span>   &lt;== pretty bad
+      origin == <span class="hljs-number">2</span>         <span class="hljs-number">70</span>   <span class="hljs-number">0.00</span>
+      origin == <span class="hljs-number">3</span>         <span class="hljs-number">79</span>   <span class="hljs-number">0.00</span>
+</code></pre>
 
             </div>
             
@@ -503,6 +514,12 @@ BIN=class<span class="hljs-string">&quot;BIN&quot;</span>
   <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(map(bins, distance2heaven), firsts)[<span class="hljs-number">1</span>][<span class="hljs-number">2</span>]  <span class="hljs-keyword">end</span> 
 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.bins</span><span class="hljs-params">(i,j,  bins)</span></span>
+  bins = {}
+  <span class="hljs-keyword">for</span> n,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.x) <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">for</span> _,bin <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(col:bins(j.cols.x[n])) <span class="hljs-keyword">do</span> push(bins, bin) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> bins <span class="hljs-keyword">end</span>
+
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.bins</span><span class="hljs-params">(i,j)</span></span>
   <span class="hljs-keyword">local</span> xys= {}
@@ -532,17 +549,18 @@ BIN=class<span class="hljs-string">&quot;BIN&quot;</span>
     <span class="hljs-keyword">local</span> lhs, rhs, cut, div, xpect, xy = yclass(), yclass()
     <span class="hljs-keyword">for</span> j=lo,hi <span class="hljs-keyword">do</span>  rhs:add(xys[j].y) <span class="hljs-keyword">end</span>
     div = rhs:div()
-    <span class="hljs-keyword">for</span> j=lo,hi <span class="hljs-keyword">do</span>
-      lhs:add(xys[j].y)
-      rhs:<span class="hljs-built_in">sub</span>(xys[j].y)
-      <span class="hljs-keyword">if</span>   lhs.n     &gt; minItems <span class="hljs-keyword">and</span>          <span class="hljs-comment">-- enough items  (on left)</span>
-           rhs.n     &gt; minItems <span class="hljs-keyword">and</span>          <span class="hljs-comment">-- enough items (on right)</span>
-           xys[j].x ~= xys[j+<span class="hljs-number">1</span>].x <span class="hljs-keyword">and</span>        <span class="hljs-comment">-- there is a break here</span>
-           xys[j].x  - xys[lo].x &gt; cohen <span class="hljs-keyword">and</span> <span class="hljs-comment">-- not trivially small (on left) </span>
-           xys[hi].x - xys[j].x  &gt; cohen     <span class="hljs-comment">-- not trivially small (on right)</span>
-      <span class="hljs-keyword">then</span> xpect = (lhs.n*lhs:div() + rhs.n*rhs:div()) / (lhs.n+rhs.n) 
-           <span class="hljs-keyword">if</span> xpect &lt; div <span class="hljs-keyword">then</span>               <span class="hljs-comment">-- cutting here simplifies things</span>
-             cut, div = j, xpect <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+    <span class="hljs-keyword">if</span> hi-lo+<span class="hljs-number">1</span> &gt; <span class="hljs-number">2</span>*minItems <span class="hljs-keyword">then</span>
+      <span class="hljs-keyword">for</span> j=lo,hi <span class="hljs-keyword">do</span>
+        lhs:add(xys[j].y)
+        rhs:<span class="hljs-built_in">sub</span>(xys[j].y)
+        <span class="hljs-keyword">if</span>   lhs.n     &gt; minItems <span class="hljs-keyword">and</span>          <span class="hljs-comment">-- enough items  (on left)</span>
+             rhs.n     &gt; minItems <span class="hljs-keyword">and</span>          <span class="hljs-comment">-- enough items (on right)</span>
+             xys[j].x ~= xys[j+<span class="hljs-number">1</span>].x <span class="hljs-keyword">and</span>        <span class="hljs-comment">-- there is a break here</span>
+             xys[j].x  - xys[lo].x &gt; cohen <span class="hljs-keyword">and</span> <span class="hljs-comment">-- not trivially small (on left) </span>
+             xys[hi].x - xys[j].x  &gt; cohen     <span class="hljs-comment">-- not trivially small (on right)</span>
+        <span class="hljs-keyword">then</span> xpect = (lhs.n*lhs:div() + rhs.n*rhs:div()) / (lhs.n+rhs.n) 
+             <span class="hljs-keyword">if</span> xpect &lt; div <span class="hljs-keyword">then</span>               <span class="hljs-comment">-- cutting here simplifies things</span>
+               cut, div = j, xpect <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
     <span class="hljs-keyword">end</span>
     <span class="hljs-keyword">if</span>   cut 
     <span class="hljs-keyword">then</span> argmin(lo,    cut)
@@ -612,12 +630,6 @@ XPLAIN=class<span class="hljs-string">&quot;XPLAIN&quot;</span>
       <span class="hljs-keyword">if</span> #yes._all &gt; stop <span class="hljs-keyword">then</span> i.yes  = XPLAIN(top, yes) <span class="hljs-keyword">end</span>
       <span class="hljs-keyword">if</span> #no._all  &gt; stop <span class="hljs-keyword">then</span> i.no   = XPLAIN(top, no) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.bins</span><span class="hljs-params">(i,j,  bins)</span></span>
-  bins = {}
-  <span class="hljs-keyword">for</span> n,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.x) <span class="hljs-keyword">do</span> 
-    <span class="hljs-keyword">for</span> _,bin <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(col:bins(j.cols.x[n])) <span class="hljs-keyword">do</span> push(bins, bin) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">return</span> bins <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">XPLAIN.show</span><span class="hljs-params">(i, pre,how)</span></span>
   pre, how = pre <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, how <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
@@ -816,11 +828,8 @@ XXX need tests for stats</p>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.bins</span><span class="hljs-params">(    egs,rights,lefts,col2)</span></span>
   egs= EGS:new4file(the.file)
   lefts, rights = egs:half(egs._all) 
-  <span class="hljs-keyword">for</span> n,col1 <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(lefts.cols.x) <span class="hljs-keyword">do</span>
-    col2 = rights.cols.x[n]
-    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&quot;</span>)
-    <span class="hljs-keyword">for</span> _,bin <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(col1:bins(col2)) <span class="hljs-keyword">do</span>
-      <span class="hljs-built_in">print</span>(bin:show(), bin.n, rnd(bin.div)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _,bin <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(lefts:bins(rights)) <span class="hljs-keyword">do</span>
+    <span class="hljs-built_in">print</span>(bin:show(), bin.n, rnd(bin.div)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.xplain</span><span class="hljs-params">()</span></span>
   XPLAIN(EGS:new4file(the.file)):show() <span class="hljs-keyword">end</span>

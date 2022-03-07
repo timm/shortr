@@ -1,4 +1,4 @@
------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 ---   __                __                   __                    __     
 ---  /\ \              /\ \                 /\ \                  /\ \    
 ---  \ \ \____   _ __  \ \ \/'\      ___    \ \ \____     __      \_\ \   
@@ -48,7 +48,8 @@ local NUM, SYM, EGS, BIN, CLUSTER, XPLAIN, GO
 
 ## Conventions
 
-### Data classes
+### Data 
+
 - First row of data are names that describe each column.
 - Names ending with `[+-]` are dependent goals to be minimized or maximized.
 - Names ending with `!` are dependent classes.
@@ -59,6 +60,7 @@ local NUM, SYM, EGS, BIN, CLUSTER, XPLAIN, GO
 - Within a EGS, row columns are summarized into NUM or SYM instances.
 
 ### Inference
+
 - The rows within an EGS are recursive bi-clustered into CLUSTERs
   using random projections (Fastmap) and Aha's distance metric
   (that can process numbers and symbols).
@@ -67,7 +69,8 @@ local NUM, SYM, EGS, BIN, CLUSTER, XPLAIN, GO
 - An XPLAIN tree runs the same clustering processing, but data is divided
   at level using the BIN that most separates the clusters.
 
-### Code conventions
+### Coding
+
 - No globals (so everything is `local`).
 - Code 80 characters wide indent with two spaces.  
 - Format to be read a two-pages-per-page portrait pdf.
@@ -80,7 +83,8 @@ local NUM, SYM, EGS, BIN, CLUSTER, XPLAIN, GO
 - If a slot is too big to display, it is declared private (not to be printed)
   by renaming (e.g.) `slotx` to `_slotx` (so often, `all` becomes `_all`).
 
-### Class conventions
+### Classes
+
 - Spread class code across different sections (so don't overload reader
   with all details, at one time).
 - Show simpler stuff before complex stuff.
@@ -94,12 +98,14 @@ local NUM, SYM, EGS, BIN, CLUSTER, XPLAIN, GO
 - Class methods using `:`; e.g.  `Thing:new4strings`. Class methods
   do things like instance creation or manage a set of instances.
 
-### Test suites (demos)
+### Test suites (and demos)
+
 - Define start-up actions as `go` functions.  
 - In `go` functions, check for errors with `ok(test,mdf)` 
   (that updates an `fails` counter when not `ok`).
 
 ### At top of file 
+
 - Trap known globals in `b4`.
 - Define all locals at top-of-file (so everyone can access everything).
 - Define options in a help string at top of file.
@@ -107,13 +113,14 @@ local NUM, SYM, EGS, BIN, CLUSTER, XPLAIN, GO
  `-t` (for startup actions, so `-t all` means "run everything").
 
 ### At end of file
+
 - Using `settings`, parse help string to set options,
   maybe updating from command-line.
 - Using `GO.main`, run the actions listed on command line.
 - `GO.main`  resets random number generator before running an action 
 - After everything else, look for `rogues` (any global not in `b4`)
 - Finally, return the `fails` as the exit status of this code. --]]
-----------------------------------------------------------------------
+--------------------------------------------------------------------------------
 ---    _  _ _ ____ ____ 
 ---    |\/| | [__  |    
 ---    |  | | ___] |___ 
@@ -222,7 +229,7 @@ new = setmetatable
 function class(s,   t)
   t={__tostring=o,_is=s or ""}; t.__index=t
   return new(t, {__call=function(_,...) return t.new(_,...) end}) end
------------------------------------------------------------------------
+----------------------------------------------------------------------
 ---    ___  ____ ___ ____    ____ _    ____ ____ ____ ____ ____ 
 ---    |  \ |__|  |  |__|    |    |    |__| [__  [__  |___ [__  
 ---    |__/ |  |  |  |  |    |___ |___ |  | ___] ___] |___ ___] 
@@ -450,24 +457,24 @@ function SYM.dist(i,a,b) return a=="?" and b=="?" and 1 or a==b and 0 or 1 end
    
 --     $ lua brknbad.lua -t bins
 --    
---                       selects  diversity
---                       =======  ========
---    -inf <= Clndrs < 5    211   0.48  
---    Clndrs >= 5           187   0.30   <== best overall
+--                          selects  diversity
+--                          =======  ========
+--           Clndrs   < 5       211   0.48  
+--           Clndrs  >= 5       187   0.30   <== best overall
 --    
---    -inf <= Volume < 121  158   0.23
---    121 <= Volume < 168    63   0.84
---    168 <= Volume < 225    32   0.20
---    Volume >= 225         145   0.00   <== pretty good
+--            Volume  < 121     158   0.23
+--    121  <= Volume  < 168      63   0.84
+--    168  <= Volume  < 225      32   0.20
+--            Volume >= 225     145   0.00   <== pretty good
 --    
---    -inf <= Model < 73    125   0.87
---    73 <= Model < 76       91   0.97
---    76 <= Model < 79       93   1.00
---    Model >= 79            89   0.47
+--            Model   < 73      125   0.87
+--    73   <= Model   < 76       91   0.97
+--    76   <= Model   < 79       93   1.00
+--    Model >= 79                89   0.47
 --    
---    origin == 1           249   0.72   <== pretty bad
---    origin == 2            70   0.00
---    origin == 3            79   0.00
+--           origin == 1        249   0.72   <== pretty bad
+--           origin == 2         70   0.00
+--           origin == 3         79   0.00
 
 BIN=class"BIN"
 function BIN:new(col,lo,hi,n,div)
@@ -501,6 +508,12 @@ function BIN:best(bins)
     divs:add(bin.div); ns:add(  bin.n) 
   end
   return sort(map(bins, distance2heaven), firsts)[1][2]  end 
+
+function EGS.bins(i,j,  bins)
+  bins = {}
+  for n,col in pairs(i.cols.x) do 
+    for _,bin in pairs(col:bins(j.cols.x[n])) do push(bins, bin) end end 
+  return bins end
 
 ---     _|. _ _ _ _ _|_._  _      _   _ _  _
 ---    (_||_\(_| (/_ | |/_(/_    _\\/| | |_\
@@ -536,18 +549,19 @@ function BIN:new4NUMs(col, yclass, xys, minItems, cohen)
     local lhs, rhs, cut, div, xpect, xy = yclass(), yclass()
     for j=lo,hi do  rhs:add(xys[j].y) end
     div = rhs:div()
-    for j=lo,hi do
-      lhs:add(xys[j].y)
-      rhs:sub(xys[j].y)
-      if   lhs.n     > minItems and          -- enough items  (on left)
-           rhs.n     > minItems and          -- enough items (on right)
-           xys[j].x ~= xys[j+1].x and        -- there is a break here
-           xys[j].x  - xys[lo].x > cohen and -- not trivially small (on left) 
-           xys[hi].x - xys[j].x  > cohen     -- not trivially small (on right)
-      then xpect = (lhs.n*lhs:div() + rhs.n*rhs:div()) / (lhs.n+rhs.n) 
-           if xpect < div then               -- cutting here simplifies things
-             cut, div = j, xpect end end 
-    end
+    if hi-lo+1 > 2*minItems 
+    then
+      for j=lo,hi - minItems do
+        lhs:add(xys[j].y)
+        rhs:sub(xys[j].y)
+        if   lhs.n     > minItems and          -- enough items (on left)
+             xys[j].x ~= xys[j+1].x and        -- there is a break here
+             xys[j].x  - xys[lo].x > cohen and -- not trivially small (on left) 
+             xys[hi].x - xys[j].x  > cohen     -- not trivially small (on right)
+        then xpect = (lhs.n*lhs:div() + rhs.n*rhs:div()) / (lhs.n+rhs.n) 
+             if xpect < div then               -- cutting here simplifies things
+               cut, div = j, xpect end end end --end for
+    end -- end if
     if   cut 
     then argmin(lo,    cut)
          argmin(cut+1, hi )
@@ -609,12 +623,6 @@ function XPLAIN:new(top,egs)
       if #yes._all > stop then i.yes  = XPLAIN(top, yes) end
       if #no._all  > stop then i.no   = XPLAIN(top, no) end end end
   return i end
-
-function EGS.bins(i,j,  bins)
-  bins = {}
-  for n,col in pairs(i.cols.x) do 
-    for _,bin in pairs(col:bins(j.cols.x[n])) do push(bins, bin) end end 
-  return bins end
 
 function XPLAIN.show(i, pre,how)
   pre, how = pre or "", how or ""
@@ -812,11 +820,11 @@ function GO.cluster()
 function GO.bins(    egs,rights,lefts,col2)
   egs= EGS:new4file(the.file)
   lefts, rights = egs:half(egs._all) 
-  for n,col1 in pairs(lefts.cols.x) do
-    col2 = rights.cols.x[n]
-    print("")
-    for _,bin in pairs(col1:bins(col2)) do
-      print(bin:show(), bin.n, rnd(bin.div)) end end end
+  local b4
+  for _,bin in pairs(lefts:bins(rights)) do
+    if bin.col.name ~= b4 then print"" end
+    b4 = bin.col.name
+    print(bin:show(), bin.n, rnd(bin.div)) end end 
 
 function GO.xplain()
   XPLAIN(EGS:new4file(the.file)):show() end
