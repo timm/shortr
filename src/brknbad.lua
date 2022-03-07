@@ -39,10 +39,10 @@ OPTIONS, other:
   -todo      -t start-up action       = nothing
 ]]
 
-local any, bestBin, bins, bins1, bootstrap, class, csv2egs, firsts, fmt, ish 
-local last, many, map, new, o, oo, per, push, quintiles, r, rnd, rnds, scottKnot
-local selects, settings,slots, smallfx, sort, sum, thing, things, xplains
-local NUM, SYM, EGS, BIN, CLUSTER, XPLAIN, GO
+local any,bestBin,bins,bins1,bootstrap,class,cosine,csv2egs,firsts,fmt,ish
+local last,many,map,new,o,oo,optimize,per,push,quintiles,r,rnd,rnds,scottKnot
+local selects,settings,shuffle,slots,smallfx,sort,sum,thing,things,xplains
+local NUM,SYM,EGS,BIN,CLUSTER,XPLAIN,GO
 
 --[[
 
@@ -129,7 +129,8 @@ local NUM, SYM, EGS, BIN, CLUSTER, XPLAIN, GO
 ---    | | |(_| | | |_\
 
 r=math.random
-function ish(x,y,z) return math.abs(y -x ) < z end 
+function ish(x,y,z)    return math.abs(y -x ) < z end 
+function cosine(a,b,c) return (a^2 + c^2 - b^2)/(2*c) end
 
 ---    |. __|_ _
 ---    ||_\ | _\
@@ -145,6 +146,9 @@ function sort(t,f)     table.sort(t,f); return t end
 function sum(t,f, n) 
   f = f or function(x) return x end
   n=0; for _,v in pairs(t) do n = n + f(v) end; return n end
+
+function shuffle(t,   j)
+  for i=#t,2,-1 do j=math.random(i); t[i],t[j]=t[j],t[i] end; return t end
 
 ---     __|_ _. _  _   '~)  _|_|_ . _  _ 
 ---    _\ | | || |(_|   /_   | | ||| |(_|
@@ -319,21 +323,12 @@ function NUM.sub(i,x,_,    d)
 ---     _      _  _  
 ---    (_| |_|(/_| \/
 ---      |/        / 
-
-function EGS.better(i,row1,row2)
-  local s1, s2, n, a, b = 0, 0, #i.cols.y
-  for _,col in pairs(i.cols.y) do
-    a  = col:norm( row1[col.at] )
-    b  = col:norm( row2[col.at] )
-    s1 = s1 - 2.7183^(col.w * (a - b) / n)
-    s2 = s2 - 2.7183^(col.w * (b - a) / n) end
-  return s1 / n < s2 / n end
-
-function EGS.betters(i,j,k)
-  return i:better(j:mid(j.cols.all), k:mid(k.cols.all)) end
   
 function EGS.mid(i,cols)
   return map(cols or i.cols.y, function(col) return col:mid() end) end
+
+function EGS.div(i,cols)
+  return map(cols or i.cols.y, function(col) return col:div() end) end
 
 function NUM.mid(i) return i.mu end
 function SYM.mid(i) return i.mode end
@@ -416,19 +411,18 @@ function CLUSTER.show(i,   pre, front)
 ---                         |       L|                 
 
 function EGS.half(i, rows)
-  local project,far,some,left,right,c,lefts,rights
+  local project,far,some,left,right,c,lefts,rights,mid
   rows    = rows or i._all
   far     = function(r,t)  return per(i:dists(r,t), the.far)[2] end
-  project = function(r1,  a,b)
-              a,b = i:dist(left,r1), i:dist(right,r1)
-              return {(a^2 + c^2 - b^2)/(2*c), r1} end
+  project = function(r1) 
+              return {cosine(i:dist(left,r1), i:dist(right,r1), c),r1} end
   some    = many(rows,       the.some)
   left    = far(any(some), some)
   right   = far(left,      some)
   c       = i:dist(left,right)
   lefts,rights = i:copy(), i:copy()
   for n, projection in pairs(sort(map(rows,project),firsts)) do
-    if n==#rows//2 then mid=row end
+    if n==#rows//2 then mid = projection[1] end
     (n <= #rows//2 and lefts or rights):add( projection[2] ) end
   return lefts, rights, left, right, mid, c  end
 
@@ -577,35 +571,35 @@ function BIN:new4NUMs(col, yclass, xys, minItems, cohen)
 
 --    % lua brknbad.lua -r xplain
 --
---                                              Weight- Acc+  Mpg+
---                                              ======= ===== =====
+--                                       Weight- Acc+  Mpg+
+--                                       ======= ===== =====
 --    398
 --    | Clndrs >= 5 : 190
 --    | | Model <  73 : 50
---    | | | Volume >= 318 : 29                 {4213.93 11.52 12.41}
---    | | | Volume <  318 : 21                 {3412.71 14.38 18.10}
+--    | | | Volume >= 318 : 29          {4213.93 11.52 12.41}
+--    | | | Volume <  318 : 21          {3412.71 14.38 18.10}
 --    | | Model >= 73 : 140
---    | | | Model >= 78 : 50                   {3354.20 15.68 22.40}
---    | | | | Volume >= 225 : 32               {3554.53 15.69 20.94}
+--    | | | Model >= 78 : 50            {3354.20 15.68 22.40}
+--    | | | | Volume >= 225 : 32        {3554.53 15.69 20.94}
 --    | | | Model <  78 : 90
---    | | | | Volume <  262 : 43               {3298.33 16.97 20.00}
---    | | | | | Model >= 75 : 28               {3401.82 17.36 20.00}
+--    | | | | Volume <  262 : 43        {3298.33 16.97 20.00}
+--    | | | | | Model >= 75 : 28        {3401.82 17.36 20.00}
 --    | | | | Volume >= 262 : 47
---    | | | | | Model <  74 : 20               {4279.05 12.25 12.00} <== worst
---    | | | | | Model >= 74 : 27               {4177.30 13.40 15.93}
+--    | | | | | Model <  74 : 20        {4279.05 12.25 12.00} <== worst
+--    | | | | | Model >= 74 : 27        {4177.30 13.40 15.93}
 --    | Clndrs <  5 : 208
 --    | | origin == 3 : 73
---    | | | Model >= 78 : 41                   {2176.20 16.37 33.66}
---    | | | | Model >= 80 : 31                 {2176.10 16.36 34.84} <=== best
---    | | | Model <  78 : 32                   {2155.03 16.41 26.87}
+--    | | | Model >= 78 : 41            {2176.20 16.37 33.66}
+--    | | | | Model >= 80 : 31          {2176.10 16.36 34.84} <=== best
+--    | | | Model <  78 : 32            {2155.03 16.41 26.87}
 --    | | origin != 3 : 135
 --    | | | origin == 2 : 63
---    | | | | Model >= 75 : 36                 {2363.81 16.76 30.83}
---    | | | | Model <  75 : 27                 {2284.96 16.67 26.30}
+--    | | | | Model >= 75 : 36          {2363.81 16.76 30.83}
+--    | | | | Model <  75 : 27          {2284.96 16.67 26.30}
 --    | | | origin != 2 : 72
---    | | | | Model <  78 : 28                 {2319.25 17.11 26.07}
---    | | | | Model >= 78 : 44                 {2512.20 16.16 29.77}
---    | | | | | Model >= 80 : 31               {2547.77 16.51 30.00}
+--    | | | | Model <  78 : 28          {2319.25 17.11 26.07}
+--    | | | | Model >= 78 : 44          {2512.20 16.16 29.77}
+--    | | | | | Model >= 80 : 31        {2547.77 16.51 30.00}
 
 XPLAIN=class"XPLAIN"
 function XPLAIN:new(top,egs)
@@ -633,6 +627,52 @@ function XPLAIN.show(i, pre,how)
   end
   if i.yes then i.yes:show("| ".. pre, i.bin:show()     .." : ") end
   if i.no  then i.no:show( "| ".. pre, i.bin:show(true) .." : ") end end
+-------------------------------------------------------------------------------
+---    ____ ___  ___ _ _  _ _ ___  ____ 
+---    |  | |__]  |  | |\/| |   /  |___ 
+---    |__| |     |  | |  | |  /__ |___ 
+
+local function optimize(egs,    cluster,leaves,row1,row2)
+  cluster = CLUSTER(egs) 
+  leaves = sort(cluster:leaves(),function(a,b) return a.egs:betters(b.egs) end)
+  for rank,leaf in pairs(leaves) do leaf.rank = rank end 
+  for i=1,200 do
+    row1= any(egs._all) 
+    row2= any(egs._all) 
+    if egs:better(row1,row2) ~= cluster:better(row1,row2) then
+       print(2) end end end
+
+function CLUSTER.project(i,row)
+  return cosine(i.top:dist(row, i.left), i.top:dist(row, i.right), i.c) end
+
+function CLUSTER.where(i,row)
+  if   i:leaf() then return i end
+  if   i:project(row) <= i.mid 
+  then return i.lefts  and i.lefts:where( row) or i.egs
+  else return i.rights and i.rights:where(row) or i.egs end end 
+
+function CLUSTER.better(i,row1,row2)
+  return i:where(row1).rank < i:where(row2).rank end
+
+function CLUSTER.leaves(i, out)
+  out = out or {}
+  if i:leaf() then push(out,i) end
+  if i.lefts  then i.lefts:leaves(out) end
+  if i.rights then i.rights:leaves(out) end
+  return out
+end
+
+function EGS.better(i,row1,row2)
+  local s1, s2, n, a, b = 0, 0, #i.cols.y
+  for _,col in pairs(i.cols.y) do
+    a  = col:norm( row1[col.at] )
+    b  = col:norm( row2[col.at] )
+    s1 = s1 - 2.7183^(col.w * (a - b) / n)
+    s2 = s2 - 2.7183^(col.w * (b - a) / n) end
+  return s1 / n < s2 / n end
+
+function EGS.betters(i,j)
+  return i:better(i:mid(i.cols.all), j:mid(j.cols.all)) end
 -------------------------------------------------------------------------------
 ---     __|_ _ _|_ _
 ---    _\ | (_| | _\
@@ -667,11 +707,11 @@ function smallfx(xs,ys,     x,y,lt,gt,n)
   return math.abs(gt - lt) / n <= the.cliffs end 
 
 function bootstrap(y0,z0)
-  local x, y, z, b4, yhat, zhat, bigger
-  local function obs(a,b,    c)
+  local x, y, z, b4, yhat, zhat, bigger, obs, adds
+  function obs(a,b,    c)
     c = math.abs(a.mu - b.mu)
     return (a.sd + b.sd) == 0 and c or c/((x.sd^2/x.n + y.sd^2/y.n)^.5) end
-  local function adds(t, num) 
+  function adds(t, num) 
     num = num or NUM(); map(t, function(x) add(num,x) end); return num end
   y,z    = adds(y0), adds(z0)
   x      = adds(y0, adds(z0))
@@ -828,6 +868,13 @@ function GO.bins(    egs,rights,lefts,col2)
 
 function GO.xplain()
   XPLAIN(EGS:new4file(the.file)):show() end
+
+function GO.optimize(     b4)
+  for _,row in things(the.file) do
+  end
+  b4 = EGS:new4file(the.file)
+  optimize(b4)
+  end
 
 --------------------------------------------------------------------------------
 the = settings(help)
