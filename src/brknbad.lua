@@ -42,7 +42,7 @@ OPTIONS, other:
 local any,bestBin,bins,bins1,bootstrap,class,cosine,csv2egs,firsts,fmt,ish
 local last,many,map,new,o,oo,optimize,per,pop,push,quintiles,r,rnd,rnds,scottKnot
 local selects,settings,shuffle,slots,smallfx,sort,sum,thing,things,xplains
-local NUM,SYM,EGS,BIN,CLUSTER,XPLAIN,GO
+local NUM,SYM,EGS,BIN,CLUSTER,XPLAIN,GO,NO
 
 --[[
 
@@ -211,7 +211,7 @@ function settings(help,    d)
 ---     _ _  _ _|_ _ _ |
 ---    (_(_)| | | | (_)|
                  
-local GO, ok = {fails=0}
+GO, NO = {fails=0}, {}
 function ok(test,msg)
   print(test and "      PASS: "or "      FAIL: ",msg or "") 
   if not test then 
@@ -870,7 +870,7 @@ function GO.bins(    egs,rights,lefts,col2)
 function GO.xplain()
   XPLAIN(EGS:new4file(the.file)):show() end
 
-function GO.optimize(     b4,rows,egs)
+function NO.optimize(     b4,rows,egs)
   rows = {}
   for _,row in things(the.file) do 
     if egs then push(rows,row) else egs=EGS(row) end end
