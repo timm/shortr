@@ -156,6 +156,20 @@ function sum(t,f, n)
 function shuffle(t,   j)
   for i=#t,2,-1 do j=math.random(i); t[i],t[j]=t[j],t[i] end; return t end
 
+local function quicksort(t,f,lo,hi)
+  f= f or function(a,b) return a <= b end
+  lo, hi = lo or 1, hi or #t
+  if (hi - lo < 1) then return t end
+  local j = lo
+  for i = lo + 1, hi do
+    if f(t[i],t[j]) then
+      if   i == j + 1 
+      then t[j],t[j+1]      = t[j+1],t[j]
+      else t[j],t[j+1],t[i] = t[i],t[j],t[j+1] end
+    j = j + 1 end 
+  end
+  t = quicksort(t, f, lo, j - 1)
+  return quicksort(t, f, j + 1, hi) end
 ---     __|_ _. _  _   '~)  _|_|_ . _  _ 
 ---    _\ | | || |(_|   /_   | | ||| |(_|
 ---                _|                  _|
@@ -640,17 +654,8 @@ function XPLAIN.show(i, pre,how)
 
 local function optimize(egs,    cluster,leaves,row1,row2)
   cluster = CLUSTER(egs) 
-  local function order(...) 
-    local t={...}
-    oo(t)
-    local a,b = t[1],t[2]
-    print(1)
-    local n= a.egs:betters(b.egs) 
-    print(2)
-    print(n,type(n)) 
-    return n
-  end
-  for rank,leaf in pairs(sort(cluster:leaves(), order)) do
+  local function order(a,b) return a.egs:betters(b.egs)  end
+  for rank,leaf in pairs(quicksort(cluster:leaves(), order)) do
     leaf.rank = rank end                     
   return cluster end
 
@@ -678,8 +683,7 @@ function CLUSTER.leaves(i, out)
   if i:leaf() then push(out,i) end
   if i.lefts  then i.lefts:leaves(out) end
   if i.rights then i.rights:leaves(out) end
-  return out
-end
+  return out end
 
 function EGS.better(i,row1,row2)
   local s1, s2, n, a, b = 0, 0, #i.cols.y
@@ -688,7 +692,7 @@ function EGS.better(i,row1,row2)
     b  = col:norm( row2[col.at] )
     s1 = s1 - 2.7183^(col.w * (a - b) / n)
     s2 = s2 - 2.7183^(col.w * (b - a) / n) end
-  return s1 / n < s2 / n end
+  return  s1 / n < s2 / n  end
 
 function EGS.betters(i,j)
   return i:better(i:mid(i.cols.all), j:mid(j.cols.all)) end
@@ -896,11 +900,12 @@ function GO.bins(    egs,rights,lefts,col2)
 function GO.xplain()
   XPLAIN(EGS:new4file(the.file)):show() end
 
-function GO.optimize(     r,rows,header)
+function GO.optimize(     rows,header)
   rows = {}
   for row in things(the.file) do 
     if header then push(rows,row) else header=row end end
   for j=1,the.n1 do
+    io.write". "
     rows = shuffle(rows)
     local train = EGS(header)
     local test  = EGS(header)
@@ -908,15 +913,20 @@ function GO.optimize(     r,rows,header)
       (j< #rows/2 and train or test):add(row) end 
     CLUSTER(train):leaves()
     local guesses = optimize(train)
-    local m=0
+    local m,d=0,0
     for i=1,the.n2 do
        local row1= any(test._all)
        local row2= any(test._all)
+       if r()> 0.5 ==guesses:better(row1,row2) then
+         d = d+1 end
        if test:better(row1,row2)==guesses:better(row1,row2) then
          m =m + 1
        end end
-    print(m/the.n2) end
+    print(m/the.n2, d/the.n2) end
   end
+
+function GO.cheat(   egs)
+	cheat(EGS:new4file(the.file)) end
 
 --------------------------------------------------------------------------------
 the = settings(help)
