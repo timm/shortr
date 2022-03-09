@@ -1,12 +1,12 @@
 --------------------------------------------------------------------------------
----   __                __                   __                    __     
+---   __                __                   __                    __    --!head 
 ---  /\ \              /\ \                 /\ \                  /\ \    
 ---  \ \ \____   _ __  \ \ \/'\      ___    \ \ \____     __      \_\ \   
 ---   \ \ '__`\ /\`'__\ \ \ , <    /' _ `\   \ \ '__`\  /'__`\    /'_` \  
 ---    \ \ \L\ \\ \ \/   \ \ \\`\  /\ \/\ \   \ \ \L\ \/\ \L\.\_ /\ \L\ \ 
 ---     \ \_,__/ \ \_\    \ \_\ \_\\ \_\ \_\   \ \_,__/\ \__/.\_\\ \___,_\
 ---      \/___/   \/_/     \/_/\/_/ \/_/\/_/    \/___/  \/__/\/_/ \/__,_ /
-                                                                     
+                                                                    
 ---     .-------.  
 ---     | Ba    | Bad <----.  planning= (better - bad)
 ---     |    56 |          |  monitor = (bad - better)
@@ -44,9 +44,9 @@ OPTIONS, other:
 local any,bestBin,bins,bins1,bootstrap,class,cosine,csv2egs,firsts,fmt,ish
 local last,many,map,new,o,ok,oo,optimize,per,pop,push,quintiles,r,rnd,rnds,scottKnot
 local selects,settings,shuffle,slots,smallfx,sort,sum,thing,things,xplains
-local NUM,SYM,EGS,BIN,CLUSTER,XPLAIN,GO,NO
+local NUM,SYM,EGS,BIN,CLUSTER,XPLAIN,GO,NO,OPTIMIZE
 
---[[
+--[[                                                                  --!code
 
 ## Conventions
 
@@ -125,11 +125,11 @@ local NUM,SYM,EGS,BIN,CLUSTER,XPLAIN,GO,NO
 - After everything else, look for `rogues` (any global not in `b4`)
 - Finally, return the `fails` as the exit status of this code. --]]
 --------------------------------------------------------------------------------
----    _  _ _ ____ ____ 
+---    _  _ _ ____ ____                                                  --!misc
 ---    |\/| | [__  |    
 ---    |  | | ___] |___ 
-                 
----     _ _  _ _|_|_  _
+                   
+---     _ _  _ _|_|_  _                                                  --!math
 ---    | | |(_| | | |_\
 
 r=math.random
@@ -137,7 +137,7 @@ function ish(x,y,z)    return math.abs(y -x ) < z end
 function cosine(a,b,c) 
   return math.max(0,math.min(1, (a^2+c^2-b^2)/(2*c+1E-32))) end
 
----    |. __|_ _
+---    |. __|_ _                                                        --!list
 ---    ||_\ | _\
 
 function any(a)        return a[ math.random(#a) ] end
@@ -170,7 +170,7 @@ local function quicksort(t,f,lo,hi)
   end
   t = quicksort(t, f, lo, j - 1)
   return quicksort(t, f, j + 1, hi) end
----     __|_ _. _  _   '~)  _|_|_ . _  _ 
+---     __|_ _. _  _   '~)  _|_|_ . _  _                               --!s2th
 ---    _\ | | || |(_|   /_   | | ||| |(_|
 ---                _|                  _|
 
@@ -186,7 +186,7 @@ function things(file,      x)
   return function()
     x=io.read(); if x then return cells(x) else io.close(file) end end end
 
----    _|_|_ . _  _   '~)   __|_ _. _  _ 
+---    _|_|_ . _  _   '~)   __|_ _. _  _                               --!th2s
 ---     | | ||| |(_|   /_  _\ | | || |(_|
 ---               _|                   _|
 
@@ -212,7 +212,7 @@ function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or "%s",x) end
 
----    |_  _ | _   _|_ _   _|_  '~)   _ _ _|__|_. _  _  _
+---    |_  _ | _   _|_ _   _|_  '~)   _ _ _|__|_. _  _  _             --!the
 ---    | |(/_||_)   | (/_>< |    /_  _\(/_ |  | || |(_|_\
 ---           |                                      _|  
 
@@ -227,7 +227,7 @@ function settings(help,    d)
   if d.help then print(help) end
   return d end
 
----     _ _  _ _|_ _ _ |
+---     _ _  _ _|_ _ _ |                                               --!cntr
 ---    (_(_)| | | | (_)|
                  
 GO, NO = {fails=0}, {}
@@ -241,11 +241,11 @@ function GO.main(todo,seed)
   for k,one in pairs(todo=="all" and slots(GO) or {todo}) do
     if k ~= "main" and type(GO[one]) == "function" then
       math.randomseed(seed)
-      print(fmt(":%s",one))
+      print(fmt("#%s",one))
       GO[one]() end end 
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  end
 
----     _ |_  . _  __|_ _
+---     _ |_  . _  __|_ _                                               --!obj
 ---    (_)|_) |(/_(_ | _\
 ---          L|          
 
@@ -652,20 +652,16 @@ function XPLAIN.show(i, pre,how)
 ---    |  | |__]  |  | |\/| |   /  |___ 
 ---    |__| |     |  | |  | |  /__ |___ 
 
-OPTIMIZE=class"OPTIMIZE"
-function OPTMIZE:new(top,egs,n)
-  local n,egs,i,stop,lefts,rights = n or 1, egs or top
-  i = new({n=n,egs=eg,top=top},OPTIMIZE)
-  stop= (#top._all)^the.minItems 
-  lefts, rights, i.left, i.right, i.border, i.c = top:half(egs._all)
-  if #egs._all > 2*stop then
-     if   egs:better(i.left,i.right) 
-     then lefts, rights, i.left, i.right = rights, lefts, i.right, i.left
-          i.border = i.c - i.border 
-     end
-     i.egs = i.lefts
-     i.rights,n = OPTIMIZE(top,i.rights,n+1)  end
-  return i,n end
+--     % lua brknad.lua -t 
+--
+--                            Weight- Acc+  Mpg+
+--                            ======= ===== =====
+-- :optimizes
+-- 199 5                     {3586.50 14.72 18.19}
+-- | 99 4                    {2470.56 16.49 30.20}
+-- | | 50 3                  {2251.92 16.42 26.00}
+-- | | | 25 2                {2214.56 16.39 30.00}
+-- | | | | 25 1              {2238.84 16.13 33.20} <== best, found after 8 evals
 
 function EGS.better(i,row1,row2)
   local s1, s2, n, a, b = 0, 0, #i.cols.y
@@ -678,6 +674,39 @@ function EGS.better(i,row1,row2)
 
 function EGS.betters(i,j)
   return i:better(i:mid(i.cols.all), j:mid(j.cols.all)) end
+
+function EGS.sorted(i,rows)
+  return sort(rows or i._all, function(a,b) return i:better(a,b) end) end
+
+OPTIMIZE=class"OPTIMIZE"
+function OPTIMIZE:new(top,egs)
+  local egs,i,stop,lefts0,rights0 = egs or top
+  i = new({rank=0, egs=egs, top=top},OPTIMIZE)
+  stop= (#top._all)^the.minItems 
+  if #egs._all > 2*stop then
+     lefts0, rights0,i.left,i.right,i.border,i.c = top:half(egs._all)
+     if #rights0._all < #egs._all then
+       if   egs:better(i.left,i.right) 
+       then lefts0,rights0,i.left,i.right = rights0,lefts0,i.right,i.left
+            i.border = i.c - i.border 
+       end
+       i.better = OPTIMIZE(top,rights0)  
+       i.rank   = i.better.rank + #rights0._all
+       i.egs    = lefts0 end end
+  return i end 
+
+function OPTIMIZE.show(i,   pre,front)
+  pre = pre or ""
+  front = fmt("%s%s %s", pre,  #i.egs._all, i.rank)
+  print(fmt("%-35s %s", front, o(rnds(i.egs:mid()))))
+  if  i.better then i.better:show("| "..pre) end end
+
+function OPTIMIZE.where(i,row)
+  return i.better and i:project(row) > i.border and i.better:where(row) or i end
+
+function OPTIMIZE.project(i,row)
+  return cosine(i.top:dist(row, i.left), i.top:dist(row, i.right), i.c) end
+ 
 -------------------------------------------------------------------------------
 ---     __|_ _ _|_ _
 ---    _\ | (_| | _\
@@ -882,33 +911,33 @@ function GO.bins(    egs,rights,lefts,col2)
 function GO.xplain()
   XPLAIN(EGS:new4file(the.file)):show() end
 
-function GO.optimize(     rows,header)
-  rows = {}
-  for row in things(the.file) do 
-    if header then push(rows,row) else header=row end end
-  for j=1,the.n1 do
-    io.write". "
-    rows = shuffle(rows)
-    local train = EGS(header)
-    local test  = EGS(header)
-    for j,row in pairs(rows) do
-      (j< #rows/2 and train or test):add(row) end 
-    CLUSTER(train):leaves()
-    local guesses = optimize(train)
-    local m,d=0,0
-    for i=1,the.n2 do
-       local row1= any(test._all)
-       local row2= any(test._all)
-       if r()> 0.5 ==guesses:better(row1,row2) then
-         d = d+1 end
-       if test:better(row1,row2)==guesses:better(row1,row2) then
-         m =m + 1
-       end end
-    print(m/the.n2, d/the.n2) end
-  end
+function GO.egssorted(   egs)
+  egs = EGS:new4file(the.file)
+  for j,row in pairs(egs:sorted()) do print(j,o(row)) end
+  oo(egs.cols.names)
+end
 
-function GO.cheat(   egs)
-	cheat(EGS:new4file(the.file)) end
+function GO.optimize1(   egs, row, header, sorted)
+  OPTIMIZE(EGS:new4file(the.file)):show() end
+
+function GO.optimize2(   egs, row, header, test,train,rows,cl)
+  rows ={} 
+  for row in things(the.file) do
+    if header then push(rows,row) else header=row end end
+  for j=1,1 do --the.n1 do
+    rows  = shuffle(rows)
+    train = EGS(header)
+    test  = EGS(header)
+    for k,row in pairs(rows) do
+      (k <= #rows/2 and train or test):add(row) end
+    cl = OPTIMIZE(train)
+    sorted = test:sorted()
+    for k=1,100 do
+      local truth = test._all
+      local m1,n1  = math.random(#truth),  math.random(#truth)
+      local m2,n2  = cl:where(truth[m1]).rank, cl:where(truth[n1]).rank
+      print((m1 < n1) == (m2 < n2))
+      end end end
 
 --------------------------------------------------------------------------------
 the = settings(help)
@@ -924,4 +953,4 @@ os.exit(GO.fails)
 ---                 ###
 ---               #  =  #            "This ain't chemistry. 
 ---               #######             This is art."
----                 ###
+

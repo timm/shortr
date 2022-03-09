@@ -30,7 +30,7 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>                                                                     
+            <div class="content"><div class='highlight'><pre>                                                                    
 
 <span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span> 
 <span class="hljs-keyword">local</span> the, help = {}, <span class="hljs-string">[[
@@ -61,7 +61,7 @@ OPTIONS, other:
 <span class="hljs-keyword">local</span> any,bestBin,bins,bins1,bootstrap,class,cosine,csv2egs,firsts,fmt,ish
 <span class="hljs-keyword">local</span> last,many,map,new,o,ok,oo,optimize,per,pop,push,quintiles,r,rnd,rnds,scottKnot
 <span class="hljs-keyword">local</span> selects,settings,shuffle,slots,smallfx,<span class="hljs-built_in">sort</span>,sum,thing,things,xplains
-<span class="hljs-keyword">local</span> NUM,SYM,EGS,BIN,CLUSTER,XPLAIN,GO,NO</pre></div></div>
+<span class="hljs-keyword">local</span> NUM,SYM,EGS,BIN,CLUSTER,XPLAIN,GO,NO,OPTIMIZE</pre></div></div>
             
         </li>
         
@@ -72,7 +72,7 @@ OPTIONS, other:
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
               </div>
-              <p>[[</p>
+              <p>[[                                                                  –!code</p>
 
             </div>
             
@@ -153,7 +153,7 @@ OPTIONS, other:
 - `GO.main`  resets random number generator before running an action 
 - After everything else, look for `rogues` (any global not in `b4`)
 - Finally, return the `fails` as the exit status of this code. --]]
-                 
+                   
 
 r=math.random
 function ish(x,y,z)    return math.abs(y -x ) &lt; z end 
@@ -191,7 +191,6 @@ local function quicksort(t,f,lo,hi)
   end
   t = quicksort(t, f, lo, j - 1)
   return quicksort(t, f, j + 1, hi) end
-
 
 function thing(x)
   x = x:match&quot;^%s*(.-)%s*$&quot;
@@ -656,39 +655,21 @@ XPLAIN=class<span class="hljs-string">&quot;XPLAIN&quot;</span>
   <span class="hljs-keyword">if</span> i.yes <span class="hljs-keyword">then</span> i.yes:show(<span class="hljs-string">&quot;| &quot;</span>.. pre, i.bin:show()     ..<span class="hljs-string">&quot; : &quot;</span>) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">if</span> i.no  <span class="hljs-keyword">then</span> i.no:show( <span class="hljs-string">&quot;| &quot;</span>.. pre, i.bin:show(<span class="hljs-literal">true</span>) ..<span class="hljs-string">&quot; : &quot;</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
-<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">optimize</span><span class="hljs-params">(egs,    cluster,leaves,row1,row2)</span></span>
-  cluster = CLUSTER(egs) 
-  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">order</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> a.egs:betters(b.egs)  <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> rank,leaf <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(quicksort(cluster:leaves(), order)) <span class="hljs-keyword">do</span>
-    leaf.rank = rank <span class="hljs-keyword">end</span>                     
-  <span class="hljs-keyword">return</span> cluster <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">CLUSTER.project</span><span class="hljs-params">(i,row)</span></span>
-  <span class="hljs-keyword">return</span> cosine(i.top:dist(row, i.left), i.top:dist(row, i.right), i.c) <span class="hljs-keyword">end</span>
- 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">CLUSTER.where</span><span class="hljs-params">(i,row)</span></span>
-  <span class="hljs-keyword">if</span>   i:leaf() <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">if</span>   i:project(row) &lt;= i.border 
-  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> i.lefts  <span class="hljs-keyword">and</span> i.lefts:where( row) <span class="hljs-keyword">or</span> i
-  <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span> i.rights <span class="hljs-keyword">and</span> i.rights:where(row) <span class="hljs-keyword">or</span> i <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">CLUSTER.better</span><span class="hljs-params">(i,row1,row2,    where1, where2)</span></span>
-  where1, where2 = i:where(row1), i:where(row2)
-  <span class="hljs-keyword">if</span>     where1.rank &gt; where2.rank <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span> 
-  <span class="hljs-keyword">elseif</span> where1.rank &lt; where2.rank <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> 
-  <span class="hljs-keyword">else</span>   <span class="hljs-keyword">return</span> where1:xbetter(row1,row2) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">CLUSTER.xbetter</span><span class="hljs-params">(i,row1,row2,  x1,x2)</span></span>
-  x1,x2 = i:project(row1), i:project(row2)
-  <span class="hljs-keyword">return</span> i.egs:better(i.left, i.right) <span class="hljs-keyword">and</span> x1 &lt;= x2 <span class="hljs-keyword">or</span> x1 &gt; x2 <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">CLUSTER.leaves</span><span class="hljs-params">(i, out)</span></span>
-  out = out <span class="hljs-keyword">or</span> {}
-  <span class="hljs-keyword">if</span> i:leaf() <span class="hljs-keyword">then</span> push(out,i) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">if</span> i.lefts  <span class="hljs-keyword">then</span> i.lefts:leaves(out) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">if</span> i.rights <span class="hljs-keyword">then</span> i.rights:leaves(out) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> out
-<span class="hljs-keyword">end</span>
+OPTIMIZE=class<span class="hljs-string">&quot;OPTIMIZE&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">OPTIMIZE:new</span><span class="hljs-params">(top,egs,n)</span></span>
+  <span class="hljs-keyword">local</span> n,egs,i,stop,lefts,rights = n <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>, egs <span class="hljs-keyword">or</span> top
+  i = new({rank=n,egs=eg,top=top},OPTIMIZE)
+  stop= (#top._all)^the.minItems 
+  <span class="hljs-keyword">if</span> #egs._all &gt; <span class="hljs-number">2</span>*stop <span class="hljs-keyword">then</span>
+     lefts, rights, i.left, i.right, i.border, i.c = top:half(egs._all)
+     <span class="hljs-keyword">if</span>   egs:better(i.left,i.right) 
+     <span class="hljs-keyword">then</span> lefts, rights, i.left, i.right = rights, lefts, i.right, i.left
+          i.border = i.c - i.border 
+     <span class="hljs-keyword">end</span>
+     i.rights = OPTIMIZE(top,i.rights,n)  <span class="hljs-keyword">end</span>
+     i.rank   = i.rights.n + <span class="hljs-number">1</span>
+     i.egs    = i.lefts
+  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.better</span><span class="hljs-params">(i,row1,row2)</span></span>
   <span class="hljs-keyword">local</span> s1, s2, n, a, b = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, #i.cols.y
@@ -930,6 +911,9 @@ XXX need tests for stats</p>
        <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
     <span class="hljs-built_in">print</span>(m/the.n2, d/the.n2) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.cheat</span><span class="hljs-params">(   egs)</span></span>
+	cheat(EGS:new4file(the.file)) <span class="hljs-keyword">end</span>
 
 the = settings(help)
 GO.main(the.todo, the.seed)

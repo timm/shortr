@@ -53,3 +53,9 @@ $D/docs/%.pdf : %.lua
 		--footer="page %p."                     \
 		-M letter -o $@.ps $<
 	@ps2pdf $@.ps $@; rm $@.ps; git add $@
+
+optA:
+	lua brknbad.lua -f ../etc/data/auto93.csv -minItems .4 -t optimize2 | tee ~/tmp/dat
+
+plotA: optA
+	gnuplot ../etc/opt1.plt
