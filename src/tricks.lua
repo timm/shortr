@@ -1,42 +1,48 @@
---[[
-
-# Stody
-
-asdaas
-ad
-ad
-a
-a
---]]
 local _={}
 
----     _ _  _ _|_|_  _                                                  
----    | | |(_| | | |_\
+-- ## Maths Tricks
 
+-- **r()**:  R~andom number shorthand.     
+-- **ish()**: is `x` is close-ish to `y`?               
+-- **cosine()**: for three  ABC with sides abc,   
+-- where does C falls on the line running AB?
 _.r=math.random
 function _.ish(x,y,z)  return math.abs(y -x ) < z end 
 function _.cosine(a,b,c) 
   return math.max(0,math.min(1, (a^2+c^2-b^2)/(2*c+1E-32))) end
 
----    |. __|_ _                                                        
----    ||_\ | _\
+-- ## List Tricks
 
+-- **any()**: returns any thing from a list    
+-- **many()**: return multiple **any()** things.
 function _.any(a)        return a[ math.random(#a) ] end
-function _.firsts(a,b)   return a[1] < b[1] end
-function _.last(a)       return a[ #a ] end
 function _.many(a,n,  u) u={}; for j=1,n do u[1+#u] =_.any(a) end; return u end
+
+-- **last()**: last item in a list     
+-- ##per()**: p-th item in a list   
+function _.last(a)       return a[ #a ] end
 function _.per(a,p)      return a[ (p*#a)//1 ] end
+
+-- **pop()**: dump from end       
+-- **push()**: add to ed
 function _.pop(a)        return table.remove(a) end
 function _.push(t,x)     t[1 + #t] = x; return x end
+
+-- **sort()**: return a list, ordered on function `f`.   
+-- **firsts()**:  order on sub-list first items
 function _.sort(t,f)     table.sort(t,f); return t end
+function _.firsts(a,b)   return a[1] < b[1] end
 
-function _.map(t,f, u)   
-  u={};for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
+-- **map()**: return a list with `f` run over all items
+function _.map(t,f, u) u={};for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
 
+-- **sum()**: sum all list items, filtered through `f`   
+-- (which defaults to just use the ran values).
 function _.sum(t,f, n) 
-  f = f or function(x) return x end
-  n=0; for k,v in pairs(t) do n = n + f(v) end; return n end
+  n=0; map(t,function(v) n=n+(f and f(v) or v) end)
+  return n end
 
+-- **shuffle()**: randomize order (sorts in  place)
 function _.shuffle(t,   j)
   for i=#t,2,-1 do j=math.random(i); t[i],t[j]=t[j],t[i] end; return t end
 
