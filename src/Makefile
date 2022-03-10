@@ -36,10 +36,11 @@ $D/docs/index.html: $D/README.md $D/etc/head.html $D/etc/foot.html
    python3 -m markdown -x toc -x extra $< | sed 's/docs\///g' ;\
    cat $D/etc/foot.html) > $@
 
-$D/docs/%.html: %.lua
+$D/docs/%.html: %.lua ../etc/dhead Makefile
 	@echo "html-ing  $@"
-	@sed '/---/d' $< > $D/docs/$<
+	@sed '/---/d' $< >> $D/docs/$<
 	@docco -o $D/docs $D/docs/$< > /dev/null
+	@gawk -i inplace '/<h1>/{while(getline line<"../etc/dhead")print line} 1' $@ 
 	@rm -rf $D/docs/$<
 	@cp $D/etc/docco.css $D/docs/
 
