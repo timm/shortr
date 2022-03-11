@@ -1,12 +1,13 @@
-local _={}
+local _ = {}
 
 -- ## Maths Tricks
 
--- **r()**:  R~andom number shorthand.     
+-- **r()**:  Random number shorthand.     
+_.r=math.random
+
 -- **ish()**: is `x` is close-ish to `y`?               
 -- **cosine()**: for three  ABC with sides abc,   
 -- where does C falls on the line running AB?
-_.r=math.random
 function _.ish(x,y,z)  return math.abs(y -x ) < z end 
 function _.cosine(a,b,c) 
   return math.max(0,math.min(1, (a^2+c^2-b^2)/(2*c+1E-32))) end
@@ -39,37 +40,43 @@ function _.map(t,f, u) u={};for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
 -- **sum()**: sum all list items, filtered through `f`   
 -- (which defaults to just use the ran values).
 function _.sum(t,f, n) 
-  n=0; map(t,function(v) n=n+(f and f(v) or v) end)
+  n=0; _.map(t,function(v) n=n+(f and f(v) or v) end)
   return n end
 
 -- **shuffle()**: randomize order (sorts in  place)
 function _.shuffle(t,   j)
   for i=#t,2,-1 do j=math.random(i); t[i],t[j]=t[j],t[i] end; return t end
 
----     __|_ _. _  _   '~)  _|_|_ . _  _                               
----    _\ | | || |(_|   /_   | | ||| |(_|
----                _|                  _|
+-- ## String -> Things
 
+-- **words()**: split  string into list of substrings
+function _.words(s,sep,   t)
+  sep="([^" .. (sep or ",")  .. "]+)"
+  t={}; for y in s:gmatch(sep) do t[1+#t] = y end; return t end
+
+-- **things()**: convert strings in a list to things      
+-- **thing()**: convert string to a thing
+function _.things(s) return _.map(_.words(s), _.thing) end 
 function _.thing(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
   return tonumber(x) or x end
 
-function _.things(file,      x)
-  local function f(x,  t)
-    t={}; for y in x:gmatch("([^,]+)") do t[1+#t] = _.thing(y) end; return t end
+-- **lines()**: (iterator) return lines in a file. Standard usage is      
+-- `for cells in file(NAME,things) do ... end`
+function _.lines(file,f,      x)
   file = io.input(file)
-  return function()
-    x=io.read(); if x then return f(x) else io.close(file) end end end
+  f    = f or function(x) return x end
+  return function() x=io.read(); if x then return f(x) else io.close(file) end end end
 
----    _|_|_ . _  _   '~)   __|_ _. _  _                               
----     | | ||| |(_|   /_  _\ | | || |(_|
----               _|                   _|
+-- ## Things -> Strings
 
-_fmt = string.format
+-- **fmt()**:  String format shorthand
+_.fmt = string.format
 
+-- **oo()**: Print string from nested table.       
+-- **o()**: Generate string from nested table. 
 function _.oo(t) print(_.o(t)) end
-
 function _.o(t,  seen, u)  
   if type(t)~="table" then return tostring(t) end
   seen = seen or {}
@@ -77,59 +84,80 @@ function _.o(t,  seen, u)
   seen[t] = t
   local function show1(x) return _.o(x, seen) end
   local function show2(k) return _.fmt(":%s %s",k, _.o(t[k],seen)) end
-  u = #t>0 and _.map(t,show1) or _.map(_slots(t),show2)
+  u = #t>0 and _.map(t,show1) or _.map(_.slots(t),show2)
   return (t._is or "").."{"..table.concat(u," ").."}" end
 
+-- **slots()**: return table slots, sorted.
 function _.slots(t, u)
   local function public(k) return tostring(k):sub(1,1) ~= "_" end
   u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
-  return sort(u) end
+  return _.sort(u) end
 
+-- **rnds()**: round list of numbers    
+-- **rnd()**: round one number.
 function _.rnds(t,f) return map(t, function(x) return _rnd(x,f) end) end
 function _.rnd(x,f) 
   f = not f and "%s" or number and fmt("%%%sf",f) or f
   return fmt(type(x)=="number" and (x~=x//1 and f) or "%s",x) end
 
----    |_  _ | _   _|_ _   _|_  '~)   _ _ _|__|_. _  _  _             --!the
----    | |(/_||_)   | (/_>< |    /_  _\(/_ |  | || |(_|_\
----           |                                      _|  
+-- ## Generate options from help string
 
-function _.settings(help,    d)
+-- **opt()**:Look for lines indented with two spaces, starting with a dash.
+-- Expect these lines to have a long and short flag, some help test
+-- and a final default values. e.g.
+--
+--     -seed -S random number seed  = 10019
+--
+-- Each line generates one slot with a key "seed" and
+-- default value "10019". Next, check for updates to those defaults
+-- specified using command line flags  `-seed` or `-S`.
+function _.opt(help,    d)
   d={}
   help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
     function(long,key,short,x)
       for n,flag in ipairs(arg) do 
         if flag==short or flag==long then
           x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
-       d[key] = x==true and true or thing(x) end)
-  if d.help then print(help) end
+       d[key] = x==true and true or _.thing(x) end)
+  if d.help then os.exit(print(help)) end
   return d end
 
----     _ _  _ _|_ _ _ |                                               --!cntr
----    (_(_)| | | | (_)|
-                 
-GO, NO = {fails=0}, {}
-function _.ok(test,msg)
+-- ## Test suites
+                
+-- **ok()**: maybe, print stack dump on errors.   
+-- Increment the `fails` counter on failed `test`.
+function _.ok(tests,test,msg)
   print(test and "      PASS: "or "      FAIL: ",msg or "") 
   if not test then 
-    GO.fails = GO.fails+1 
-    if the.dump then assert(test,msg) end end end
+    tests.fails = tests.fails+1 
+    if tests.dump then assert(test,msg) end end end
 
-function _.main(todo,seed)
-  for k,one in pairs(todo=="all" and slots(GO) or {todo}) do
-    if k ~= "main" and type(GO[one]) == "function" then
-      math.randomseed(seed)
-      print(fmt("#%s",one))
-      GO[one]() end end 
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  end
+-- **go()**:  run some `tests`, controlled by `settings`.    
+-- Maybe update the `_fails` counter.     
+-- Return the total fails to the operating system.
+function _.go(settings,tests,b4)
+  tests._fails  = 0
+  local todo    = settings.todo
+  tests._dumps  = settings.dump
+  local defaults = {}; for k,v in pairs(settings) do defaults[k]=v end
+  for k,one in pairs(todo=="all" and _.slots(tests) or {todo}) do
+    if k ~= "main" and type(tests[one]) == "function" then
+      for k,v in pairs(defaults) do settings[k] = v end
+      math.randomseed(settings.seed or 1)
+      print(_.fmt("#%s",one))
+      tests[one](tests) end end 
+  if b4 then
+    for k,v in pairs(_ENV) do 
+      if not b4[k] then print("??",k,type(v)) end end end
+  os.exit(tests.fails) end
 
----     _ |_  . _  __|_ _                                               --!obj
----    (_)|_) |(/_(_ | _\
----          L|          
+-- ## Objects
 
-new = setmetatable
+-- **new()**:  make a new instance.   
+-- **class*(**: define a new class of instances
+_.new = setmetatable
 function _.class(s,   t)
   t={__tostring=o,_is=s or ""}; t.__index=t
   return new(t, {__call=function(_,...) return t.new(_,...) end}) end
 
-return _
+return _  
