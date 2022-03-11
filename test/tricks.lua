@@ -1,7 +1,7 @@
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 package.path = '../src/?.lua;' .. package.path
 local  _=require"tricks"
-local go, ok, opt, eg =  _.go, _.ok, _.opt, {}
+local go, ok, cli, eg =  _.go, _.ok, _.cli, {}
 local help=[[
 
 lua tricks.lua [OPTIONS]
@@ -38,4 +38,4 @@ function eg.shuffle(tst, t, good)
 function eg.lines(tst)
   for t in lines("tricks.lua", things) do print(#t, o(t)) end end
 
-go(opt(help), eg, b4)
+go(cli(help), eg, b4)

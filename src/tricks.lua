@@ -100,18 +100,18 @@ function _.rnd(x,f)
   f = not f and "%s" or number and fmt("%%%sf",f) or f
   return fmt(type(x)=="number" and (x~=x//1 and f) or "%s",x) end
 
--- ## Generate options from help string
+-- ## Make settings from help string  and CLI (command-line interface)
 
--- **opt()**:Look for lines indented with two spaces, starting with a dash.
--- Expect these lines to have a long and short flag, some help test
--- and a final default values. e.g.
+-- **cli()**: In a string, look for lines indented with two spaces, starting with a dash.
+-- Each such  line should have  a long and short flag, some help tesx
+-- and (at end of line), a  default values. e.g.
 --
---     -seed -S random number seed  = 10019
+--     -seed -S set the random number seed  = 10019
 --
--- Each line generates one slot with a key "seed" and
--- default value "10019". Next, check for updates to those defaults
--- specified using command line flags  `-seed` or `-S`.
-function _.opt(help,    d)
+-- Each line generates  a setting  with key "seed" and
+-- default value "10019". If the command line contains one of the flags
+-- (`-seed` or `-s`) then update those defaults.
+function _.cli(help,    d)
   d={}
   help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
     function(long,key,short,x)
