@@ -2,10 +2,11 @@
 align=right width=250 src=heads2.png>
 <a 
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <img 
-src="https://img.shields.io/badge/platform-osx,linux-informational?style=flat&logo=linux&logoColor=white&color=orange"> <img 
-src="https://img.shields.io/badge/purpose-se,ai-informational?style=flat&logo=hyper&logoColor=white&color=red"> <img 
-src="https://img.shields.io/badge/language-lua-informational?style=flat&logo=lua&logoColor=white&color=yellow"> <a
-href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a> 
+src="https://img.shields.io/badge/platform-osx,linux-informational?logo=linux&logoColor=white&color=red"> <img 
+src="https://img.shields.io/badge/purpose-se,ai-informational?logo=hyper&logoColor=white&color=orange"> <img 
+src="https://img.shields.io/badge/language-lua-informational?logo=lua&logoColor=white&color=yellow"> <a
+href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a
+href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://img.shields.io/badge/license-BSD2-informational?logo=adblock&logoColor=white&color=blueviolet"></a>
 <br>
-<b><a href="https://github.com/timm/l5/blob/master/LICENSE.md#top">&copy;2022</a></b>, Tim Menzies, &lt;timm@ieee.org&gt;
+&copy;2022, Tim Menzies, &lt;timm@ieee.org&gt;
 <hr>

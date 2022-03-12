@@ -1,5 +1,5 @@
 local _ = {}
-
+   
 -- ## Maths Tricks
 
 -- **r()**:  Random number shorthand.     
@@ -43,6 +43,17 @@ function _.sum(t,f, n)
   n=0; _.map(t,function(v) n=n+(f and f(v) or v) end)
   return n end
 
+-- **inc()** incretements a 1,2, or 3 nested dictionary counter
+function inc(f,a,n)      f=f or{}; f[a]=(    f[a] or 0) + (n or 1); return f end
+function inc2(f,a,b,n)   f=f or{}; f[a]=_.inc( f[a] or {},b,n);     return f end
+function inc3(f,a,b,c,n) f=f or{}; f[a]=_.inc2(f[a] or {},b,c,n);   return f end
+
+-- **has()** implements a 1,2, or level nested lookup
+function has(f,a)      return f[a]                    or 0 end
+function has1(f,a,b)   return f[a] and has( f[a],b)   or 0 end
+function has2(f,a,b,c) return f[a] and has1(f[a],b,c) or 0 end
+
+
 -- **shuffle()**: randomize order (sorts in  place)
 function _.shuffle(t,   j)
   for i=#t,2,-1 do j=math.random(i); t[i],t[j]=t[j],t[i] end; return t end
@@ -66,7 +77,7 @@ function _.thing(x)
 -- `for cells in file(NAME,things) do ... end`
 function _.lines(file,f,      x)
   file = io.input(file)
-  f    = f or function(x) return x end
+  f    = f or _.things
   return function() x=io.read(); if x then return f(x) else io.close(file) end end end
 
 -- ## Things -> Strings
@@ -154,10 +165,11 @@ function _.go(settings,tests,b4)
 -- ## Objects
 
 -- **new()**:  make a new instance.   
--- **class*(**: define a new class of instances
+-- **class()**: define a new class of instances
 _.new = setmetatable
 function _.class(s,   t)
-  t={__tostring=o,_is=s or ""}; t.__index=t
-  return new(t, {__call=function(_,...) return t.new(_,...) end}) end
+  t={__tostring=_.o,_is=s or ""}; t.__index=t
+  return _.new(t, {__call=function(_,...) return t.new(_,...) end}) end
 
+-- ## Return
 return _  

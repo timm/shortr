@@ -19,12 +19,13 @@
 align=right width=250 src=heads2.png>
 <a 
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <img 
-src="https://img.shields.io/badge/platform-osx,linux-informational?style=flat&logo=linux&logoColor=white&color=orange"> <img 
-src="https://img.shields.io/badge/purpose-se,ai-informational?style=flat&logo=hyper&logoColor=white&color=red"> <img 
-src="https://img.shields.io/badge/language-lua-informational?style=flat&logo=lua&logoColor=white&color=yellow"> <a
-href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a> 
+src="https://img.shields.io/badge/platform-osx,linux-informational?logo=linux&logoColor=white&color=red"> <img 
+src="https://img.shields.io/badge/purpose-se,ai-informational?logo=hyper&logoColor=white&color=orange"> <img 
+src="https://img.shields.io/badge/language-lua-informational?logo=lua&logoColor=white&color=yellow"> <a
+href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a
+href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://img.shields.io/badge/license-BSD2-informational?logo=adblock&logoColor=white&color=blueviolet"></a>
 <br>
-<b><a href="https://github.com/timm/l5/blob/master/LICENSE.md#top">&copy;2022</a></b>, Tim Menzies, &lt;timm@ieee.org&gt;
+&copy;2022, Tim Menzies, &lt;timm@ieee.org&gt;
 <hr>
                   <h1>tricks.lua</h1>
               </div>
@@ -377,7 +378,7 @@ href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://
               <div class="sswrap ">
                 <a class="ss" href="#section-22">&#x00a7;</a>
               </div>
-              <h2 id="generate-options-from-help-string">Generate options from help string</h2>
+              <h2 id="make-settings-from-help-string--and-cli-command-line-interface">Make settings from help string  and CLI (command-line interface)</h2>
 
             </div>
             
@@ -390,18 +391,18 @@ href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://
               <div class="sswrap ">
                 <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
-              <p><strong>opt()</strong>:Look for lines indented with two spaces, starting with a dash.
-Expect these lines to have a long and short flag, some help test
-and a final default values. e.g.</p>
-<pre><code>-seed -S <span class="hljs-built_in">random</span> number seed  = <span class="hljs-number">10019</span>
+              <p><strong>cli()</strong>: In a string, look for lines indented with two spaces, starting with a dash.
+Each such  line should have  a long and short flag, some help tesx
+and (at end of line), a  default values. e.g.</p>
+<pre><code>-seed -S set the <span class="hljs-built_in">random</span> number seed  = <span class="hljs-number">10019</span>
 </code></pre>
-<p>Each line generates one slot with a key “seed” and
-default value “10019”. Next, check for updates to those defaults
-specified using command line flags  <code>-seed</code> or <code>-S</code>.</p>
+<p>Each line generates  a setting  with key “seed” and
+default value “10019”. If the command line contains one of the flags
+(<code>-seed</code> or <code>-s</code>) then update those defaults.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.opt</span><span class="hljs-params">(help,    d)</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.cli</span><span class="hljs-params">(help,    d)</span></span>
   d={}
   help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)&quot;</span>,
     <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(long,key,short,x)</span></span>
@@ -495,16 +496,29 @@ specified using command line flags  <code>-seed</code> or <code>-S</code>.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-28">&#x00a7;</a>
               </div>
-              <p><strong>new()</strong>:  make a new instance.<br><em><em>class</em>(</em>*: define a new class of instances</p>
+              <p><strong>new()</strong>:  make a new instance.<br><strong>class()</strong>: define a new class of instances</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>_.new = <span class="hljs-built_in">setmetatable</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.class</span><span class="hljs-params">(s,   t)</span></span>
-  t={<span class="hljs-built_in">__tostring</span>=o,_is=s <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>}; t.<span class="hljs-built_in">__index</span>=t
-  <span class="hljs-keyword">return</span> new(t, {<span class="hljs-built_in">__call</span>=<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(_,...)</span></span> <span class="hljs-keyword">return</span> t.new(_,...) <span class="hljs-keyword">end</span>}) <span class="hljs-keyword">end</span>
+  t={<span class="hljs-built_in">__tostring</span>=_.o,_is=s <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>}; t.<span class="hljs-built_in">__index</span>=t
+  <span class="hljs-keyword">return</span> _.new(t, {<span class="hljs-built_in">__call</span>=<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(_,...)</span></span> <span class="hljs-keyword">return</span> t.new(_,...) <span class="hljs-keyword">end</span>}) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-29">&#x00a7;</a>
+              </div>
+              <h2 id="return">Return</h2>
 
-<span class="hljs-keyword">return</span> _</pre></div></div>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">return</span> _</pre></div></div>
             
         </li>
         
