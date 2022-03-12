@@ -1,5 +1,5 @@
 local _ = {}
-   
+
 -- ## Maths Tricks
 
 -- **r()**:  Random number shorthand.     
@@ -44,14 +44,14 @@ function _.sum(t,f, n)
   return n end
 
 -- **inc()** incretements a 1,2, or 3 nested dictionary counter
-function inc(f,a,n)      f=f or{}; f[a]=(    f[a] or 0) + (n or 1); return f end
-function inc2(f,a,b,n)   f=f or{}; f[a]=_.inc( f[a] or {},b,n);     return f end
-function inc3(f,a,b,c,n) f=f or{}; f[a]=_.inc2(f[a] or {},b,c,n);   return f end
+function _.inc(f,a,n)      f=f or{}; f[a]=(f[a] or 0) + (n or 1);   return f end
+function _.inc2(f,a,b,n)   f=f or{}; f[a]=_.inc( f[a] or {},b,n);   return f end
+function _.inc3(f,a,b,c,n) f=f or{}; f[a]=_.inc2(f[a] or {},b,c,n); return f end
 
 -- **has()** implements a 1,2, or level nested lookup
-function has(f,a)      return f[a]                    or 0 end
-function has1(f,a,b)   return f[a] and has( f[a],b)   or 0 end
-function has2(f,a,b,c) return f[a] and has1(f[a],b,c) or 0 end
+function _.has(f,a)      return f[a]                    or 0 end
+function _.has1(f,a,b)   return f[a] and _.has( f[a],b)   or 0 end
+function _.has2(f,a,b,c) return f[a] and _.has1(f[a],b,c) or 0 end
 
 
 -- **shuffle()**: randomize order (sorts in  place)
@@ -140,27 +140,24 @@ function _.cli(help,    d)
 function _.ok(tests,test,msg)
   print(test and "      PASS: "or "      FAIL: ",msg or "") 
   if not test then 
-    tests.fails = tests.fails+1 
-    if tests.dump then assert(test,msg) end end end
+    tests._fails = tests._fails+1 
+    if the and the.dump then assert(test,msg) end end end
 
 -- **go()**:  run some `tests`, controlled by `settings`.    
 -- Maybe update the `_fails` counter.     
 -- Return the total fails to the operating system.
-function _.go(settings,tests,b4)
-  tests._fails  = 0
-  local todo    = settings.todo
-  tests._dumps  = settings.dump
-  local defaults = {}; for k,v in pairs(settings) do defaults[k]=v end
+function _.go(tests,b4)
+  tests._fails = 0
+  local todo = the and the.todo or "all"
   for k,one in pairs(todo=="all" and _.slots(tests) or {todo}) do
     if k ~= "main" and type(tests[one]) == "function" then
-      for k,v in pairs(defaults) do settings[k] = v end
-      math.randomseed(settings.seed or 1)
+      math.randomseed(the and the.seed  or 1)
       print(_.fmt("#%s",one))
       tests[one](tests) end end 
   if b4 then
     for k,v in pairs(_ENV) do 
       if not b4[k] then print("??",k,type(v)) end end end
-  os.exit(tests.fails) end
+  os.exit(tests._fails) end
 
 -- ## Objects
 
