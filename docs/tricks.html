@@ -15,7 +15,10 @@
         
           <li id="title">
               <div class="annotation">
-<img 
+<a href="tricks.html">tricks</a>
+::   <a href="think.html">think</a> 
+:: &copy;2022, <a href="mailto:timm@ieee.org">Tim Menzies</a>
+<hr><img 
 align=right width=250 src=heads2.png>
 <a 
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <img 
@@ -25,8 +28,7 @@ src="https://img.shields.io/badge/language-lua-informational?logo=lua&logoColor=
 href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a
 href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://img.shields.io/badge/license-BSD2-informational?logo=adblock&logoColor=white&color=blueviolet"></a>
 <br>
-&copy;2022, Tim Menzies, &lt;timm@ieee.org&gt;
-<hr>
+
                   <h1>tricks.lua</h1>
               </div>
           </li>
@@ -207,12 +209,13 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
               <div class="sswrap ">
                 <a class="ss" href="#section-12">&#x00a7;</a>
               </div>
-              <p><strong>shuffle()</strong>: randomize order (sorts in  place)</p>
+              <p><strong>inc()</strong> incretements a 1,2, or 3 nested dictionary counter</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.shuffle</span><span class="hljs-params">(t,   j)</span></span>
-  <span class="hljs-keyword">for</span> i=#t,<span class="hljs-number">2</span>,<span class="hljs-number">-1</span> <span class="hljs-keyword">do</span> j=<span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span>(i); t[i],t[j]=t[j],t[i] <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.inc</span><span class="hljs-params">(f,a,n)</span></span>      f=f <span class="hljs-keyword">or</span>{}; f[a]=(f[a] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) + (n <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>);   <span class="hljs-keyword">return</span> f <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.inc2</span><span class="hljs-params">(f,a,b,n)</span></span>   f=f <span class="hljs-keyword">or</span>{}; f[a]=_.inc( f[a] <span class="hljs-keyword">or</span> {},b,n);   <span class="hljs-keyword">return</span> f <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.inc3</span><span class="hljs-params">(f,a,b,c,n)</span></span> f=f <span class="hljs-keyword">or</span>{}; f[a]=_.inc2(f[a] <span class="hljs-keyword">or</span> {},b,c,n); <span class="hljs-keyword">return</span> f <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -223,9 +226,13 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
               <div class="sswrap ">
                 <a class="ss" href="#section-13">&#x00a7;</a>
               </div>
-              <h2 id="string---things">String -&gt; Things</h2>
+              <p><strong>has()</strong> implements a 1,2, or level nested lookup</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.has</span><span class="hljs-params">(f,a)</span></span>      <span class="hljs-keyword">return</span> f[a]                    <span class="hljs-keyword">or</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.has1</span><span class="hljs-params">(f,a,b)</span></span>   <span class="hljs-keyword">return</span> f[a] <span class="hljs-keyword">and</span> _.has( f[a],b)   <span class="hljs-keyword">or</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.has2</span><span class="hljs-params">(f,a,b,c)</span></span> <span class="hljs-keyword">return</span> f[a] <span class="hljs-keyword">and</span> _.has1(f[a],b,c) <span class="hljs-keyword">or</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -235,6 +242,35 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
               
               <div class="sswrap ">
                 <a class="ss" href="#section-14">&#x00a7;</a>
+              </div>
+              <p><strong>shuffle()</strong>: randomize order (sorts in  place)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.shuffle</span><span class="hljs-params">(t,   j)</span></span>
+  <span class="hljs-keyword">for</span> i=#t,<span class="hljs-number">2</span>,<span class="hljs-number">-1</span> <span class="hljs-keyword">do</span> j=<span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span>(i); t[i],t[j]=t[j],t[i] <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-15">&#x00a7;</a>
+              </div>
+              <h2 id="string---things">String -&gt; Things</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-16">&#x00a7;</a>
               </div>
               <p><strong>words()</strong>: split  string into list of substrings</p>
 
@@ -247,11 +283,11 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
         </li>
         
         
-        <li id="section-15">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-15">&#x00a7;</a>
+                <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
               <p><strong>things()</strong>: convert strings in a list to things<br><strong>thing()</strong>: convert string to a thing</p>
 
@@ -266,11 +302,11 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
         </li>
         
         
-        <li id="section-16">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-16">&#x00a7;</a>
+                <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
               <p><strong>lines()</strong>: (iterator) return lines in a file. Standard usage is<br><code>for cells in file(NAME,things) do ... end</code></p>
 
@@ -278,17 +314,17 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.lines</span><span class="hljs-params">(file,f,      x)</span></span>
   file = <span class="hljs-built_in">io</span>.<span class="hljs-built_in">input</span>(file)
-  f    = f <span class="hljs-keyword">or</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+  f    = f <span class="hljs-keyword">or</span> _.things
   <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span> x=<span class="hljs-built_in">io</span>.<span class="hljs-built_in">read</span>(); <span class="hljs-keyword">if</span> x <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> f(x) <span class="hljs-keyword">else</span> <span class="hljs-built_in">io</span>.<span class="hljs-built_in">close</span>(file) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-17">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-17">&#x00a7;</a>
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
               <h2 id="things---strings">Things -&gt; Strings</h2>
 
@@ -297,11 +333,11 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
         </li>
         
         
-        <li id="section-18">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-18">&#x00a7;</a>
+                <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
               <p><strong>fmt()</strong>:  String format shorthand</p>
 
@@ -312,11 +348,11 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
         </li>
         
         
-        <li id="section-19">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
               <p><strong>oo()</strong>: Print string from nested table.<br><strong>o()</strong>: Generate string from nested table. </p>
 
@@ -336,11 +372,11 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
         </li>
         
         
-        <li id="section-20">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-22">&#x00a7;</a>
               </div>
               <p><strong>slots()</strong>: return table slots, sorted.</p>
 
@@ -354,11 +390,11 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
         </li>
         
         
-        <li id="section-21">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-21">&#x00a7;</a>
+                <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
               <p><strong>rnds()</strong>: round list of numbers<br><strong>rnd()</strong>: round one number.</p>
 
@@ -372,11 +408,11 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
         </li>
         
         
-        <li id="section-22">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-22">&#x00a7;</a>
+                <a class="ss" href="#section-24">&#x00a7;</a>
               </div>
               <h2 id="make-settings-from-help-string--and-cli-command-line-interface">Make settings from help string  and CLI (command-line interface)</h2>
 
@@ -385,11 +421,11 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
         </li>
         
         
-        <li id="section-23">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-23">&#x00a7;</a>
+                <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
               <p><strong>cli()</strong>: In a string, look for lines indented with two spaces, starting with a dash.
 Each such  line should have  a long and short flag, some help tesx
@@ -416,63 +452,15 @@ default value “10019”. If the command line contains one of the flags
         </li>
         
         
-        <li id="section-24">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
-              </div>
-              <h2 id="test-suites">Test suites</h2>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-25">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-25">&#x00a7;</a>
-              </div>
-              <p><strong>ok()</strong>: maybe, print stack dump on errors.<br>Increment the <code>fails</code> counter on failed <code>test</code>.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.ok</span><span class="hljs-params">(tests,test,msg)</span></span>
-  <span class="hljs-built_in">print</span>(test <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;      PASS: &quot;</span><span class="hljs-keyword">or</span> <span class="hljs-string">&quot;      FAIL: &quot;</span>,msg <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>) 
-  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> test <span class="hljs-keyword">then</span> 
-    tests.fails = tests.fails+<span class="hljs-number">1</span> 
-    <span class="hljs-keyword">if</span> tests.<span class="hljs-built_in">dump</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">assert</span>(test,msg) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
         <li id="section-26">
             <div class="annotation">
               
               <div class="sswrap ">
                 <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
-              <p><strong>go()</strong>:  run some <code>tests</code>, controlled by <code>settings</code>.<br>Maybe update the <code>_fails</code> counter.<br>Return the total fails to the operating system.</p>
+              <h2 id="test-suites">Test suites</h2>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.go</span><span class="hljs-params">(settings,tests,b4)</span></span>
-  tests._fails  = <span class="hljs-number">0</span>
-  <span class="hljs-keyword">local</span> todo    = settings.todo
-  tests._dumps  = settings.<span class="hljs-built_in">dump</span>
-  <span class="hljs-keyword">local</span> defaults = {}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(settings) <span class="hljs-keyword">do</span> defaults[k]=v <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> k,one <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(todo==<span class="hljs-string">&quot;all&quot;</span> <span class="hljs-keyword">and</span> _.slots(tests) <span class="hljs-keyword">or</span> {todo}) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">if</span> k ~= <span class="hljs-string">&quot;main&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">type</span>(tests[one]) == <span class="hljs-string">&quot;function&quot;</span> <span class="hljs-keyword">then</span>
-      <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(defaults) <span class="hljs-keyword">do</span> settings[k] = v <span class="hljs-keyword">end</span>
-      <span class="hljs-built_in">math</span>.<span class="hljs-built_in">randomseed</span>(settings.seed <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)
-      <span class="hljs-built_in">print</span>(_.fmt(<span class="hljs-string">&quot;#%s&quot;</span>,one))
-      tests[one](tests) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">if</span> b4 <span class="hljs-keyword">then</span>
-    <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> 
-      <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> b4[k] <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;??&quot;</span>,k,<span class="hljs-built_in">type</span>(v)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-built_in">os</span>.<span class="hljs-built_in">exit</span>(tests.fails) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -483,9 +471,15 @@ default value “10019”. If the command line contains one of the flags
               <div class="sswrap ">
                 <a class="ss" href="#section-27">&#x00a7;</a>
               </div>
-              <h2 id="objects">Objects</h2>
+              <p><strong>ok()</strong>: maybe, print stack dump on errors.<br>Increment the <code>fails</code> counter on failed <code>test</code>.</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.ok</span><span class="hljs-params">(tests,test,msg)</span></span>
+  <span class="hljs-built_in">print</span>(test <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;      PASS: &quot;</span><span class="hljs-keyword">or</span> <span class="hljs-string">&quot;      FAIL: &quot;</span>,msg <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>) 
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> test <span class="hljs-keyword">then</span> 
+    tests._fails = tests._fails+<span class="hljs-number">1</span> 
+    <span class="hljs-keyword">if</span> the <span class="hljs-keyword">and</span> the.<span class="hljs-built_in">dump</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">assert</span>(test,msg) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -495,6 +489,45 @@ default value “10019”. If the command line contains one of the flags
               
               <div class="sswrap ">
                 <a class="ss" href="#section-28">&#x00a7;</a>
+              </div>
+              <p><strong>go()</strong>:  run some <code>tests</code>, controlled by <code>settings</code>.<br>Maybe update the <code>_fails</code> counter.<br>Return the total fails to the operating system.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.go</span><span class="hljs-params">(tests,b4)</span></span>
+  tests._fails = <span class="hljs-number">0</span>
+  <span class="hljs-keyword">local</span> todo = the <span class="hljs-keyword">and</span> the.todo <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;all&quot;</span>
+  <span class="hljs-keyword">for</span> k,one <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(todo==<span class="hljs-string">&quot;all&quot;</span> <span class="hljs-keyword">and</span> _.slots(tests) <span class="hljs-keyword">or</span> {todo}) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">if</span> k ~= <span class="hljs-string">&quot;main&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">type</span>(tests[one]) == <span class="hljs-string">&quot;function&quot;</span> <span class="hljs-keyword">then</span>
+      <span class="hljs-built_in">math</span>.<span class="hljs-built_in">randomseed</span>(the <span class="hljs-keyword">and</span> the.seed  <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)
+      <span class="hljs-built_in">print</span>(_.fmt(<span class="hljs-string">&quot;#%s&quot;</span>,one))
+      tests[one](tests) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">if</span> b4 <span class="hljs-keyword">then</span>
+    <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> 
+      <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> b4[k] <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;??&quot;</span>,k,<span class="hljs-built_in">type</span>(v)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-built_in">os</span>.<span class="hljs-built_in">exit</span>(tests._fails) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-29">&#x00a7;</a>
+              </div>
+              <h2 id="objects">Objects</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-30">&#x00a7;</a>
               </div>
               <p><strong>new()</strong>:  make a new instance.<br><strong>class()</strong>: define a new class of instances</p>
 
@@ -508,11 +541,11 @@ default value “10019”. If the command line contains one of the flags
         </li>
         
         
-        <li id="section-29">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-29">&#x00a7;</a>
+                <a class="ss" href="#section-31">&#x00a7;</a>
               </div>
               <h2 id="return">Return</h2>
 

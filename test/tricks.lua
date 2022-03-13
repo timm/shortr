@@ -1,9 +1,11 @@
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 package.path = '../src/?.lua;' .. package.path
-local  _=require"tricks"
+local  _   = require"tricks"
+local  the = require"the"
 local go, ok, cli, eg =  _.go, _.ok, _.cli, {}
 
 local last,lines,many,o,oo,per = _.last, _.lines, _.many, _.o, _.oo, _.per 
+local powerset = _.powerset
 local push,shuffle,sum,things = _.push, _.shuffle, _.sum,  _.things
 
 function eg.last(tst) 
@@ -27,7 +29,11 @@ function eg.shuffle(tst, t, good)
     good = good and sum(t)==45,"shuffle "..j end 
   ok(tst,good, "shuffling") end
 
+function eg.powerset(tst, t)
+  t = {10,20,30,40}
+  for _,x in pairs(powerset(t)) do oo(x) end end
+
 -- function eg.lines(tst)
 --   for t in lines("tricks.lua", things) do print(#t, o(t)) end end
 
-go(eg, b4)
+go(the, eg, b4)

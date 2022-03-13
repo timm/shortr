@@ -1,4 +1,7 @@
-<img 
+<a href="tricks.html">tricks</a>
+::   <a href="think.html">think</a> 
+:: &copy;2022, <a href="mailto:timm@ieee.org">Tim Menzies</a>
+<hr><img 
 align=right width=250 src=heads2.png>
 <a 
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <img 
@@ -8,5 +11,4 @@ src="https://img.shields.io/badge/language-lua-informational?logo=lua&logoColor=
 href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a
 href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://img.shields.io/badge/license-BSD2-informational?logo=adblock&logoColor=white&color=blueviolet"></a>
 <br>
-&copy;2022, Tim Menzies, &lt;timm@ieee.org&gt;
-<hr>
+

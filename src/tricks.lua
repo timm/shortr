@@ -34,6 +34,12 @@ function _.push(t,x)     t[1 + #t] = x; return x end
 function _.sort(t,f)     table.sort(t,f); return t end
 function _.firsts(a,b)   return a[1] < b[1] end
 
+-- **copy()**: deep copy
+function _.copy(t,   u)
+  if type(t)~="table" then return t end
+  u={}; for k,v in pairs(t) do u[k]=_.copy(v) end
+  return setmetatable(u, getmetatable(t)) end
+
 -- **map()**: return a list with `f` run over all items
 function _.map(t,f, u) u={};for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
 
@@ -43,20 +49,27 @@ function _.sum(t,f, n)
   n=0; _.map(t,function(v) n=n+(f and f(v) or v) end)
   return n end
 
--- **inc()** incretements a 1,2, or 3 nested dictionary counter
-function _.inc(f,a,n)      f=f or{}; f[a]=(f[a] or 0) + (n or 1);   return f end
-function _.inc2(f,a,b,n)   f=f or{}; f[a]=_.inc( f[a] or {},b,n);   return f end
-function _.inc3(f,a,b,c,n) f=f or{}; f[a]=_.inc2(f[a] or {},b,c,n); return f end
+-- **inc()** increment a 1,2, or 3 nested dictionary counter
+function _.inc(f,a,n)      f=f or{};f[a]=(f[a] or 0) + (n or 1);  return f end
+function _.inc2(f,a,b,n)   f=f or{};f[a]=_.inc( f[a] or {},b,n);  return f end
+function _.inc3(f,a,b,c,n) f=f or{};f[a]=_.inc2(f[a] or {},b,c,n);return f end
 
 -- **has()** implements a 1,2, or level nested lookup
-function _.has(f,a)      return f[a]                    or 0 end
-function _.has1(f,a,b)   return f[a] and _.has( f[a],b)   or 0 end
-function _.has2(f,a,b,c) return f[a] and _.has1(f[a],b,c) or 0 end
-
+function _.has(f,a)      return f[a]                      or 0 end
+function _.has2(f,a,b)   return f[a] and _.has( f[a],b)   or 0 end
+function _.has3(f,a,b,c) return f[a] and _.has2(f[a],b,c) or 0 end
 
 -- **shuffle()**: randomize order (sorts in  place)
 function _.shuffle(t,   j)
   for i=#t,2,-1 do j=math.random(i); t[i],t[j]=t[j],t[i] end; return t end
+
+-- **pwoerset()**: return all subsets
+function _.powerset(s)
+  local t = {{}}
+  for i = 1, #s do
+    for j = 1, #t do
+      t[#t+1] = {s[i],table.unpack(t[j])} end end
+  return t end
 
 -- ## String -> Things
 
@@ -122,10 +135,12 @@ function _.rnd(x,f)
 -- Each line generates  a setting  with key "seed" and
 -- default value "10019". If the command line contains one of the flags
 -- (`-seed` or `-s`) then update those defaults.
-function _.cli(help,    d)
-  d={}
+function _.cli(help)
+  local d,used = {},{}
   help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
     function(long,key,short,x)
+      assert(not used[short], "repeated short flag ["..short.."]")
+      used[short]=short
       for n,flag in ipairs(arg) do 
         if flag==short or flag==long then
           x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
@@ -146,11 +161,13 @@ function _.ok(tests,test,msg)
 -- **go()**:  run some `tests`, controlled by `settings`.    
 -- Maybe update the `_fails` counter.     
 -- Return the total fails to the operating system.
-function _.go(tests,b4)
+function _.go(settings,tests,b4,      defaults)
   tests._fails = 0
+  defaults={}; for k,v in pairs(settings) do defaults[k]=v end
   local todo = the and the.todo or "all"
   for k,one in pairs(todo=="all" and _.slots(tests) or {todo}) do
     if k ~= "main" and type(tests[one]) == "function" then
+      for k,v in pairs(defaults) do settings[k]=v end
       math.randomseed(the and the.seed  or 1)
       print(_.fmt("#%s",one))
       tests[one](tests) end end 
