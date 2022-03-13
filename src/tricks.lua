@@ -181,10 +181,10 @@ function _.go(settings,tests,b4,      defaults)
 
 -- **new()**:  make a new instance.   
 -- **class()**: define a new class of instances
-_.new = setmetatable
-function _.class(s,   t)
+_.as = setmetatable
+function _.is(s,   t)
   t={__tostring=_.o,_is=s or ""}; t.__index=t
-  return _.new(t, {__call=function(_,...) return t.new(_,...) end}) end
+  return _.as(t, {__call=function(_,...) return t.new(_,...) end}) end
 
 -- ## Return
 return _  

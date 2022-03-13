@@ -5,7 +5,7 @@ local classify,train,test,score, nb
 
 function nb(file)
   local i = {h={}, nh=0,e={}, names=nil, n=0, wait=the.wait, log={}}
-  for row  lines(file) do 
+  for row in lines(file) do 
     if not i.names then i.names=row else test(i,row); train(i,row) end end 
   return score(i.log) end
 
