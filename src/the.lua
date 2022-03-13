@@ -7,6 +7,7 @@ Explore the world better; explore it for good.
 OPTIONS:
   -cohen     -c cohen                     =  .35
   -far       -F how far to seek poles     = .9
+  -goal      -g goal class                = recurrence-events
   -keep      -k items to keep             = 256
   -K         -K manage low class counts   = 1
   -M         -M manage low evidence counts = 2
@@ -14,6 +15,7 @@ OPTIONS:
   -p         -p euclidean coefficient     = 2
   -some      -S sample size for rows      = 512
   -wait      -w wait inference some items = 10
+  -want      -W range optimization goal   = plan
 
 OPTIONS, other:
   -dump      -d stackdump on error      = false

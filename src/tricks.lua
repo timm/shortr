@@ -33,11 +33,12 @@ function _.push(t,x)     t[1 + #t] = x; return x end
 -- **firsts()**:  order on sub-list first items
 function _.sort(t,f)     table.sort(t,f); return t end
 function _.firsts(a,b)   return a[1] < b[1] end
+function _.stsrif(a,b)   return a[1] > b[1] end
 
 -- **copy()**: deep copy
 function _.copy(t,   u)
   if type(t)~="table" then return t end
-  u={}; for k,v in pairs(t) do u[k]=_.copy(v) end
+  u={}; for k,v in pairs(t) do u[copy(k)]=_.copy(v) end
   return setmetatable(u, getmetatable(t)) end
 
 -- **map()**: return a list with `f` run over all items
@@ -164,11 +165,11 @@ function _.ok(tests,test,msg)
 function _.go(settings,tests,b4,      defaults)
   tests._fails = 0
   defaults={}; for k,v in pairs(settings) do defaults[k]=v end
-  local todo = the and the.todo or "all"
+  local todo =  settings.todo or "all"
   for k,one in pairs(todo=="all" and _.slots(tests) or {todo}) do
     if k ~= "main" and type(tests[one]) == "function" then
       for k,v in pairs(defaults) do settings[k]=v end
-      math.randomseed(the and the.seed  or 1)
+      math.randomseed(settings.seed  or 1)
       print(_.fmt("#%s",one))
       tests[one](tests) end end 
   if b4 then
