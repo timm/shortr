@@ -77,7 +77,7 @@ Summarize symbols in `Nominal`s
 ```lua
 function Nominal:new(at,name)
   at,name = at or 0, name or ""
-  return as({at=at,name=name,n=0,has={},mode=nil,most=0},Nominal) end
+  return as({at=at, name=name, n=0, has={}, mode=nil, most=0}, Nominal) end
 ```
 
 
