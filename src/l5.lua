@@ -283,7 +283,6 @@ function is(s,   t)
   return as(t, {call=function(...) return t.new(...) end}) end
 
 --- ---------------------------------------------------------------------------
-
 ---    _  _ ___     ____ _  _ ____ 
 ---    |\ | |__]    |  | |\ | |___ 
 ---    | \| |__]    |__| | \| |___ 
@@ -405,6 +404,7 @@ function Ratio.mid(i) return i.mu end
 ---    _  _ ___  _  _ _  _ _  _ 
 ---    |\ | |__] |\ | |  | |\/| 
 ---    | \| |__] | \| |__| |  | 
+
 local Nb = is"Nb"
 
 -- ## Add likelihood calculators
