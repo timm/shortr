@@ -10,14 +10,13 @@ function Egs:new(names) return as({rows={}, cols=Cols(names)}, Egs) end
 
 function Egs:new4file(file,  i)
   for _,row in lines(file) do if i then i:add(row) else i=Egs(row) end end
-  return i end
+  ;return i end
 
 function Egs.add(i,t)
   t = t.cells or t -- detail (for future extension)
   push(i.rows, map(i.cols.all, function(col) return col:add(t[col.at]) end)) end
 
-function Egs.mid(i,cols) 
-  return map(cols or i.cols.all, function(col) return col:mid() end) end
+function Egs.mid(i,cols) return map(cols or i.cols.all, function(col) return col:mid() end) end
 
 -- ## Col
 -- Convert  names into various Column types.
@@ -62,8 +61,7 @@ function Nominal.mid(i) return i.mode end
 -- Summarize numbers in `Ratio`s
 function Ratio:new(at,name)
   at,name = at or 0, name or ""
-  return as({at=at,name=name,n=0,mu=0,m2=0,sd=0,
-             w=ako.less(name) and -1 or 1},Ratio) end
+  return as({at=at, name=name, n=0, mu=0, m2=0, sd=0, w=ako.less(name) and -1 or 1}, Ratio) end
 
 function Ratio.add(i,x)
   if x ~= "?" then 
