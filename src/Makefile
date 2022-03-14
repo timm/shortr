@@ -38,7 +38,7 @@ $D/docs/index.html: $D/README.md $D/etc/head.html $D/etc/foot.html
 
 $D/docs/%.md: %.lua ../README.md  Makefile
 	@echo "md-ing $@..."
-	@gawk 'BEGIN {FS="\n"; RS=""} {print $0 "\n\n"; exit}' ../README.md > $@
+	@gawk 'BEGIN {FS="\n"; RS=""} {print $$0 "\n\n"; exit}' ../README.md > $@
 	@gawk -f ../etc/lua2md.awk $< >>  $@
   
 $D/docs/%.html: %.lua ../etc/dhead Makefile
