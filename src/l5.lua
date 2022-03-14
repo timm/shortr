@@ -282,7 +282,6 @@ as = setmetatable
 function is(s,   t)
   t={tostring=o,s=s or ""}; t.index=t
   return as(t, {call=function(...) return t.new(...) end}) end
-
 --- ---------------------------------------------------------------------------
 ---    _  _ ___     ____ _  _ ____ 
 ---    |\ | |__]    |  | |\ | |___ 
@@ -503,12 +502,11 @@ function eg.nbnum(tst,  i)
 
 function eg.nbtest(tst)
   Nb:new4file("../etc/data/diabetes.csv") end
-
 --- ---------------------------------------------------------------------------
 ---    ____ ___ ____ ____ ___    _  _ ___  
 ---    [__   |  |__| |__/  |     |  | |__] 
 ---    ___]  |  |  | |  \  |     |__| |    
-                                    
+---                                    
 -- ## Stattup
 the=cli(help)
 
