@@ -78,10 +78,10 @@ local eg={} -- demo tricks
 ---    ___ ____ _ ____ _  _ ____ 
 ---     |  |__/ | |    |_/  [__  
 ---     |  |  \ | |___ | \_ ___] 
-                          
+---                          
 ---     _ _  _ _|_|_  _
 ---    | | |(_| | | |_\
-                
+---                
 -- ### Maths Tricks
 -- `r()`:  Random number shorthand.     
 r=math.random
@@ -92,10 +92,10 @@ r=math.random
 function ish(x,y,z)  return math.abs(y -x ) < z end 
 function cosine(a,b,c) 
   return math.max(0,math.min(1, (a^2+c^2-b^2)/(2*c+1E-32))) end
-
+---
 ---    |. __|_ _
 ---    ||_\ | _\
-         
+---         
 -- ### List Tricks
 -- `any()`: returns any thing from a list    
 -- `many()`: return multiple `any()` things.
@@ -154,11 +154,11 @@ function powerset(s)
     for j = 1, #t do
       t[#t+1] = {s[i],table.unpack(t[j])} end end
   return t end
-
+---
 ---     __|_ _. _  _  _  '~)  _|_|_ . _  _  _
 ---    _\ | | || |(_|_\   /_   | | ||| |(_|_\
 ---                _|                    _|  
-
+---
 -- ### String -> Things
 -- `words()`: split  string into list of substrings
 function words(s,sep,   t)
@@ -179,11 +179,11 @@ function lines(file,f,      x)
   file = io.input(file)
   f    = f or things
   return function() x=io.read(); if x then return f(x) else io.close(file) end end end
-
+---
 ---    _|_|_ . _  _  _  '~)   __|_ _. _  _  _
 ---     | | ||| |(_|_\   /_  _\ | | || |(_|_\
 ---               _|                     _|  
-
+---
 -- ### Things -> Strings
 -- `fmt()`:  String format shorthand
 fmt = string.format
@@ -213,18 +213,18 @@ function rnds(t,f) return map(t, function(x) return nd(x,f) end) end
 function rnd(x,f) 
   f = not f and "%s" or number and fmt("%%%sf",f) or f
   return fmt(type(x)=="number" and (x~=x//1 and f) or "%s",x) end
-
+---
 ---     _ _ _|__|_. _  _  _
 ---    _\(/_ |  | || |(_|_\
 ---                    _|  
-
+---
 -- ### Make settings from help string  and CLI (command-line interface)
 -- `cli()`: In a string, look for lines indented with two spaces, starting with a dash.
 -- Each such  line should have  a long and short flag, some help tesx
 -- and (at end of line), a  default values. e.g.
---
---     -seed -S set the random number seed  = 10019
---
+--    
+--       -seed -S set the random number seed  = 10019
+--    
 -- Each line generates  a setting  with key "seed" and
 -- default value "10019". If the command line contains one of the flags
 -- (`-seed` or `-s`) then update those defaults.
@@ -240,10 +240,10 @@ function cli(help)
        d[key] = x==true and true or thing(x) end)
   if d.help then os.exit(print(help)) end
   return d end
-
+---
 ---    _|_ _  __|_ _
 ---     | (/__\ | _\
-             
+---          
 -- ### Test suites
 -- `ok()`: maybe, print stack dump on errors.   
 -- Increment the `fails` counter on failed `test`.
@@ -270,11 +270,11 @@ function go(settings,tests,b4,      defaults)
     for k,v in pairs(_ENV) do 
       if not b4[k] then print("??",k,type(v)) end end end
   os.exit(tests.ails) end
-
+---
 ---     _ |_  . _  __|_ _
 ---    (_)|_) |(/_(_ | _\
 ---          L|          
-
+---
 -- ### Objects
 
 -- `new()`:  make a new instance.   
