@@ -5,8 +5,8 @@ src="https://img.shields.io/badge/language-lua-informational?style=flat&logo=lua
 src="https://img.shields.io/badge/platform-osx,linux-informational?style=flat&logo=linux&logoColor=white&color=orange"> <a
 href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a> <a 
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a><br>
-<small>
-<b><a href="https://menzies.us/l5">Docs</a> •  <a href="https://github.com/timm/l5/blob/master/LICENSE.md">&copy;2022</a> </b>, Tim Menzies, <timm@ieee.org></small><br clear=all>
+<b> <a href="https://github.com/timm/l5/blob/master/LICENSE.md">&copy;2022</a> </b>, Tim Menzies, <timm@ieee.org>
+<h1>The Little LUA Learning Library</h1><br clear=all>
 
 
 ## Egs

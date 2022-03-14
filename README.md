@@ -5,12 +5,10 @@ src="https://img.shields.io/badge/language-lua-informational?style=flat&logo=lua
 src="https://img.shields.io/badge/platform-osx,linux-informational?style=flat&logo=linux&logoColor=white&color=orange"> <a
 href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a> <a 
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a><br>
-<small>
-<b><a href="https://menzies.us/l5">Docs</a> •  <a href="https://github.com/timm/l5/blob/master/LICENSE.md">&copy;2022</a> </b>, Tim Menzies, <timm@ieee.org></small><br clear=all>
+<b> <a href="https://github.com/timm/l5/blob/master/LICENSE.md">&copy;2022</a> </b>, Tim Menzies, <timm@ieee.org>
+<h1>The Little LUA Learning Library</h1><br clear=all>
 
-
-
-#  Do you understand AI?
+##  Do you understand AI?
 
 How well do  you understand AI? 
 Do you want to understand it better?  Want to practice that skill, a little more?
@@ -40,7 +38,7 @@ they might remember this code.
 But lets get to some specifics.
 Buse and Zimmermann[^Bu12] surveyed over  hundreds of developers and managers to
 find a list of "information needs" for software analytics. 
-Lets make sure we understand these, enough, to code them succinctly.
+Lets [make](make) sure we understand these, enough, to code them succinctly.
 
 ![docs/bi.png](docs/bi.png)
 
@@ -66,7 +64,7 @@ I ask them to:
 - Benchmark this tiny toolkit against those more elaborate tools. This is end-of-semester project, which takes
   another 6-8 weeks.
 
-## Why is all these coded in LUA?
+### Why is all these coded in LUA?
 
 - Because Lua is fun to write and [easy to learn](https://learnxinyminutes.com/docs/lua/).
 - Because I want you to learn AI by coding it up from scratch, but I do not want to 
@@ -96,7 +94,7 @@ global defined in the background LUA libraries.
 
 <br clear=all><hr>
 
-## Framework
+### Framework
 
 Divide the world then look for differences between the divisions.
 
