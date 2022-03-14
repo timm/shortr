@@ -71,9 +71,7 @@ local cli -- tricks for settings
 local ok,go -- tricks for test suites
 local as, is -- tricks for objects
 local nb1, train1,test1,classify1,score1 -- intro to classifiers
-local Egs,Cols,Ratio,Nominal=is"Egs",is"Cols",is"Ratio", is"Nominal" -- data 
 local ako={} -- column creattion t
-local Nb = is"Nb" -- classifiers, round2
 local eg={} -- demo tricks
 ---    ___ ____ _ ____ _  _ ____ 
 ---     |  |__/ | |    |_/  [__  
@@ -88,8 +86,7 @@ local eg={} -- demo tricks
 r=math.random
 
 -- `ish()`: is `x` is close-ish to `y`?               
--- `cosine()`: for three  ABC with sides abc,   
--- where does C falls on the line running AB?
+-- `cosine()`: for three  ABC with sides abc where does C fall between AB?
 function ish(x,y,z)  return math.abs(y -x ) < z end 
 function cosine(a,b,c) 
   return math.max(0,math.min(1, (a^2+c^2-b^2)/(2*c+1E-32))) end
@@ -104,7 +101,7 @@ function any(a)        return a[ math.random(#a) ] end
 function many(a,n,  u) u={}; for j=1,n do u[1+#u] =any(a) end; return u end
 
 -- `last()`: last item in a list     
--- ##per()`: p-th item in a list   
+-- `per()`: p-th item in a list   
 function last(a)       return a[ #a ] end
 function per(a,p)      return a[ (p*#a)//1 ] end
 
@@ -246,6 +243,13 @@ function cli(help)
 ---     | (/__\ | _\
 ---          
 -- ### Test suites
+function eg.list()
+  print(1)
+  oo(slots(eg))
+  for _,k in pairs(slots(eg)) do
+    if type(eg[k]) == "function" then
+      print(fmt("  -t %s",k)) end end end
+
 -- `ok()`: maybe, print stack dump on errors.   
 -- Increment the `fails` counter on failed `test`.
 function ok(tests,test,msg)
@@ -281,8 +285,11 @@ function go(settings,tests,b4,      defaults)
 -- `class()`: define a new class of instances
 as = setmetatable
 function is(s,   t)
-  t={tostring=o,s=s or ""}; t.index=t
-  return as(t, {call=function(...) return t.new(...) end}) end
+  t={__tostring=o,_iss=s or ""}; t.__index=t
+  return as(t, {__call=function(...) return t.new(...) end}) end
+
+local Egs,Cols,Ratio,Nominal=is"Egs",is"Cols",is"Ratio", is"Nominal" -- data 
+local Nb = is"Nb" -- classifiers, round2
 --- ---------------------------------------------------------------------------
 ---    _  _ ___     ____ _  _ ____ 
 ---    |\ | |__]    |  | |\ | |___ 
@@ -412,8 +419,8 @@ function Egs.like(i,t,prior)
   return like end
 
 function Ratio.like(i,x,prior)
-  if x < i.mu - 3*i.sd then return 0 end
-  if x > i.mu + 3*i.sd then return 0 end
+  if x < i.mu - 4*i.sd then return 0 end
+  if x > i.mu + 4*i.sd then return 0 end
   local denom = (math.pi*2*i.sd^2)^.5
   local nom   =  math.exp(1)^(-(x-mu)^2/(2*i.sd^2+1E-32))
   return nom/(denom + 1E-32) end
