@@ -10,4 +10,5 @@ local eg={}
 function eg.thing(tst,  abcd) 
   print(nb("../etc/data/breastcancer.csv")) end
 
+
 go(the, eg, b4)

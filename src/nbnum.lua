@@ -63,4 +63,4 @@ function Nb.score(i,    n)
   return n/#i.log end 
 
 -- ## Return
-return Nb
+return {Nb=Nb, Ratio=Ratio, Nominal=Nominal}

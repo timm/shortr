@@ -105,4 +105,4 @@ function Nb.score(i,    n)
 ## Return
 
 ```lua
-return Nb
+return {Nb=Nb, Ratio=Ratio, Nominal=Nominal}
