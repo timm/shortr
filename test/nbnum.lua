@@ -8,6 +8,6 @@ local go = _.go
 
 local eg={}
 function eg.test(tst)
-  Nb:new4file("../etc/data/breastcancer.csv") end
+  Nb:new4file("../etc/data/diabetes.csv") end
 
 go(the, eg, b4)

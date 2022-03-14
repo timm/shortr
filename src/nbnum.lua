@@ -30,13 +30,14 @@ function Nominal.like(i,x,prior)
 
 -- ## Create and update
 function Nb:new() 
-  return {h={}, all=nil, nh=0, n=0, wait=the.wait, log={}} end
+  return as({h={}, all=nil, nh=0, n=0, wait=the.wait, log={}},Nb)  end
 
-function Nb:new4file(file) 
+function Nb:new4file(file,     i) 
+  i = Nb()
   for row in lines(file) do i:add(row) end end
 
 function Nb.add(i,row)
-  if not i.all then i.all = Egs(row) else i:test(row); i:train(row) end end 
+  if not i.all then print(1); i.all = Nb(row) else i:test(row); i:train(row) end end 
 
 -- ## Train, test, classify
 function Nb.train(i,t)
