@@ -31,17 +31,18 @@ bye:  ## stop work (save all files)
 
 #https://purecss.io/start/
 $D/docs/index.html: $D/README.md $D/etc/head.html $D/etc/foot.html
-	@echo "index-ing $@"
+	@echo "index-ing $@ ..."
 	@(cat $D/etc/head.html; \
    python3 -m markdown -x toc -x extra $< | sed 's/docs\///g' ;\
    cat $D/etc/foot.html) > $@
 
 $D/docs/%.md: %.lua ../README.md  Makefile
+	@echo "md-ing $@..."
 	@gawk 'BEGIN {FS="\n"; RS=""} {print $0 "\n\n"; exit}' ../README.md > $@
 	@gawk -f ../etc/lua2md.awk $< >>  $@
   
 $D/docs/%.html: %.lua ../etc/dhead Makefile
-	@echo "html-ing  $@"
+	@echo "html-ing  $@ ..."
 	@sed '/---/d' $< >> $D/docs/$<
 	@docco -o $D/docs $D/docs/$< > /dev/null
 	@gawk -i inplace '/<h1>/{while(getline line<"../etc/dhead")print line} 1' $@ 
@@ -49,7 +50,7 @@ $D/docs/%.html: %.lua ../etc/dhead Makefile
 	@cp $D/etc/docco.css $D/docs/
 
 $D/docs/%.pdf : %.lua  
-	@echo "pdf-ing   $@ "
+	@echo "pdf-ing $@ ... "
 	@a2ps -BjR    -q                        \
 		--line-numbers=1                    \
 		--borders=no --pro=color --columns 2 \
