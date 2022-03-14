@@ -39,7 +39,7 @@ $D/docs/index.html: $D/README.md $D/etc/head.html $D/etc/foot.html
 $D/docs/%.md: %.lua ../README.md  Makefile
 	@echo "md-ing $@..."
 	@gawk 'BEGIN {FS="\n"; RS=""} {print $$0 "\n\n"; exit}' ../README.md > $@
-	@sed '/^---/d' $< | gawk -f ../etc/lua2md.awk $<  >>  $@
+	@sed '/^---/d' $< | gawk -f ../etc/lua2md.awk  >>  $@
   
 $D/docs/%.html: %.lua ../etc/dhead Makefile
 	@echo "html-ing  $@ ..."
