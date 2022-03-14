@@ -7,32 +7,30 @@
 ---       /\____\   \ \____/         /\_\           /\____\ \ \____/\ \__/.\_\
 ---       \/____/    \/___/          \/_/           \/____/  \/___/  \/__/\/_/
 
---                                                ___
---                                            ,o88888
---                                         ,o8888888'
---                   ,:o:o:oooo.        ,8o88pd8888"
---               ,.::.::o:ooooooooo. ,oo8o8pd888'"
---             ,.:.::o:oooooooo8o8ooo.8oopd8o8o"
---            , ..:.::o:oooooooo8ooooo.fdo8o8"
---           , ..:.::o:oooooo8o888o8o,cocoo"
---          , . ..:.::o:oooooooo8oooococo"
---           . ..:.::o:oooooooo8o8occcc"o
---              . ..:.::o:oooooococcc"o:o
---              . ..:.::o:o:,cooooco"oo:o:
---           `   . . ..:.:cocoooo"'o:o:::'
---           .`   . ..::ccccoc"'o:o:o:::'
---          :.:.    ,c:cccc"':.:.:.:.:.'
---        ..:.:"'`::::c:"'..:.:.:.:.:.'
---      ...:.'.:.::::"'    . . . . .'
---     .. . ....:."' `   .  . . ''
---   . . . ...."'
---   .. . ."'     -hrr-
---  .
-
-
+---                                                           ___
+---                                                       ,o88888
+---                                                    ,o8888888'
+---                              ,:o:o:oooo.        ,8o88pd8888"
+---                          ,.::.::o:ooooooooo. ,oo8o8pd888'"
+---                        ,.:.::o:oooooooo8o8ooo.8oopd8o8o"
+---                       , ..:.::o:oooooooo8ooooo.fdo8o8"
+---                      , ..:.::o:oooooo8o888o8o,cocoo"
+---                     , . ..:.::o:oooooooo8oooococo"
+---                      . ..:.::o:oooooooo8o8occcc"o
+---                         . ..:.::o:oooooococcc"o:o
+---                         . ..:.::o:o:,cooooco"oo:o:
+---                      `   . . ..:.:cocoooo"'o:o:::'
+---                      .`   . ..::ccccoc"'o:o:o:::'
+---                     :.:.    ,c:cccc"':.:.:.:.:.'
+---                   ..:.:"'`::::c:"'..:.:.:.:.:.'
+---                 ...:.'.:.::::"'    . . . . .'
+---                .. . ....:."' `   .  . . ''
+---              . . . ...."'
+---              .. . ."'     -hrr-
+---             .
+--- ---------------------------------------------------------------------------
 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local the
 local help=[[
 
 lua l5.lua [OPTIONS]
@@ -61,7 +59,22 @@ OPTIONS, other:
   -todo      -t start-up action         = nothing
   -n1        -n1 #repeated trials       = 20
   -n2        -n2 samples per trial      = 100
-]]
+]]
+
+local the
+local r,ish,cosine -- maths tricks
+local any,many,last,per,pop,push,sort,firsts,stsrif,copy,map,sum -- list tricks
+local inc,inc2,inc3, has,has2,has3, powerset, shuffle -- more list trics
+local words, things, thing, lines -- tricks for strings 2 things
+local fmt,o,oo,slots,rnds,rnd -- tricks for things 2 strings
+local cli -- tricks for settings
+local ok,go -- tricks for test suites
+local as, is -- tricks for objects
+local nb1, train1,test1,classify1,score1 -- intro to classifiers
+local Egs,Cols,Ratio,Nominal=is"Egs",is"Cols",is"Ratio", is"Nominal" -- data 
+local ako={} -- column creattion t
+local Nb = is"Nb" -- classifiers, round2
+local eg={} -- demo tricks
 ---    ___ ____ _ ____ _  _ ____ 
 ---     |  |__/ | |    |_/  [__  
 ---     |  |  \ | |___ | \_ ___] 
@@ -70,8 +83,6 @@ OPTIONS, other:
 ---    | | |(_| | | |_\
                 
 -- ### Maths Tricks
-local r,ish,cosine
-
 -- **r()**:  Random number shorthand.     
 r=math.random
 
@@ -86,8 +97,6 @@ function cosine(a,b,c)
 ---    ||_\ | _\
          
 -- ### List Tricks
-local any,many,last,per,pop,push,sort,firsts,stsrif,copy,map,sum
-local inc,inc2,inc3, has,has2,has3, powerset, shuffle
 -- **any()**: returns any thing from a list    
 -- **many()**: return multiple **any()** things.
 function any(a)        return a[ math.random(#a) ] end
@@ -151,8 +160,6 @@ function powerset(s)
 ---                _|                    _|  
 
 -- ### String -> Things
-local words, things, thing, lines
-
 -- **words()**: split  string into list of substrings
 function words(s,sep,   t)
   sep="([^" .. (sep or ",")  .. "]+)"
@@ -178,8 +185,6 @@ function lines(file,f,      x)
 ---               _|                     _|  
 
 -- ### Things -> Strings
-local fmt,o,oo,slots,rnds,rnd
-
 -- **fmt()**:  String format shorthand
 fmt = string.format
 
@@ -214,8 +219,6 @@ function rnd(x,f)
 ---                    _|  
 
 -- ### Make settings from help string  and CLI (command-line interface)
-local cli
-
 -- **cli()**: In a string, look for lines indented with two spaces, starting with a dash.
 -- Each such  line should have  a long and short flag, some help tesx
 -- and (at end of line), a  default values. e.g.
@@ -242,8 +245,6 @@ function cli(help)
 ---     | (/__\ | _\
              
 -- ### Test suites
-local ok,go
-
 -- **ok()**: maybe, print stack dump on errors.   
 -- Increment the `fails` counter on failed `test`.
 function ok(tests,test,msg)
@@ -275,7 +276,6 @@ function go(settings,tests,b4,      defaults)
 ---          L|          
 
 -- ### Objects
-local as, is
 
 -- **new()**:  make a new instance.   
 -- **class()**: define a new class of instances
@@ -289,8 +289,7 @@ function is(s,   t)
 ---    |\ | |__]    |  | |\ | |___ 
 ---    | \| |__]    |__| | \| |___ 
 
-local nb1, train1,test1,classify1,score1
-
+-- ## Intro to Classifiers
 function nb1(file)
   local i = {h={}, nh=0,e={}, names=nil, n=0, wait=the.wait, log={}}
   for row in lines(file) do 
@@ -326,8 +325,6 @@ function score1(log,   n)
 ---    |___ |__] ___] 
 
 -- ## Egs
-local Egs,Cols,Ratio,Nominal=is"Egs",is"Cols",is"Ratio", is"Nominal"
-
 -- Egs store examples (in `rows`), summarized in columns (in `cols`)
 function Egs:new(names) return as({rows={}, cols=Cols(names)}, Egs) end
 
@@ -347,7 +344,6 @@ function Egs.klass(i,row) return row[i.cols.klass.at] end
 
 -- ## Col
 -- Convert  names into various Column types.
-local ako={}
 ako.ratio  = function(x) return x:find"^[A-Z]" end
 ako.goal   = function(x) return x:find"[-+!]"  end
 ako.klass  = function(x) return x:find"!$"     end
@@ -406,8 +402,6 @@ function Ratio.mid(i) return i.mu end
 ---    _  _ ___  _  _ _  _ _  _ 
 ---    |\ | |__] |\ | |  | |\/| 
 ---    | \| |__] | \| |__| |  | 
-
-local Nb = is"Nb"
 
 -- ## Add likelihood calculators
 function Egs.like(i,t,prior)
@@ -470,7 +464,6 @@ function Nb.score(i,    n)
 ---    |__/ |___ |  | |__| ___] 
                          
 -- ## Demos
-local eg={}
 function eg.last(tst) 
   ok(tst, 30 == last{10,20,30}, "lasts") end
 
