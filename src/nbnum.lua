@@ -5,7 +5,8 @@ local the     = require"the"
 local Egs     = require("Egs").Egs
 local Ratio   = require("Egs").Ratio
 local Nominal = require("Egs").Nominal
-local inc,inc3,has3,lines,push = _.inc, _.inc3, _.has3, _.lines, _.push
+local inc,inc3,has3,lines = _.inc, _.inc3, _.has3, _.lines
+local o,o,push = _.o, _.oo, _.push
 local is,as = _.is, _.as
 local Nb = is"Nb"
 
@@ -42,7 +43,9 @@ function Nb.add(i,row)
 -- ## Train, test, classify
 function Nb.train(i,t)
   i.n = i.n + 1
+  print(2,o(i.all))
   local h = i.all:klass(t)
+  print(3)
   if not i.h[h] then i.nh = i.nh + 1; i.h[h] = i.all:clone() end
   i.h[h]:add(row) 
   i.all:add(row) end
