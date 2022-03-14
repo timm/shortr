@@ -36,6 +36,10 @@ $D/docs/index.html: $D/README.md $D/etc/head.html $D/etc/foot.html
    python3 -m markdown -x toc -x extra $< | sed 's/docs\///g' ;\
    cat $D/etc/foot.html) > $@
 
+$D/docs/%.md: %.lua ../README.md  Makefile
+	@gawk 'BEGIN {FS="\n"; RS=""} {print $0; exit}' ../README.md > $@
+	@gawk -f ../etc/lua2md.awk $< >>  $@
+  
 $D/docs/%.html: %.lua ../etc/dhead Makefile
 	@echo "html-ing  $@"
 	@sed '/---/d' $< >> $D/docs/$<
