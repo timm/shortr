@@ -9,6 +9,7 @@ href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.or
 <b><a href="https://menzies.us/l5">Docs</a> •  <a href="https://github.com/timm/l5/blob/master/LICENSE.md">&copy;2022</a> </b>, Tim Menzies, <timm@ieee.org></small><br clear=all>
 
 
+
 #  Do you understand AI?
 
 How well do  you understand AI? 
