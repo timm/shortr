@@ -1,5 +1,5 @@
-<img align=right width=175 src=/docs/head.png>
-<img src="https://img.shields.io/badge/purpose-se,ai-informational?style=flat&logo=hyper&logoColor=white&color=red"> <img 
+<img align=left width=175 src="/docs/head.png"> <img 
+src="https://img.shields.io/badge/purpose-se,ai-informational?style=flat&logo=hyper&logoColor=white&color=red"> <img 
 src="https://img.shields.io/badge/purpose-learner,optimizer-informational?style=flat&logo=hyper&logoColor=white&color=ff69b4"> <img 
 src="https://img.shields.io/badge/language-lua-informational?style=flat&logo=lua&logoColor=white&color=yellow"> <img 
 src="https://img.shields.io/badge/platform-osx,linux-informational?style=flat&logo=linux&logoColor=white&color=orange"> <a
