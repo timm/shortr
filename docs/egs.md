@@ -1,37 +1,53 @@
--- Simple data storage tool.
-local _   = require"tricks"
-local the = require"the"
-local as, is, lines, map, push = _.as, _.is, _.lines, _.map, _.push
-local Egs,Cols,Nominal,Ratio = is"Egs",is"Cols",is"Nominal",is"Ratio"
+## Egs
+Egs store examples (in `rows`), summarized in columns (in `cols`)
 
--- ## Egs
--- Egs store examples (in `rows`), summarized in columns (in `cols`)
+```lua
 function Egs:new(names) return as({rows={}, cols=Cols(names)}, Egs) end
+```
 
+
+
+```lua
 function Egs:new4file(file,  i)
   for _,row in lines(file) do if i then i:add(row) else i=Egs(row) end end
   return i end
+```
 
+
+
+```lua
 function Egs.add(i,t)
   t = t.cells or t -- detail (for future extension)
   push(i.rows, map(i.cols.all, function(col) return col:add(t[col.at]) end)) end
+```
 
+
+
+```lua
 function Egs.mid(i,cols) 
   return map(cols or i.cols.all, function(col) return col:mid() end) end
+```
 
--- ## Col
--- Convert  names into various Column types.
+
+## Col
+Convert  names into various Column types.
+
+```lua
 local ako={}
 ako.ratio  = function(x) return x:find"^[A-Z]" end
 ako.goal   = function(x) return x:find"[-+!]"  end
 ako.klass  = function(x) return x:find"!$"     end
 ako.ignore = function(x) return x:find":$"     end
 ako.less   = function(x) return x:find"-$"     end
+```
 
--- Every new column goes into `all`.  Also, for any column that we we
--- are not ignoring, then that also gets added to (a) either the list
--- of `x` independent columns or `y` dependent columns; and (b) maybe,
--- the `klass` slot.
+
+Every new column goes into `all`.  Also, for any column that we we
+are not ignoring, then that also gets added to (a) either the list
+of `x` independent columns or `y` dependent columns; and (b) maybe,
+the `klass` slot.
+
+```lua
 function Cols:new(names)
   local i = as({names=names, klass=nil,all={}, x={}, y={}}, Cols)
   for at,name in pairs(names) do
@@ -42,29 +58,49 @@ function Cols:new(names)
       if ako.klass(name) then i.klass = col end
       push(ako.goal(name) and i.y or i.x, col) end end
   return i end
+```
 
--- ## Nominal
--- Summarize symbols in `Nominal`s
+
+## Nominal
+Summarize symbols in `Nominal`s
+
+```lua
 function Nominal:new(at,name)
   at,name = at or 0, name or ""
   return as({at=at,name=name,n=0,has={},mode=nil,most=0},Nominal) end
+```
 
+
+
+```lua
 function Nominal.add(i,x)
   if x ~= "?" then 
     i.n =i.n+1
     i.has[x] = 1 + (i.has[x] or 0) 
     if i.has[x] > i.most then i.most, i.mode = i.has[x], x end end
   return x end
+```
 
+
+
+```lua
 function Nominal.mid(i) return i.mode end
+```
 
--- ## Ratio
--- Summarize numbers in `Ratio`s
+
+## Ratio
+Summarize numbers in `Ratio`s
+
+```lua
 function Ratio:new(at,name)
   at,name = at or 0, name or ""
   return as({at=at,name=name,n=0,mu=0,m2=0,sd=0,
              w=ako.less(name) and -1 or 1},Ratio) end
+```
 
+
+
+```lua
 function Ratio.add(i,x)
   if x ~= "?" then 
     i.n =i.n+1
@@ -75,8 +111,16 @@ function Ratio.add(i,x)
     i.lo = i.lo and math.min(x, i.lo) or x
     i.hi = i.hi and math.max(x, i.hi) or x end 
   return x end
+```
 
+
+
+```lua
 function Ratio.mid(i) return i.mu end
+```
 
--- ## Return
+
+## Return
+
+```lua
 return {Egs=Egs, Ratio=Ratio, Nominal=Nominal}
