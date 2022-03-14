@@ -83,11 +83,11 @@ local eg={} -- demo tricks
 ---    | | |(_| | | |_\
                 
 -- ### Maths Tricks
--- **r()**:  Random number shorthand.     
+-- `r()`:  Random number shorthand.     
 r=math.random
 
--- **ish()**: is `x` is close-ish to `y`?               
--- **cosine()**: for three  ABC with sides abc,   
+-- `ish()`: is `x` is close-ish to `y`?               
+-- `cosine()`: for three  ABC with sides abc,   
 -- where does C falls on the line running AB?
 function ish(x,y,z)  return math.abs(y -x ) < z end 
 function cosine(a,b,c) 
@@ -97,57 +97,57 @@ function cosine(a,b,c)
 ---    ||_\ | _\
          
 -- ### List Tricks
--- **any()**: returns any thing from a list    
--- **many()**: return multiple **any()** things.
+-- `any()`: returns any thing from a list    
+-- `many()`: return multiple `any()` things.
 function any(a)        return a[ math.random(#a) ] end
 function many(a,n,  u) u={}; for j=1,n do u[1+#u] =any(a) end; return u end
 
--- **last()**: last item in a list     
--- ##per()**: p-th item in a list   
+-- `last()`: last item in a list     
+-- ##per()`: p-th item in a list   
 function last(a)       return a[ #a ] end
 function per(a,p)      return a[ (p*#a)//1 ] end
 
--- **pop()**: dump from end       
--- **push()**: add to ed
+-- `pop()`: dump from end       
+-- `push()`: add to ed
 function pop(a)        return table.remove(a) end
 function push(t,x)     t[1 + #t] = x; return x end
 
--- **sort()**: return a list, ordered on function `f`.   
--- **firsts()**:  order on sub-list first items
+-- `sort()`: return a list, ordered on function `f`.   
+-- `firsts()`:  order on sub-list first items
 function sort(t,f)     table.sort(t,f); return t end
 function firsts(a,b)   return a[1] < b[1] end
 function stsrif(a,b)   return a[1] > b[1] end
 
--- **copy()**: deep copy
+-- `copy()`: deep copy
 function copy(t,   u)
   if type(t)~="table" then return t end
   u={}; for k,v in pairs(t) do u[copy(k)]=copy(v) end
   return setmetatable(u, getmetatable(t)) end
 
--- **map()**: return a list with `f` run over all items
+-- `map()`: return a list with `f` run over all items
 function map(t,f, u) u={};for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
 
--- **sum()**: sum all list items, filtered through `f`   
+-- `sum()`: sum all list items, filtered through `f`   
 -- (which defaults to just use the ran values).
 function sum(t,f, n) 
   n=0; map(t,function(v) n=n+(f and f(v) or v) end)
   return n end
 
--- **inc()** increment a 1,2, or 3 nested dictionary counter
+-- `inc()` increment a 1,2, or 3 nested dictionary counter
 function inc(f,a,n)      f=f or{};f[a]=(f[a] or 0) + (n or 1);  return f end
 function inc2(f,a,b,n)   f=f or{};f[a]=inc( f[a] or {},b,n);  return f end
 function inc3(f,a,b,c,n) f=f or{};f[a]=inc2(f[a] or {},b,c,n);return f end
 
--- **has()** implements a 1,2, or level nested lookup
+-- `has()` implements a 1,2, or level nested lookup
 function has(f,a)      return f[a]                      or 0 end
 function has2(f,a,b)   return f[a] and has( f[a],b)   or 0 end
 function has3(f,a,b,c) return f[a] and has2(f[a],b,c) or 0 end
 
--- **shuffle()**: randomize order (sorts in  place)
+-- `shuffle()`: randomize order (sorts in  place)
 function shuffle(t,   j)
   for i=#t,2,-1 do j=math.random(i); t[i],t[j]=t[j],t[i] end; return t end
 
--- **pwoerset()**: return all subsets
+-- `pwoerset()`: return all subsets
 function powerset(s)
   local t = {{}}
   for i = 1, #s do
@@ -160,20 +160,20 @@ function powerset(s)
 ---                _|                    _|  
 
 -- ### String -> Things
--- **words()**: split  string into list of substrings
+-- `words()`: split  string into list of substrings
 function words(s,sep,   t)
   sep="([^" .. (sep or ",")  .. "]+)"
   t={}; for y in s:gmatch(sep) do t[1+#t] = y end; return t end
 
--- **things()**: convert strings in a list to things      
--- **thing()**: convert string to a thing
+-- `things()`: convert strings in a list to things      
+-- `thing()`: convert string to a thing
 function things(s) return map(words(s), thing) end 
 function thing(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
   return tonumber(x) or x end
 
--- **lines()**: (iterator) return lines in a file. Standard usage is      
+-- `lines()`: (iterator) return lines in a file. Standard usage is      
 -- `for cells in file(NAME,things) do ... end`
 function lines(file,f,      x)
   file = io.input(file)
@@ -185,11 +185,11 @@ function lines(file,f,      x)
 ---               _|                     _|  
 
 -- ### Things -> Strings
--- **fmt()**:  String format shorthand
+-- `fmt()`:  String format shorthand
 fmt = string.format
 
--- **oo()**: Print string from nested table.       
--- **o()**: Generate string from nested table. 
+-- `oo()`: Print string from nested table.       
+-- `o()`: Generate string from nested table. 
 function oo(t) print(o(t)) end
 function o(t,  seen, u)  
   if type(t)~="table" then return tostring(t) end
@@ -201,14 +201,14 @@ function o(t,  seen, u)
   u = #t>0 and map(t,show1) or map(slots(t),show2)
   return (t.s or "").."{"..table.concat(u," ").."}" end
 
--- **slots()**: return table slots, sorted.
+-- `slots()`: return table slots, sorted.
 function slots(t, u)
   local function public(k) return tostring(k):sub(1,1) ~= "_" end
   u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
   return sort(u) end
 
--- **rnds()**: round list of numbers    
--- **rnd()**: round one number.
+-- `rnds()`: round list of numbers    
+-- `rnd()`: round one number.
 function rnds(t,f) return map(t, function(x) return nd(x,f) end) end
 function rnd(x,f) 
   f = not f and "%s" or number and fmt("%%%sf",f) or f
@@ -219,7 +219,7 @@ function rnd(x,f)
 ---                    _|  
 
 -- ### Make settings from help string  and CLI (command-line interface)
--- **cli()**: In a string, look for lines indented with two spaces, starting with a dash.
+-- `cli()`: In a string, look for lines indented with two spaces, starting with a dash.
 -- Each such  line should have  a long and short flag, some help tesx
 -- and (at end of line), a  default values. e.g.
 --
@@ -245,7 +245,7 @@ function cli(help)
 ---     | (/__\ | _\
              
 -- ### Test suites
--- **ok()**: maybe, print stack dump on errors.   
+-- `ok()`: maybe, print stack dump on errors.   
 -- Increment the `fails` counter on failed `test`.
 function ok(tests,test,msg)
   print(test and "      PASS: "or "      FAIL: ",msg or "") 
@@ -253,7 +253,7 @@ function ok(tests,test,msg)
     tests.ails = tests.ails+1 
     if the and the.dump then assert(test,msg) end end end
 
--- **go()**:  run some `tests`, controlled by `settings`.    
+-- `go()`:  run some `tests`, controlled by `settings`.    
 -- Maybe update the `ails` counter.     
 -- Return the total fails to the operating system.
 function go(settings,tests,b4,      defaults)
@@ -277,8 +277,8 @@ function go(settings,tests,b4,      defaults)
 
 -- ### Objects
 
--- **new()**:  make a new instance.   
--- **class()**: define a new class of instances
+-- `new()`:  make a new instance.   
+-- `class()`: define a new class of instances
 as = setmetatable
 function is(s,   t)
   t={tostring=o,s=s or ""}; t.index=t
