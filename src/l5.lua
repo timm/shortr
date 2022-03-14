@@ -276,7 +276,6 @@ function go(settings,tests,b4,      defaults)
 ---          L|          
 ---
 -- ### Objects
-
 -- `new()`:  make a new instance.   
 -- `class()`: define a new class of instances
 as = setmetatable
