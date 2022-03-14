@@ -1,767 +1,521 @@
---------------------------------------------------------------------------------
----   __         ______                                                      ___
----  /\ \       /\  ___\                                                 ,o88888
----  \ \ \      \ \ \__/                                              ,o8888888'
----   \ \ \  __  \ \___``\                      ,:o:o:oooo.        ,8O88Pd8888"
----    \ \ \L\ \  \/\ \L\ \                 ,.::.::o:ooooOoOoO. ,oO8O8Pd888'"
----     \ \____/   \ \____/               ,.:.::o:ooOoOoOO8O8OOo.8OOPd8O8O"
----      \/___/     \/___/               , ..:.::o:ooOoOOOO8OOOOo.FdO8O8"
----                                      , ..:.::o:ooOoOO8O888O8O,COCOO"
----  a little LUA learning library       , . ..:.::o:ooOoOOOO8OOOOCOCO"
----  (c) Tim Menzies 2022, BSD-2         . ..:.::o:ooOoOoOO8O8OCCCC"o
----  https://menzies.us/l5                . ..:.::o:ooooOoCoCCC"o:o
----  Share and enjoy                      . ..:.::o:o:,cooooCo"oo:o:
----                                   `   . . ..:.:cocoooo"'o:o:::'
----                                   .`   . ..::ccccoc"'o:o:o:::'
----                                  :.:.    ,c:cccc"':.:.:.:.:.'
----                                ..:.:"'`::::c:"'..:.:.:.:.:.'
----                              ...:.'.:.::::"'    . . . . .'
----                             .. . ....:."' `   .  . . ''
----                            . . . ...."'
----                            .. . ."'     -hrr-
----                           .
----   
---- 
---------------------------------------------------------------------------------
+--- ---------------------------------------------------------------------------
+---     ___       ______                          ___                         
+---    /\_ \     /\  ___\                        /\_ \                        
+---    \//\ \    \ \ \__/                        \//\ \     __  __     __     
+---      \ \ \    \ \___``\                        \ \ \   /\ \/\ \  /'__`\   
+---       \_\ \_   \/\ \L\ \          __            \_\ \_ \ \ \_\ \/\ \L\.\_ 
+---       /\____\   \ \____/         /\_\           /\____\ \ \____/\ \__/.\_\
+---       \/____/    \/___/          \/_/           \/____/  \/___/  \/__/\/_/
+
+--                                                ___
+--                                            ,o88888
+--                                         ,o8888888'
+--                   ,:o:o:oooo.        ,8o88pd8888"
+--               ,.::.::o:ooooooooo. ,oo8o8pd888'"
+--             ,.:.::o:oooooooo8o8ooo.8oopd8o8o"
+--            , ..:.::o:oooooooo8ooooo.fdo8o8"
+--           , ..:.::o:oooooo8o888o8o,cocoo"
+--          , . ..:.::o:oooooooo8oooococo"
+--           . ..:.::o:oooooooo8o8occcc"o
+--              . ..:.::o:oooooococcc"o:o
+--              . ..:.::o:o:,cooooco"oo:o:
+--           `   . . ..:.:cocoooo"'o:o:::'
+--           .`   . ..::ccccoc"'o:o:o:::'
+--          :.:.    ,c:cccc"':.:.:.:.:.'
+--        ..:.:"'`::::c:"'..:.:.:.:.:.'
+--      ...:.'.:.::::"'    . . . . .'
+--     .. . ....:."' `   .  . . ''
+--   . . . ...."'
+--   .. . ."'     -hrr-
+--  .
+
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local the,help={},[[
+local the
+local help=[[
 
 lua l5.lua [OPTIONS]
-L5 == a very little LUA learning lab
+(c) 2022, Tim Menzies, BSD-2-Clause
+Explore the world better; explore it for good.
 
-OPTIONS (inference):                        | DEFAULT  
-  -boot   -b P  #bootstrap samples          | 256
-  -cohen  -c F  cohen's small effect size   | .35
-  -cliffs -C F  threshold on Cliff's delta  | .147
-  -far    -F F  look no further than "far"  | .9
-  -keep   -k    items to keep in a number   | 512 
-  -leaves -l    leaf size                   | .5 
-  -conf   -n F  confidence for stats tests  | .05
-  -p      -p P  distance calcs coefficient  | 2
-  -seed   -S P  random number seed          | 10019
-  -some   -s    look only at "some" items   | 512
+OPTIONS:
+  -cohen     -c cohen                     =  .35
+  -far       -F how far to seek poles     = .9
+  -goal      -g goal class                = recurrence-events
+  -keep      -k items to keep             = 256
+  -K         -K manage low class counts   = 1
+  -M         -M manage low evidence counts = 2
+  -minItems  -m min items in a rang e     = .5
+  -p         -p euclidean coefficient     = 2
+  -some      -S sample size for rows      = 512
+  -wait      -w wait inference some items = 10
+  -want      -W range optimization goal   = plan
 
-OPTIONS (housekeeping):
-  -dump   -d    on error, exit+ stacktrace  | false
-  -file   -f S  where to get data           | ../etc/data/auto93.csv
-  -help   -h    show help                   | false
-  -rnd    -r S  format string               | %5.2f
-  -todo   -t S  start-up action             | nothing
-]]
---------------------------------------------------------------------------------
---[[
-Copyright 2022, Tim Menzies
+OPTIONS, other:
+  -dump      -d stackdump on error      = false
+  -file      -f data file               = ../etc/data/breastcancer.csv
+  -help      -h show help               = false
+  -rnd       -r round numbers           = %5.2f
+  -seed      -s random number seed      = 10019
+  -todo      -t start-up action         = nothing
+  -n1        -n1 #repeated trials       = 20
+  -n2        -n2 samples per trial      = 100
+]]
+---    ___ ____ _ ____ _  _ ____ 
+---     |  |__/ | |    |_/  [__  
+---     |  |  \ | |___ | \_ ___] 
+                          
+---     _ _  _ _|_|_  _
+---    | | |(_| | | |_\
+                
+-- ### Maths Tricks
+local r,ish,cosine
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
+-- **r()**:  Random number shorthand.     
+r=math.random
 
-1. Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
+-- **ish()**: is `x` is close-ish to `y`?               
+-- **cosine()**: for three  ABC with sides abc,   
+-- where does C falls on the line running AB?
+function ish(x,y,z)  return math.abs(y -x ) < z end 
+function cosine(a,b,c) 
+  return math.max(0,math.min(1, (a^2+c^2-b^2)/(2*c+1E-32))) end
 
-2. Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
+---    |. __|_ _
+---    ||_\ | _\
+         
+-- ### List Tricks
+local any,many,last,per,pop,push,sort,firsts,stsrif,copy,map,sum
+local inc,inc2,inc3, has,has2,has3, powerset, shuffle
+-- **any()**: returns any thing from a list    
+-- **many()**: return multiple **any()** things.
+function any(a)        return a[ math.random(#a) ] end
+function many(a,n,  u) u={}; for j=1,n do u[1+#u] =any(a) end; return u end
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.  --]]
+-- **last()**: last item in a list     
+-- ##per()**: p-th item in a list   
+function last(a)       return a[ #a ] end
+function per(a,p)      return a[ (p*#a)//1 ] end
 
---------------------------------------------------------------------------------
--- ## Coding Conventions
---
--- - All config options in "the" (which is generated by parsing the help text)
--- - LOTS OF SHORT FUNCTIONS
--- - Line width = 80
--- - when you can, write functions down on one line
--- - "i" not "self" (so we can fit more on each line)
--- - for loop index variables, do not use i. try j,k instead.
--- - if something holds a list of thing, name the holding variable "all"
--- - no inheritance
--- - only define a method if that is for polymorphism
--- - all config items into a global "the" variable
--- - all the test cases (or demos) are "function Demo.xxx".
---   - If test case assertion crashed, add "1" to Demo.fails
---   - On exit return the value of Demo.fails as the exit status
--- - random seed reset so carefully, just once, at the end of the code.
--- - usually, no line with just "end" on it 
---------------------------------------------------------------------------------
----    ___  ____ ___ ____ 
----    |  \ |__|  |  |__| 
----    |__/ |  |  |  |  | 
+-- **pop()**: dump from end       
+-- **push()**: add to ed
+function pop(a)        return table.remove(a) end
+function push(t,x)     t[1 + #t] = x; return x end
 
--- This code reads date from csv files (where "?" denotes "missing value").
-local is={}
-function is.missing(x) return x=="?" end
+-- **sort()**: return a list, ordered on function `f`.   
+-- **firsts()**:  order on sub-list first items
+function sort(t,f)     table.sort(t,f); return t end
+function firsts(a,b)   return a[1] < b[1] end
+function stsrif(a,b)   return a[1] > b[1] end
 
--- The names on  row1 of that file define the role of that column.
--- Names in row1 ending with ":" are to be ignored
-function is.skip(x) return x:find":$" end
+-- **copy()**: deep copy
+function copy(t,   u)
+  if type(t)~="table" then return t end
+  u={}; for k,v in pairs(t) do u[copy(k)]=copy(v) end
+  return setmetatable(u, getmetatable(t)) end
 
--- Names in row1 starting in upper case are numbers 
-function is.num(x) return x:find"^[A-Z]" end
+-- **map()**: return a list with `f` run over all items
+function map(t,f, u) u={};for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
 
--- Names in row1 ending with "!" are classes.
-function is.class(x) return x:find"!$" end
+-- **sum()**: sum all list items, filtered through `f`   
+-- (which defaults to just use the ran values).
+function sum(t,f, n) 
+  n=0; map(t,function(v) n=n+(f and f(v) or v) end)
+  return n end
 
--- Names in row1 ending with "-" are objectives to be minimized.
-function is.less(x) return x:find"-$" end
+-- **inc()** increment a 1,2, or 3 nested dictionary counter
+function inc(f,a,n)      f=f or{};f[a]=(f[a] or 0) + (n or 1);  return f end
+function inc2(f,a,b,n)   f=f or{};f[a]=inc( f[a] or {},b,n);  return f end
+function inc3(f,a,b,c,n) f=f or{};f[a]=inc2(f[a] or {},b,c,n);return f end
 
--- Names in row1 ending with "+" are objectives to be maximized.
-function is.more(x) return x:find"+$" end
+-- **has()** implements a 1,2, or level nested lookup
+function has(f,a)      return f[a]                      or 0 end
+function has2(f,a,b)   return f[a] and has( f[a],b)   or 0 end
+function has3(f,a,b,c) return f[a] and has2(f[a],b,c) or 0 end
 
--- Objectives or classes are dependent variables.
-function is.dependent(x) return is.more(x) or is.less(x) or is.class(x) end
+-- **shuffle()**: randomize order (sorts in  place)
+function shuffle(t,   j)
+  for i=#t,2,-1 do j=math.random(i); t[i],t[j]=t[j],t[i] end; return t end
 
--- For example, in this data file, we will ignore column 3 (Hp:),
--- try to minimize weight (Lbs-) and maximize acceleration and 
--- miles per hour (Acc+, Mpg+). Also, with one exception (origin),
--- everything is numeric. Finally,  there are some missing values on
--- lines 3 and lines 7.
---
---      Clndrs, Weight, Hp:, Lbs-, Acc+, Model, origin, Mpg+
---      8,      304.0,  193, 4732, 18.5, 70,    1,      10
---      8,      ?,      215, 4615, 14,   70,    1,      10
---      4,      85,     70,  2070, 18.6, 78,    3,      40
---      4,      85,     65,  2110, 19.2, 80,    3,      40
---      4,      85,     ?,   1835, 17.3, 80,    2,      40
---      4,      98,     76,  2144, 14.7, 80,    2,      40
+-- **pwoerset()**: return all subsets
+function powerset(s)
+  local t = {{}}
+  for i = 1, #s do
+    for j = 1, #t do
+      t[#t+1] = {s[i],table.unpack(t[j])} end end
+  return t end
 
---------------------------------------------------------------------------------
----    ____ ___   _ ____ ____ ___ ____ 
----    |  | |__]  | |___ |     |  [__  
----    |__| |__] _| |___ |___  |  ___] 
+---     __|_ _. _  _  _  '~)  _|_|_ . _  _  _
+---    _\ | | || |(_|_\   /_   | | ||| |(_|_\
+---                _|                    _|  
 
-local as = setmetatable
-local function obj(   t)
-  t={__tostring=o}; t.__index=t
-  return as(t, {__call=function(_,...) return t.new(_,...) end}) end
+-- ### String -> Things
+local words, things, thing, lines
 
-local Sym = obj() -- Where to summarize symbols
-function Sym:new(at,s) return as({
-  is="Sym",     -- type
-  at=at or 0,   -- column index
-  name=s or "", -- column name
-  n=0,          -- number of items summarized in this column
-  all={},       -- all[x] = n means we've seen "n" repeats of "x" 
-   most=0,      -- count of the most frequently seen symbol
-   mode=nil     -- the most commonly seen letter
-  }, Sym) end
+-- **words()**: split  string into list of substrings
+function words(s,sep,   t)
+  sep="([^" .. (sep or ",")  .. "]+)"
+  t={}; for y in s:gmatch(sep) do t[1+#t] = y end; return t end
 
-local Num = obj() -- Where to summarize numbers
-function Num:new(at,s) return as({
-  is="Num",     -- type
-  at=at or 0,   -- column index
-  name=s or "", -- column name
-  n=0,          -- number of items summarizes in this column
-  mu=0,         -- mean (updated incrementally)
-  m2=0,         -- second moment (updated incrementally)
-  sd=0,         -- standard deviation
-  ok=false,     -- true if "all" is sorted
-  all={},       -- a sample of items seen so far
-  lo=1E31,      -- lowest number seen; initially, big so 1st num sends it low
-  hi=-1E31,     -- highest number seen;initially, msall to 2st num sends it hi
-  w=is.less(s or "") and -1 or 1 -- "-1"= minimize and "1"= maximize
-  }, Num) end
-
-local Egs = obj() -- Where to store examples, summarized into Syms or Nums
-function Egs:new(names,     i,col,here)  i=as({
-  is="Egs",     -- type
-  all={},       -- all the rows
-  names=names,  -- list of name 
-  cols={},      -- list of all columns  (Nums or Syms)
-  x={},         -- independent columns (nothing marked as "skip")
-  y={},         -- dependent columns (nothing marked as "skip")
-  class=nil     --  classes
-  },Egs)
-  for at,name in pairs(names) do
-    col = (is.num(name) and Num or Sym)(at,name)
-    i.cols[1+#i.cols] = col
-    here = is.dependent(name) and i.y or i.x
-    if not is.skip(name) then 
-      here[1 + #here] = col 
-      if is.class(name) then i.class=col end end end
-  return i end  
----     _ | _  _ . _  _ 
----    (_ |(_)| ||| |(_|
----                  _|
-
-function Num.clone(i) return Num(i.at, i.name) end
-function Sym.clone(i) return Sym(i.at, i.name) end
-
-local data
-function Egs.clone(i,rows,    copy) 
-  copy = Egs(i.names) 
-  for _,row in pairs(rows or {}) do  data(copy,row)  end
-  return copy end
---------------------------------------------------------------------------------
----    _  _ _ ____ ____    ___ ____ ____ _    ____ 
----    |\/| | [__  |        |  |  | |  | |    [__  
----    |  | | ___] |___     |  |__| |__| |___ ___] 
-                                            
-local r   = math.random
-local fmt = string.format
-local unpack = table.unpack
-local function push(t,x) table.insert(t,x); return x end
----     _ _  _  _ _ _ 
----    (_(_)(/_| (_(/_
-               
-local thing,things,file2things
+-- **things()**: convert strings in a list to things      
+-- **thing()**: convert string to a thing
+function things(s) return map(words(s), thing) end 
 function thing(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
   return tonumber(x) or x end
 
-function things(x,sep,  t)
-  t={}; for y in x:gmatch(sep or"([^,]+)") do t[1+#t]=thing(y) end
-  return t end
-
-function file2things(file,      x)
+-- **lines()**: (iterator) return lines in a file. Standard usage is      
+-- `for cells in file(NAME,things) do ... end`
+function lines(file,f,      x)
   file = io.input(file)
-  return function()
-    x=io.read(); 
-    if x then return things(x) else io.close(file) end end end
----     _  _ _|_   _ _ _|_
----    (_|(/_ | , _\(/_ | 
----     _|               
+  f    = f or things
+  return function() x=io.read(); if x then return f(x) else io.close(file) end end end
 
-local last,per,any,many
-function last(a)       return a[ #a ] end
-function per(a,p)      return a[ (p*#a)//1 ] end
-function any(a)        return a[ math.random(#a) ] end
-function many(a,n,  u) u={}; for j=1,n do push(u,any(a)) end; return u end
----    |. __|_
----    ||_\ | 
-       
-local firsts,sort,map,slots,copy
-function firsts(a,b)  return a[1] < b[1] end
-function sort(t,f)    table.sort(t,f); return t end
-function map(t,f, u)  u={};for k,v in pairs(t) do push(u,f(v)) end; return u end
-function slots(t, u,s)
-  u={}
-  for k,v in pairs(t) do s=tostring(k);if s:sub(1,1)~="_" then push(u,k) end end
+---    _|_|_ . _  _  _  '~)   __|_ _. _  _  _
+---     | | ||| |(_|_\   /_  _\ | | || |(_|_\
+---               _|                     _|  
+
+-- ### Things -> Strings
+local fmt,o,oo,slots,rnds,rnd
+
+-- **fmt()**:  String format shorthand
+fmt = string.format
+
+-- **oo()**: Print string from nested table.       
+-- **o()**: Generate string from nested table. 
+function oo(t) print(o(t)) end
+function o(t,  seen, u)  
+  if type(t)~="table" then return tostring(t) end
+  seen = seen or {}
+  if seen[t] then return "..." end
+  seen[t] = t
+  local function show1(x) return o(x, seen) end
+  local function show2(k) return fmt(":%s %s",k, o(t[k],seen)) end
+  u = #t>0 and map(t,show1) or map(slots(t),show2)
+  return (t.s or "").."{"..table.concat(u," ").."}" end
+
+-- **slots()**: return table slots, sorted.
+function slots(t, u)
+  local function public(k) return tostring(k):sub(1,1) ~= "_" end
+  u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
   return sort(u) end
 
-function copy(t,   u)
-  if type(t)~="table" then return t end
-  u={}; for k,v in pairs(t) do u[copy(k)]=copy(v) end
-  return setmetatable(u, getmetatable(t)) end
-     
----     _  _ . _ _|_
----    |_)|  || | | 
----    |           
-
-local oo,o, rnd, rnds 
-function oo(t) print(o(t)) end
-function o(t,seen,        key,xseen,u)
-  seen = seen or {}
-  if type(t)~="table" then return tostring(t) end
-  if seen[t]          then return "..." end
-  seen[t] = t
-  key   = function(k) return fmt(":%s %s",k,o(t[k],seen)) end
-  xseen = function(x) return o(x,seen) end
-  u = #t>0 and map(t,xseen) or map(slots(t),key)
-  return (t.is or "")..'{'..table.concat(u," ").."}" end
-
-function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
+-- **rnds()**: round list of numbers    
+-- **rnd()**: round one number.
+function rnds(t,f) return map(t, function(x) return nd(x,f) end) end
 function rnd(x,f) 
-  return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or "%s",x) end
----    _|_ _  __|_   _   ._|_ _  _
----     | (/__\ |   _\|_|| | (/__\
-                           
-local Demo, ok = {fails=0}
-function ok(test,msg)
-  print(test and "PASS: "or "FAIL: ",msg or "") 
-  if not test then 
-    Demo.fails=Demo.fails+1 
-    if the.dump then assert(test,msg) end end end
+  f = not f and "%s" or number and fmt("%%%sf",f) or f
+  return fmt(type(x)=="number" and (x~=x//1 and f) or "%s",x) end
 
-function Demo.main(todo,seed)
-   for k,one in pairs(todo=="all" and slots(Demo) or {todo}) do
-     if k ~= "main" and type(Demo[one]) == "function" then
-       math.randomseed(seed)
-       Demo[one]() end end 
-   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end  
-   return Demo.fails end
----     _  _  _ _ _   |_  _ | _    __|_ _. _  _ 
----    |_)(_|| _\(/_  | |(/_||_)  _\ | | || |(_|
----    |                     |                _|
+---     _ _ _|__|_. _  _  _
+---    _\(/_ |  | || |(_|_\
+---                    _|  
 
-local function settings(txt,  d)
-   d={}
-   txt:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+-- ### Make settings from help string  and CLI (command-line interface)
+local cli
+
+-- **cli()**: In a string, look for lines indented with two spaces, starting with a dash.
+-- Each such  line should have  a long and short flag, some help tesx
+-- and (at end of line), a  default values. e.g.
+--
+--     -seed -S set the random number seed  = 10019
+--
+-- Each line generates  a setting  with key "seed" and
+-- default value "10019". If the command line contains one of the flags
+-- (`-seed` or `-s`) then update those defaults.
+function cli(help)
+  local d,used = {},{}
+  help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
     function(long,key,short,x)
+      assert(not used[short], "repeated short flag ["..short.."]")
+      used[short]=short
       for n,flag in ipairs(arg) do 
         if flag==short or flag==long then
           x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
-      if x=="false" then the[key]=false elseif x=="true" then the[key]=true else
-      d[key] = tonumber(x) or x end end)
-  if d.help then print(txt) end
-  return d end
---------------------------------------------------------------------------------
----    _  _ ____ ____    ____ ____ ____ ____ ____ 
----    |  | [__  |___    |    |__| [__  |___ [__  
----    |__| ___] |___    |___ |  | ___] |___ ___] 
+       d[key] = x==true and true or thing(x) end)
+  if d.help then os.exit(print(help)) end
+  return d end
 
----        _  _| _ _|_ _    _ _ | _
----    |_||_)(_|(_| | (/_  (_(_)|_\
----       |                        
+---    _|_ _  __|_ _
+---     | (/__\ | _\
+             
+-- ### Test suites
+local ok,go
 
-local add
-function add(i,x, inc)
-  inc = inc or 1
-  if not is.missing(x) then
-    i.n = i.n + inc
-    i:internalAdd(x,inc) end
+-- **ok()**: maybe, print stack dump on errors.   
+-- Increment the `fails` counter on failed `test`.
+function ok(tests,test,msg)
+  print(test and "      PASS: "or "      FAIL: ",msg or "") 
+  if not test then 
+    tests.ails = tests.ails+1 
+    if the and the.dump then assert(test,msg) end end end
+
+-- **go()**:  run some `tests`, controlled by `settings`.    
+-- Maybe update the `ails` counter.     
+-- Return the total fails to the operating system.
+function go(settings,tests,b4,      defaults)
+  tests.ails = 0
+  defaults={}; for k,v in pairs(settings) do defaults[k]=v end
+  local todo =  settings.todo or "all"
+  for k,one in pairs(todo=="all" and slots(tests) or {todo}) do
+    if k ~= "main" and type(tests[one]) == "function" then
+      for k,v in pairs(defaults) do settings[k]=v end
+      math.randomseed(settings.seed  or 1)
+      print(fmt("#%s",one))
+      tests[one](tests) end end 
+  if b4 then
+    for k,v in pairs(_ENV) do 
+      if not b4[k] then print("??",k,type(v)) end end end
+  os.exit(tests.ails) end
+
+---     _ |_  . _  __|_ _
+---    (_)|_) |(/_(_ | _\
+---          L|          
+
+-- ### Objects
+local as, is
+
+-- **new()**:  make a new instance.   
+-- **class()**: define a new class of instances
+as = setmetatable
+function is(s,   t)
+  t={tostring=o,s=s or ""}; t.index=t
+  return as(t, {call=function(...) return t.new(...) end}) end
+
+--- ---------------------------------------------------------------------------
+
+---    _  _ ___     ____ _  _ ____ 
+---    |\ | |__]    |  | |\ | |___ 
+---    | \| |__]    |__| | \| |___ 
+
+local nb1, train1,test1,classify1,score1
+
+function nb1(file)
+  local i = {h={}, nh=0,e={}, names=nil, n=0, wait=the.wait, log={}}
+  for row in lines(file) do 
+    if not i.names then i.names=row else test1(i,row); train1(i,row) end end 
+  return score1(i.log) end
+
+function train1(i,t)
+  i.n = i.n + 1
+  if not i.h[t[#t]] then i.nh = i.nh + 1 end
+  inc(i.h, t[#t])
+  for col,x in pairs(t) do if x~="?" then inc3(i.e,col,x,t[#t]) end end end
+
+function test1(i,t)
+  if i.n > i.wait then push(i.log,{want=t[#t], got=classify1(i,t)}) end end
+
+function classify1(i,t)
+  local hi,out = -1
+  for h,_ in pairs(i.h) do 
+    local prior = ((i.h[h] or 0) + the.K)/(i.n + the.K*i.nh)
+    local l = prior
+    for col,x in pairs(t) do
+      if x ~= "?" and col ~= #t then 
+        l=l*(has3(i.e,col,x,h) + the.M*prior)/((i.h[h] or 0) + the.M) end end 
+    if l>hi then hi,out=l,h end end
+  return out end
+
+function score1(log,   n)
+  n=0; for _,x in pairs(log) do if x.want==x.got then n=n+1 end end
+  return n/#log end 
+--- ---------------------------------------------------------------------------
+---    ____ ____ ____ 
+---    |___ | __ [__  
+---    |___ |__] ___] 
+
+-- ## Egs
+local Egs,Cols,Ratio,Nominal=is"Egs",is"Cols",is"Ratio", is"Nominal"
+
+-- Egs store examples (in `rows`), summarized in columns (in `cols`)
+function Egs:new(names) return as({rows={}, cols=Cols(names)}, Egs) end
+
+function Egs:new4file(file,  i)
+  for _,row in lines(file) do if i then i:add(row) else i=Egs(row) end end
+  return i end
+
+function Egs.add(i,t)
+  t = t.cells or t -- detail (for future extension)
+  push(i.rows, map(i.cols.all, function(col) return col:add(t[col.at]) end)) end
+
+function Egs.mid(i,cols) return map(cols or i.cols.all, function(col) return col:mid() end) end
+
+function Egs.clone(i) return Egs(i.cols.names) end
+
+function Egs.klass(i,row) return row[i.cols.klass.at] end
+
+-- ## Col
+-- Convert  names into various Column types.
+local ako={}
+ako.ratio  = function(x) return x:find"^[A-Z]" end
+ako.goal   = function(x) return x:find"[-+!]"  end
+ako.klass  = function(x) return x:find"!$"     end
+ako.ignore = function(x) return x:find":$"     end
+ako.less   = function(x) return x:find"-$"     end
+
+-- Every new column goes into `all`.  Also, for any column that we we
+-- are not ignoring, then that also gets added to (a) either the list
+-- of `x` independent columns or `y` dependent columns; and (b) maybe,
+-- the `klass` slot.
+function Cols:new(names)
+  local i = as({names=names, klass=nil,all={}, x={}, y={}}, Cols)
+  for at,name in pairs(names) do
+    local col = (ako.ratio(name) and Ratio or Nominal)(at,name) 
+    col.is_goal = ako.goal(name)
+    push(i.all, col)
+    if not ako.ignore(name) then
+      if ako.klass(name) then i.klass = col end
+      push(ako.goal(name) and i.y or i.x, col) end end
+  return i end
+
+-- ## Nominal
+-- Summarize symbols in `Nominal`s
+function Nominal:new(at,name)
+  at,name = at or 0, name or ""
+  return as({at=at, name=name, n=0, has={}, mode=nil, most=0}, Nominal) end
+
+function Nominal.add(i,x)
+  if x ~= "?" then 
+    i.n =i.n+1
+    i.has[x] = 1 + (i.has[x] or 0) 
+    if i.has[x] > i.most then i.most, i.mode = i.has[x], x end end
   return x end
 
-function Sym.internalAdd(i,x,inc)
-  i.all[x] = inc + (i.all[x] or 0)
-  if i.all[x] > i.most then i.most, i.mode = i.all[x], x end end
+function Nominal.mid(i) return i.mode end
 
-function Num.internalAdd(i,x,inc,    d)
-  for j=1,inc do
-    d     = x - i.mu
-    i.mu  = i.mu + d/i.n
-    i.m2  = i.m2 + d*(x - i.mu)
-    i.sd  = (i.m2<0 or i.n<2) and 0 or ((i.m2/(i.n-1))^0.5)
-    i.lo  = math.min(x, i.lo)
-    i.hi  = math.max(x, i.hi) 
-    if     #i.all < the.keep   then i.ok=false; push(i.all,x)  
-    elseif r() < the.keep/i.n then i.ok=false; i.all[r(#i.all)]=x end end end
+-- ## Ratio
+-- Summarize numbers in `Ratio`s
+function Ratio:new(at,name)
+  at,name = at or 0, name or ""
+  return as({at=at, name=name, n=0, mu=0, m2=0, sd=0, w=ako.less(name) and -1 or 1}, Ratio) end
 
-function Num.sorted(i)
-  if not i.ok then i.all = sort(i.all) end
-  i.ok=true 
-  return i.all end
----     _ _  _ |  _    _| _ _|_ _ 
----    | | |(_||<(/_  (_|(_| | (_|
-                           
-local file2Egs -- not "local data" (since defined above)
-function data(i,row)
-  push(i.all, row)
-  for _,col in pairs(i.cols) do add(col, row[col.at]) end 
-  return i end
+function Ratio.add(i,x)
+  if x ~= "?" then 
+    i.n =i.n+1
+    local d= x - i.mu
+    i.mu = i.mu + d/i.n
+    i.m2 = i.m2 + d*(x - i.mu)
+    i.sd = ((i.m2<0 or i.n<2) and 0) or ((i.m2/(i.n - 1))^0.5)
+    i.lo = i.lo and math.min(x, i.lo) or x
+    i.hi = i.hi and math.max(x, i.hi) or x end 
+  return x end
 
-function file2Egs(file,   i)
-  for row in file2things(file) do
-    if i then data(i,row) else i = Egs(row) end end
-  return i end
----     _    _ _  _ _  _  _._  _ 
----    _\|_|| | || | |(_|| |/_(/_
-                          
-local mids
-function mids(i,rows,cols) return i:clone(rows):mid(cols) end
+function Ratio.mid(i) return i.mu end
+--- --------------------------------------------------------------------------
+---    _  _ ___  _  _ _  _ _  _ 
+---    |\ | |__] |\ | |  | |\/| 
+---    | \| |__] | \| |__| |  | 
+local Nb = is"Nb"
 
-function Egs.mid(i,cols) 
-  return map(cols or i.y,function(col) return col:mid() end) end
+-- ## Add likelihood calculators
+function Egs.like(i,t,prior)
+  local like = prior
+  for at,x in pairs(t) do
+    local col = i.cols.all[at]
+    if not col.is_goal then
+      like = like * (x=="?" and 1 or i.cols.all[at]:like(x,prior)) end end 
+  return like end
 
-function Sym.mid(i) return i.mode end
-function Num.mid(i) return i.mu end
+function Ratio.like(i,x,prior)
+  if x < i.mu - 3*i.sd then return 0 end
+  if x > i.mu + 3*i.sd then return 0 end
+  local denom = (math.pi*2*i.sd^2)^.5
+  local nom   =  math.exp(1)^(-(x-mu)^2/(2*i.sd^2+1E-32))
+  return nom/(denom + 1E-32) end
 
-function Num.div(i) return i.sd end
-function Sym.div(i,  e)
-  e=0; for _,n in pairs(i.all) do e=e + n/i.n*math.log(n/i.n,2) end
-  return -e end
----     _|. __|_ _  _  _ _ 
----    (_||_\ | (_|| |(_(/_
-                    
-local far,furthest,neighbors,dist
-function far(      i,r1,rows,far) 
-  return per(neighbors(i,r1,rows),far or the.far)[2] end
+function Nominal.like(i,x,prior) 
+  return ((i.has[x] or 0) + the.M*prior)/(i.n + the.M) end 
 
-function furthest( i,r1,rows) 
-  return last(neighbors(i,r1,rows))[2] end 
+-- ## Create and update
+function Nb:new() 
+  return as({h={}, all=nil, nh=0, n=0, wait=the.wait, log={}},Nb)  end
 
-function neighbors(i,r1,rows) 
-  return sort(map(rows, function(r2) return {dist(i,r1,r2),r2} end),firsts) end
+function Nb:new4file(file,     i) 
+  i = Nb()
+  for row in lines(file) do i:add(row) end end
 
-function dist(i,row1,row2,    d,n,a,b,inc)
-  d,n = 0,0    
-  for _,col in pairs(i.x) do
-    a,b = row1[col.at], row2[col.at]
-    inc = is.missing(a) and is.missing(b) and 1 or col:dist1(a,b) 
-    d = d + inc^the.p
-    n = n + 1 end 
-  return (d/n)^(1/the.p) end
+function Nb.add(i,row)
+  if not i.all then print(1); i.all = Nb(row) else i:test(row); i:train(row) end end 
 
-function Sym.dist1(i,a,b) return a==b and 0 or 1 end
+-- ## Train, test, classify
+function Nb.train(i,t)
+  i.n = i.n + 1
+  print(2,o(i.all))
+  local h = i.all:klass(t)
+  print(3)
+  if not i.h[h] then i.nh = i.nh + 1; i.h[h] = i.all:clone() end
+  i.h[h]:add(row) 
+  i.all:add(row) end
 
-function Num.dist1(i,a,b)
-  if     is.missing(a) then b=i:norm(b); a=b<.5 and 1 or 0 
-  elseif is.missing(b) then a=i:norm(a); b=a<.5 and 1 or 0
-  else   a,b = i:norm(a), i:norm(b)  end
-  return math.abs(a - b) end
+function Nb.test(i,t)
+  if i.n > i.wait then push(i.log, {want=i.all:klass(t), got=classify(i,t)}) end end
 
-function Num.norm(i,x)
-  return i.hi - i.lo < 1E-32 and 0 or (x - i.lo)/(i.hi - i.lo) end 
----     _ |    __|_ _  _
----    (_ ||_|_\ | (/_| 
-                
-local half, cluster, clusters
-function half(i, rows,    project,row,some,left,right,lefts,rights,c,mid)
-  function project(row,a,b)
-    a= dist(i,left,row)
-    b= dist(i,right,row)
-    return {(a^2 + c^2 - b^2)/(2*c), row} 
-  end ----------------------- 
-  some  = many(rows,        the.some)
-  left  = furthest(i,any(some), some)
-  right = furthest(i,left,      some)
-  c     = dist(i,left,right)
-  lefts,rights = {},{}
-  for n, projection in pairs(sort(map(rows,project),firsts)) do
-    if n==#rows//2 then mid=row end
-    push(n <= #rows//2 and lefts or rights, projection[2]) end
-  return lefts, rights, left, right, mid, c  end
-
-function cluster(i,rows,  here,lefts,rights)
-  rows = rows or i.all
-  here = {all=rows}
-  if #rows >= 2* (#i.all)^the.leaves then
-    lefts, rights, here.left, here.right, here.mid = half(i, rows)
-    if #lefts < #rows then
-      here.lefts = cluster(i,lefts)
-      here.rights= cluster(i,rights) end end
-  return here end
-
-function clusters(i,format,t,pre,   front)
-  if t then
-    pre=pre or ""
-    front = fmt("%s%s",pre,#t.all)
-    if not t.lefts and not t.rights then
-      print(fmt("%-20s%s",front, o(rnds(mids(i,t.all),format))))
-    else 
-      print(front)
-      clusters(i,format,t.lefts, "| ".. pre)
-      clusters(i,format,t.rights,"| ".. pre) end end end
----     _|. _ _ _ _ _|_._  _ 
----    (_||_\(_| (/_ | |/_(/_
-                      
-local merge,merged,spans,bestSpan
-function Sym.spans(i, j)
-  local xys,all,one,last,x,y,n = {}, {}
-  for x,n in pairs(i.all) do push(xys, {x,"lefts",n}) end
-  for x,n in pairs(j.all) do push(xys, {x,"rights",n}) end
-  for _,tmp in ipairs(sort(xys,firsts)) do
-    x,y,n = unpack(tmp)
-    if x ~= last then
-      last = x
-      one  = push(all, {lo=x, hi=x, all=Sym(i.at,i.name)}) end
-    add(one.all, y, n) end
-  return all end
-
-function Num.spans(i, j)
-  local xys,all,lo,hi,gap,one,x,y,n = {},{}
-  lo,hi = math.min(i.lo, j.lo), math.max(i.hi,j.hi)
-  gap   = (hi - lo) / (6/the.cohen)
-  for _,n in pairs(i.all) do push(xys, {n,"lefts",1}) end
-  for _,n in pairs(j.all) do push(xys, {n,"rights",1}) end
-  one = {lo=lo, hi=lo, all=Sym(i.at,i.name)}
-  all = {one}
-  for _,tmp in ipairs(sort(xys,firsts)) do
-    x,y,n = unpack(tmp) 
-    if   one.hi - one.lo > gap 
-    then one = push(all, {lo=one.hi, hi=x, all=one.all:clone()}) end 
-    one.hi = x
-    add(one.all, y, n) end
-  all          = merge(all)
-  all[1   ].lo = -math.huge
-  all[#all].hi =  math.huge
-  return all end
-
-function merge(b4,      j,n,now,a,b,both)
-  j, n, now = 0, #b4, {}
-  while j < #b4 do
-    j    = j+1
-    a, b = b4[j], b4[j+1]
-    if   b then
-      both = a.all:merged(b.all)
-      if    both 
-      then  a = {lo=a.lo, hi=b.hi, all=both} 
-            j = j + 1 end end
-    push(now,a) end
-  return #now == #b4 and b4 or merge(now) end
-
--- XXX make .marged and function
-function Num.merge(i,j,    k)
-  k=i:clone()
-  for _,x in pairs(i.all) do add(k,x) end
-  for _,x in pairs(j.all) do add(k,x) end
-  return k end
-
-function Sym.merge(i,j,    k)
-  k = i:clone()
-  for x,n in pairs(i.all) do add(k,x,n) end
-  for x,n in pairs(j.all) do add(k,x,n) end
-  return k end
-
-function Sym.merged(i,j,   k,ei,ej,ek)
-  k = i:merge(j)
-  ei, ej, ek= i:div(), j:div(), k:div()
-  if ek*.99 <= (i.n*ei + j.n*ej)/k.n then return k end end
-
-function spans(egs1,egs2,      spans,tmp,col1,col2)
-  spans = {}
-  for c,col1 in pairs(egs1.x) do
-    col2 = egs2.x[c]
-    tmp = col1:spans(col2)
-    if #tmp> 1 then
-      for _,one in pairs(tmp) do push(spans,one) end end end
-  return spans end
-
-function bestSpan(spans)  
-  local divs,ns,n,div,stats,dist2heaven = Num(), Num()
-  function dist2heaven(s) return {((1 - n(s))^2 + (0 - div(s))^2)^.5,s} end 
-  function div(s)         return divs:norm( s.all:div() ) end
-  function n(s)           return   ns:norm( s.all.n     ) end
-  for _,s in pairs(spans) do 
-    add(divs, s.all:div())
-    add(ns,   s.all.n) end
-  return sort(map(spans, dist2heaven), firsts)[1][2]  end 
----     _      _ | _ . _ 
----    (/_ >< |_)|(_||| |
----          |          
-
-local xplain,xplains,selects,spanShow
-function xplain(i,rows,used,   
-                 stop,here,left,right,lefts0,rights0,lefts1,rights1)
-  used=used or {}
-  rows = rows or i.all
-  here = {all=rows}
-  stop = (#i.all)^the.leaves 
-  if #rows >= 2*stop then
-    lefts0, rights0, here.left, here.right, here.mid, here.c  = half(i, rows)
-    if #lefts0 < #rows then
-      here.selector = bestSpan(spans(i:clone(lefts0),i:clone(rights0)))
-      push(used, {here.selector.all.name, here.selector.lo, here.selector.hi})
-      lefts1,rights1 = {},{}
-      for _,row in pairs(rows) do 
-        push(selects(here.selector, row) and lefts1 or rights1, row) end
-      if #lefts1  > stop then here.lefts  = xplain(i,lefts1,used) end
-      if #rights1 > stop then here.rights = xplain(i,rights1,used) end end end
-  return here end
-
-function xplains(i,format,t,pre,how,    sel,front)
-  pre, how = pre or "", how or ""
-  if t then
-    pre=pre or ""
-    front = fmt("%s%s%s %s",pre,how, #t.all, t.c and rnd(t.c) or "")
-    if t.lefts and t.rights then print(fmt("%-35s",front)) else
-      print(fmt("%-35s %s",front, o(rnds(mids(i,t.all),format)))) 
-    end
-    sel = t.selector
-    xplains(i,format,t.lefts,  "| ".. pre, spanShow(sel).." : ")
-    xplains(i,format,t.rights, "| ".. pre, spanShow(sel,true) .." : ") end end
-
-function selects(span,row,    lo,hi,at,x)
-  lo, hi, at = span.lo, span.hi, span.all.at
-  x = row[at]
-  if is.missing(x) then return true end
-  if lo==hi then return x==lo else return lo <= x and x < hi end end
-
-function spanShow(span, negative,   hi,lo,x,big)
-  if not span then return "" end
-  lo, hi, x, big  = span.lo, span.hi, span.all.name, math.huge
-  if   not negative 
-  then if lo ==  hi  then return fmt("%s == %s",x,lo)  end   
-       if hi ==  big then return fmt("%s >= %s",x,lo)  end   
-       if lo == -big then return fmt("%s <  %s",x,hi)  end   
-       return fmt("%s <= %s < %s",lo,x,hi)
-  else if lo ==  hi  then return fmt("%s != %s",x,lo)  end   
-       if hi ==  big then return fmt("%s <  %s",x,lo)  end   
-       if lo == -big then return fmt("%s >= %s",x,hi)  end   
-       return fmt("%s < %s and %s >=  %s", x,lo,x,hi)  end end
----     __|_ _ _|_ _
----    _\ | (_| | _\
-
-local quintiles,smallfx,bootstrap
-function quintiles(ts,width,  nums,out,all,n,m)
-  width=width or 32
-  nums=Num(); for _,t in pairs(ts) do
-                for _,x in pairs(sort(t)) do add(nums,x) end end
-  all,out = nums.all, {}
-  for _,t in pairs(ts) do
-     local s, where = {}
-     where = function(n) return (width*nums:norm(n))//1 end
-     for j = 1, width do s[j]=" " end
-     for j = where(per(t,.1)), where(per(t,.3)) do s[j]="-" end
-     for j = where(per(t,.7)), where(per(t,.9)) do s[j]="-" end
-     s[where(per(t, .5))] = "|"
-     push(out,{display=table.concat(s),
-               data = t,
-               pers = map({.1,.3,.5,.7,.9},
-                           function(p) return rnd(per(t,p))end)}) end
+function Nb.classify(i,t)
+  local hi,out = -1
+  for klass,h in pairs(i.h) do 
+    local prior = (h.n + the.K) / (i.n + the.K*i.nh)
+    local like  = h:like(t,prior)
+    if like > hi then hi,out=like,klass end end
   return out end
-             
-function smallfx(xs,ys,     x,y,lt,gt,n)
-  lt,gt,n = 0,0,0
-  if #ys > #xs then xs,ys=ys,xs end
-  for _,x in pairs(xs) do
-    for j=1, math.min(64,#ys) do
-      y = any(ys)
-      if y<x then lt=lt+1 end
-      if y>x then gt=gt+1 end
-      n = n+1 end end
-  return math.abs(gt - lt) / n <= the.cliffs end 
 
-function bootstrap(y0,z0)
-  local x, y, z, b4, yhat, zhat, bigger
-  local function obs(a,b,    c)
-    c = math.abs(a.mu - b.mu)
-    return (a.sd + b.sd) == 0 and c or c/((x.sd^2/x.n + y.sd^2/y.n)^.5) end
-  local function adds(t, num) 
-    num = num or Num(); map(t, function(x) add(num,x) end); return num end
-  y,z    = adds(y0), adds(z0)
-  x      = adds(y0, adds(z0))
-  b4     = obs(y,z)
-  yhat   = map(y.all, function(y1) return y1 - y.mu + x.mu end)
-  zhat   = map(z.all, function(z1) return z1 - z.mu + x.mu end)
-  bigger = 0
-  for j=1,the.boot do 
-    if obs( adds(many(yhat,#yhat)),  adds(many(zhat,#zhat))) > b4 
-    then bigger = bigger + 1/the.boot end end
-  return bigger >= the.conf end
+-- ## Score
+function Nb.score(i,    n)
+  n=0; for _,x in pairs(i.log) do if x.want==x.got then n=n+1 end end
+  return n/#i.log end 
+--- ---------------------------------------------------------------------------
+---    ___  ____ _  _ ____ ____ 
+---    |  \ |___ |\/| |  | [__  
+---    |__/ |___ |  | |__| ___] 
+                         
+-- ## Demos
+local eg={}
+function eg.last(tst) 
+  ok(tst, 30 == last{10,20,30}, "lasts") end
 
---- xxx mid has to be per and 
--- XXX implement same
--- XXX need tests for stats
-function scottKnot(nums,      all,cohen)
-  local mid = function (z) return z.some:mid() 
-  end --------------------------------
-  local function summary(i,j,    out)
-    out = copy( nums[i] )
-    for k = i+1, j do out = out:merge(nums[k]) end
-    return out 
-  end --------------------------- 
-  local function div(lo,hi,rank,b4,       cut,best,l,l1,r,r1,now)
-    best = 0
-    for j = lo,hi do
-      if j < hi  then
-        l   = summary(lo,  j)
-        r   = summary(j+1, hi)
-        now = (l.n*(mid(l) - mid(b4))^2 + r.n*(mid(r) - mid(b4))^2
-              ) / (l.n + r.n)
-        if now > best then
-          if math.abs(mid(l) - mid(r)) >= cohen then
-            cut, best, l1, r1 = j, now, copy(l), copy(r) 
-    end end end end
-    if cut and not l1:same(r1,the) then
-      rank = div(lo,    cut, rank, l1) + 1
-      rank = div(cut+1, hi,  rank, r1) 
-    else
-      for i = lo,hi do nums[i].rank = rank end end
-    return rank 
-  end ------------------------------------------------------ 
-  table.sort(nums, function(x,y) return mid(x) < mid(y) end)
-  all   = summary(1,#nums)
-  cohen = all.sd * the.cohen
-  div(1, #nums, 1, all)
-  return nums end
-
---------------------------------------------------------------------------------
----    _  _ ____ _ _  _ 
----    |\/| |__| | |\ | 
----    |  | |  | | | \| 
-                 
-function Demo.the() oo(the) end
+function eg.per(tst,  t)
+  t={};for i=1,100 do push(t,i*1000) end
+  ok(tst,70000 == per(t,.7), "per") end
 
-function Demo.many(a) 
-  a={1,2,3,4,5,6,7,8,9,10}; ok("{10 2 3}" == o(many(a,3)), "manys") end
+function eg.many(tst,  t)
+  t={};for i=1,100 do push(t,i) end; many(t,10) end
 
-local function normal(m,s)
-  local pi, sqrt, cos, log = math.pi, math.sqrt, math.cos, math.log
-  local function z() return sqrt(-2*log(r())) * cos(2* pi * r()) end
-  return m + s*z() end
+function eg.sum(tst,   t) 
+  t={};for i=1,100 do push(t,i) end; ok(tst,5050==sum(t),"sum")end
 
-function Demo.tiles()
-  local function ns(m,s,r,     u)
-    u={}; for j=1,r do u[1+#u] = normal(m,s) end; return u end
-  local ts={}
-  local m=100
-  for mu=8,12,.25 do ts[1+#ts] = ns(mu, 5, m) end
-  ts= sort(map(ts,sort), function(a,b) return per(a,.5) < per(b,.5) end)
-  for j,one in pairs(quintiles(ts,20)) do
-    print(fmt("[%s]",one.display),o(one.pers),
-                     smallfx(  ts[1], ts[j]),
-                     bootstrap(ts[1], ts[j])) end end
+function eg.shuffle(tst, t, good)
+  t={1,2,3,4,5,6,7,8,9}
+  good = true
+  for j=1,10^5 do 
+    t= shuffle(t); 
+    good = good and sum(t)==45,"shuffle "..j end 
+  ok(tst,good, "shuffling") end
 
-function Demo.stats(  t1,t2,inc,n,a,b)
-  for _,n in pairs{20} do --25,50,100,250,500,1000} do
-    inc=1
-    while inc < 3 do
-      print("")
-      t1={}; for j=1,n            do push(t1, j*r()) end
-      t2={}; for j,x in pairs(t1) do t2[j]=x+inc end
-      a,b = smallfx(t1,t2), bootstrap(t1,t2)
-      for _,x in pairs(quintiles{t1,t2}) do print(rnd(inc), x.display,a,b) end
-      inc = inc*1.1 end end end
+function eg.powersets(tst, t)
+  ok(tst,1024==#powerset{1,2,3,4,5,6,7,8,9,10}) end
 
-function Demo.stats1(x)
-  x1={0.34, 0.49 , 0.51 , 0.6}
-  x2={  0.6,  0.7 ,  0.8 ,  0.9}
-  x3={ 0.15 , 0.25 , 0.4 ,  0.35}
-  x4={ 0.6 ,  0.7 ,  0.8  , 0.9}
-  x5={0.1 ,  0.2 ,  0.3 ,  0.4}
-  print(bootstrap(x5,x3))
-  print(bootstrap(x3,x1))
-  print(bootstrap(x1,x2))
-  print(bootstrap(x2,x4))
+function eg.inc(tst,   f)
+  f=inc3({},"a","b","c"); oo(f) 
+  f=inc2({},"a","b"); oo(f) 
+  f=inc({},"a"); oo(f) 
 end
 
+function eg.nb(tst,  abcd) 
+  print(nb1("../etc/data/breastcancer.csv")) end
 
-function Demo.egs() 
-  ok(5140==file2Egs(the.file).y[1].hi,"reading") end
+function eg.nbnum(tst,  i)
+  i=Egs({"Clndrs", "Volume", "Hp:", "Lbs-", "Acc+","Model", "origin", "Mpg+"})
+  print("\nx::"); map(i.cols.x,oo) 
+  print("\ny::"); map(i.cols.y,oo) end 
 
-function Demo.dist(i)
-  i = file2Egs(the.file)
-  for n,row in pairs(i.all) do print(n,dist(i, i.all[1], row)) end end
+function eg.nbtest(tst)
+  Nb:new4file("../etc/data/diabetes.csv") end
 
-function Demo.far(  i,j,row1,row2,row3,d3,d9)
-  i = file2Egs(the.file)
-  for j=1,10 do
-    row1 = any(i.all)
-    row2 = far(i,row1, i.all, .9)
-    d9   = dist(i,row1,row2)
-    row3 = far(i,row1, i.all, .3)
-    d3   = dist(i,row1,row3)
-    ok(d3 < d9, "closer far") end end 
+--- ---------------------------------------------------------------------------
+---    ____ ___ ____ ____ ___    _  _ ___  
+---    [__   |  |__| |__/  |     |  | |__] 
+---    ___]  |  |  | |  \  |     |__| |    
+                                    
+-- ## Stattup
+the=cli(help)
 
-function Demo.half(  i,lefts,rights)
-  i = file2Egs(the.file)
-  lefts,rights = half(i, i.all) 
-  oo(mids(i, lefts))
-  oo(mids(i, rights)) 
-  end
-
-function Demo.cluster(   i)
-  i = file2Egs(the.file)
-  clusters(i,"%.0f",cluster(i)) end
-
-function Demo.spans(    i,lefts,rights)
-  i = file2Egs(the.file)
-  lefts, rights = half(i, i.all) 
-  oo(bestSpan(spans(i:clone(lefts), i:clone(rights)))) end
-
-function Demo.xplain(    i,j,tmp,lefts,rights,used)
-  i = file2Egs(the.file)
-  used={}
-  xplains(i,"%.0f",xplain(i, i.all,used)) 
-  map(sort(used,function(a,b)
-        return ((a[1] < b[1]) or 
-                (a[1]==b[1] and a[2] < b[2]) or
-                (a[1]==b[1] and a[2]==b[2] and a[3] < b[3]))end),oo) end
-
-
---------------------------------------------------------------------------------
-the = settings(help)
-Demo.main(the.todo, the.seed)
+go(the, eg, b4)
