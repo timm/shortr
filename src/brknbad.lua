@@ -235,8 +235,7 @@ function nb3(file,  log)
     for j,b in pairs(t) do if b.lo <= x and x < b.hi then return j end end end  
  
   function discretize(t, x)
-    for j,bins in pairs(i.nums) do t[j] = discretize1(bins,t[j]) end
-    return t end
+    for j,bins in pairs(i.nums) do t[j] = discretize1(bins,t[j]) end end
 
   tmp={}
   for row in lines(file) do 
