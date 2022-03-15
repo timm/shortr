@@ -246,8 +246,8 @@ function nb3(file,  log)
     test(i,row); train(i,row) end  
   return i end
 
----     |`. _  _|  |_ . _  _
----    ~|~|| |(_|  |_)|| |_\
+---     |` .  _  _|  |_ . _  _
+---    ~|~ | | |(_|  |_)|| |_\
                      
 function bins(xys)
   xys  = sort(xys, upx)
@@ -401,6 +401,7 @@ function eg.nb1()
   local i = nb1(the.file); 
   local acc, out = score(i); print(acc); map(out,oo) end
 
+-- there is a "?"in the output. nope
 function eg.nb2() 
   local i = nb2(the.file); 
   local acc, out = score(i); print(acc); map(out,oo) end
