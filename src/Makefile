@@ -65,3 +65,9 @@ optA:
 
 plotA: optA
 	gnuplot ../etc/opt1.plt
+
+BAD=lua brknbad.lua  
+eg1 :; $(BAD) -t nb1
+eg2 :; $(BAD) -t nb2
+eg3 :; $(BAD) -g positive -f ../etc/data/diabetes.csv -t nb2  | cat -n
+eg3a:; $(BAD) -g positive -f ../etc/data/diabetes.csv -t nb2a | cat -n

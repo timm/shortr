@@ -68,9 +68,10 @@ local inc,inc2,inc3, has,has2,has3, powerset, shuffle -- more list trics
 local words, things, thing, lines -- tricks for strings 2 things
 local fmt,o,oo,slots,rnds,rnd -- tricks for things 2 strings
 local cli -- tricks for settings
+local nb1 -- tricks for settings
 local ok,go -- tricks for test suites
 local as, is -- tricks for objects
-local nb1, train1,test1,classify1,score1 -- intro to classifiers
+local nb -- intro to classifiers
 local ako={} -- column creattion t
 local eg={} -- demo tricks
 ---    ___ ____ _ ____ _  _ ____ 
@@ -132,12 +133,12 @@ function sum(t,f, n)
   return n end
 
 -- `inc()` increment a 1,2, or 3 nested dictionary counter
-function inc(f,a,n)      f=f or{};f[a]=(f[a] or 0) + (n or 1);  return f end
+function inc(f,a,n)      f=f or{};f[a]=(    f[a] or 0) + (n or 1); return f end
 function inc2(f,a,b,n)   f=f or{};f[a]=inc( f[a] or {},b,n);  return f end
 function inc3(f,a,b,c,n) f=f or{};f[a]=inc2(f[a] or {},b,c,n);return f end
 
 -- `has()` implements a 1,2, or level nested lookup
-function has(f,a)      return f[a]                      or 0 end
+function has(f,a)      return f[a]                    or 0 end
 function has2(f,a,b)   return f[a] and has( f[a],b)   or 0 end
 function has3(f,a,b,c) return f[a] and has2(f[a],b,c) or 0 end
 
@@ -297,34 +298,54 @@ local Nb = is"Nb" -- classifiers, round2
 
 -- ## Intro to Classifiers
 function nb1(file)
-  local i = {h={}, nh=0,e={}, names=nil, n=0, wait=the.wait, log={}}
+  local classify, test,train,score
+  local i = {h={}, nh=0,e={}, names=nil, n=0, wait=the.wait, 
+            bests=0,rests=0,best={}, rest={},log={}}
+
+  function classify(t)
+    local hi,out = -1
+    for h,_ in pairs(i.h) do 
+      local prior = ((i.h[h] or 0) + the.K)/(i.n + the.K*i.nh)
+      local l = prior
+      for col,x in pairs(t) do
+        if x ~= "?" and col ~= #t then 
+          l=l*(has3(i.e,col,x,h) + the.M*prior)/((i.h[h] or 0) + the.M) end end 
+      if l>hi then hi,out=l,h end end
+    return out end
+
+  function test(t)
+    if i.n > i.wait then push(i.log,{want=t[#t], got=classify(t)}) end  end
+  
+  function train(t)
+    local more, kl = false, t[#t]
+    for col,x in pairs(t) do 
+      if x ~=" ?" then 
+        more = true
+        if col ~= #t then
+          inc2(kl==the.goal and i.best or i.rest, col,x) end
+        inc3(i.e, col, x, kl) end end 
+    if more then
+      i.n = i.n + 1
+      if not i.h[kl] then i.nh = i.nh + 1 end
+      inc(i.h, kl)
+      if kl==the.goal then i.bests=i.bests+1 else i.rests=i.rests+1 end end end
+  
+  function score()
+    local n,out=0,{}
+    for _,x in pairs(i.log) do if x.want==x.got then n=n+1 end end
+    print("n", n)
+    for col,xns in pairs(i.best) do
+      for x,b in pairs(xns) do
+        local r1 = has2(i.rest,col,x)/i.rests
+        local b1 = b/i.bests
+        push(out, {100*(b1^2/(b1+r1))//1, col,x,b}) end end
+    return n/#i.log , sort(out,stsrif) end 
+  
   for row in lines(file) do 
-    if not i.names then i.names=row else test1(i,row); train1(i,row) end end 
-  return score1(i.log) end
+    if not i.names then i.names=row else 
+      test(row); train(row) end end 
+  return score() end
 
-function train1(i,t)
-  i.n = i.n + 1
-  if not i.h[t[#t]] then i.nh = i.nh + 1 end
-  inc(i.h, t[#t])
-  for col,x in pairs(t) do if x~="?" then inc3(i.e,col,x,t[#t]) end end end
-
-function test1(i,t)
-  if i.n > i.wait then push(i.log,{want=t[#t], got=classify1(i,t)}) end end
-
-function classify1(i,t)
-  local hi,out = -1
-  for h,_ in pairs(i.h) do 
-    local prior = ((i.h[h] or 0) + the.K)/(i.n + the.K*i.nh)
-    local l = prior
-    for col,x in pairs(t) do
-      if x ~= "?" and col ~= #t then 
-        l=l*(has3(i.e,col,x,h) + the.M*prior)/((i.h[h] or 0) + the.M) end end 
-    if l>hi then hi,out=l,h end end
-  return out end
-
-function score1(log,   n)
-  n=0; for _,x in pairs(log) do if x.want==x.got then n=n+1 end end
-  return n/#log end 
 --- ---------------------------------------------------------------------------
 ---    ____ ____ ____ 
 ---    |___ | __ [__  
@@ -500,8 +521,10 @@ function eg.inc(tst,   f)
   f=inc({},"a"); oo(f) 
 end
 
-function eg.nb(tst,  abcd) 
-  print(nb1("../etc/data/breastcancer.csv")) end
+function eg.nb1(tst,  acc, ranges) 
+  acc, ranges = nb1("../etc/data/breastcancer.csv") 
+  print(acc) 
+  map(ranges,oo) end
 
 function eg.nbnum(tst,  i)
   i=Egs({"Clndrs", "Volume", "Hp:", "Lbs-", "Acc+","Model", "origin", "Mpg+"})
