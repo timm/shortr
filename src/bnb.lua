@@ -32,7 +32,6 @@
 -- CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 -- OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 -- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-------------------------------------------------------------------------------
 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local help=[[
@@ -92,14 +91,22 @@ ako.weight = function(x) return x:find"-$" and -1 and 1 end
 ---     __|_ _    __|_ _
 ---    _\ | | |_|(_ | _\
                  
-local it ={
-  num  = {nump=true,n=0, at=0, txt="",lo=1E32, hi=-1E32, mu=0, bins={}},
-  sym  = {nump=false, n=0, at=0, txt="", has={}, most=0, mode=nil},
-  cols = {names={}, klass=nil, xy= {all={}, nums={}, syms={}},
-                                x= {all={}, nums={}, syms={}},
-                                y= {all={}, nums={}, syms={}}},
-  egs  = {h={}, nh=0, e={}, ames=nil, n=0,
-          bests=0, rests=0, best={}, rest={}, log={}, cols=nil}}
+local it={}
+function it.num()   
+  return {nump=true,  n=0, at=0, txt="",lo=1E32, hi=-1E32, mu=0, bins={}} end
+
+function it.sym()   
+  return {nump=false, n=0, at=0, txt="", has={}, most=0, mode=nil} end
+
+function it.three() 
+  return {all={}, nums={}, syms={}} end
+
+function it.cols()  
+  return {names={}, klass=nil,xy= it.three(), x= it.three(), y= it.three()} end
+
+function it.egs()   
+  return {h={}, nh=0, e={}, ames=nil, n=0, bests=0, rests=0, 
+         best={}, rest={}, log={}, cols=nil} end
 ------------------------------------------------------------------------------
 ---    ___  ____ ____ _ ____ 
 ---    |__] |__| [__  | |    
@@ -117,7 +124,7 @@ function classify(i,t)
   return out end
 
 function test(i,t)
-  if i.n > i.wait then push(i.log,{want=t[#t], got=classify(i,t)}) end  end
+  if i.n > the.wait then push(i.log,{want=t[#t], got=classify(i,t)}) end  end
 
 function train(i,t)
   local more, kl = false, t[#t]
@@ -156,13 +163,12 @@ function nb1(file, log)
 ---                                    /        
 
 function cols(names)
-  local i = copy(it.cols)
-  oo(i)
+  local i = it.cols()
   local function keep(now, at)  -- keep in "all" plus in one of "nums" or "syms"
-            push(ako.num(now.txt) and at.nums or at.syms, push(at.all, now)) end
+    push(ako.num(now.txt) and at.nums or at.syms, push(at.all, now)) end
   i.names = names
   for j,txt in pairs(names) do
-    local now = copy(ako.num(txt) and it.num or it.sym)
+    local now = ako.num(txt) and it.num() or it.sym()
     now.at, now.txt, now.w = j, txt, ako.weight(txt)
     keep(now, i.xy) 
     if not ako.ignore(txt) then
@@ -171,47 +177,45 @@ function cols(names)
   return i end 
 
 function update(i,t)
-  local function num(x, col)
-    col.mu = col.mu + (x - col.mu)/c.n
+  local function num(col, x)
+    col.mu = col.mu + (x - col.mu)/col.n
     col.lo = math.min(x, col.lo)
     col.hi = math.max(x, col.hi)  end
-  local function sym(x, col)
+
+  local function num(col, x)
     col.has[x] = 1 + (col.has[x] or 0) 
-    if col.has[x] > col.most then
-      col.most, col.mode = col.has[x], x end end 
+    if col.has[x] > col.most then col.mode,col.most = x,col.has[x] end end
+
   for _,col in pairs(i.cols.xy.all) do
     local x = t[col.at]
     if x ~= "?" then 
       col.n = col.n + 1
-      (col.nump and num or sym)(x, col) end end
+      (col.nump and num or sym)(col,x) end end
   return t end
  
 ---       . _|_ |_     _      _|
 ---    VV |  |  | |   (/_ VV (_|
     
 function nb2(file,  log)
-  local tmp, i, create, update, discretize, discretize1 = {}
-  i = copy(it.egs)
-
-  function discretize(j,x)
+  local tmp, i = {}, it.egs()
+  local function discretize(j,x)
     if x~="?" then 
       col = i.cols.xy.all[j]
       if col.nump then
         x = (x - col.lo) // ((col.hi - col.lo+1E-32) / the.bins) end end
     return x end
-
   -- start
-  tmp={}
   for row in items(file) do 
-    if not i.cols then i.cols = cols(row) else push(tmp,update(i ,row)) end end
+    if not i.cols then i.cols=cols(row) else push(tmp,update(i,row)) end end
   for _,row in pairs(tmp) do 
     row=collect(row,discretize)
     test(i,row); train(i,row) end  
   return i end
 -------------------------------------------------------------------------------
----     _ _  _ _|_ _. _ _
----    | | |(/_ | | |(__\
-                  
+---    _  _ ____ ___ ____ _ ____ ____ 
+---    |\/| |___  |  |__/ | |    [__  
+---    |  | |___  |  |  \ | |___ ___] 
+                               
 function abcd(gotwants, show)
   local i, exists, add, report, pretty 
   i={data=data or "data",rx= rx or "rx",known={},a={},b={},c={},d={},yes=0,no=0}
@@ -267,32 +271,21 @@ function abcd(gotwants, show)
 ---    ___] |__| |    |___ |  \    |  \ |  | | \| |__] |___ ___] 
 
 function nb3(file,  log)
-  local tmp, i, create, update, discretize1, discretize = {}
-  i = {h={}, nh=0,e={}, names=nil, n=0, wait=the.wait, 
-       bests=0,rests=0,best={}, rest={},log=log or {},
-       nums={}}
-
-  function create(t) 
-    for j,txt in pairs(t) do
-      if ako.num(txt) then i.nums[j] = {} end end; return t end
-
-  function update(t,    x)
-    for j,n in pairs(i.nums) do
-      x=t[j]
-      if x~="?" then push(n, {x=x, y= t[#t]}) end end; return t end
- 
-  function discretize(j,x,   bins)
+  local tmp, i = {}, it.egs()
+  local function discretize(j,x,   bins)
     if x ~= "?" then 
       bins = i.nums[j]
       if bins then
         for _,bin in pairs(bins) do 
           if bin.lo <= x and x < bin.hi then return bin.id end end end end 
      return x end
+
+  function update1(i, row)
+    update(i, row)
   -- start 
-  tmp={}
   for row in items(file) do 
-    if not i.names then i.names = create(row) else push(tmp,update(row)) end end
-  for j,xys in pairs(i.nums) do i.nums[j] = bins(xys,j) end
+    if not i.cols then i.cols = cols(row) else push(tmp,update1(i,row)) end end
+  for _,col in pairs(i.cols.x.nums) do i.nums[j] = bins(xys,j) end
   for _,row in pairs(tmp) do 
     row = collect(row, discretize);
     test(i,row); train(i,row) end  
@@ -485,8 +478,6 @@ function eg.copy(     t,u)
   oo(u)
   end
 
-oo(copy(it.cols))
-
 function eg.collect()
   local function aux(x,y) return x*y end
   oo(collect({10,20,30},aux)) end
@@ -512,7 +503,7 @@ function eg.nb2()
   local acc, out = score(i); print(acc); map(out,oo) end
 
 function eg.nb2a() 
-  local i = nb2(the.file); 
+  local i = nb2("../etc/data/diabetes.csv"); 
   local acc, out = score(i)
   abcd(i.log, true) 
   map(out,oo) end
