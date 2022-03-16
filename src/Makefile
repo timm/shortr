@@ -60,13 +60,17 @@ $D/docs/%.pdf : %.lua
 		-M letter -o $@.ps $<
 	@ps2pdf $@.ps $@; rm $@.ps; git add $@
 
+
+bnb.lua: bnb
+	cp $< $@
+
 optA:
 	lua brknbad.lua -f ../etc/data/auto93.csv -minItems .4 -t optimize2 | tee ~/tmp/dat
 
 plotA: optA
 	gnuplot ../etc/opt1.plt
 
-BAD=lua brknbad.lua  
+BAD=bad
 eg1 :; $(BAD) -t nb1
 eg2 :; $(BAD) -t nb2
 eg3 :; $(BAD) -g positive -f ../etc/data/diabetes.csv -t nb2  | cat -n

@@ -1,4 +1,5 @@
 #!/usr/bin/env lua
+-- vi: filetype=lua :
 ------------------------------------------------------------------------------
 ---   __                __                    __                    __    
 ---  /\ \              /\ \                  /\ \                  /\ \    
@@ -8,54 +9,6 @@
 ---     \ \_,__/ \ \_\    \ \_\ \_\ \ \_\ \_\   \ \_,__/\ \__/.\_\\ \___,_\
 ---      \/___/   \/_/     \/_/\/_/  \/_/\/_/    \/___/  \/__/\/_/ \/__,_ /
 
----     .-------.  
----     | Ba    | Bad <----.  planning= (better - bad)
----     |    56 |          |  monitor = (bad - better)
----     .-------.------.   |  
----             | B    |   v  
----             |    5 | Better  
----             .------.  
----
-------------------------------------------------------------------------------
-
-local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local help=[[
-
-  -bins  -b   number of bins             = 16
-  -cohen -c   cohen                      = .35
-  -file  -f   file name                  = ../etc/data/breastcancer.csv
-  -goal  -g   goal                       = recurrence-events
-  -K     -K   manage low class counts    = 1
-  -M     -M   manage low evidence counts = 2
-  -seed  -S   seed                       = 10019
-  -todo  -t   start up action            = nothing
-  -wait  -w   wait                       = 10
-]]
-
-local max,min,ent,per
-local push,map,collect
-local sort,up1,upx,down1,slots,up1,down1
-local words,thing, things, lines
-local cli
-local fmt,o,oo
-local inc,inc2,inc3,has,has2,has3
-local rogues
-local classify,test,train,score,nb1,nb2,abcd
-local bins,nb3
-local eg,the,ako={},{},{}
-
----     _ _ |    _ _  _   _|_   _  _  _
----    (_(_)||_|| | || |   | \/|_)(/__\
----                          / |       
-
-local ako={}
-ako.num    = function(x) return x:find"^[A-Z]" end
-ako.goal   = function(x) return x:find"[-+!]"  end
-ako.klass  = function(x) return x:find"!$"     end
-ako.ignore = function(x) return x:find":$"     end
-ako.less   = function(x) return x:find"-$"     end
-
-------------------------------------------------------------------------------
 -- BSD 2-Clause License
 -- Copyright (c) 2022, Tim Menzies
 --
@@ -79,6 +32,62 @@ ako.less   = function(x) return x:find"-$"     end
 -- CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 -- OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 -- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+------------------------------------------------------------------------------
+
+local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
+local help=[[
+brknbad.lua: explore the world better, explore the world for good.
+(c) 2022, Tim Menzies
+
+     .-------.  
+     | Ba    | Bad <----.  planning= (better - bad)
+     |    56 |          |  monitor = (bad - better)
+     .-------.------.   |  
+             | Be   |   v  
+             |    4 | Better  
+             .------.  
+
+USAGE:
+  ./bnb [OPTIONS]
+
+OPTIONS:
+  -bins  -b   max. number of bins            = 16
+  -cohen -c   cohen                          = .35
+  -goal  -g   goal                           = recurrence-events
+  -K     -K   manage low class counts        = 1
+  -M     -M   manage low evidence counts     = 2
+  -seed  -S   seed                           = 10019
+  -wait  -w   wait                           = 10
+
+OPTIONS (other):
+  -dump  -d   dump stack on error, then exit = false
+  -file  -f   file name                      = ../etc/data/breastcancer.csv
+  -help  -h   show help                      = false
+  -todo  -t   start up action                = nothing
+]]
+
+local ent,per
+local push,map,collect,copy
+local sort,up1,upx,down1,slots,up1,down1
+local words,thing, things, lines
+local cli
+local fmt,o,oo
+local inc,inc2,inc3,has,has2,has3
+local ok,ish, rogues
+local classify,test,train,score,nb1,nb2,abcd
+local bins,nb3
+local eg,the,ako={},{},{}
+
+---     _ _ |    _ _  _   _|_   _  _  _
+---    (_(_)||_|| | || |   | \/|_)(/__\
+---                          / |       
+
+local ako={}
+ako.num    = function(x) return x:find"^[A-Z]" end
+ako.goal   = function(x) return x:find"[-+!]"  end
+ako.klass  = function(x) return x:find"!$"     end
+ako.ignore = function(x) return x:find":$"     end
+ako.less   = function(x) return x:find"-$"     end
 ------------------------------------------------------------------------------
 ---    ___  ____ ____ _ ____ 
 ---    |__] |__| [__  | |    
@@ -146,14 +155,15 @@ function nb2(file,  log)
   function update(t,    x)
     for j,n in pairs(i.nums) do
       x=t[j]
-      if x~="?" then n.lo=min(x,n.lo); n.hi=max(x,n.hi) end end; return t end
+      if x~="?" then 
+        n.lo=math.min(x,n.lo); n.hi=math.max(x,n.hi) end end; return t end
  
    function discretize(x,j)
      if x~="?" then 
        n = i.nums[j]
        x = n and (x - n.lo) // ((n.hi - n.lo+1E-32) / the.bins) or x end
      return x end
- 
+  -- start
   tmp={}
   for row in lines(file) do 
     if not i.names then i.names = create(row) else push(tmp,update(row)) end end
@@ -204,7 +214,7 @@ function abcd(gotwants, show)
       local u = t[x]
       print(fmt(s.." %s", u.data,u.rx,u.a, u.b, u.c, u.d,
                           u.acc, u.pd, u.pf, u.prec, u.f, u.g, x)) end end
-
+  -- start
   for _,one in pairs(gotwants) do 
     exists(one.want) 
     exists(one.got)  
@@ -241,7 +251,7 @@ function nb3(file,  log)
         for _,bin in pairs(bins) do 
           if bin.lo <= x and x < bin.hi then return bin.id end end end end 
      return x end
- 
+  -- start 
   tmp={}
   for row in lines(file) do 
     if not i.names then i.names = create(row) else push(tmp,update(row)) end end
@@ -256,7 +266,7 @@ function nb3(file,  log)
                      
 function bins(xys)
   xys  = sort(xys, upx)
-  local cohen    = the.cohen * (per(xys,.9).x - per(xys, .1).x) / 2.54
+  local cohen    = the.cohen * (per(xys,.9).x - per(xys, .1).x) / 2.56
   local minItems = #xys / the.bins
   local out, b4  = {}, -math.huge
   local function add(f,z) f[z] = (f[z] or 0) + 1 end
@@ -272,6 +282,7 @@ function bins(xys)
         sub(rhs, xys[j].y)
         local n1,n2 = j - lo +1, hi-j
         if   n1        > minItems and          -- enough items (on left)
+             n2        > minItems and          -- enough items (on right)
              xys[j].x ~= xys[j+1].x and        -- there is a break here
              xys[j].x  - xys[lo].x > cohen and -- not trivially small (on left) 
              xys[hi].x - xys[j].x  > cohen     -- not trivially small (on right)
@@ -296,8 +307,7 @@ function bins(xys)
 ---     _ _  _ _|_|_  _
 ---    | | |(_| | | |_\
 
-min = math.min
-max = math.max
+function ish(x,y,z) return math.abs(x-y) <= (z or 0.001) end
 
 function per(t,p) return t[ (p or .5)*#t//1 ] end 
 
@@ -308,7 +318,16 @@ function ent(t)
 
 ---     _ |_  _   _ | 
 ---    (_ | |(/ _(_ |<
-            
+
+function ish(x,y,z) return math.abs(x-y) <= (z or 0.001) end
+
+local fails=0
+function ok(test,msg)
+  print("", test and "PASS "or "FAIL ",msg or "") 
+  if not test then 
+    fails = fails+1 
+    if the and the.dump then assert(test,msg) end end end
+
 function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end end
 
@@ -329,8 +348,11 @@ function has3(f,a,b,c) return f[a] and has2(f[a],b,c) or 0 end
 function push(t,x) t[1 + #t] = x; return x end
 
 function map(t, f, u) u={};for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
-function collect(t,f, u) u={};for k,v in pairs(t) do u[k]=f(v,k) end;return u end
-         
+function collect(t,f, u) u={};for k,v in pairs(t) do u[k]=f(v,k)end;return u end
+function copy(t,   u)
+  if type(t) ~= "table" then return t end
+  u={}; for k,v in pairs(t) do u[copy(k)] = copy(v) end; return u end
+
 function sort(t,f) table.sort(t,f); return t end
 
 function upx(a,b)   return a.x < b.x end
@@ -439,12 +461,15 @@ function eg.nb3(  i)
 ---    ____ ___ ____ ____ ___ 
 ---    [__   |  |__| |__/  |  
 ---    ___]  |  |  | |  \  |  
-                       
-the=cli(help)
-math.randomseed( the.seed or 10019 )
-if eg[the.todo] then eg[the.todo]() end
+                      
+fails = 0
+local defaults=cli(help)
+for _,todo in pairs(defaults.todo == "all" and slots(eg) or {defaults.todo}) do
+  the = copy(defaults)
+  math.randomseed(the.seed or 10019)
+  if eg[todo] then eg[todo]() end end 
 rogues()
-
+os.exit(fails)
 ---             .---------.
 ---             |         |
 ---           -= _________ =-

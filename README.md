@@ -141,7 +141,7 @@ a handful of examples (maybe even just one)  from each cluster.
 
 
 
-- **Scripting**: licenses, little languages (e.g. regular expressions); test-drive-development, 
+- **Scripting**: licenses, little languages (e.g. regular expressions); test-drive-development, rule-of-3 for refactoring,
   pseudo-random numbers (and seeds), dialog independence, CLI design, version control, GitHub workflows, test-driven development, open science
 - Data layer: summarize text files as samples of data
 - Anomaly detection: Nearest-neighbor, Clustering
