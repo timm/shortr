@@ -67,14 +67,14 @@ OPTIONS (other):
 ]]
 
 local ent,per
-local push,map,collect,copy
+local push,map,collect,copy,powerset
 local sort,up1,upx,down1,slots,up1,down1
-local words,thing, things, lines
+local words,thing, things, items
 local cli
 local fmt,o,oo
 local inc,inc2,inc3,has,has2,has3
 local ok,ish, rogues
-local classify,test,train,score,nb1,nb2,abcd
+local cols,update,classify,test,train,score,nb1,nb2,abcd
 local bins,nb3
 local eg,the,ako={},{},{}
 
@@ -87,7 +87,19 @@ ako.num    = function(x) return x:find"^[A-Z]" end
 ako.goal   = function(x) return x:find"[-+!]"  end
 ako.klass  = function(x) return x:find"!$"     end
 ako.ignore = function(x) return x:find":$"     end
-ako.less   = function(x) return x:find"-$"     end
+ako.weight = function(x) return x:find"-$" and -1 and 1 end
+
+---     __|_ _    __|_ _
+---    _\ | | |_|(_ | _\
+                 
+local it ={
+  num  = {nump=true,n=0, at=0, txt="",lo=1E32, hi=-1E32, mu=0, bins={}},
+  sym  = {nump=false, n=0, at=0, txt="", has={}, most=0, mode=nil},
+  cols = {names={}, klass=nil, xy= {all={}, nums={}, syms={}},
+                                x= {all={}, nums={}, syms={}},
+                                y= {all={}, nums={}, syms={}}},
+  egs  = {h={}, nh=0, e={}, ames=nil, n=0,
+          bests=0, rests=0, best={}, rest={}, log={}, cols=nil}}
 ------------------------------------------------------------------------------
 ---    ___  ____ ____ _ ____ 
 ---    |__] |__| [__  | |    
@@ -134,50 +146,75 @@ function score(i)
 function nb1(file, log)
   local i = {h={}, nh=0,e={}, names=nil, n=0, wait=the.wait, 
             bests=0,rests=0,best={}, rest={},log=log or {}}
-  for row in lines(file) do 
+  for row in items(file) do 
     if not i.names then i.names=row else
       test(i,row); train(i,row) end end 
   return i end
 
+---     _     _ _  _     _  _  _|     _   _ _  _
+---    | ||_|| | |_\    (_|| |(_|    _\\/| | |_\
+---                                    /        
+
+function cols(names)
+  local i = copy(it.cols)
+  oo(i)
+  local function keep(now, at)  -- keep in "all" plus in one of "nums" or "syms"
+            push(ako.num(now.txt) and at.nums or at.syms, push(at.all, now)) end
+  i.names = names
+  for j,txt in pairs(names) do
+    local now = copy(ako.num(txt) and it.num or it.sym)
+    now.at, now.txt, now.w = j, txt, ako.weight(txt)
+    keep(now, i.xy) 
+    if not ako.ignore(txt) then
+      keep(now, ako.goal(txt) and i.y or i.x) 
+      if ako.klass(txt) then i.klass=now end end end
+  return i end 
+
+function update(i,t)
+  local function num(x, col)
+    col.mu = col.mu + (x - col.mu)/c.n
+    col.lo = math.min(x, col.lo)
+    col.hi = math.max(x, col.hi)  end
+  local function sym(x, col)
+    col.has[x] = 1 + (col.has[x] or 0) 
+    if col.has[x] > col.most then
+      col.most, col.mode = col.has[x], x end end 
+  for _,col in pairs(i.cols.xy.all) do
+    local x = t[col.at]
+    if x ~= "?" then 
+      col.n = col.n + 1
+      (col.nump and num or sym)(x, col) end end
+  return t end
+ 
 ---       . _|_ |_     _      _|
 ---    VV |  |  | |   (/_ VV (_|
-                             
+    
 function nb2(file,  log)
   local tmp, i, create, update, discretize, discretize1 = {}
-  i = {h={}, nh=0,e={}, names=nil, n=0, wait=the.wait, 
-       bests=0,rests=0,best={}, rest={},log=log or {},
-       hi={},lo={}, nums={}}
+  i = copy(it.egs)
 
-  function create(t) 
-    for j,txt in pairs(t) do
-      if ako.num(txt) then i.nums[j] = {lo=1E32, hi=-1E32} end end; return t end
+  function discretize(j,x)
+    if x~="?" then 
+      col = i.cols.xy.all[j]
+      if col.nump then
+        x = (x - col.lo) // ((col.hi - col.lo+1E-32) / the.bins) end end
+    return x end
 
-  function update(t,    x)
-    for j,n in pairs(i.nums) do
-      x=t[j]
-      if x~="?" then 
-        n.lo=math.min(x,n.lo); n.hi=math.max(x,n.hi) end end; return t end
- 
-   function discretize(x,j)
-     if x~="?" then 
-       n = i.nums[j]
-       x = n and (x - n.lo) // ((n.hi - n.lo+1E-32) / the.bins) or x end
-     return x end
   -- start
   tmp={}
-  for row in lines(file) do 
-    if not i.names then i.names = create(row) else push(tmp,update(row)) end end
+  for row in items(file) do 
+    if not i.cols then i.cols = cols(row) else push(tmp,update(i ,row)) end end
   for _,row in pairs(tmp) do 
     row=collect(row,discretize)
     test(i,row); train(i,row) end  
-  return i end
-
+  return i end
+-------------------------------------------------------------------------------
 ---     _ _  _ _|_ _. _ _
 ---    | | |(/_ | | |(__\
                   
 function abcd(gotwants, show)
-  local i, exists, add, report, pretty = {
-    data=data or "data", rx= rx or "rx",known={},a={},b={},c={},d={},yes=0,no=0}
+  local i, exists, add, report, pretty 
+  i={data=data or "data",rx= rx or "rx",known={},a={},b={},c={},d={},yes=0,no=0}
 
   function exists(x,   new) 
     new = not i.known[x]
@@ -244,7 +281,7 @@ function nb3(file,  log)
       x=t[j]
       if x~="?" then push(n, {x=x, y= t[#t]}) end end; return t end
  
-  function discretize(x,j,   bins)
+  function discretize(j,x,   bins)
     if x ~= "?" then 
       bins = i.nums[j]
       if bins then
@@ -253,9 +290,9 @@ function nb3(file,  log)
      return x end
   -- start 
   tmp={}
-  for row in lines(file) do 
+  for row in items(file) do 
     if not i.names then i.names = create(row) else push(tmp,update(row)) end end
-  for j,xys in pairs(i.nums) do i.nums[j] = bins(xys) end
+  for j,xys in pairs(i.nums) do i.nums[j] = bins(xys,j) end
   for _,row in pairs(tmp) do 
     row = collect(row, discretize);
     test(i,row); train(i,row) end  
@@ -264,7 +301,7 @@ function nb3(file,  log)
 ---     |` .  _  _|  |_ . _  _
 ---    ~|~ | | |(_|  |_)|| |_\
                      
-function bins(xys)
+function bins(xys,ref)
   xys  = sort(xys, upx)
   local cohen    = the.cohen * (per(xys,.9).x - per(xys, .1).x) / 2.56
   local minItems = #xys / the.bins
@@ -293,12 +330,17 @@ function bins(xys)
     if   cut 
     then argmin(lo,    cut)
          argmin(cut+1, hi )
-    else b4 = push(out, {lo=b4, hi=xys[hi].x, n=hi-lo+1, div=div}).hi end
+    else b4 = push(out,{ref=ref,lo=b4, hi=xys[hi].x, n=hi-lo+1, div=div}).hi end
   end -----------------------------------------------
   argmin(1,#xys)
   for j,bin in pairs(out) do bin.id = j end
   out[#out].hi =  math.huge 
   return out end
+------------------------------------------------------------------------------
+---    _  _ ___  _    ____ _ _  _ 
+---     \/  |__] |    |__| | |\ | 
+---    _/\_ |    |___ |  | | | \| 
+
 ------------------------------------------------------------------------------
 ---    _  _ _ ____ ____ 
 ---    |\/| | [__  |    
@@ -306,8 +348,6 @@ function bins(xys)
 
 ---     _ _  _ _|_|_  _
 ---    | | |(_| | | |_\
-
-function ish(x,y,z) return math.abs(x-y) <= (z or 0.001) end
 
 function per(t,p) return t[ (p or .5)*#t//1 ] end 
 
@@ -348,11 +388,20 @@ function has3(f,a,b,c) return f[a] and has2(f[a],b,c) or 0 end
 function push(t,x) t[1 + #t] = x; return x end
 
 function map(t, f, u) u={};for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
-function collect(t,f, u) u={};for k,v in pairs(t) do u[k]=f(v,k)end;return u end
+function collect(t,f, u) u={};for k,v in pairs(t) do u[k]=f(k,v)end;return u end
 function copy(t,   u)
   if type(t) ~= "table" then return t end
   u={}; for k,v in pairs(t) do u[copy(k)] = copy(v) end; return u end
 
+function powerset(s)
+  local function aux(s)
+    local t = {{}}
+    for i = 1, #s do
+      for j = 1, #t do
+        t[#t+1] = {s[i],table.unpack(t[j])} end end
+    return t end
+  return sort(aux(s), function(a,b) return #a < #b end) end
+  
 function sort(t,f) table.sort(t,f); return t end
 
 function upx(a,b)   return a.x < b.x end
@@ -378,12 +427,16 @@ function things(s) return map(words(s), thing) end
 function thing(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
-  return tonumber(x) or x end
+  return tonumber(x) or x end 
 
-function lines(file,f,      x)
-  file = io.input(file)
-  f    = f or things
-  return function() x=io.read(); if x then return f(x) else io.close(file) end end end
+function items(src,f)
+  local function file()
+    src,f = io.input(src),f or things
+    return function() x=io.read();if x then return f(x) else io.close(src) end end end 
+  local function tbl(   x)
+    x,f = 0, f or function(z) return z end
+    return function() if x< #src then x=x+1; return f(src[x]) end end end 
+  return type(src) == "string" and file() or tbl() end
 
 ---    _|_|_ . _  _  _  '~)   __|_ _. _  _ 
 ---     | | ||| |(_|_\   /_  _\ | | || |(_|
@@ -423,8 +476,31 @@ function cli(help)
 ---    |  \ |___ |\/| |  | [__  
 ---    |__/ |___ |  | |__| ___] 
 
+function eg.copy(     t,u)
+  t={a={b={c=10},d={e=200}}, f=300}
+  u= copy(t) 
+  t.a.b.c= 20
+  print(u.a.b.c) 
+  oo(t)
+  oo(u)
+  end
+
+oo(copy(it.cols))
+
+function eg.collect()
+  local function aux(x,y) return x*y end
+  oo(collect({10,20,30},aux)) end
+
 function eg.ent()
-  print(ent{a=9,b=7}) end
+  ok(ish(ent{a=9,b=7}, .98886), "entropy")  end
+
+function eg.items()
+  for  x in items{10,20,30} do print(x) end 
+  local n=0
+  for  x in items(the.file) do n=n+1; if n<=5 then oo(x) end end end
+
+function eg.powerset()
+  for _,x in pairs(powerset{10,20,30,40,50}) do oo(x) end end
 
 function eg.nb1() 
   local i = nb1(the.file); 
@@ -444,7 +520,7 @@ function eg.nb2a()
 function eg.bins(   t)
   local t,n = {},30
   for j=1,n do push(t, {x=j, y=j<.6*n and 1 or j<.8*n and 2 or 3}) end
-  map(bins(t),oo)
+  map(bins(t,20),oo)
 end
 
 function eg.nb3(  i)
@@ -464,12 +540,15 @@ function eg.nb3(  i)
                       
 fails = 0
 local defaults=cli(help)
-for _,todo in pairs(defaults.todo == "all" and slots(eg) or {defaults.todo}) do
+local todos = defaults.todo == "all" and slots(eg) or {defaults.todo}
+for _,todo in pairs(todos) do
   the = copy(defaults)
   math.randomseed(the.seed or 10019)
   if eg[todo] then eg[todo]() end end 
+
 rogues()
 os.exit(fails)
+
 ---             .---------.
 ---             |         |
 ---           -= _________ =-
