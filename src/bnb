@@ -326,27 +326,6 @@ function create(names)
       push(now.indep and i.x or i.y, now)          end end
   return i end
 
-function mid(i,cols)
-   local function mid(col) return col.nump and col.mu or col.mode end
-   return map(cols or i.cols.y, mid) end
-
-function div(i,cols)
-   local function div(col) return col.nump and col.sd or ent(col.has) end
-   return map(cols or i.cols.y, div) end
-
-function dist(i,row1,row2)
-  local d, n = 0, #i.cols.x
-  local function sym(_,x,y) return x==y and 0 or 0 end
-  local function num(c,x,y)
-     if     x=="?" then y = norm(c.lo, c.hi, y); x=y<.5 and 1 or 0 
-     elseif y=="?" then x = norm(c.lo, c.hi, x); y=x<.5 and 1 or 0
-     else             x,y = norm(c.lo, c.hi, x), norm(c.lo, c.hi, y) end
-     return math.abs(x-y) end
-  local function dist(c,x,y)
-     return x=="?" and y=="?" and 1 or (c.nump and num or sym)(c,x,y) end
-  for _,c in pairs(i.cols.x) do d=d + dist(c, row1[c.at], row2[c.at])^the.e end 
-  return (d/n)^(1/the.e) end
-
 function update(i,row)
   local function num(col,x,   d)
     col.lo = math.min(x, col.lo)
@@ -367,6 +346,20 @@ function update(i,row)
       (col.nump and num or sym)(col,x) end end
   return row end
 
+function clone(old,rows)
+  local i={rows={}, cols=create(old.cols.names)}
+  for _,row in pairs(rows or {}) do update(i,row) end
+  return i end
+
+function better(i,row1,row2)
+  local s1, s2, n, e = 0, 0, #i.cols.y, math.exp(1)
+  for _,col in pairs(i.cols.y) do
+    local a  = norm(col.lo, col.hi, row1[col.at] )
+    local b  = norm(col.lo, col.hi, row2[col.at] )
+    s1 = s1 - e^(col.w * (a - b) / n)
+    s2 = s2 - e^(col.w * (b - a) / n) end
+  return s1 / n < s2 / n  end
+
  ------------------------------------------------------------------------------
 ---    _  _ ___  _    ____ _ _  _ 
 ---     \/  |__] |    |__| | |\ | 
@@ -376,8 +369,30 @@ function xplain(data)
   local i = {rows={}, cols=nil}
   for row in items(data) do
     if not i.cols then i.cols=cols(row) else push(i.rows,update(i,row)) end end
-  i.rows = sort(i.rows, order)
+  i.rows = sort(i.rows, function(a,b) return better(i,a,b) end)
 end
+
+function mid(i,cols)
+   local function mid(col) return col.nump and col.mu or col.mode end
+   return map(cols or i.cols.y, mid) end
+
+function div(i,cols)
+   local function div(col) return col.nump and col.sd or ent(col.has) end
+   return map(cols or i.cols.y, div) end
+
+function dist(i,row1,row2)
+  local d, n = 0, #i.cols.x
+  local function sym(_,x,y) return x==y and 0 or 1 end
+  local function num(c,x,y)
+    if     x=="?" then y = norm(c.lo, c.hi, y); x=y<.5 and 1 or 0 
+    elseif y=="?" then x = norm(c.lo, c.hi, x); y=x<.5 and 1 or 0
+    else             x,y = norm(c.lo, c.hi, x), norm(c.lo, c.hi, y) end
+    return math.abs(x-y) end
+  local function dist(c,x,y)
+    return x=="?" and y=="?" and 1 or (c.nump and num or sym)(c,x,y) end
+  for _,c in pairs(i.cols.x) do d= d + dist(c, row1[c.at], row2[c.at])^the.e end 
+  return (d/n)^(1/the.e) end
+
 ------------------------------------------------------------------------------
 ---    _  _ _ ____ ____ 
 ---    |\/| | [__  |    
