@@ -381,7 +381,6 @@ function div(i,cols)
    return map(cols or i.cols.y, div) end
 
 function dist(i,row1,row2)
-  local d, n = 0, #i.cols.x
   local function sym(_,x,y) return x==y and 0 or 1 end
   local function num(c,x,y)
     if     x=="?" then y = norm(c.lo, c.hi, y); x=y<.5 and 1 or 0 
@@ -390,6 +389,7 @@ function dist(i,row1,row2)
     return math.abs(x-y) end
   local function dist(c,x,y)
     return x=="?" and y=="?" and 1 or (c.nump and num or sym)(c,x,y) end
+  local d, n = 0, #i.cols.x
   for _,c in pairs(i.cols.x) do d= d + dist(c, row1[c.at], row2[c.at])^the.e end 
   return (d/n)^(1/the.e) end
 
