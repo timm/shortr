@@ -75,7 +75,7 @@ local inc,inc2,inc3,has,has2,has3
 local ok,ish, rogues
 local cols,update,classify,test,train,score,nb1,nb2,abcd
 local bins,nb3
-local eg,the,ako={},{},{}
+local the={}
 
 ---     _ _ |    _ _  _   _|_   _  _  _
 ---    (_(_)||_|| | || |   | \/|_)(/__\
@@ -93,7 +93,7 @@ ako.weight = function(x) return x:find"-$" and -1 and 1 end
                  
 local it={}
 function it.num()   
-  return {nump=true,  n=0, at=0, txt="",lo=1E32, hi=-1E32, mu=0, bins={}} end
+  return {nump=true,  n=0, at=0, txt="",lo=1E32, hi=-1E32, mu=0, bins=nil} end
 
 function it.sym()   
   return {nump=false, n=0, at=0, txt="", has={}, most=0, mode=nil} end
@@ -129,7 +129,7 @@ function test(i,t)
 function train(i,t)
   local more, kl = false, t[#t]
   for col,x in pairs(t) do 
-    if x ~=" ?" then 
+    if x ~="?" then 
       more = true
       inc3(i.e, col, x, kl) 
       if col ~= #t then
@@ -181,11 +181,11 @@ function update(i,t)
     col.mu = col.mu + (x - col.mu)/col.n
     col.lo = math.min(x, col.lo)
     col.hi = math.max(x, col.hi)  end
-
-  local function num(col, x)
+  local function sym(col, x)
     col.has[x] = 1 + (col.has[x] or 0) 
-    if col.has[x] > col.most then col.mode,col.most = x,col.has[x] end end
-
+    if col.has[x] > col.most then 
+      col.mode,col.most = x,col.has[x] end end
+  -- start
   for _,col in pairs(i.cols.xy.all) do
     local x = t[col.at]
     if x ~= "?" then 
@@ -274,21 +274,28 @@ function nb3(file,  log)
   local tmp, i = {}, it.egs()
   local function discretize(j,x,   bins)
     if x ~= "?" then 
-      bins = i.nums[j]
+      bins = i.cols.xy.all[j].bins
       if bins then
         for _,bin in pairs(bins) do 
           if bin.lo <= x and x < bin.hi then return bin.id end end end end 
      return x end
 
-  function update1(i, row)
+  local function update1(i, row)
     update(i, row)
+    for _,col in pairs(i.cols.x.nums) do
+      x=row[col.at]
+      if x ~= "?" then
+        col.bins = col.bins or {}
+        push(col.bins, {x=row[col.at], y=row[i.cols.klass.at]}) end end end
+
   -- start 
   for row in items(file) do 
     if not i.cols then i.cols = cols(row) else push(tmp,update1(i,row)) end end
-  for _,col in pairs(i.cols.x.nums) do i.nums[j] = bins(xys,j) end
+  for _,col in pairs(i.cols.x.nums) do 
+    col.bins = bins(col.bins, col.at) end
   for _,row in pairs(tmp) do 
     row = collect(row, discretize);
-    test(i,row); train(i,row) end  
+    test(i,row); train(i,row) end  -- XXX a new train
   return i end
 
 ---     |` .  _  _|  |_ . _  _
@@ -469,6 +476,7 @@ function cli(help)
 ---    |  \ |___ |\/| |  | [__  
 ---    |__/ |___ |  | |__| ___] 
 
+local eg={}
 function eg.copy(     t,u)
   t={a={b={c=10},d={e=200}}, f=300}
   u= copy(t) 
@@ -509,17 +517,20 @@ function eg.nb2a()
   map(out,oo) end
 
 function eg.bins(   t)
-  local t,n = {},30
+  local t,n = {},1000
   for j=1,n do push(t, {x=j, y=j<.6*n and 1 or j<.8*n and 2 or 3}) end
   map(bins(t,20),oo)
 end
 
 function eg.nb3(  i)
   print(20)
-  i=nb3("../etc/data/diabetes.csv")
-  for n,bins in pairs(i.nums) do 
-    print(n,#bins) end
+  the.goal = "positive"
+  the.file="../etc/data/diabetes.csv"
+  i=nb3(the.file)
+  for _,col in pairs(i.cols.x.nums) do 
+    print(col.at,#col.bins) end
   local acc, out = score(i)  -- XXX
+  abcd(i.log, true) 
   print(#out)
   print(acc)
   map(out,oo)
@@ -549,3 +560,7 @@ os.exit(fails)
 ---                 ###
 ---               #  =  #            "This ain't chemistry. 
 ---               #######             This is art."
+
+
+-- nb1 and nb2 has "?"
+-- nb3 needsa new train.

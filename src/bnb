@@ -95,16 +95,15 @@ ako.xnum   = function(x) return ako.num(x) and not ako.goal(x) end
 local big = 1E32
 local it={}
 function it.num()   
-  return {nump=true,indep=false,n=0,at=0,name="",lo=big,hi=-big,mu=0,bins={}} end
+  return {nump=true,indep=false,n=0,at=0,name="",
+          lo=big,hi=-big,mu=0,m2=0,sd=0,bins={}} end
 
 function it.sym()   
-  return {nump=false,indep=false, n=0, at=0,name="",has={}, most=0, mode=nil} end
-
-function it.three() 
-  return {all={}, nums={}, syms={}} end
+  return {nump=false,indep=false, n=0, at=0,name="",
+          has={}, most=0, mode=nil} end
 
 function it.cols()  
-  return {names={}, klass=nil,xy= it.three(), x= it.three(), y= it.three()} end
+  return {names={}, klass=nil,xy= {}, x= {}, y={}} end
 
 function it.egs()   
   return {h={}, nh=0, e={}, n=0, bests=0, rests=0, 
@@ -309,47 +308,76 @@ function argmin(lo, hi, xys, triviallySmall, enoughItems, b4, where, out)
   else b4 = push(out,{id=#out+1, where=where,
                       lo=b4, hi=xys[hi].x, n=hi-lo+1, div=div}).hi end
   return b4 end
-
 ------------------------------------------------------------------------------
 ---     _     _ _  _     _  _  _|     _   _ _  _
 ---    | ||_|| | |_\    (_|| |(_|    _\\/| | |_\
 ---                                    /        
 
-function cols(names)
-  local i = it.cols()
-  local function keep(now, at)  -- keep in "all" plus in one of "nums" or "syms"
-    push(ako.num(now.name) and at.nums or at.syms, push(at.all, now)) end
-  for j,name in pairs(names) do
+function create(names)
+  i = it.cols()
+  i.names = names
+  for at,name in pairs(names) do
     local now = ako.num(name) and it.num() or it.sym()
-    now.at, now.name, now.w = j, name, ako.weight(name)
-    keep(now, i.xy) 
-    if not ako.ignore(name) then
-      now.indep = not ako.goal(name)
-      keep(now, now.indep and i.x or i.y) 
-      if ako.klass(name) then i.klass=now end end end
-  return i end 
+    now.at, now.name, now.w = at, name, ako.weight(name)
+    push(i.xy, now)
+    if not ako.ignore(name)  then
+      if not ako.goal(name)  then now.indep = true end
+      if     ako.klass(name) then i.klass=now      end 
+      push(now.indep and i.x or i.y, now)          end end
+  return i end
 
-function update(i,t)
-  local function num(col, x)
-    col.mu = col.mu + (x - col.mu)/col.n
+function mid(i,cols)
+   local function mid(col) return col.nump and col.mu or col.mode end
+   return map(cols or i.cols.y, mid) end
+
+function div(i,cols)
+   local function div(col) return col.nump and col.sd or ent(col.has) end
+   return map(cols or i.cols.y, div) end
+
+function dist(i,row1,row2)
+  local d, n = 0, #i.cols.x
+  local function sym(_,x,y) return x==y and 0 or 0 end
+  local function num(c,x,y)
+     if     x=="?" then y = norm(c.lo, c.hi, y); x=y<.5 and 1 or 0 
+     elseif y=="?" then x = norm(c.lo, c.hi, x); y=x<.5 and 1 or 0
+     else             x,y = norm(c.lo, c.hi, x), norm(c.lo, c.hi, y) end
+     return math.abs(x-y) end
+  local function dist(c,x,y)
+     return x=="?" and y=="?" and 1 or (c.nump and num or sym)(c,x,y) end
+  for _,c in pairs(i.cols.x) do d=d + dist(c, row1[c.at], row2[c.at])^the.e end 
+  return (d/n)^(1/the.e) end
+
+function update(i,row)
+  local function num(col,x,   d)
     col.lo = math.min(x, col.lo)
-    col.hi = math.max(x, col.hi)  end
-  local function sym(col, x)
+    col.hi = math.max(x, col.hi) 
+    d      = x - col.mu
+    col.mu = col.mu + d/col.n
+    col.m2 = col.m2 + d*(x - col.mu)
+    col.sd = ((col.m2<0 or col.n<2) and 0) or ((col.m2/(col.n - 1))^0.5) end
+  local function sym(col,x)
     col.has[x] = 1 + (col.has[x] or 0) 
     if col.has[x] > col.most then 
       col.mode,col.most = x,col.has[x] end end
   -- start
   for _,col in pairs(i.cols.xy.all) do
-    local x = t[col.at]
+    local x = row[col.at]
     if x ~= "?" then 
       col.n = col.n + 1
       (col.nump and num or sym)(col,x) end end
-  return t end
+  return row end
+
  ------------------------------------------------------------------------------
 ---    _  _ ___  _    ____ _ _  _ 
 ---     \/  |__] |    |__| | |\ | 
 ---    _/\_ |    |___ |  | | | \| 
 
+function xplain(data)
+  local i = {rows={}, cols=nil}
+  for row in items(data) do
+    if not i.cols then i.cols=cols(row) else push(i.rows,update(i,row)) end end
+  i.rows = sort(i.rows, order)
+end
 ------------------------------------------------------------------------------
 ---    _  _ _ ____ ____ 
 ---    |\/| | [__  |    
@@ -364,6 +392,8 @@ function ent(t)
   local n=0; for _,m in pairs(t) do n = n+m end
   local e=0; for _,m in pairs(t) do if m>0 then e= e+m/n*math.log(m/n,2) end end
   return -e end
+
+function norm(lo,hi,x) return math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi - lo) end
 
 ---     _ |_  _   _ | 
 ---    (_ | |(/ _(_ |<
