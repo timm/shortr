@@ -379,15 +379,41 @@ function better(i,row1,row2)
 ---     \/  |__] |    |__| | |\ | 
 ---    _/\_ |    |___ |  | | | \| 
 
+function contrast(cols, rows1, rows2)
+  function xys(at)
+    local out={}
+    for klass,rows in pairs{rows1,rows2} do
+      for _,row in pairs(rows) do 
+        x = row[at] 
+        if x ~= "?" then 
+          push(out, {x=x, y=klass}) end end end
+    return out end 
+  function sym(xys,t)
+    local out,x,y,tmp = {}
+    for _,xy in pairs(xys) do
+       x,y    = xy.x, xy.y
+       out[x] = out[x] or {id=x, where=at, lo=x, hi=x, n=0, tmp={}}
+       tmp    = out[x].tmp
+       tmp[y] = 1 + (tmp[y] or 0) end 
+    for _,one in pairs(out) do one.div,one.n = ent(one.tmp) end
+    return out end
+  -- start
+  local out={}
+  for _,col in pairs(cols.x) do
+    bins = (col.nump and bins or sym)(xys(col.at), col.at) 
+    if #bins > 1 then
+      for _,bin in pairs(bins) do push(out,bin) end end end
+  return out end
+
 function xplain(data)
   local i = {rows={}, cols=nil}
   local function num(col, best, rest)
-    local tmp = {}
+    local xys = {}
     for klass,rows in pairs{rest,best} do
       for _,row in pairs(rows) do 
         local x = row[col.at] 
-        if x~="?" then push(tmp, {x=x, y=klass}) end end end
-    return bins(tmp, col.at)  
+        if x~="?" then push(xys, {x=x, y=klass}) end end end
+    return bins(xys, col.at)  
   end
   local function sym(col, best, rest)
     local tmp = {}
