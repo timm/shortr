@@ -379,10 +379,11 @@ function better(i,row1,row2)
 ---     \/  |__] |    |__| | |\ | 
 ---    _/\_ |    |___ |  | | | \| 
 
-function constrasts(i, rows1,row2)
+function constrasts(i, rows1, row2)
+  local out, tmp, contrast = {}
   function contrast(col)
-    local symbols, xys, x ={},{}
-    local function asBin(x,ys,       n,div) 
+    local symbols, xys, x, asBin = {},{}
+    function asBin(x,ys,       n,div) 
       n,div = ent(ys)
       return {id=x,where=col.at, lo=x,hi=x, n=n, div=div} 
     end
@@ -394,7 +395,7 @@ function constrasts(i, rows1,row2)
           push(xys, {x=x, y=klass}) end end end
     return col.nump and bins(xys, col.at) or collect(symbols, asBin) end
   -- start
-  local out, tmp = {}
+  out, tmp = {}
   for _,col in pairs(i.xols.x) do
     tmp = constast(col)
     if #tmp > 1 then
