@@ -51,6 +51,8 @@ USAGE:
 
 OPTIONS:
   -bins  -b   max. number of bins            = 16
+  -best  -B   best set                       = .5
+  -rest  -R   rest is -R*best                = 4
   -cohen -c   cohen                          = .35
   -goal  -g   goal                           = recurrence-events
   -K     -K   manage low class counts        = 1
@@ -65,16 +67,17 @@ OPTIONS (other):
   -todo  -t   start up action                = nothing
 ]]
 
-local ent,per
-local push,map,collect,copy,powerset
+local ent,per,norm
+local slice,many,any,push,map,collect,copy,powerset
 local sort,up1,upx,down1,slots,up1,down1
 local words,thing, things, items
 local cli
-local fmt,o,oo
+local rnd,rnds,fmt,o,oo
 local inc,inc2,inc3,has,has2,has3
 local ok,ish, rogues
 local cols,update,classify,test,train,score,header,nb1,nb2,abcd
 local bins,nb3
+local sorted,mid,div,dist,clone,create,better,xplain
 local the={}
 
 ---     _ _ |    _ _  _   _|_   _  _  _
@@ -86,7 +89,7 @@ ako.num    = function(x) return x:find"^[A-Z]" end
 ako.goal   = function(x) return x:find"[-+!]"  end
 ako.klass  = function(x) return x:find"!$"     end
 ako.ignore = function(x) return x:find":$"     end
-ako.weight = function(x) return x:find"-$" and -1 and 1 end
+ako.weight = function(x) return x:find"-$" and -1 or 1 end
 ako.xnum   = function(x) return ako.num(x) and not ako.goal(x) end
 
 ---     __|_ _    __|_ _
@@ -314,7 +317,7 @@ function argmin(lo, hi, xys, triviallySmall, enoughItems, b4, where, out)
 ---                                    /        
 
 function create(names)
-  i = it.cols()
+  local i = it.cols()
   i.names = names
   for at,name in pairs(names) do
     local now = ako.num(name) and it.num() or it.sym()
@@ -339,17 +342,28 @@ function update(i,row)
     if col.has[x] > col.most then 
       col.mode,col.most = x,col.has[x] end end
   -- start
-  for _,col in pairs(i.cols.xy.all) do
+  for _,col in pairs(i.cols.xy) do
     local x = row[col.at]
     if x ~= "?" then 
       col.n = col.n + 1
       (col.nump and num or sym)(col,x) end end
   return row end
 
+function mid(i,cols)
+   local function mid(col) return col.nump and col.mu or col.mode end
+   return map(cols or i.cols.y, mid) end
+
+function div(i,cols)
+   local function div(col) return col.nump and col.sd or ent(col.has) end
+   return map(cols or i.cols.y, div) end
+
 function clone(old,rows)
   local i={rows={}, cols=create(old.cols.names)}
   for _,row in pairs(rows or {}) do update(i,row) end
   return i end
+
+function sorted(i)
+  return sort(i.rows, function(a,b) return better(i,a,b) end) end
 
 function better(i,row1,row2)
   local s1, s2, n, e = 0, 0, #i.cols.y, math.exp(1)
@@ -367,18 +381,37 @@ function better(i,row1,row2)
 
 function xplain(data)
   local i = {rows={}, cols=nil}
+  local function num(col, best, rest)
+    local tmp = {}
+    for klass,rows in pairs{rest,best} do
+      for _,row in pairs(rows) do 
+        local x = row[col.at] 
+        if x~="?" then push(tmp, {x=x, y=klass}) end end end
+    return bins(tmp, col.at)  
+  end
+  local function sym(col, best, rest)
+    local tmp = {}
+    for klass,rows in pairs{rest,best} do
+      for _,row in pairs(rows) do
+        local x = row[col.at]
+        if x ~= "?" then 
+          tmp[x]  = tmp[x] or {id=x, where=col.at, lo=x, hi=x, n=0, tmp={}}
+          local r  = tmp[x].tmp
+          r[klass] = 1 + (r[klass] or 0) end end end
+    for x,t in pairs(tmp) do t.div,t.n = ent(t.tmp) end
+    return tmp
+  end
   for row in items(data) do
-    if not i.cols then i.cols=cols(row) else push(i.rows,update(i,row)) end end
-  i.rows = sort(i.rows, function(a,b) return better(i,a,b) end)
-end
-
-function mid(i,cols)
-   local function mid(col) return col.nump and col.mu or col.mode end
-   return map(cols or i.cols.y, mid) end
-
-function div(i,cols)
-   local function div(col) return col.nump and col.sd or ent(col.has) end
-   return map(cols or i.cols.y, div) end
+    if not i.cols then i.cols=create(row) else push(i.rows,update(i,row)) end end
+  i.rows = sorted(i)
+  local n    = (#i.rows)^the.best
+  local best = slice(i.rows, 1, n)
+  local rest = many(i.rows, n*the.rest, n+1)
+  for _,col in pairs(i.cols.x) do
+    print""
+    print(col.at)
+    map((col.nump and num or sym)(col, best, rest),oo) end
+  return i end
 
 function dist(i,row1,row2)
   local function sym(_,x,y) return x==y and 0 or 1 end
@@ -406,7 +439,7 @@ function per(t,p) return t[ (p or .5)*#t//1 ] end
 function ent(t) 
   local n=0; for _,m in pairs(t) do n = n+m end
   local e=0; for _,m in pairs(t) do if m>0 then e= e+m/n*math.log(m/n,2) end end
-  return -e end
+  return -e,n end
 
 function norm(lo,hi,x) return math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi - lo) end
 
@@ -462,12 +495,19 @@ function upx(a,b)   return a.x < b.x end
 function up1(a,b)   return a[1] < b[1] end
 function down1(a,b) return a[1] > b[1] end
 
-
 function slots(t, u)
   local function public(k) return tostring(k):sub(1,1) ~= "_" end
   u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
   return sort(u) end
 
+function any(a,lo,hi) 
+  lo,hi = lo or 1, hi or #a; return a[ (lo+(hi-lo)*math.random())//1 ] end
+
+function many(a,n,lo,hi,  u) 
+  u={}; for j=1,n do push(u,any(a,lo,hi)) end; return u end
+
+function slice(a,lo,hi,    u)
+  u,lo,hi = {},lo or 1,hi or #a; for j=lo,hi do u[1+#u]=a[j] end; return u end
 ---     __|_ _. _  _   '~)  _|_|_ . _  _  _
 ---    _\ | | || |(_|   /_   | | ||| |(_|_\
 ---                _|                  _|  
@@ -510,6 +550,10 @@ function o(t,  seen, u)
   u = #t>0 and map(t,show1) or map(slots(t),show2)
   return (t.s or "").."{"..table.concat(u," ").."}" end
 
+function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
+function rnd(x,f) 
+  return fmt(type(x)=="number" and (x~=x//1 and f or "%5.2f") or "%s",x) end
+
 ---     _ | .
 ---    (_ | |
     
@@ -540,7 +584,15 @@ function eg.copy(     t,u)
   oo(u)
   end
 
-function eg.collect()
+function eg.create()
+  oo(create{"Name","Age","gender","Weight-"}.y[1]) end
+
+function eg.clone(   i,t,best,rest)
+  i={rows={},cols=nil}
+  the.file = "../etc/data/auto93.csv"
+  i = xplain(the.file) end
+
+ function eg.collect()
   local function aux(x,y) return x*y end
   oo(collect({10,20,30},aux)) end
 
@@ -586,6 +638,12 @@ function eg.bins(   t)
   for j=1,n do push(t, {x=j, y=j<.6*n and 1 or j<.8*n and 2 or 3}) end
   map(bins(t,20),oo)
 end
+
+function eg.many( t)
+  t={};for j = 1,1000 do t[#t+1] = j end
+  print(900,"+", o(many(t,10,900)))
+  print(1,100,o(many(t,10,1,100)))
+  print(300,700, o(many(t,10,300,700))) end 
 
 function eg.nb3() 
   the.file = "../etc/data/diabetes.csv" 
