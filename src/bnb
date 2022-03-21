@@ -92,6 +92,10 @@ ako.ignore = function(x) return x:find":$"     end
 ako.weight = function(x) return x:find"-$" and -1 or 1 end
 ako.xnum   = function(x) return ako.num(x) and not ako.goal(x) end
 
+-- ## Convenctions:
+-- lower case for instance methods, upper case for class methods (e.g. 
+-- creation, management of sets of instances)
+
 ---     __|_ _    __|_ _
 ---    _\ | | |_|(_ | _\
        
@@ -249,43 +253,17 @@ function abcd(gotwants, show)
 ---    [__  |  | |__] |___ |__/    |__/ |__| |\ | | __ |___ [__  
 ---    ___] |__| |    |___ |  \    |  \ |  | | \| |__] |___ ___] 
 
-function nb3(data,  log)
-  local tmp, xnums = {}
-  local function discretize(c,x,   col)
-    if x ~= "?" then 
-      col = xnums[c]
-      if col then
-        for _,bin in pairs(col.bins) do 
-          if bin.lo <= x and x < bin.hi then return bin.id end end end end 
-    return x end
-  local function xnum(c,name) 
-    if ako.xnum(name) then return {name=name, xys={},bins={}} end end
-  local function train(c,x,row) 
-    if xnums[c] and x ~= "?" then push(xnums[c].xys, {x=x,y= row[#row]}) end end
-  -- start 
-  for row in items(data) do
-    push(tmp,row)
-    if   xnums then collect(row, function(c,x) return train(c,x,row) end) 
-    else xnums = collect(row,xnum) end end
-  for where,col in pairs(xnums) do col.bins = bins(col.xys,where); print(col.name,#col.bins) end
-  for j=2,#tmp do tmp[j] = collect(tmp[j], discretize) end
-  return nb1(tmp) 
-  end
-
----     |` .  _  _|  |_ . _  _
----    ~|~ | | |(_|  |_)|| |_\
-      
-local argmin
-function bins(xys,at)
+local bin={}
+function bin.New4xys(xys,at,name)
   xys                  = sort(xys, upx)
   local triviallySmall = the.cohen*(per(xys,.9).x - per(xys, .1).x)/2.56 
   local enoughItems    = #xys / the.bins
   local out            = {}
-  argmin(1,#xys, xys, triviallySmall, enoughItems, -math.huge, at, out)
+  bin.Argmin(1,#xys, xys, triviallySmall, enoughItems, -math.huge, at.name, out)
   out[#out].hi =  math.huge 
   return out end
 
-function argmin(lo, hi, xys, triviallySmall, enoughItems, b4, at, out)
+function bin.Argmin(lo, hi, xys, triviallySmall, enoughItems, b4, at, name,out)
   local function add(f,z) f[z] = (f[z] or 0) + 1 end
   local function sub(f,z) f[z] =  f[z] - 1       end
   local lhs, rhs, cut, div, xpect, xy = {},{}
@@ -306,18 +284,40 @@ function argmin(lo, hi, xys, triviallySmall, enoughItems, b4, at, out)
              cut, div = j, xpect end end end 
   end -- end if
   if   cut 
-  then b4 = argmin(lo,    cut, xys, triviallySmall, enoughItems, b4, at, out)
-       b4 = argmin(cut+1, hi , xys, triviallySmall, enoughItems, b4, at, out)
-  else b4 = push(out,{id=#out+1, at=at,
-                      lo=b4, hi=xys[hi].x, n=hi-lo+1, div=div}).hi end
+  then b4 = bin.Argmin(lo,   cut, xys,triviallySmall,enoughItems,b4,at,name,out)
+       b4 = bin.Argmin(cut+1,hi , xys,triviallySmall,enoughItems,b4,at,name,out)
+  else b4 = push(out,  bin.New(#out+1,at,name,b4,xys[hi].x, hi-lo+1,div)).hi end
   return b4 end
-------------------------------------------------------------------------------
----     _     _ _  _     _  _  _|     _   _ _  _
----    | ||_|| | |_\    (_|| |(_|    _\\/| | |_\
----                                    /        
 
-function create(names)
-  local i = it.cols()
+function nb3(data,  log)
+  local tmp, xnums = {}
+  local function discretize(c,x,   col)
+    if x ~= "?" then 
+      col = xnums[c]
+      if col then
+        for _,one in pairs(col.bins) do 
+          if one.lo <= x and x < one.hi then return one.id end end end end 
+    return x end
+  local function xnum(c,name) 
+    if ako.xnum(name) then return {name=name, xys={},bins={}} end end
+  local function train(c,x,row) 
+    if xnums[c] and x ~= "?" then push(xnums[c].xys, {x=x,y= row[#row]}) end end
+  -- start 
+  for row in items(data) do
+    push(tmp,row)
+    if   xnums then collect(row, function(c,x) return train(c,x,row) end) 
+    else xnums = collect(row,xnum) end end
+  for where,col in pairs(xnums) do col.bins = bin.New4xys(col.xys,where); print(col.name,#col.bins) end
+  for j=2,#tmp do tmp[j] = collect(tmp[j], discretize) end
+  return nb1(tmp) 
+  end
+
+---     _ _ | _
+---    (_(_)|_\
+        
+local cols={}
+function cols.New(names,    i)
+  i = {names={}, klass=nil,xy= {}, x= {}, y={}} 
   i.names = names
   for at,name in pairs(names) do
     local now = ako.num(name) and it.num() or it.sym()
@@ -329,7 +329,7 @@ function create(names)
       push(now.indep and i.x or i.y, now)          end end
   return i end
 
-function update(i,row)
+function cols.update(i,row)
   local function num(col,x,   d)
     col.lo = math.min(x, col.lo)
     col.hi = math.max(x, col.hi) 
@@ -342,51 +342,121 @@ function update(i,row)
     if col.has[x] > col.most then 
       col.mode,col.most = x,col.has[x] end end
   -- start
-  for _,col in pairs(i.cols.xy) do
+  for _,col in pairs(i.xy) do
     local x = row[col.at]
     if x ~= "?" then 
       col.n = col.n + 1
       (col.nump and num or sym)(col,x) end end
   return row end
 
-function mid(i,cols)
-   local function mid(col) return col.nump and col.mu or col.mode end
-   return map(cols or i.cols.y, mid) end
-
-function div(i,cols)
-   local function div(col) return col.nump and col.sd or ent(col.has) end
-   return map(cols or i.cols.y, div) end
-
-function clone(old,rows)
-  local i={rows={}, cols=create(old.cols.names)}
-  for _,row in pairs(rows or {}) do update(i,row) end
-  return i end
-
-function bestRest(i)
-  i.rows  = sort(i.rows, function(a,b) return better(i,a,b) end) 
-  local n = (#i.rows)^the.best
-  return slice(i.rows, 1,          n),      -- top n things
-         many( i.rows, n*the.rest, n+1) end -- some sample of the rest
-
-function better(i,row1,row2)
-  local s1, s2, n, e = 0, 0, #i.cols.y, math.exp(1)
-  for _,col in pairs(i.cols.y) do
+function cols.better(i,row1,row2)
+  local s1, s2, n, e = 0, 0, #i.y, math.exp(1)
+  for _,col in pairs(i.y) do
     local a  = norm(col.lo, col.hi, row1[col.at] )
     local b  = norm(col.lo, col.hi, row2[col.at] )
     s1 = s1 - e^(col.w * (a - b) / n)
     s2 = s2 - e^(col.w * (b - a) / n) end
   return s1 / n < s2 / n  end
 
+------------------------------------------------------------------------------
+---     _     _ _  _     _  _  _|     _   _ _  _
+---    | ||_|| | |_\    (_|| |(_|    _\\/| | |_\
+---                                    /        
+function egs.New() return {rows={}, cols=nil} end
+
+function egs.New4data(data,   rest,best)
+  local i = egs.New()
+  for row in items(data) do
+    if not i.cols then i.cols=cols.New(row) else push(i.rows, cols.update(i.cols,row)) end end
+  return i end
+
+function egs.mid(i,cols)
+   local function mid(col) return col.nump and col.mu or col.mode end
+   return map(cols or i.cols.y, mid) end
+
+function egs.div(i,cols)
+   local function div(col) return col.nump and col.sd or ent(col.has) end
+   return map(cols or i.cols.y, div) end
+
+function egs.clone(old,rows)
+  local i={rows={}, cols=cols.New(old.cols.names)}
+  for _,row in pairs(rows or {}) do cols.update(i.cols,row) end
+  return i end
+
+function egs.bestRest(i)
+  i.rows  = sort(i.rows, function(a,b) return cols.better(i.cols,a,b) end) 
+  local n = (#i.rows)^the.best
+  return slice(i.rows, 1,          n),      -- top n things
+         many( i.rows, n*the.rest, n+1) end -- some sample of the rest
+
  ------------------------------------------------------------------------------
 ---    _  _ ___  _    ____ _ _  _ 
 ---     \/  |__] |    |__| | |\ | 
 ---    _/\_ |    |___ |  | | | \| 
 
-function contrasts(i, rows1, rows2)
+local bin={}
+function bin.New(id,at,name,lo,hi,n,div) 
+  return {id=id,at=at,name=name,lo=lo,hi=hi,n=n,div=div} end
+
+function bin.show(i,negative)
+  local x,lo,hi,big, s = i.name, i.lo, i.hi, math.huge
+  if negative then
+    if     lo== hi  then s=fmt("%s != %s",x,lo)  
+    elseif hi== big then s=fmt("%s <  %s",x,lo) 
+    elseif lo==-big then s=fmt("%s >= %s",x,hi)  
+    else                 s=fmt("%s < %s and %s >= %s",x,lo,x,hi) end 
+  else
+    if     lo== hi  then s=fmt("%s == %s",x,lo)  
+    elseif hi== big then s=fmt("%s >= %s",x,lo)  
+    elseif lo==-big then s=fmt("%s <  %s",x,hi)  
+    else                 s=fmt("%s <= %s < %s",lo,x,hi) end end
+  return s end
+
+function bin.select(i,row)
+  local x, lo, hi = row[i.at], i.lo, i.hi
+  return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
+
+function bin.Merges(bins)
+  local j,n,new = 0,length(bins),{}
+  while j <= n do
+    j=j+1
+    a=bins[j]
+    if j < n then
+      b = bins[j+1]
+      if a.hi == b.lo then
+        a.hi  = b.hi
+        a.div = (a.div*a.n + b.div*b.n)/(a.n+b.n)
+        a.n   = a.n + b.n
+        j     = j + 1 end end
+    push(new,a) end
+  return #new < #bins and bin.Merges(new) or bins end
+
+local rule={}
+function rule.New(bins,   t)
+  t = {}
+  for _,one in pairs(bins) do t[one.at]=t[one.at] or {}; push(t[one.at],one) end 
+  return {bins=t} end
+
+function rule.selects(i,row)
+  local function ors(bins)
+    for _,x in pairs(bins) do if bin.select(x,row) then return true end end
+    return false end
+  for at,bins in pairs(i.bins) do if not ors(bins) then return false end end
+  return true end 
+
+function rule.show(i,bins)
+  local cat, order, ors
+  cat = function(t,sep)return table.concat(t,sep) end
+  order= function(a,b)  return a.lo < b.lo end
+  ors= function(bins) 
+          return cat(map(bin.Merges(sort(bins,order)),bin.show)," or ") end
+  return cat(map(i.bins, ors)," and ") end
+
+function egs.Contrasts(i, rows1, rows2)
   local function contrast(col)
-    local function asBin(x,ys)
-      local n,div = ent(ys)
-      return {id=x, at=col.at, lo=x, hi=x, n=n, div=div} end
+    local function asBin(x,ys,     n,div)
+      n,div = ent(ys)
+      return bin.New(id, col.at, col.name, x, x, n, div) end
     local symbols, xys, x = {},{}
     for klass,rows in pairs{rows1,rows2} do
       for _,row in pairs(rows) do 
@@ -399,55 +469,14 @@ function contrasts(i, rows1, rows2)
   for _,col in pairs(i.cols.x) do
     tmp = contrast(col)
     if #tmp > 1 then
-      for _,bin in pairs(tmp) do push(out, bin) end end end
+      for _,one in pairs(tmp) do push(out, one) end end end
    return out end
 
-function select(bin,row)
-  x, lo, hi = row[bin.at], bin.lo, bin.hi
-  return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
-
-function ands_ors(rule,row)
-  local function ors(bins)
-    for _,bin in pairs(bins) do if select(bin,row) then return true end end
-    return false end
-  for at,bins in pairs(rule) do if not ors(bins) then return false end end
-  return true end 
-
-local _merge
-function canonical(bins)
-  for _,b in pairs(bins) do
-    rule[b.at] = rule[b.at] or {}
-    push(rule[b.at], b) end
-  for at,bins in pairs(rule) do
-    if #bins > 1 then 
-      rule[at] = _merge(sort(bins, function(a,b) return a.lo < b.lo end)) end end
-    
-function _merge(b4)
-  j,n,tmp = 0,length(b4),{}
-  while j <= n do
-    j=j+1
-    a=b4[j]
-    if j < n and then
-      b = b4[j+1]
-      if a.hi = b.lo then
-        a.hi  = b.hi
-        a.div = (a.div*a.n + b.div*b.n)/(a.n+b.n)
-        a.n   = a.n + b.n
-        j     = j + 1 end end
-    push(tmp,a) end
-  return #tmp < #b4 and merge(tmp) or b4 end
-
--- XXX pring a range
--- XXX cplelect stats on the rules
-
-function xplain(data,   rest,best)
-  local i = {rows={}, cols=nil}
-  for row in items(data) do
-    if not i.cols then i.cols=create(row) else push(i.rows,update(i,row)) end end
+function egs.xplain(i)
   best, rest = bestRest(i)
-  return contrasts(i, best,rest) end
+  return egs.contrasts(i, best,rest) end
 
-function dist(i,row1,row2)
+function egs.dist(i,row1,row2)
   local function sym(_,x,y) return x==y and 0 or 1 end
   local function num(c,x,y)
     if     x=="?" then y = norm(c.lo, c.hi, y); x=y<.5 and 1 or 0 
@@ -628,7 +657,7 @@ function eg.clone(   i,t,best,rest, x)
   the.file = "../etc/data/auto93.csv"
   bins=xplain(the.file) 
   for _,row in pairs(i.rows) do
-      x=row[col].at
+      x=row[col].at end
 end
 
  function eg.collect()
