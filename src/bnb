@@ -68,7 +68,7 @@ OPTIONS (other):
 ]]
 
 local ent,per,norm
-local slice,many,any,push,map,collect,copy,powerset
+local slice,many,any,push,map,collect,copy,powerset,unpack
 local sort,up1,upx,down1,slots,up1,down1
 local words,thing, things, items
 local cli
@@ -77,7 +77,7 @@ local inc,inc2,inc3,has,has2,has3
 local ok,ish, rogues
 local cols,update,classify,test,train,score,header,nb1,nb2,abcd
 local bins,nb3
-local sorted,mid,div,dist,clone,create,better,xplain
+local sorted,mid,div,dist,clone,create,better,bestRest,contrasts,xplain
 local the={}
 
 ---     _ _ |    _ _  _   _|_   _  _  _
@@ -276,16 +276,16 @@ function nb3(data,  log)
 ---    ~|~ | | |(_|  |_)|| |_\
       
 local argmin
-function bins(xys,where)
+function bins(xys,at)
   xys                  = sort(xys, upx)
   local triviallySmall = the.cohen*(per(xys,.9).x - per(xys, .1).x)/2.56 
   local enoughItems    = #xys / the.bins
   local out            = {}
-  argmin(1,#xys, xys, triviallySmall, enoughItems, -math.huge, where, out)
+  argmin(1,#xys, xys, triviallySmall, enoughItems, -math.huge, at, out)
   out[#out].hi =  math.huge 
   return out end
 
-function argmin(lo, hi, xys, triviallySmall, enoughItems, b4, where, out)
+function argmin(lo, hi, xys, triviallySmall, enoughItems, b4, at, out)
   local function add(f,z) f[z] = (f[z] or 0) + 1 end
   local function sub(f,z) f[z] =  f[z] - 1       end
   local lhs, rhs, cut, div, xpect, xy = {},{}
@@ -306,9 +306,9 @@ function argmin(lo, hi, xys, triviallySmall, enoughItems, b4, where, out)
              cut, div = j, xpect end end end 
   end -- end if
   if   cut 
-  then b4 = argmin(lo,    cut, xys, triviallySmall, enoughItems, b4, where, out)
-       b4 = argmin(cut+1, hi , xys, triviallySmall, enoughItems, b4, where, out)
-  else b4 = push(out,{id=#out+1, where=where,
+  then b4 = argmin(lo,    cut, xys, triviallySmall, enoughItems, b4, at, out)
+       b4 = argmin(cut+1, hi , xys, triviallySmall, enoughItems, b4, at, out)
+  else b4 = push(out,{id=#out+1, at=at,
                       lo=b4, hi=xys[hi].x, n=hi-lo+1, div=div}).hi end
   return b4 end
 ------------------------------------------------------------------------------
@@ -376,16 +376,17 @@ function better(i,row1,row2)
     s1 = s1 - e^(col.w * (a - b) / n)
     s2 = s2 - e^(col.w * (b - a) / n) end
   return s1 / n < s2 / n  end
+
  ------------------------------------------------------------------------------
 ---    _  _ ___  _    ____ _ _  _ 
 ---     \/  |__] |    |__| | |\ | 
 ---    _/\_ |    |___ |  | | | \| 
 
-function constrasts(i, rows1, row2)
+function contrasts(i, rows1, rows2)
   local function contrast(col)
     local function asBin(x,ys)
       local n,div = ent(ys)
-      return {id=x, where=col.at, lo=x, hi=x, n=n, div=div} end
+      return {id=x, at=col.at, lo=x, hi=x, n=n, div=div} end
     local symbols, xys, x = {},{}
     for klass,rows in pairs{rows1,rows2} do
       for _,row in pairs(rows) do 
@@ -396,12 +397,50 @@ function constrasts(i, rows1, row2)
     return col.nump and bins(xys, col.at) or collect(symbols, asBin) end
   local out, tmp = {}
   for _,col in pairs(i.cols.x) do
-    tmp = constast(col)
+    tmp = contrast(col)
     if #tmp > 1 then
       for _,bin in pairs(tmp) do push(out, bin) end end end
    return out end
 
-function xplain(data)
+function select(bin,row)
+  x, lo, hi = row[bin.at], bin.lo, bin.hi
+  return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
+
+function ands_ors(rule,row)
+  local function ors(bins)
+    for _,bin in pairs(bins) do if select(bin,row) then return true end end
+    return false end
+  for at,bins in pairs(rule) do if not ors(bins) then return false end end
+  return true end 
+
+local _merge
+function canonical(bins)
+  for _,b in pairs(bins) do
+    rule[b.at] = rule[b.at] or {}
+    push(rule[b.at], b) end
+  for at,bins in pairs(rule) do
+    if #bins > 1 then 
+      rule[at] = _merge(sort(bins, function(a,b) return a.lo < b.lo end)) end end
+    
+function _merge(b4)
+  j,n,tmp = 0,length(b4),{}
+  while j <= n do
+    j=j+1
+    a=b4[j]
+    if j < n and then
+      b = b4[j+1]
+      if a.hi = b.lo then
+        a.hi  = b.hi
+        a.div = (a.div*a.n + b.div*b.n)/(a.n+b.n)
+        a.n   = a.n + b.n
+        j     = j + 1 end end
+    push(tmp,a) end
+  return #tmp < #b4 and merge(tmp) or b4 end
+
+-- XXX pring a range
+-- XXX cplelect stats on the rules
+
+function xplain(data,   rest,best)
   local i = {rows={}, cols=nil}
   for row in items(data) do
     if not i.cols then i.cols=create(row) else push(i.rows,update(i,row)) end end
@@ -467,7 +506,7 @@ function has3(f,a,b,c) return f[a] and has2(f[a],b,c) or 0 end
 ---    |. __|_ _
 ---    ||_\ | _\
 
-unpack = t.able.unpack
+unpack = table.unpack
 
 function push(t,x) t[1 + #t] = x; return x end
 
@@ -482,7 +521,7 @@ function powerset(s)
     local t = {{}}
     for i = 1, #s do
       for j = 1, #t do
-        t[#t+1] = {s[i],.unpack(t[j])} end end
+        t[#t+1] = {s[i],unpack(t[j])} end end
     return t end
   return sort(aux(s), function(a,b) return #a < #b end) end
   
@@ -584,16 +623,21 @@ function eg.copy(     t,u)
 function eg.create()
   oo(create{"Name","Age","gender","Weight-"}.y[1]) end
 
-function eg.clone(   i,t,best,rest)
+function eg.clone(   i,t,best,rest, x)
   i={rows={},cols=nil}
   the.file = "../etc/data/auto93.csv"
-  i = xplain(the.file) end
+  bins=xplain(the.file) 
+  for _,row in pairs(i.rows) do
+      x=row[col].at
+end
 
  function eg.collect()
   local function aux(x,y) return x*y end
   oo(collect({10,20,30},aux)) end
 
 function eg.ent()
+  local a,b = ent{a=9,b=7}
+  print(a,b)
   ok(ish(ent{a=9,b=7}, .98886), "entropy")  end
 
 function eg.items()
