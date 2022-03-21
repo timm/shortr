@@ -100,21 +100,6 @@ ako.xnum   = function(x) return ako.num(x) and not ako.goal(x) end
 ---    _\ | | |_|(_ | _\
        
 local big = 1E32
-local it={}
-function it.num()   
-  return {nump=true,indep=false,n=0,at=0,name="",
-          lo=big,hi=-big,mu=0,m2=0,sd=0,bins={}} end
-
-function it.sym()   
-  return {nump=false,indep=false, n=0, at=0,name="",
-          has={}, most=0, mode=nil} end
-
-function it.cols()  
-  return {names={}, klass=nil,xy= {}, x= {}, y={}} end
-
-function it.egs()   
-  return {h={}, nh=0, e={}, n=0, bests=0, rests=0, 
-         best={}, rest={}, log={}, cols=nil} end
 ------------------------------------------------------------------------------
 ---    ___  ____ ____ _ ____ 
 ---    |__] |__| [__  | |    
@@ -291,7 +276,7 @@ function bin.Merges(bins)
   return #new < #bins and bin.Merges(new) or bins end
 
 local _argmin
-function bin.New4xys(xys,at,name)
+function bin.Xys(xys,at,name)
   xys                  = sort(xys, upx)
   local triviallySmall = the.cohen*(per(xys,.9).x - per(xys, .1).x)/2.56 
   local enoughItems    = #xys / the.bins
@@ -344,21 +329,50 @@ function nb3(data,  log)
     push(tmp,row)
     if   xnums then collect(row, function(c,x) return train(c,x,row) end) 
     else xnums = collect(row,xnum) end end
-  for where,col in pairs(xnums) do col.bins = bin.New4xys(col.xys,where); print(col.name,#col.bins) end
+  for where,col in pairs(xnums) do col.bins = bin.Xys(col.xys,where); print(col.name,#col.bins) end
   for j=2,#tmp do tmp[j] = collect(tmp[j], discretize) end
   return nb1(tmp) 
   end
 
 ---     _ _ | _
 ---    (_(_)|_\
-        
+local num={}
+function num.new(at,name)   
+  local w = (name or ""):weight(name)
+  return {nump=true,indep=false,n=0,at=at or 0,name=name or "",
+          w=w,lo=big,hi=-big,mu=0,m2=0,sd=0,bins={}} end
+
+local sym={}
+function sym.new(at,name)   
+  return {nump=false,indep=false, n=0, at=at or 0,name=name or "",
+          has={}, most=0, mode=nil} end
+
+--update to "add" everyhwere
+function num.update(i,x,   d)
+  if x ~= "?" then
+    i.n = i.n+1
+    i.lo = math.min(x, i.lo)
+    i.hi = math.max(x, i.hi) 
+    d      = x - i.mu
+    i.mu = i.mu + d/i.n
+    i.m2 = i.m2 + d*(x - i.mu)
+    i.sd = ((i.m2<0 or i.n<2) and 0) or ((i.m2/(i.n - 1))^0.5) end
+ return x end
+
+function sym.update(i,x)
+  if x ~= "?" then
+    i.n = i.n + 1
+    i.has[x] = 1 + (i.has[x] or 0) 
+    if i.has[x] > i.most then 
+      i.mode,i.most = x,i.has[x] end end 
+   return x end
+      
 local cols={}
 function cols.new(names,    i)
   i = {names={}, klass=nil,xy= {}, x= {}, y={}} 
   i.names = names
   for at,name in pairs(names) do
-    local now = ako.num(name) and it.num() or it.sym()
-    now.at, now.name, now.w = at, name, ako.weight(name)
+    local now = (ako.num(name) and num.new or sym.new)(at,name)
     push(i.xy, now)
     if not ako.ignore(name)  then
       if not ako.goal(name)  then now.indep = true end
@@ -367,23 +381,8 @@ function cols.new(names,    i)
   return i end
 
 function cols.update(i,row)
-  local function num(col,x,   d)
-    col.lo = math.min(x, col.lo)
-    col.hi = math.max(x, col.hi) 
-    d      = x - col.mu
-    col.mu = col.mu + d/col.n
-    col.m2 = col.m2 + d*(x - col.mu)
-    col.sd = ((col.m2<0 or col.n<2) and 0) or ((col.m2/(col.n - 1))^0.5) end
-  local function sym(col,x)
-    col.has[x] = 1 + (col.has[x] or 0) 
-    if col.has[x] > col.most then 
-      col.mode,col.most = x,col.has[x] end end
-  -- start
   for _,col in pairs(i.xy) do
-    local x = row[col.at]
-    if x ~= "?" then 
-      col.n = col.n + 1
-      (col.nump and num or sym)(col,x) end end
+    (col.nump and num or sym).update(col, row[col.at]) end 
   return row end
 
 function cols.better(i,row1,row2)
@@ -404,7 +403,7 @@ function egs.new(data,    i)
   i= {rows={}, cols=nil} 
   for row in items(data) do
     if not i.cols then i.cols=cols.new(row) else 
-       push(i.rows, cols.update(i.cols,row)) end end 
+      push(i.rows, cols.update(i.cols,row)) end end 
   return i end
 
 function egs.mid(i,cols)
