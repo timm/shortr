@@ -30,28 +30,11 @@ local nb1=require"nb1.lua"
 
 local lib=require"lib"
 
-local ent,per,norm
-local slice,many,any,push,map,collect,copy,powerset,unpack
-local sort,up1,upx,down1,slots,up1,down1
-local words,thing, things, items
-local cli
-local rnd,rnds,fmt,o,oo
-local inc,inc2,inc3,has,has2,has3
-local ok,ish, rogues
-local cols,update,classify,test,train,score,header,nb1,nb2,abcd
-local bins,nb3
-local sorted,mid,div,dist,clone,create,better,bestRest,contrasts,xplain
-local the={}
-
----     _ _ |    _ _  _   _|_   _  _  _
----    (_(_)||_|| | || |   | \/|_)(/__\
----                          / |       
-
 -- ## Convenctions:
 -- lower case for instance methods, upper case for class methods (e.g. 
--- creation, management of sets of instances)
+-- creation, management of sets of instances)
 
- ---     _| _  _ _  _  _
+---     _| _  _ _  _  _
 ---    (_|(/_| | |(_)_\
 local fails=0
 function ok(test,msg)
@@ -59,12 +42,9 @@ function ok(test,msg)
   if not test then 
     fails = fails+1 ; if the and the.dump then assert(test,msg) end end end
 
-function rogues()
-  for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end end
-
-              
 local demo={}
 function demo.copy(     t,u)
+  copy=lib.copy
   t={a={b={c=10},d={e=200}}, f=300}
   u= copy(t) 
   t.a.b.c= 20
