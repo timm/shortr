@@ -198,3 +198,9 @@ set statusline+=:
 set statusline+=%c
 set statusline+=\ 
 set statusline+=>
+
+set cursorline
+hi cursorline cterm=none term=none
+autocmd WinEnter * setlocal cursorline
+autocmd WinLeave * setlocal nocursorline
+highlight CursorLine guibg=#403050 ctermbg=234

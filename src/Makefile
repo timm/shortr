@@ -12,10 +12,10 @@ help:
 	@printf "\nmake [OPTIONS]\n\nOPTIONS:\n"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 	| sort \
-	| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%10s :\033[0m %s\n", $$1, $$2}'
+	| awk 'BEGIN {print(FS = ":.*?## "}; {printf "\033[36m%10s :\033[0m %s\n", $$1, $$2}'
 
 h1:; @figlet -W -flarry3d     $t | $(COMMENT)
-h3:; @figlet -W -fthreepoint        $t | $(COMMENT)
+h3:; @figlet -W -fthreepoint  $t | $(COMMENT)
 h2:; @figlet -W -fcybermedium $t | $(COMMENT)
 
 doc: $(PDF) $(HTML) $D/docs/index.html ## generate pdfs
@@ -60,6 +60,12 @@ $D/docs/%.pdf : %.lua
 		-M letter -o $@.ps $<
 	@ps2pdf $@.ps $@; rm $@.ps; git add $@
 
+$D/docs/all.pdf:  all.lua
+
+prune = grep -v "usr.bin.env" | grep -v "vi:"
+all.lua:
+	-         (t="bnb" $(MAKE) h1; cat the.lua | $(prune)) >  $@
+	-(echo ""; t="main" $(MAKE) h2; cat bnb    | $(prune); echo "") >> $@
 
 bnb.lua: bnb
 	cp $< $@

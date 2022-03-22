@@ -1,5 +1,67 @@
-#!/usr/bin/env lua
--- vi: filetype=lua :
+---     __                  __        
+---    /\ \                /\ \       
+---    \ \ \____    ___    \ \ \____  
+---     \ \ '__`\ /' _ `\   \ \ '__`\ 
+---      \ \ \L\ \/\ \/\ \   \ \ \L\ \
+---       \ \_,__/\ \_\ \_\   \ \_,__/
+---        \/___/  \/_/\/_/    \/___/ 
+                               
+local the,help = {},[[
+brknbad.lua: explore the world better, explore the world for good.
+(c) 2022, Tim Menzies
+
+     .-------.  
+     | Ba    | Bad <----.  planning= (better - bad)
+     |    56 |          |  monitor = (bad - better)
+     .-------.------.   |  
+             | Be   |   v  
+             |    4 | Better  
+             .------.  
+
+USAGE:
+  ./bnb [OPTIONS]
+
+OPTIONS:
+  -bins  -b   max. number of bins            = 16
+  -best  -B   best set                       = .5
+  -rest  -R   rest is -R*best                = 4
+  -cohen -c   cohen                          = .35
+  -goal  -g   goal                           = recurrence-events
+  -K     -K   manage low class counts        = 1
+  -M     -M   manage low evidence counts     = 2
+  -seed  -S   seed                           = 10019
+  -wait  -w   wait                           = 10
+
+OPTIONS (other):
+  -dump  -d   dump stack on error, then exit = false
+  -file  -f   file name                      = ../etc/data/breastcancer.csv
+  -help  -h   show help                      = false
+  -todo  -t   start up action                = nothing
+]]
+
+local function cli(long,key,short,x)
+  local function thing(x)
+    if type(x) ~="string" then return x end
+    x = x:match"^%s*(.-)%s*$"
+    if x=="true" then return true elseif x=="false" then return false end
+    return tonumber(x) or x end 
+  local used={}
+  assert(not used[short], "repeated short flag ["..short.."]")
+  used[short]=short
+  for n,flag in ipairs(arg) do 
+    if flag==short or flag==long then
+      x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
+   the[key] = thing(x) end
+
+help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",cli)
+if the.help then os.exit(print(help)) end
+return the
+
+---    _  _ ____ _ _  _ 
+---    |\/| |__| | |\ | 
+---    |  | |  | | | \| 
+                 
+
 -- BSD 2-Clause License
 -- Copyright (c) 2022, Tim Menzies
 --
@@ -28,8 +90,6 @@ local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local the=require"the"
 local nb1=require"nb1.lua"
 
-local lib=require"lib"
-
 local ent,per,norm
 local slice,many,any,push,map,collect,copy,powerset,unpack
 local sort,up1,upx,down1,slots,up1,down1
@@ -47,23 +107,19 @@ local the={}
 ---    (_(_)||_|| | || |   | \/|_)(/__\
 ---                          / |       
 
+local ako={}
+ako.num    = function(x) return x:find"^[A-Z]" end
+ako.goal   = function(x) return x:find"[-+!]"  end
+ako.klass  = function(x) return x:find"!$"     end
+ako.ignore = function(x) return x:find":$"     end
+ako.weight = function(x) return x:find"-$" and -1 or 1 end
+ako.xnum   = function(x) return ako.num(x) and not ako.goal(x) end
+
 -- ## Convenctions:
 -- lower case for instance methods, upper case for class methods (e.g. 
 -- creation, management of sets of instances)
 
- ---     _| _  _ _  _  _
----    (_|(/_| | |(_)_\
-local fails=0
-function ok(test,msg)
-  print("", test and "PASS "or "FAIL ",msg or "") 
-  if not test then 
-    fails = fails+1 ; if the and the.dump then assert(test,msg) end end end
-
-function rogues()
-  for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end end
-
-              
-local demo={}
+local demo={}
 function demo.copy(     t,u)
   t={a={b={c=10},d={e=200}}, f=300}
   u= copy(t) 
@@ -148,9 +204,13 @@ function demo.nb3()
   local acc, out = score(i);  map(out,function(q) qq(i,q) end) 
 end 
 
---     __|_ _  __|_
----    _\ | (_||  | 
-             
+
+
+------------------------------------------------------------------------------
+---    ____ ___ ____ ____ ___ 
+---    [__   |  |__| |__/  |  
+---    ___]  |  |  | |  \  |  
+                      
 fails = 0
 local defaults=cli(help)
 local todos = defaults.todo == "all" and slots(demo) or {defaults.todo}
@@ -170,7 +230,13 @@ os.exit(fails)
 ---              ---   --- 
 ---                 ###
 ---               #  =  #            "This ain't chemistry. 
----               #######             This is art."
+---               #######             This is art."
+
+
+---     __|_ _    __|_ _
+---    _\ | | |_|(_ | _\
+       
+local big = 1E32
 ------------------------------------------------------------------------------
 ---    ___  ____ ____ _ ____ 
 ---    |__] |__| [__  | |    
@@ -227,9 +293,7 @@ function nb1(data, log)
 
 ---       . _|_ |_     _      _|
 ---    VV |  |  | |   (/_ VV (_|
-   
-local ako = require"ako"
-
+    
 function nb2(data,  log)
   local tmp,xnums = {}
   local function discretize(c,x,    col)
@@ -410,8 +474,6 @@ function nb3(data,  log)
 
 ---     _ _ | _
 ---    (_(_)|_\
-local ako=require"ako"
-
 local num={}
 function num.new(at,name)   
   local w = ako.weight(name or "")
@@ -442,10 +504,7 @@ function sym.add(i,x)
     if i.has[x] > i.most then 
       i.mode,i.most = x,i.has[x] end end 
    return x end
-
-local sym,num = require"sym", require"num"
-local ako,norm =require"ako",require("lib").norm
-
+      
 local summary={}
 function summary.new(names,    i)
   i = {names={}, klass=nil,xy= {}, x= {}, y={}} 
@@ -709,6 +768,21 @@ function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or "%5.2f") or "%s",x) end
 
+---     _ | .
+---    (_ | |
+    
+function cli(help)
+  local d,used = {},{}
+  help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+    function(long,key,short,x)
+      assert(not used[short], "repeated short flag ["..short.."]")
+      used[short]=short
+      for n,flag in ipairs(arg) do 
+        if flag==short or flag==long then
+          x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
+       d[key] = x==true and true or thing(x) end)
+  if d.help then os.exit(print(help)) end
+  return d end
 ------------------------------------------------------------------------------
 ---    ___  ____ _  _ ____ ____ 
 ---    |  \ |___ |\/| |  | [__  
@@ -814,7 +888,7 @@ for _,todo in pairs(todos) do
   math.randomseed(the.seed or 10019)
   if demo[todo] then demo[todo]() end end 
 
-for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end 
+rogues()
 os.exit(fails)
 
 ---             .---------.
@@ -830,3 +904,4 @@ os.exit(fails)
 
 -- nb1 and nb2 has "?"
 -- nb3 needsa new train.
+
