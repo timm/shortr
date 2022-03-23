@@ -10,18 +10,19 @@ function lib.ent(t)
   local e=0; for _,m in pairs(t) do if m>0 then e= e+m/n*math.log(m/n,2) end end
   return -e,n end
 
-function lib.norm(lo,hi,x) return math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi - lo) end
+function lib.norm(lo,hi,x) return math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi-lo) end
 
 ---     _ |_  _   _ | 
 ---    (_ | |(/ _(_ |<
 
 function lib.ish(x,y,z) return math.abs(x-y) <= (z or 0.001) end
 
----     _ _     _ _|_
----    (_(_)|_|| | | 
+---     |`.|_|_ _  _. _  _ 
+---    ~|~|| | (/_| || |(_|
+---                      _|
               
 function lib.inc(f,a,n)      f=f or{};f[a]=(f[a] or 0) + (n or 1)    return f end
-function lib.inc2(f,a,b,n)   f=f or{};f[a]=lib.inc f[a]  or {},b,n); return f end
+function lib.inc2(f,a,b,n)   f=f or{};f[a]=lib.inc(f[a]  or {},b,n); return f end
 function lib.inc3(f,a,b,c,n) f=f or{};f[a]=lib.inc2(f[a] or{},b,c,n);return f end
 
 function lib.has(f,a)      return f[a]                        or 0 end
@@ -35,14 +36,6 @@ lib.unpack = table.unpack
 
 function lib.push(t,x) t[1 + #t] = x; return x end
 
-function lib.map(t, f, u) 
-  u={}; for k,v in pairs(t) do u[1+#u]=f(v) end; return u end
-function lib.collect(t,f,u) 
-  u={}; for k,v in pairs(t) do u[k]=f(k,v) end; return u end
-function lib.copy(t,   u)
-  if type(t) ~= "table" then return t end
-  u={}; for k,v in pairs(t) do u[copy(k)] = copy(v) end; return u end
-
 function lib.powerset(s)
   local function aux(s)
     local t = {{}}
@@ -51,7 +44,23 @@ function lib.powerset(s)
         t[#t+1] = {s[i], lib.unpack(t[j])} end end
     return t end
   return lib.sort(aux(s), function(a,b) return #a < #b end) end
-  
+
+---     |`.|_|_ _  _. _  _ 
+---    ~|~|| | (/_| || |(_|
+---                      _|
+
+function lib.map(t, f, u) 
+  u={}; for k,v in pairs(t) do u[1+#u]=f(v) end; return u end
+function lib.collect(t,f,u) 
+  u={}; for k,v in pairs(t) do u[k]=f(k,v) end; return u end
+function lib.copy(t,   u)
+  if type(t) ~= "table" then return t end
+  u={}; for k,v in pairs(t) do u[copy(k)] = copy(v) end; return u end
+
+---     _ _  __|_. _  _ 
+---    _\(_)|  | || |(_|
+---                   _|
+
 function lib.sort(t,f) table.sort(t,f); return t end
 
 function lib.upx(a,b)   return a.x < b.x end
@@ -63,6 +72,9 @@ function lib.slots(t, u)
   u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
   return lib.sort(u) end
 
+---     _ _ | _  __|_. _  _ 
+---    _\(/_|(/_(_ | |(_)| |
+                     
 function lib.any(a,lo,hi) 
   lo,hi = lo or 1, hi or #a; return a[ (lo+(hi-lo)*math.random())//1 ] end
 
@@ -71,6 +83,7 @@ function lib.many(a,n,lo,hi,  u)
 
 function lib.slice(a,lo,hi,    u)
   u,lo,hi = {},lo or 1,hi or #a; for j=lo,hi do u[1+#u]=a[j] end; return u end
+
 ---     __|_ _. _  _   '~)  _|_|_ . _  _  _
 ---    _\ | | || |(_|   /_   | | ||| |(_|_\
 ---                _|                  _|  
@@ -105,29 +118,31 @@ lib.fmt = string.format
 
 function lib.oo(t) print(lib.o(t)) end
 
-function o(t,  seen, u)  
+function lib.o(t,  seen, u)  
   if type(t)~="table" then return tostring(t) end
   seen = seen or {}
   if seen[t] then return "..." end
   seen[t] = t
   local function show1(x) return o(x, seen) end
-  local function show2(k) return fmt(":%s %s",k, o(t[k],seen)) end
-  u = #t>0 and map(t,show1) or map(slots(t),show2)
+  local function show2(k) return fmt(":%s %s",k, lib.o(t[k],seen)) end
+  u = #t>0 and lib.map(t,show1) or lib.map(lib.slots(t),show2)
   return (t.s or "").."{"..table.concat(u," ").."}" end
 
-function dent(t,  seen,pre)  
+function lib.dent(t,  seen,pre)  
   pre,seen = pre or "", seen or {}
   if seen[t] then t= "..." end
   if type(t)~="table" then return print(pre .. tostring(t)) end
   seen[t]=t
-  for _,k in pairs(slots(t)) do
+  for _,k in pairs(lib.slots(t)) do
     local v = t[k]
     local after = type(v)=="table" and "\n" or "\t"
     io.write(pre,":",k,after)
-    if type(v)=="table" then dent(v,seen,"|  "..pre) else print(v) end end end
+    if   type(v)=="table" 
+    then lib.dent(v,seen,"|  "..pre) 
+    else print(v) end end end
 
-function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
-function rnd(x,f) 
-  return fmt(type(x)=="number" and (x~=x//1 and f or "%5.2f") or "%s",x) end
+function lib.rnds(t,f) return map(t, function(x) return lib.rnd(x,f) end) end
+function lib.rnd(x,f) 
+  return lib.fmt(type(x)=="number" and (x~=x//1 and f or "%5.2f") or "%s",x) end
 
 return lib
