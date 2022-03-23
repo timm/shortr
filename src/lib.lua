@@ -1,4 +1,4 @@
-lib={}
+local lib={}
 
 ---     _ _  _ _|_|_  _
 ---    | | |(_| | | |_\
@@ -55,7 +55,7 @@ function lib.collect(t,f,u)
   u={}; for k,v in pairs(t) do u[k]=f(k,v) end; return u end
 function lib.copy(t,   u)
   if type(t) ~= "table" then return t end
-  u={}; for k,v in pairs(t) do u[copy(k)] = copy(v) end; return u end
+  u={}; for k,v in pairs(t) do u[lib.copy(k)] = lib.copy(v) end; return u end
 
 ---     _ _  __|_. _  _ 
 ---    _\(_)|  | || |(_|
@@ -101,7 +101,8 @@ function lib.thing(x)
 
 function lib.items(src,f)
   local function file()
-    src,f = io.input(src),f or things
+    src,f = io.input(src),f or lib.things
+    print(f)
     return function() x=io.read()
              if x then return f(x) else io.close(src) end end end 
   local function tbl(   x)
@@ -123,10 +124,10 @@ function lib.o(t,  seen, u)
   seen = seen or {}
   if seen[t] then return "..." end
   seen[t] = t
-  local function show1(x) return o(x, seen) end
-  local function show2(k) return fmt(":%s %s",k, lib.o(t[k],seen)) end
+  local function show1(x) return lib.o(x, seen) end
+  local function show2(k) return lib.fmt(":%s %s",k, lib.o(t[k],seen)) end
   u = #t>0 and lib.map(t,show1) or lib.map(lib.slots(t),show2)
-  return (t.s or "").."{"..table.concat(u," ").."}" end
+  return (t.is or "").."{"..table.concat(u," ").."}" end
 
 function lib.dent(t,  seen,pre)  
   pre,seen = pre or "", seen or {}
@@ -141,7 +142,9 @@ function lib.dent(t,  seen,pre)
     then lib.dent(v,seen,"|  "..pre) 
     else print(v) end end end
 
-function lib.rnds(t,f) return map(t, function(x) return lib.rnd(x,f) end) end
+function lib.rnds(t,f) 
+  return lib.map(t, function(x) return lib.rnd(x,f) end) end
+
 function lib.rnd(x,f) 
   return lib.fmt(type(x)=="number" and (x~=x//1 and f or "%5.2f") or "%s",x) end
 

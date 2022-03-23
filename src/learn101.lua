@@ -1,5 +1,5 @@
 local _ = require"lib"
-local has2,has3,inc,inc2,inc3,sort = _.has2,_.has3,_.inc,_.inc2,_.inc3._.sort
+local has2,has3,inc,inc2,inc3,sort = _.has2,_.has3,_.inc,_.inc2,_.inc,_.sort
 
 local function classify(i,t,use)
   local hi,out = -1

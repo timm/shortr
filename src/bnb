@@ -25,14 +25,14 @@
 -- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local r=require
+local r    = require
 local the  = r"the"
-local lib  = require"lib"
+local lib  = r"lib"
 local abcd = r"abcd"
-local bin, rule                  = r"bin", r"rule"
-local num,sym                    = r"num", r"sym"
-local ako, egs, summary          = r"ako", r"egs", r"summary"
-local learn101,learn201,learn301 = r"learn101", r"learn201", r"learn301"
+local bin, rule                 = r"bin", r"rule"
+local num,sym                   = r"num", r"sym"
+local ako, egs, summary         = r"ako", r"egs", r"summary"
+local learn101,learn201,learn301= r"learn101", r"learn201", r"learn301"
 
 local ish,items,o,oo,powerset = lib.ish,lib.items,lib.o,lib.oo,lib.powerset
 -- ## Convenctions:
@@ -55,7 +55,7 @@ function demo.copy(     t,u)
   print(u.a.b.c) 
   oo(t)
   oo(u)
-  dent(u)
+  lib.dent(u)
   end
 
 function demo.collect()
@@ -63,7 +63,7 @@ function demo.collect()
   oo(lib.collect({10,20,30},aux)) end
 
 function demo.ent()
-  local a,b = ent{a=9,b=7}
+  local a,b = lib.ent{a=9,b=7}
   print(a,b)
   ok(ish(lib.ent{a=9,b=7}, .98886), "entropy")  end
 
@@ -137,10 +137,10 @@ end
 ---    ___]  |  |  | |  \  |  
                       
 fails = 0
-local defaults=cli(help)
+local defaults=lib.copy(the)
 local todos = defaults.todo == "all" and slots(demo) or {defaults.todo}
 for _,todo in pairs(todos) do
-  the = copy(defaults)
+  the = lib.copy(defaults)
   math.randomseed(the.seed or 10019)
   if demo[todo] then demo[todo]() end end 
 

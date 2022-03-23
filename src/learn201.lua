@@ -2,9 +2,9 @@
 ---    VV |  |  | |   (/_ VV (_|
    
 local ako = require"ako"
-local nb1 = require"nb1"
+local nb1 = require"learn101"
 
-function nb2(data,  log)
+local function nb2(data,  log)
   local tmp,xnums = {}
   local function discretize(c,x,    col)
     if x ~= "?" then 
