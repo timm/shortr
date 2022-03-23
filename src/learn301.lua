@@ -1,9 +1,9 @@
-local nb1  = require"learna"
+local nb1  = require"learn101"
 local lib  = require"lib"
 local bin  = require"bin"
 local collect,push = lib.collect,lib.push
 
-local function nb3(data,  log)
+return function(data,  log)
   local tmp, xnums = {}
   local function discretize(c,x,   col)
     if x ~= "?" then 
@@ -14,7 +14,6 @@ local function nb3(data,  log)
     return x end
 
   local function xnum(c,name) 
-
     if ako.xnum(name) then return {name=name, xys={},bins={}} end end
 
   local function train(c,x,row) 
@@ -28,5 +27,3 @@ local function nb3(data,  log)
     col.bins = bin.Xys(col.xys,where); print(col.name,#col.bins) end
   for j=2,#tmp do tmp[j] = collect(tmp[j], discretize) end
   return nb1(tmp) end
-
-return nb3

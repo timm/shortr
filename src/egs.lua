@@ -4,12 +4,21 @@ local lib     = require"lib"
 local map,sort,many = lib.map,lib.sort,lib.many
 local items,slice   = lib.items,lib.slice
 
-function egs.new(data,    i)
-  i= {rows={}, cols=nil} 
+---     _ _ _  _ _|_ _ 
+---    (_| (/_(_| | (/_
+                
+function egs.new() return {rows={}, cols={}} end
+
+function egs.Init(data,    i)
+  i= egs.new()
   for row in items(data) do
-    if not i.cols then i.cols=summary.new(row) else 
+    if  #i.cols==0 then i.cols=summary.new(row) else 
       push(i.rows, summary.add(i.cols,row)) end end 
   return i end
+
+---     _      _  _  
+---    (_| |_|(/_| \/
+---      |/        / 
 
 function egs.mid(i,cols)
    local function mid(col) return col.nump and col.mu or col.mode end
@@ -24,6 +33,26 @@ function egs.clone(old,rows)
   for _,row in pairs(rows or {}) do summary.add(i.cols,row) end
   return i end
 
+---     _|. __|_ _  _  _ _ 
+---    (_||_\ | (_|| |(_(/_
+                    
+function egs.dist(i,row1,row2)
+  local function sym(_,x,y) return x==y and 0 or 1 end
+  local function num(c,x,y)
+    if     x=="?" then y = norm(c.lo, c.hi, y); x=y<.5 and 1 or 0 
+    elseif y=="?" then x = norm(c.lo, c.hi, x); y=x<.5 and 1 or 0
+    else             x,y = norm(c.lo, c.hi, x), norm(c.lo, c.hi, y) end
+    return math.abs(x-y) end
+  local function dist(c,x,y)
+    return x=="?" and y=="?" and 1 or (c.nump and num or sym)(c,x,y) end
+  local d, n = 0, #i.cols.x
+  for _,c in pairs(i.cols.x) do d= d + dist(c, row1[c.at], row2[c.at])^the.e end 
+  return (d/n)^(1/the.e) end
+
+
+---     _ _  _ _|_ _ _  __|_ 
+---    (_(_)| | | | (_|_\ | 
+                       
 function egs.bestRest(i)
   i.rows  = sort(i.rows, function(a,b) return summary.better(i.cols,a,b) end) 
   local n = (#i.rows)^the.best
@@ -53,18 +82,5 @@ function egs.Contrasts(i, rows1, rows2)
 function egs.xplain(i)
   best, rest = egs.bestRest(i)
   return egs.contrasts(i, best,rest) end
-
-function egs.dist(i,row1,row2)
-  local function sym(_,x,y) return x==y and 0 or 1 end
-  local function num(c,x,y)
-    if     x=="?" then y = norm(c.lo, c.hi, y); x=y<.5 and 1 or 0 
-    elseif y=="?" then x = norm(c.lo, c.hi, x); y=x<.5 and 1 or 0
-    else             x,y = norm(c.lo, c.hi, x), norm(c.lo, c.hi, y) end
-    return math.abs(x-y) end
-  local function dist(c,x,y)
-    return x=="?" and y=="?" and 1 or (c.nump and num or sym)(c,x,y) end
-  local d, n = 0, #i.cols.x
-  for _,c in pairs(i.cols.x) do d= d + dist(c, row1[c.at], row2[c.at])^the.e end 
-  return (d/n)^(1/the.e) end
 
 return egs 

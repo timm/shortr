@@ -25,19 +25,20 @@
 -- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local r    = require
-local the  = r"the"
-local lib  = r"lib"
-local abcd = r"abcd"
-local bin, rule           = r"bin", r"rule"
-local num,sym             = r"num", r"sym"
-local ako, egs, summary   = r"ako", r"egs", r"summary"
-local learna,learnb,learnc= r"learna", r"learnb", r"learnc"
+local R    = require
+local the  = R"the"
+local lib  = R"lib"
+local abcd = R"abcd"
+local bin, rule                 = R"bin", R"rule"
+local num,sym                   = R"num", R"sym"
+local ako, egs, summary         = R"ako", R"egs", R"summary"
+local learn101,learn201,learn301= R"learn101", R"learn201", R"learn301"
 
 local ish,items,o,oo,powerset = lib.ish,lib.items,lib.o,lib.oo,lib.powerset
 local rnds, rnd = lib.rnds, lib.rnd
 -- ## Convenctions:
--- lower case for instance methods, upper case for class methods (e.g. 
+-- lower case for instance methods, leading upper case for class methods (e.g. 
+-- start ach file witha  sime new method that lists the attributes 
 -- creation, management of sets of instances)
 ---     _| _  _ _  _  _
 ---    (_|(/_| | |(_)_\
@@ -143,7 +144,6 @@ local todos = defaults.todo == "all" and slots(demo) or {defaults.todo}
 for _,todo in pairs(todos) do
   the = lib.copy(defaults)
   math.randomseed(the.seed or 10019)
-  print(">>",demo,todo)
   if demo[todo] then demo[todo]() end end 
 
 for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end 

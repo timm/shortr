@@ -16,7 +16,7 @@ help:
 	| awk 'BEGIN {print(FS = ":.*?## "}; {printf "\033[36m%10s :\033[0m %s\n", $$1, $$2}'
 
 h1:; @figlet -W -flarry3d     $t | $(COMMENT)
-h3:; @figlet -W -fthreepoint  $t | $(COMMENT)
+h3:; @figlet -W -fsmall  $${t%%.*}  | $(COMMENT)
 h2:; @figlet -W -fcybermedium $t | $(COMMENT)
 
 doc: $(PDF) $(HTML) $D/docs/index.html ## generate pdfs
@@ -67,7 +67,7 @@ prune = grep -v "usr.bin.env" | grep -v "vi:"
 
 # ../docs/all.lua: abcd.lua ako.lua all.lua bin.lua egs.lua \
 #                  lib.lua num.lua rule.lua summary.lua sym.lua the.lua
-INTROS=learna.lua learnb.lua learnc.lua
+INTROS=learn101.lua learn201.lua learn301.lua
 DATA=ako.lua num.lua sym.lua summary.lua
 EGS=egs.lua
 
@@ -83,6 +83,8 @@ pages:
 
 book: pages
 	$(MAKE) ../docs/all.pdf
+	open ../docs/all.pdf
+	rm all.lua
 
 bnb.lua: bnb
 	cp $< $@

@@ -1,8 +1,8 @@
-local bin={}
 local the=require"the"
 local lib=require"lib"
 local fmt,per,push,sort = lib.fmt, lib.per, lib.push, lib.sort
 
+local bin={}
 function bin.new(id,at,name,lo,hi,n,div) 
   return {id=id,at=at,name=name,lo=lo,hi=hi,n=n,div=div} end
 
@@ -23,6 +23,9 @@ function bin.show(i,negative)
 function bin.select(i,row)
   local x, lo, hi = row[i.at], i.lo, i.hi
   return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
+
+---     _  | _  _ _   _ _  _ _|_|_  _  _| _
+---    (_  |(_|_\_\  | | |(/_ | | |(_)(_|_\
 
 function bin.Merges(bins)
   local j,n,new = 0,length(bins),{}

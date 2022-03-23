@@ -1,7 +1,8 @@
-local rule={}
 local lib=require"lib"
+local bin=require"bin"
 local map,push,sort = lib.map, lib.push, lib.sort
 
+local rule={}
 function rule.new(bins,   t)
   t = {}
   for _,one in pairs(bins) do t[one.at]=t[one.at] or {}; push(t[one.at],one) end 
@@ -16,9 +17,9 @@ function rule.selects(i,row)
 
 function rule.show(i,bins)
   local cat, order, ors
-  cat = function(t,sep) return table.concat(t,sep) end
+  cat =  function(t,sep) return table.concat(t,sep) end
   order= function(a,b)  return a.lo < b.lo end
-  ors= function(bins) 
+  ors=   function(bins) 
           return cat(map(bin.Merges(sort(bins,order)),bin.show)," or ") end
   return cat(map(i.bins, ors)," and ") end
 

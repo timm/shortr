@@ -1,13 +1,13 @@
-local summary = {}
-local ako = require"ako"
-local sym = require"sym"
-local num = require"num"
-local lib = require"lib"
-local norm= lib.norm
+local R=require
+local ako, lib = R"ako", R"lib"
+local sym, num = R"sym", R"num"
+local norm,push = lib.norm, lib.push
 
-function summary.new(names,    i)
-  i = {names={}, klass=nil,xy= {}, x= {}, y={}} 
-  i.names = names
+local summary = {}
+function summary.new(names)
+  return summary.init({names=names, klass=nil,xy= {}, x= {}, y={}},names) end
+
+function summary.init(i, names)
   for at,name in pairs(names) do
     local now = (ako.num(name) and num.new or sym.new)(at,name)
     push(i.xy, now)

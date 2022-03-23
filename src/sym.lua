@@ -1,8 +1,9 @@
 local sym = {}
 
 function sym.new(at,name)   
-  return {nump=false, indep=false, n=0, at=at or 0,
-          name=name or "", has={}, most=0, mode=nil} end
+  return {at=at or 0, name=name or "", 
+          nump=false, indep=false, n=0, 
+          has={}, most=0, mode=nil} end
 
 function sym.add(i,x)
   if x ~= "?" then

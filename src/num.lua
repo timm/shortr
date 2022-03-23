@@ -2,9 +2,9 @@ local num = {}
 local ako = require"ako"
 
 function num.new(at,name)   
-  return {nump=true, indep=false, n=0, at=at or 0, name=name or "", 
-          w = ako.weight(name or ""), lo=math.huge, hi=-math.huge, 
-          mu=0,m2=0,sd=0,bins={}} end
+  return {at=at or 0, name=name or "", 
+          nump=true, indep=false, n=0, w = ako.weight(name or ""), 
+          lo=math.huge, hi=-math.huge, mu=0, m2=0, sd=0, bins={}} end
 
 function num.add(i,x,   d)
   if x ~= "?" then

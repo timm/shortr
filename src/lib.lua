@@ -128,7 +128,7 @@ function lib.o(t,  seen, u)
   local function show1(x) return lib.o(x, seen) end
   local function show2(k) return lib.fmt(":%s %s",k, lib.o(t[k],seen)) end
   u = #t>0 and lib.map(t,show1) or lib.map(lib.slots(t),show2)
-  return (t.is or "").."{"..table.concat(u," ").."}" end
+  return (t._is or "").."{"..table.concat(u," ").."}" end
 
 function lib.dent(t,  seen,pre)  
   pre,seen = pre or "", seen or {}
