@@ -49,6 +49,6 @@ local function abcd(gotwants, show)
       if   one.want == x
       then lib.inc(one.want == one.got and i.d or i.b, x)
       else lib.inc(one.got  == x       and i.c or i.a, x) end end end 
-  return show and pretty(report()) or report() end
+  return show and pretty(report()) or report() end
 
 return abcd

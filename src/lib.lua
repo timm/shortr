@@ -82,11 +82,11 @@ function lib.many(a,n,lo,hi,  u)
   u={}; for j=1,n do lib.push(u, lib.any(a,lo,hi)) end; return u end
 
 function lib.slice(a,lo,hi,    u)
-  u,lo,hi = {},lo or 1,hi or #a; for j=lo,hi do u[1+#u]=a[j] end; return u end
+  u,lo,hi = {},lo or 1,hi or #a; for j=lo,hi do u[1+#u]=a[j] end; return u end
 
----     __|_ _. _  _   '~)  _|_|_ . _  _  _
----    _\ | | || |(_|   /_   | | ||| |(_|_\
----                _|                  _|  
+---     __|_ _. _  _   '~)  _|_|_ . _  _ 
+---    _\ | | || |(_|   /_   | | ||| |(_|
+---                _|                  _|
 
 function lib.words(s,sep,   t)
   sep="([^" .. (sep or ",")  .. "]+)"
@@ -102,10 +102,11 @@ function lib.thing(x)
 function lib.items(src,f)
   local function file()
     src,f = io.input(src),f or lib.things
-    print(f)
     return function() x=io.read()
+             print(6000,f)
              if x then return f(x) else io.close(src) end end end 
   local function tbl(   x)
+    print(300)
     x,f = 0, f or function(z) return z end
     return function() if x< #src then x=x+1; return f(src[x]) end end end 
   if src then

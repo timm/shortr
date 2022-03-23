@@ -57,11 +57,7 @@ help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",cli)
 if the.help then os.exit(print(help)) end
 return the
 
----    _  _ ____ _ _  _ 
----    |\/| |__| | |\ | 
----    |  | |  | | | \| 
-                 
-
+ 
 -- BSD 2-Clause License
 -- Copyright (c) 2022, Tim Menzies
 --
@@ -87,48 +83,66 @@ return the
 -- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local the=require"the"
-local nb1=require"nb1.lua"
+local r    = require
+local the  = r"the"
+local lib  = r"lib"
+local abcd = r"abcd"
+local bin, rule           = r"bin", r"rule"
+local num,sym             = r"num", r"sym"
+local ako, egs, summary   = r"ako", r"egs", r"summary"
+local learna,learnb,learnc= r"learna", r"learnb", r"learnc"
 
-local ent,per,norm
-local slice,many,any,push,map,collect,copy,powerset,unpack
-local sort,up1,upx,down1,slots,up1,down1
-local words,thing, things, items
-local cli
-local rnd,rnds,fmt,o,oo
-local inc,inc2,inc3,has,has2,has3
-local ok,ish, rogues
-local cols,update,classify,test,train,score,header,nb1,nb2,abcd
-local bins,nb3
-local sorted,mid,div,dist,clone,create,better,bestRest,contrasts,xplain
-local the={}
-
----     _ _ |    _ _  _   _|_   _  _  _
----    (_(_)||_|| | || |   | \/|_)(/__\
----                          / |       
-
-local ako={}
-ako.num    = function(x) return x:find"^[A-Z]" end
-ako.goal   = function(x) return x:find"[-+!]"  end
-ako.klass  = function(x) return x:find"!$"     end
-ako.ignore = function(x) return x:find":$"     end
-ako.weight = function(x) return x:find"-$" and -1 or 1 end
-ako.xnum   = function(x) return ako.num(x) and not ako.goal(x) end
-
+local ish,items,o,oo,powerset = lib.ish,lib.items,lib.o,lib.oo,lib.powerset
+local rnds, rnd = lib.rnds, lib.rnd
 -- ## Convenctions:
 -- lower case for instance methods, upper case for class methods (e.g. 
--- creation, management of sets of instances)
+-- creation, management of sets of instances)
+---     _| _  _ _  _  _
+---    (_|(/_| | |(_)_\
 
-local demo={}
+local fails=0
+local function ok(test,msg)
+  print("", test and "PASS "or "FAIL ",msg or "") 
+  if not test then 
+    fails = fails+1 ; if the and the.dump then assert(test,msg) end end end
+
+local demo={}
 function demo.copy(     t,u)
   t={a={b={c=10},d={e=200}}, f=300}
-  u= copy(t) 
+  u= lib.copy(t) 
   t.a.b.c= 20
   print(u.a.b.c) 
   oo(t)
   oo(u)
-  dent(u)
+  lib.dent(u)
   end
+
+function demo.rnd()
+  oo(rnds{23.1111111}) end
+
+function demo.collect()
+  local function aux(x,y) return x*y end
+  oo(lib.collect({10,20,30},aux)) end
+
+function demo.ent()
+  local a,b = lib.ent{a=9,b=7}
+  print(a,b)
+  ok(ish(lib.ent{a=9,b=7}, .98886), "entropy")  end
+
+function demo.items()
+  for  x in items{10,20,30} do print(x) end 
+  local n=0
+  print(33)
+  for  x in items(the.file) do n=n+1; if n<=5 then print(100); oo(x) end end end
+
+function demo.powerset()
+  for _,x in pairs(powerset{10,20,30,40,50}) do oo(x) end end
+ 
+ function demo.many( t)
+  t={};for j = 1,1000 do t[#t+1] = j end
+  print(900,"+", o(many(t,10,900)))
+  print(1,100,o(many(t,10,1,100)))
+  print(300,700, o(many(t,10,300,700))) end 
 
 function demo.new()
   dent(summary.new{"Name","Age","gender","Weight-"}) end
@@ -140,23 +154,6 @@ function demo.clone(   i,t,best,rest, x)
   for _,row in pairs(i.rows) do
       x=row[col].at end end
 
- function demo.collect()
-  local function aux(x,y) return x*y end
-  oo(collect({10,20,30},aux)) end
-
-function demo.ent()
-  local a,b = ent{a=9,b=7}
-  print(a,b)
-  ok(ish(ent{a=9,b=7}, .98886), "entropy")  end
-
-function demo.items()
-  for  x in items{10,20,30} do print(x) end 
-  local n=0
-  for  x in items(the.file) do n=n+1; if n<=5 then oo(x) end end end
-
-function demo.powerset()
-  for _,x in pairs(powerset{10,20,30,40,50}) do oo(x) end end
-  
 local function qq(i,q) 
   print(q[1], fmt("%15s = %-8s best= %s/%s rest= %s/%s",i.cols[q[2]].name, q[3],q[4],q[5],q[6],q[7])) end
 
@@ -168,8 +165,7 @@ function demo.nb2()
   the.file = "../etc/data/diabetes.csv" 
   the.goal = "positive"
   local i = nb2(the.file); 
-  abcd(i.log,true)
-end 
+  abcd(i.log,true) end 
 
 function demo.nb2a() 
   the.file = "../etc/data/diabetes.csv" 
@@ -189,12 +185,6 @@ function demo.bins(   t)
   map(bins(t,20),oo)
 end
 
-function demo.many( t)
-  t={};for j = 1,1000 do t[#t+1] = j end
-  print(900,"+", o(many(t,10,900)))
-  print(1,100,o(many(t,10,1,100)))
-  print(300,700, o(many(t,10,300,700))) end 
-
 function demo.nb3() 
   the.file = "../etc/data/diabetes.csv" 
   the.goal = "positive"
@@ -202,24 +192,19 @@ function demo.nb3()
   local i = nb3(the.file); 
   abcd(i.log,true)
   local acc, out = score(i);  map(out,function(q) qq(i,q) end) 
-end 
+end
 
-
-
-------------------------------------------------------------------------------
----    ____ ___ ____ ____ ___ 
----    [__   |  |__| |__/  |  
----    ___]  |  |  | |  \  |  
-                      
+-------------------------------------------------------------------------------                      
 fails = 0
-local defaults=cli(help)
+local defaults=lib.copy(the)
 local todos = defaults.todo == "all" and slots(demo) or {defaults.todo}
 for _,todo in pairs(todos) do
-  the = copy(defaults)
+  the = lib.copy(defaults)
   math.randomseed(the.seed or 10019)
+  print(">>",demo,todo)
   if demo[todo] then demo[todo]() end end 
 
-rogues()
+for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end 
 os.exit(fails)
 
 ---             .---------.
@@ -231,18 +216,14 @@ os.exit(fails)
 ---                 ###
 ---               #  =  #            "This ain't chemistry. 
 ---               #######             This is art."
+
+---    | _  _  _ _  _  |    _ 
+---    |(/_(_|| | |(_|.||_|(_|
+                       
+local _ = require"lib"
+local has2,has3,inc,inc2,inc3,sort = _.has2,_.has3,_.inc,_.inc2,_.inc,_.sort
 
-
----     __|_ _    __|_ _
----    _\ | | |_|(_ | _\
-       
-local big = 1E32
-------------------------------------------------------------------------------
----    ___  ____ ____ _ ____ 
----    |__] |__| [__  | |    
----    |__] |  | ___] | |___ 
-                      
-function classify(i,t,use)
+local function classify(i,t,use)
   local hi,out = -1
   for h,_ in pairs(i.h) do 
     local prior = ((i.h[h] or 0) + the.K)/(i.n + the.K*i.nh)
@@ -253,10 +234,10 @@ function classify(i,t,use)
     if l>hi then hi,out=l,h end end
   return out end
 
-function test(i,t)
+local function test(i,t)
   if i.n > the.wait then push(i.log,{want=t[#t], got=classify(i,t)}) end  end
 
-function train(i,t)
+local function train(i,t)
   local more, kl = false, t[#t]
   for col,x in pairs(t) do 
     if x ~="?" then 
@@ -270,7 +251,7 @@ function train(i,t)
     inc(i.h, kl)
     if kl==the.goal then i.bests=i.bests+1 else i.rests=i.rests+1 end end end
 
-function score(i)
+local function score(i)
   local acc,out=0,{}
   for _,x in pairs(i.log) do if x.want==x.got then acc=acc+1/#i.log end end
   for col,xns in pairs(i.best) do
@@ -281,7 +262,7 @@ function score(i)
       push(out, {100*(b1^2/(b1+r1))//1, col,x,b,i.bests,r,i.rests}) end end
   return acc, sort(out,down1) end 
  
-function nb1(data, log)
+local function nb1(data, log)
   local i = {h={}, nh=0,e={}, n=0, wait=the.wait, 
             bests=0,rests=0,best={}, rest={},log=log or {}, cols=nil}
   for row in items(data) do 
@@ -290,11 +271,14 @@ function nb1(data, log)
     else test(i,row); train(i,row) end end 
   return i end
 
+return nb1
+---    | _  _  _ _ |_  |    _ 
+---    |(/_(_|| | ||_).||_|(_|
+                       
+local ako = require"ako"
+local nb1 = require"learna"
 
----       . _|_ |_     _      _|
----    VV |  |  | |   (/_ VV (_|
-    
-function nb2(data,  log)
+local function nb2(data,  log)
   local tmp,xnums = {}
   local function discretize(c,x,    col)
     if x ~= "?" then 
@@ -316,66 +300,52 @@ function nb2(data,  log)
     else xnums = collect(row,xnum)  end end
   for j=2,#tmp do tmp[j] = collect(tmp[j], discretize) end
   return nb1(tmp) end
--------------------------------------------------------------------------------
----    _  _ ____ ___ ____ _ ____ ____ 
----    |\/| |___  |  |__/ | |    [__  
----    |  | |___  |  |  \ | |___ ___] 
-                               
-function abcd(gotwants, show)
-  local i, exists, add, report, pretty 
-  i={data=data or "data",rx= rx or "rx",known={},a={},b={},c={},d={},yes=0,no=0}
 
-  function exists(x,   new) 
-    new = not i.known[x]
-    inc(i.known,x)
-    if new then
-      i.a[x]=i.yes + i.no; i.b[x]=0; i.c[x]=0; i.d[x]=0 end end
-  
-  function report(    p,out,a,b,c,d,pd,pf,pn,f,acc,g,prec)
-    p = function (z) return math.floor(100*z + 0.5) end
-    out= {}
-    for x,_ in pairs( i.known ) do
-      pd,pf,pn,prec,g,f,acc = 0,0,0,0,0,0,0
-      a= (i.a[x] or 0); b= (i.b[x] or 0); c= (i.c[x] or 0); d= (i.d[x] or 0);
-      if b+d > 0     then pd   = d     / (b+d)        end
-      if a+c > 0     then pf   = c     / (a+c)        end
-      if a+c > 0     then pn   = (b+d) / (a+c)        end
-      if c+d > 0     then prec = d     / (c+d)        end
-      if 1-pf+pd > 0 then g=2*(1-pf) * pd / (1-pf+pd) end 
-      if prec+pd > 0 then f=2*prec*pd / (prec + pd)   end
-      if i.yes + i.no > 0 then 
-         acc= i.yes / (i.yes + i.no) end
-      out[x] = {data=i.data,rx=i.rx,num=i.yes+i.no,a=a,b=b,c=c,d=d,acc=p(acc),
-                prec=p(prec), pd=p(pd), pf=p(pf),f=p(f), g=p(g), class=x} end
-    return out end
+return nb2
+---    | _  _  _ _  _ |    _ 
+---    |(/_(_|| | |(_.||_|(_|
+                      
+local nb1  = require"learna"
+local lib  = require"lib"
+local bin  = require"bin"
+local collect,push = lib.collect,lib.push
 
-  function pretty(t)
-    print""
-    local s1  = "%10s | %10s | %4s | %4s | %4s | %4s "
-    local s2  = "| %3s | %3s| %3s | %4s | %3s | %3s |"
-    local d,s = "---", (s1 .. s2)
-    print(fmt(s,"db","rx","a","b","c","d","acc","pd","pf","prec","f","g"))
-    print(fmt(s,d,d,d,d,d,d,d,d,d,d,d,d))
-    for _,x in pairs(slots(t)) do
-      local u = t[x]
-      print(fmt(s.." %s", u.data,u.rx,u.a, u.b, u.c, u.d,
-                          u.acc, u.pd, u.pf, u.prec, u.f, u.g, x)) end end
-  -- start
-  for _,one in pairs(gotwants) do 
-    exists(one.want) 
-    exists(one.got)  
-    if one.want == one.got then i.yes=i.yes+1 else i.no=i.no+1 end
-    for x,_ in pairs(i.known) do 
-      if   one.want == x
-      then inc(one.want == one.got and i.d or i.b, x)
-      else inc(one.got  == x       and i.c or i.a, x) end end end 
-  return show and pretty(report()) or report() end
-------------------------------------------------------------------------------
----    ____ _  _ ___  ____ ____    ____ ____ _  _ ____ ____ ____ 
----    [__  |  | |__] |___ |__/    |__/ |__| |\ | | __ |___ [__  
----    ___] |__| |    |___ |  \    |  \ |  | | \| |__] |___ ___] 
+local function nb3(data,  log)
+  local tmp, xnums = {}
+  local function discretize(c,x,   col)
+    if x ~= "?" then 
+      col = xnums[c]
+      if col then
+        for _,one in pairs(col.bins) do 
+          if one.lo <= x and x < one.hi then return one.id end end end end 
+    return x end
 
+  local function xnum(c,name) 
+
+    if ako.xnum(name) then return {name=name, xys={},bins={}} end end
+
+  local function train(c,x,row) 
+    if xnums[c] and x ~= "?" then push(xnums[c].xys, {x=x,y= row[#row]}) end end
+
+  for row in items(data) do
+    push(tmp,row)
+    if   xnums then collect(row, function(c,x) return train(c,x,row) end) 
+    else xnums = collect(row,xnum) end end
+  for where,col in pairs(xnums) do 
+    col.bins = bin.Xys(col.xys,where); print(col.name,#col.bins) end
+  for j=2,#tmp do tmp[j] = collect(tmp[j], discretize) end
+  return nb1(tmp) end
+
+return nb3
+
+---    |_ . _  |    _ 
+---    |_)|| |.||_|(_|
+               
 local bin={}
+local the=require"the"
+local lib=require"lib"
+local fmt,per,push,sort = lib.fmt, lib.per, lib.push, lib.sort
+
 function bin.new(id,at,name,lo,hi,n,div) 
   return {id=id,at=at,name=name,lo=lo,hi=hi,n=n,div=div} end
 
@@ -449,43 +419,60 @@ function _argmin(lo, hi, xys, triviallySmall, enoughItems, b4, at, name,out)
        b4 = push(out,  bin.new(#out+1,at,name,b4,xys[hi].x, hi-lo+1,div)).hi end
   return b4 end
 
-function nb3(data,  log)
-  local tmp, xnums = {}
-  local function discretize(c,x,   col)
-    if x ~= "?" then 
-      col = xnums[c]
-      if col then
-        for _,one in pairs(col.bins) do 
-          if one.lo <= x and x < one.hi then return one.id end end end end 
-    return x end
-  local function xnum(c,name) 
-    if ako.xnum(name) then return {name=name, xys={},bins={}} end end
-  local function train(c,x,row) 
-    if xnums[c] and x ~= "?" then push(xnums[c].xys, {x=x,y= row[#row]}) end end
-  -- start 
-  for row in items(data) do
-    push(tmp,row)
-    if   xnums then collect(row, function(c,x) return train(c,x,row) end) 
-    else xnums = collect(row,xnum) end end
-  for where,col in pairs(xnums) do col.bins = bin.Xys(col.xys,where); print(col.name,#col.bins) end
-  for j=2,#tmp do tmp[j] = collect(tmp[j], discretize) end
-  return nb1(tmp) 
-  end
+return bin
+---     _   | _  |    _ 
+---    | |_||(/_.||_|(_|
+                 
+local rule={}
+local lib=require"lib"
+local map,push,sort = lib.map, lib.push, lib.sort
 
----     _ _ | _
----    (_(_)|_\
-local num={}
+function rule.new(bins,   t)
+  t = {}
+  for _,one in pairs(bins) do t[one.at]=t[one.at] or {}; push(t[one.at],one) end 
+  return {bins=t} end
+
+function rule.selects(i,row)
+  local function ors(bins)
+    for _,x in pairs(bins) do if bin.select(x,row) then return true end end
+    return false end
+  for at,bins in pairs(i.bins) do if not ors(bins) then return false end end
+  return true end 
+
+function rule.show(i,bins)
+  local cat, order, ors
+  cat = function(t,sep) return table.concat(t,sep) end
+  order= function(a,b)  return a.lo < b.lo end
+  ors= function(bins) 
+          return cat(map(bin.Merges(sort(bins,order)),bin.show)," or ") end
+  return cat(map(i.bins, ors)," and ") end
+
+return rule
+
+---     _ |  _  |    _ 
+---    (_||<(_).||_|(_|
+                
+local ako={}
+
+ako.num    = function(x) return x:find"^[A-Z]" end
+ako.goal   = function(x) return x:find"[-+!]"  end
+ako.klass  = function(x) return x:find"!$"     end
+ako.ignore = function(x) return x:find":$"     end
+ako.weight = function(x) return x:find"-$" and -1 or 1 end
+ako.xnum   = function(x) return ako.num(x) and not ako.goal(x) end
+
+return ako
+---     _     _ _  |    _ 
+---    | ||_|| | |.||_|(_|
+                   
+local num = {}
+local ako = require"ako"
+
 function num.new(at,name)   
-  local w = ako.weight(name or "")
-  return {nump=true,indep=false,n=0,at=at or 0,name=name or "",
-          w=w,lo=big,hi=-big,mu=0,m2=0,sd=0,bins={}} end
+  return {nump=true, indep=false, n=0, at=at or 0, name=name or "", 
+          w = ako.weight(name or ""), lo=math.huge, hi=-math.huge, 
+          mu=0,m2=0,sd=0,bins={}} end
 
-local sym={}
-function sym.new(at,name)   
-  return {nump=false,indep=false, n=0, at=at or 0,name=name or "",
-          has={}, most=0, mode=nil} end
-
--- update to "add" everyhwere
 function num.add(i,x,   d)
   if x ~= "?" then
     i.n = i.n+1
@@ -497,6 +484,17 @@ function num.add(i,x,   d)
     i.sd = ((i.m2<0 or i.n<2) and 0) or ((i.m2/(i.n - 1))^0.5) end
  return x end
 
+return num
+---     _   _ _  |    _ 
+---    _\\/| | |.||_|(_|
+---      /              
+  /              
+local sym = {}
+
+function sym.new(at,name)   
+  return {nump=false, indep=false, n=0, at=at or 0,
+          name=name or "", has={}, most=0, mode=nil} end
+
 function sym.add(i,x)
   if x ~= "?" then
     i.n = i.n + 1
@@ -504,8 +502,19 @@ function sym.add(i,x)
     if i.has[x] > i.most then 
       i.mode,i.most = x,i.has[x] end end 
    return x end
-      
-local summary={}
+
+return sym
+---     _    _ _  _ _  _  _   |    _ 
+---    _\|_|| | || | |(_|| \/.||_|(_|
+---                        /         
+                    /         
+local summary = {}
+local ako = require"ako"
+local sym = require"sym"
+local num = require"num"
+local lib = require"lib"
+local norm= lib.norm
+
 function summary.new(names,    i)
   i = {names={}, klass=nil,xy= {}, x= {}, y={}} 
   i.names = names
@@ -532,11 +541,18 @@ function summary.better(i,row1,row2)
     s2 = s2 - e^(col.w * (b - a) / n) end
   return s1 / n < s2 / n  end
 
-------------------------------------------------------------------------------
----     _     _ _  _     _  _  _|     _   _ _  _
----    | ||_|| | |_\    (_|| |(_|    _\\/| | |_\
----                                    /        
+return summary
+
+---     _  _  _ |    _ 
+---    (/_(_|_\.||_|(_|
+---        _|          
+    _|          
 local egs={}
+local summary = require"summary"
+local lib     = require"lib"
+local map,sort,many = lib.map,lib.sort,lib.many
+local items,slice   = lib.items,lib.slice
+
 function egs.new(data,    i)
   i= {rows={}, cols=nil} 
   for row in items(data) do
@@ -563,32 +579,6 @@ function egs.bestRest(i)
   return slice(i.rows, 1,          n),      -- top n things
          many( i.rows, n*the.rest, n+1) end -- some sample of the rest
 
- ------------------------------------------------------------------------------
----    _  _ ___  _    ____ _ _  _ 
----     \/  |__] |    |__| | |\ | 
----    _/\_ |    |___ |  | | | \| 
-
-local rule={}
-function rule.new(bins,   t)
-  t = {}
-  for _,one in pairs(bins) do t[one.at]=t[one.at] or {}; push(t[one.at],one) end 
-  return {bins=t} end
-
-function rule.selects(i,row)
-  local function ors(bins)
-    for _,x in pairs(bins) do if bin.select(x,row) then return true end end
-    return false end
-  for at,bins in pairs(i.bins) do if not ors(bins) then return false end end
-  return true end 
-
-function rule.show(i,bins)
-  local cat, order, ors
-  cat = function(t,sep)return table.concat(t,sep) end
-  order= function(a,b)  return a.lo < b.lo end
-  ors= function(bins) 
-          return cat(map(bin.Merges(sort(bins,order)),bin.show)," or ") end
-  return cat(map(i.bins, ors)," and ") end
-
 function egs.Contrasts(i, rows1, rows2)
   local function contrast(col)
     local function asBin(x,ys,     n,div)
@@ -610,7 +600,7 @@ function egs.Contrasts(i, rows1, rows2)
    return out end
 
 function egs.xplain(i)
-  best, rest = bestRest(i)
+  best, rest = egs.bestRest(i)
   return egs.contrasts(i, best,rest) end
 
 function egs.dist(i,row1,row2)
@@ -626,110 +616,178 @@ function egs.dist(i,row1,row2)
   for _,c in pairs(i.cols.x) do d= d + dist(c, row1[c.at], row2[c.at])^the.e end 
   return (d/n)^(1/the.e) end
 
-------------------------------------------------------------------------------
----    _  _ _ ____ ____ 
----    |\/| | [__  |    
----    |  | | ___] |___ 
+return egs 
+
+---     _ |_  _ _| |    _ 
+---    (_||_)(_(_|.||_|(_|
+                   
+local lib=require"lib"
+
+local function pretty(t)
+  print""
+  local s1  = "%10s | %10s | %4s | %4s | %4s | %4s "
+  local s2  = "| %3s | %3s| %3s | %4s | %3s | %3s |"
+  local d,s = "---", (s1 .. s2)
+  print(fmt(s,"db","rx","a","b","c","d","acc","pd","pf","prec","f","g"))
+  print(fmt(s,d,d,d,d,d,d,d,d,d,d,d,d))
+  for _,x in pairs(lib.slots(t)) do
+    local u = t[x]
+    print(lib.fmt(s.." %s", u.data,u.rx,u.a, u.b, u.c, u.d,
+                              u.acc, u.pd, u.pf, u.prec, u.f, u.g, x)) end end
+
+local function abcd(gotwants, show)
+  local i, exists, add, report, pretty 
+  i={data=data or "data",rx= rx or "rx",known={},a={},b={},c={},d={},yes=0,no=0}
+ 
+  function exists(x,   new) 
+    new = not i.known[x]
+    inc(i.known,x)
+    if new then
+      i.a[x]=i.yes + i.no; i.b[x]=0; i.c[x]=0; i.d[x]=0 end end
+
+  function report(    p,out,a,b,c,d,pd,pf,pn,f,acc,g,prec)
+    p = function (z) return math.floor(100*z + 0.5) end
+    out= {}
+    for x,_ in pairs( i.known ) do
+      pd,pf,pn,prec,g,f,acc = 0,0,0,0,0,0,0
+      a= (i.a[x] or 0); b= (i.b[x] or 0); c= (i.c[x] or 0); d= (i.d[x] or 0);
+      if b+d > 0     then pd   = d     / (b+d)        end
+      if a+c > 0     then pf   = c     / (a+c)        end
+      if a+c > 0     then pn   = (b+d) / (a+c)        end
+      if c+d > 0     then prec = d     / (c+d)        end
+      if 1-pf+pd > 0 then g=2*(1-pf) * pd / (1-pf+pd) end 
+      if prec+pd > 0 then f=2*prec*pd / (prec + pd)   end
+      if i.yes + i.no > 0 then 
+         acc= i.yes / (i.yes + i.no) end
+      out[x] = {data=i.data,rx=i.rx,num=i.yes+i.no,a=a,b=b,c=c,d=d,acc=p(acc),
+                prec=p(prec), pd=p(pd), pf=p(pf),f=p(f), g=p(g), class=x} end
+    return out end
+
+    -- start
+  for _,one in pairs(gotwants) do 
+    exists(one.want) 
+    exists(one.got)  
+    if one.want == one.got then i.yes=i.yes+1 else i.no=i.no+1 end
+    for x,_ in pairs(i.known) do 
+      if   one.want == x
+      then lib.inc(one.want == one.got and i.d or i.b, x)
+      else lib.inc(one.got  == x       and i.c or i.a, x) end end end 
+  return show and pretty(report()) or report() end
+
+return abcd
+
+---    |.|_  |    _ 
+---    |||_).||_|(_|
+             
+local lib={}
 
 ---     _ _  _ _|_|_  _
 ---    | | |(_| | | |_\
 
-function per(t,p) return t[ (p or .5)*#t//1 ] end 
+function lib.per(t,p) return t[ (p or .5)*#t//1 ] end 
 
-function ent(t) 
+function lib.ent(t) 
   local n=0; for _,m in pairs(t) do n = n+m end
   local e=0; for _,m in pairs(t) do if m>0 then e= e+m/n*math.log(m/n,2) end end
   return -e,n end
 
-function norm(lo,hi,x) return math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi - lo) end
+function lib.norm(lo,hi,x) return math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi-lo) end
 
 ---     _ |_  _   _ | 
 ---    (_ | |(/ _(_ |<
 
-function ish(x,y,z) return math.abs(x-y) <= (z or 0.001) end
+function lib.ish(x,y,z) return math.abs(x-y) <= (z or 0.001) end
 
-local fails=0
-function ok(test,msg)
-  print("", test and "PASS "or "FAIL ",msg or "") 
-  if not test then 
-    fails = fails+1 
-    if the and the.dump then assert(test,msg) end end end
-
-function rogues()
-  for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end end
-
----     _ _     _ _|_
----    (_(_)|_|| | | 
+---     |`.|_|_ _  _. _  _ 
+---    ~|~|| | (/_| || |(_|
+---                      _|
               
-function inc(f,a,n)      f=f or{};f[a]=(f[a] or 0) + (n or 1) return f end
-function inc2(f,a,b,n)   f=f or{};f[a]=inc( f[a] or {},b,n);  return f end
-function inc3(f,a,b,c,n) f=f or{};f[a]=inc2(f[a] or {},b,c,n);return f end
+function lib.inc(f,a,n)      f=f or{};f[a]=(f[a] or 0) + (n or 1)    return f end
+function lib.inc2(f,a,b,n)   f=f or{};f[a]=lib.inc(f[a]  or {},b,n); return f end
+function lib.inc3(f,a,b,c,n) f=f or{};f[a]=lib.inc2(f[a] or{},b,c,n);return f end
 
-function has(f,a)      return f[a]                    or 0 end
-function has2(f,a,b)   return f[a] and has( f[a],b)   or 0 end
-function has3(f,a,b,c) return f[a] and has2(f[a],b,c) or 0 end
+function lib.has(f,a)      return f[a]                        or 0 end
+function lib.has2(f,a,b)   return f[a] and lib.has( f[a],b)   or 0 end
+function lib.has3(f,a,b,c) return f[a] and lib.has2(f[a],b,c) or 0 end
 
 ---    |. __|_ _
 ---    ||_\ | _\
 
-unpack = table.unpack
+lib.unpack = table.unpack
 
-function push(t,x) t[1 + #t] = x; return x end
+function lib.push(t,x) t[1 + #t] = x; return x end
 
-function map(t, f, u) u={};for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
-function collect(t,f, u) u={};for k,v in pairs(t) do u[k]=f(k,v)end;return u end
-function copy(t,   u)
-  if type(t) ~= "table" then return t end
-  u={}; for k,v in pairs(t) do u[copy(k)] = copy(v) end; return u end
-
-function powerset(s)
+function lib.powerset(s)
   local function aux(s)
     local t = {{}}
     for i = 1, #s do
       for j = 1, #t do
-        t[#t+1] = {s[i],unpack(t[j])} end end
+        t[#t+1] = {s[i], lib.unpack(t[j])} end end
     return t end
-  return sort(aux(s), function(a,b) return #a < #b end) end
-  
-function sort(t,f) table.sort(t,f); return t end
+  return lib.sort(aux(s), function(a,b) return #a < #b end) end
 
-function upx(a,b)   return a.x < b.x end
-function up1(a,b)   return a[1] < b[1] end
-function down1(a,b) return a[1] > b[1] end
+---     |`.|_|_ _  _. _  _ 
+---    ~|~|| | (/_| || |(_|
+---                      _|
 
-function slots(t, u)
+function lib.map(t, f, u) 
+  u={}; for k,v in pairs(t) do u[1+#u]=f(v) end; return u end
+function lib.collect(t,f,u) 
+  u={}; for k,v in pairs(t) do u[k]=f(k,v) end; return u end
+function lib.copy(t,   u)
+  if type(t) ~= "table" then return t end
+  u={}; for k,v in pairs(t) do u[lib.copy(k)] = lib.copy(v) end; return u end
+
+---     _ _  __|_. _  _ 
+---    _\(_)|  | || |(_|
+---                   _|
+
+function lib.sort(t,f) table.sort(t,f); return t end
+
+function lib.upx(a,b)   return a.x < b.x end
+function lib.up1(a,b)   return a[1] < b[1] end
+function lib.down1(a,b) return a[1] > b[1] end
+
+function lib.slots(t, u)
   local function public(k) return tostring(k):sub(1,1) ~= "_" end
   u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
-  return sort(u) end
+  return lib.sort(u) end
 
-function any(a,lo,hi) 
+---     _ _ | _  __|_. _  _ 
+---    _\(/_|(/_(_ | |(_)| |
+                     
+function lib.any(a,lo,hi) 
   lo,hi = lo or 1, hi or #a; return a[ (lo+(hi-lo)*math.random())//1 ] end
 
-function many(a,n,lo,hi,  u) 
-  u={}; for j=1,n do push(u,any(a,lo,hi)) end; return u end
+function lib.many(a,n,lo,hi,  u) 
+  u={}; for j=1,n do lib.push(u, lib.any(a,lo,hi)) end; return u end
 
-function slice(a,lo,hi,    u)
-  u,lo,hi = {},lo or 1,hi or #a; for j=lo,hi do u[1+#u]=a[j] end; return u end
----     __|_ _. _  _   '~)  _|_|_ . _  _  _
----    _\ | | || |(_|   /_   | | ||| |(_|_\
----                _|                  _|  
+function lib.slice(a,lo,hi,    u)
+  u,lo,hi = {},lo or 1,hi or #a; for j=lo,hi do u[1+#u]=a[j] end; return u end
 
-function words(s,sep,   t)
+---     __|_ _. _  _   '~)  _|_|_ . _  _ 
+---    _\ | | || |(_|   /_   | | ||| |(_|
+---                _|                  _|
+
+function lib.words(s,sep,   t)
   sep="([^" .. (sep or ",")  .. "]+)"
   t={}; for y in s:gmatch(sep) do t[1+#t] = y end; return t end
 
-function things(s) return map(words(s), thing) end 
+function lib.things(s) return lib.map(lib.words(s), thing) end 
 
-function thing(x)
+function lib.thing(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
   return tonumber(x) or x end 
 
-function items(src,f)
+function lib.items(src,f)
   local function file()
-    src,f = io.input(src),f or things
-    return function() x=io.read();if x then return f(x) else io.close(src) end end end 
+    src,f = io.input(src),f or lib.things
+    return function() x=io.read()
+             print(6000,f)
+             if x then return f(x) else io.close(src) end end end 
   local function tbl(   x)
+    print(300)
     x,f = 0, f or function(z) return z end
     return function() if x< #src then x=x+1; return f(src[x]) end end end 
   if src then
@@ -739,169 +797,37 @@ function items(src,f)
 ---     | | ||| |(_|_\   /_  _\ | | || |(_|
 ---               _|                     _|
 
-fmt = string.format
+lib.fmt = string.format
 
-function oo(t) print(o(t)) end
+function lib.oo(t) print(lib.o(t)) end
 
-function o(t,  seen, u)  
+function lib.o(t,  seen, u)  
   if type(t)~="table" then return tostring(t) end
   seen = seen or {}
   if seen[t] then return "..." end
   seen[t] = t
-  local function show1(x) return o(x, seen) end
-  local function show2(k) return fmt(":%s %s",k, o(t[k],seen)) end
-  u = #t>0 and map(t,show1) or map(slots(t),show2)
-  return (t.s or "").."{"..table.concat(u," ").."}" end
+  local function show1(x) return lib.o(x, seen) end
+  local function show2(k) return lib.fmt(":%s %s",k, lib.o(t[k],seen)) end
+  u = #t>0 and lib.map(t,show1) or lib.map(lib.slots(t),show2)
+  return (t.is or "").."{"..table.concat(u," ").."}" end
 
-function dent(t,  seen,pre)  
+function lib.dent(t,  seen,pre)  
   pre,seen = pre or "", seen or {}
   if seen[t] then t= "..." end
   if type(t)~="table" then return print(pre .. tostring(t)) end
   seen[t]=t
-  for _,k in pairs(slots(t)) do
+  for _,k in pairs(lib.slots(t)) do
     local v = t[k]
     local after = type(v)=="table" and "\n" or "\t"
     io.write(pre,":",k,after)
-    if type(v)=="table" then dent(v,seen,"|  "..pre) else print(v) end end end
+    if   type(v)=="table" 
+    then lib.dent(v,seen,"|  "..pre) 
+    else print(v) end end end
 
-function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
-function rnd(x,f) 
-  return fmt(type(x)=="number" and (x~=x//1 and f or "%5.2f") or "%s",x) end
+function lib.rnds(t,f) 
+  return lib.map(t, function(x) return lib.rnd(x,f) end) end
 
----     _ | .
----    (_ | |
-    
-function cli(help)
-  local d,used = {},{}
-  help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
-    function(long,key,short,x)
-      assert(not used[short], "repeated short flag ["..short.."]")
-      used[short]=short
-      for n,flag in ipairs(arg) do 
-        if flag==short or flag==long then
-          x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
-       d[key] = x==true and true or thing(x) end)
-  if d.help then os.exit(print(help)) end
-  return d end
-------------------------------------------------------------------------------
----    ___  ____ _  _ ____ ____ 
----    |  \ |___ |\/| |  | [__  
----    |__/ |___ |  | |__| ___] 
+function lib.rnd(x,f) 
+  return lib.fmt(type(x)=="number" and (x~=x//1 and f or "%5.2f") or "%s",x) end
 
-local demo={}
-function demo.copy(     t,u)
-  t={a={b={c=10},d={e=200}}, f=300}
-  u= copy(t) 
-  t.a.b.c= 20
-  print(u.a.b.c) 
-  oo(t)
-  oo(u)
-  dent(u)
-  end
-
-function demo.new()
-  dent(summary.new{"Name","Age","gender","Weight-"}) end
-
-function demo.clone(   i,t,best,rest, x)
-  i={rows={},cols=nil}
-  the.file = "../etc/data/auto93.csv"
-  bins=xplain(the.file) 
-  for _,row in pairs(i.rows) do
-      x=row[col].at end end
-
- function demo.collect()
-  local function aux(x,y) return x*y end
-  oo(collect({10,20,30},aux)) end
-
-function demo.ent()
-  local a,b = ent{a=9,b=7}
-  print(a,b)
-  ok(ish(ent{a=9,b=7}, .98886), "entropy")  end
-
-function demo.items()
-  for  x in items{10,20,30} do print(x) end 
-  local n=0
-  for  x in items(the.file) do n=n+1; if n<=5 then oo(x) end end end
-
-function demo.powerset()
-  for _,x in pairs(powerset{10,20,30,40,50}) do oo(x) end end
-  
-local function qq(i,q) 
-  print(q[1], fmt("%15s = %-8s best= %s/%s rest= %s/%s",i.cols[q[2]].name, q[3],q[4],q[5],q[6],q[7])) end
-
-function demo.nb1() 
-  local i = nb1(the.file); 
-  local acc, out = score(i); print(acc); map(out,function(q) qq(i,q) end) end
-
-function demo.nb2() 
-  the.file = "../etc/data/diabetes.csv" 
-  the.goal = "positive"
-  local i = nb2(the.file); 
-  abcd(i.log,true)
-end 
-
-function demo.nb2a() 
-  the.file = "../etc/data/diabetes.csv" 
-  the.goal = "positive"
-  for _,bins in pairs{2,5,9} do
-    print(bins)
-    the.bins = bins
-    local i = nb2(the.file); 
-    abcd(i.log,true)
-    --local acc, out = score(i); print(acc)
-    --map(out,function(q) q4(i,q) end)  end end
-end end
-
-function demo.bins(   t)
-  local t,n = {},30
-  for j=1,n do push(t, {x=j, y=j<.6*n and 1 or j<.8*n and 2 or 3}) end
-  map(bins(t,20),oo)
-end
-
-function demo.many( t)
-  t={};for j = 1,1000 do t[#t+1] = j end
-  print(900,"+", o(many(t,10,900)))
-  print(1,100,o(many(t,10,1,100)))
-  print(300,700, o(many(t,10,300,700))) end 
-
-function demo.nb3() 
-  the.file = "../etc/data/diabetes.csv" 
-  the.goal = "positive"
-  the.bins = 16
-  local i = nb3(the.file); 
-  abcd(i.log,true)
-  local acc, out = score(i);  map(out,function(q) qq(i,q) end) 
-end 
-
-
-
-------------------------------------------------------------------------------
----    ____ ___ ____ ____ ___ 
----    [__   |  |__| |__/  |  
----    ___]  |  |  | |  \  |  
-                      
-fails = 0
-local defaults=cli(help)
-local todos = defaults.todo == "all" and slots(demo) or {defaults.todo}
-for _,todo in pairs(todos) do
-  the = copy(defaults)
-  math.randomseed(the.seed or 10019)
-  if demo[todo] then demo[todo]() end end 
-
-rogues()
-os.exit(fails)
-
----             .---------.
----             |         |
----           -= _________ =-
----              ___   ___
----             |   )=(   |
----              ---   --- 
----                 ###
----               #  =  #            "This ain't chemistry. 
----               #######             This is art."
-
-
--- nb1 and nb2 has "?"
--- nb3 needsa new train.
-
+return lib

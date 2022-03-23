@@ -29,18 +29,19 @@ local r    = require
 local the  = r"the"
 local lib  = r"lib"
 local abcd = r"abcd"
-local bin, rule                 = r"bin", r"rule"
-local num,sym                   = r"num", r"sym"
-local ako, egs, summary         = r"ako", r"egs", r"summary"
-local learn101,learn201,learn301= r"learn101", r"learn201", r"learn301"
+local bin, rule           = r"bin", r"rule"
+local num,sym             = r"num", r"sym"
+local ako, egs, summary   = r"ako", r"egs", r"summary"
+local learna,learnb,learnc= r"learna", r"learnb", r"learnc"
 
 local ish,items,o,oo,powerset = lib.ish,lib.items,lib.o,lib.oo,lib.powerset
+local rnds, rnd = lib.rnds, lib.rnd
 -- ## Convenctions:
 -- lower case for instance methods, upper case for class methods (e.g. 
 -- creation, management of sets of instances)
-
 ---     _| _  _ _  _  _
 ---    (_|(/_| | |(_)_\
+
 local fails=0
 local function ok(test,msg)
   print("", test and "PASS "or "FAIL ",msg or "") 
@@ -58,6 +59,9 @@ function demo.copy(     t,u)
   lib.dent(u)
   end
 
+function demo.rnd()
+  oo(rnds{23.1111111}) end
+
 function demo.collect()
   local function aux(x,y) return x*y end
   oo(lib.collect({10,20,30},aux)) end
@@ -70,7 +74,8 @@ function demo.ent()
 function demo.items()
   for  x in items{10,20,30} do print(x) end 
   local n=0
-  for  x in items(the.file) do n=n+1; if n<=5 then oo(x) end end end
+  print(33)
+  for  x in items(the.file) do n=n+1; if n<=5 then print(100); oo(x) end end end
 
 function demo.powerset()
   for _,x in pairs(powerset{10,20,30,40,50}) do oo(x) end end
@@ -129,19 +134,16 @@ function demo.nb3()
   local i = nb3(the.file); 
   abcd(i.log,true)
   local acc, out = score(i);  map(out,function(q) qq(i,q) end) 
-end 
+end
 
-------------------------------------------------------------------------------
----    ____ ___ ____ ____ ___ 
----    [__   |  |__| |__/  |  
----    ___]  |  |  | |  \  |  
-                      
+-------------------------------------------------------------------------------                      
 fails = 0
 local defaults=lib.copy(the)
 local todos = defaults.todo == "all" and slots(demo) or {defaults.todo}
 for _,todo in pairs(todos) do
   the = lib.copy(defaults)
   math.randomseed(the.seed or 10019)
+  print(">>",demo,todo)
   if demo[todo] then demo[todo]() end end 
 
 for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end 

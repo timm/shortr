@@ -4,7 +4,8 @@ D      = ..
 LUA    = $(shell ls *.lua)
 PDF    = $(addsuffix .pdf, $(addprefix $D/docs/,$(basename $(LUA))))
 HTML   = $(addsuffix .html,$(addprefix $D/docs/,$(basename $(LUA))))
-COMMENT= gawk '/^[ \t]*$$/ {next} {print "---    "$$0} END{print}'
+COMMENT= gawk 'BEGIN {"-------------------------------------------------------------------"} \
+                      /^[ \t]*$$/ {next} {print "---    "$$0} END{print}'
 
 top:; echo $(LUA)
 
@@ -63,9 +64,25 @@ $D/docs/%.pdf : %.lua
 $D/docs/all.pdf:  all.lua
 
 prune = grep -v "usr.bin.env" | grep -v "vi:"
-all.lua:
-	-         (t="bnb" $(MAKE) h1; cat the.lua | $(prune)) >  $@
-	-(echo ""; t="main" $(MAKE) h2; cat bnb    | $(prune); echo "") >> $@
+
+# ../docs/all.lua: abcd.lua ako.lua all.lua bin.lua egs.lua \
+#                  lib.lua num.lua rule.lua summary.lua sym.lua the.lua
+INTROS=learna.lua learnb.lua learnc.lua
+DATA=ako.lua num.lua sym.lua summary.lua
+EGS=egs.lua
+
+pages:
+	@(t="bnb" $(MAKE) h1; cat the.lua | $(prune)) >  all.lua
+	@$(foreach d,bnb,(echo " "; cat $d | $(prune)) >>  all.lua;)
+	@echo "" >> all.lua;$(foreach d,$(INTROS),(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
+	@echo "" >> all.lua;$(foreach d,bin.lua rule.lua,(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
+	@echo "" >> all.lua;$(foreach d,$(DATA),(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
+	@echo "" >> all.lua;$(foreach d,$(EGS),(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
+	@echo "" >> all.lua;$(foreach d, abcd.lua,(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
+	@echo "" >> all.lua;$(foreach d,  lib.lua,(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
+
+book: pages
+	$(MAKE) ../docs/all.pdf
 
 bnb.lua: bnb
 	cp $< $@

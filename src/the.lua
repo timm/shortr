@@ -48,3 +48,4 @@ local function cli(long,key,short,x)
 help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",cli)
 if the.help then os.exit(print(help)) end
 return the
+

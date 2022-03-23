@@ -1,4 +1,4 @@
-local nb1  = require"learn101"
+local nb1  = require"learna"
 local lib  = require"lib"
 local bin  = require"bin"
 local collect,push = lib.collect,lib.push
