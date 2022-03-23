@@ -1,6 +1,5 @@
-local nb1  = require"learn101"
-local lib  = require"lib"
-local bin  = require"bin"
+local R=require
+local nb1,bin,lib  = R"learn101", R"bin", R"lib"
 local collect,push = lib.collect,lib.push
 
 return function(data,  log)

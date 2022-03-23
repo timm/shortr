@@ -1,7 +1,5 @@
-local the = require"the"
-local lib = require"lib"
-local ako = require"ako"
-local nb1 = require"learn101"
+local R=require
+local the,lib, ako, nb1 = R"the",R"lib",R"ako", R"learn101"
 local collect = lib.collect
 
 return function(data,  log)
