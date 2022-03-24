@@ -1,12 +1,12 @@
-local num = {}
 local ako = require"ako"
 
-function num.new(at,name)   
+local _ = {}
+function _.new(at,name)   
   return {at=at or 0, name=name or "", 
           nump=true, indep=false, n=0, w = ako.weight(name or ""), 
           lo=math.huge, hi=-math.huge, mu=0, m2=0, sd=0, bins={}} end
 
-function num.add(i,x,   d)
+function _.add(i,x,   d)
   if x ~= "?" then
     i.n = i.n+1
     i.lo = math.min(x, i.lo)
@@ -17,4 +17,4 @@ function num.add(i,x,   d)
     i.sd = ((i.m2<0 or i.n<2) and 0) or ((i.m2/(i.n - 1))^0.5) end
  return x end
 
-return num
+return _

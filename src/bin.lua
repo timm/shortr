@@ -2,11 +2,11 @@ local the=require"the"
 local lib=require"lib"
 local fmt,per,push,sort = lib.fmt, lib.per, lib.push, lib.sort
 
-local bin={}
-function bin.new(id,at,name,lo,hi,n,div) 
+local _={}
+function _.new(id,at,name,lo,hi,n,div) 
   return {id=id,at=at,name=name,lo=lo,hi=hi,n=n,div=div} end
 
-function bin.show(i,negative)
+function _.show(i,negative)
   local x,lo,hi,big, s = i.name, i.lo, i.hi, math.huge
   if negative then
     if     lo== hi  then s=fmt("%s != %s",x,lo)  
@@ -20,14 +20,14 @@ function bin.show(i,negative)
     else                 s=fmt("%s <= %s < %s",lo,x,hi) end end
   return s end
 
-function bin.select(i,row)
+function _.select(i,row)
   local x, lo, hi = row[i.at], i.lo, i.hi
   return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
 
 ---     _  | _  _ _   _ _  _ _|_|_  _  _| _
 ---    (_  |(_|_\_\  | | |(/_ | | |(_)(_|_\
 
-function bin.Merges(bins)
+function _.Merges(bins)
   local j,n,new = 0,length(bins),{}
   while j <= n do
     j=j+1
@@ -40,19 +40,19 @@ function bin.Merges(bins)
         a.n   = a.n + b.n
         j     = j + 1 end end
     push(new,a) end
-  return #new < #bins and bin.Merges(new) or bins end
+  return #new < #bins and _.Merges(new) or bins end
 
-local _argmin
-function bin.Xys(xys,at,name)
+local argmin
+function _.Xys(xys,at,name)
   xys                  = sort(xys, upx)
   local triviallySmall = the.cohen*(per(xys,.9).x - per(xys, .1).x)/2.56 
   local enoughItems    = #xys / the.bins
   local out            = {}
-  _argmin(1,#xys, xys, triviallySmall, enoughItems, -math.huge, at.name, out)
+  argmin(1,#xys, xys, triviallySmall, enoughItems, -math.huge, at.name, out)
   out[#out].hi =  math.huge 
   return out end
 
-function _argmin(lo, hi, xys, triviallySmall, enoughItems, b4, at, name,out)
+function argmin(lo, hi, xys, triviallySmall, enoughItems, b4, at, name,out)
   local function add(f,z) f[z] = (f[z] or 0) + 1 end
   local function sub(f,z) f[z] =  f[z] - 1       end
   local lhs, rhs, cut, div, xpect, xy = {},{}
@@ -73,10 +73,10 @@ function _argmin(lo, hi, xys, triviallySmall, enoughItems, b4, at, name,out)
              cut, div = j, xpect end end end 
   end -- end if
   if   cut 
-  then b4 = _argmin(lo,   cut, xys,triviallySmall,enoughItems,b4,at,name,out)
-       b4 = _argmin(cut+1,hi , xys,triviallySmall,enoughItems,b4,at,name,out)
+  then b4 = argmin(lo,   cut, xys,triviallySmall,enoughItems,b4,at,name,out)
+       b4 = argmin(cut+1,hi , xys,triviallySmall,enoughItems,b4,at,name,out)
   else -- if no cut then the original div was never updates and is still correct
-       b4 = push(out,  bin.new(#out+1,at,name,b4,xys[hi].x, hi-lo+1,div)).hi end
+       b4 = push(out,  _.new(#out+1,at,name,b4,xys[hi].x, hi-lo+1,div)).hi end
   return b4 end
 
-return bin
+return _

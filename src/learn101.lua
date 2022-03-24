@@ -1,14 +1,14 @@
-local _ = require"lib"
-local has2,has3,inc,inc2,inc3,sort = _.has2,_.has3,_.inc,_.inc2,_.inc,_.sort
+local lib = require"lib"
+local has2,has3,inc,inc2,sort = lib.has2,lib.has3,lib.inc,lib.inc2,lib.sort
  
-local nb1={}
-function nb1.new() return {
+local _={}
+function _.new() return {
    h={}, nh=0,e={}, n=0, wait=the.wait,
    bests=0,rests=0,best={}, rest={},log=log or {}, cols={}} end
 
-function nb1.classify(i,t,use)
+function _.classify(i,t,use)
   local hi,out = -1
-  for h,_ in pairs(i.h) do 
+  for h,val in pairs(i.h) do 
     local prior = ((i.h[h] or 0) + the.K)/(i.n + the.K*i.nh)
     local l = prior
     for col,x in pairs(t) do
@@ -17,10 +17,10 @@ function nb1.classify(i,t,use)
     if l>hi then hi,out=l,h end end
   return out end
 
-function nb1.test(i,t)
-  if i.n > the.wait then push(i.log,{want=t[#t], got=nb1.classify(i,t)}) end  end
+function _.test(i,t)
+  if i.n > the.wait then push(i.log,{want=t[#t], got=_.classify(i,t)}) end  end
 
-function nb1.train(i,t)
+function _.train(i,t)
   local more, kl = false, t[#t]
   for col,x in pairs(t) do 
     if x ~="?" then 
@@ -34,9 +34,9 @@ function nb1.train(i,t)
     inc(i.h, kl)
     if kl==the.goal then i.bests=i.bests+1 else i.rests=i.rests+1 end end end
 
-function nb1.score(i)
+function _.score(i)
   local acc,out=0,{}
-  for _,x in pairs(i.log) do if x.want==x.got then acc=acc+1/#i.log end end
+  for key,x in pairs(i.log) do if x.want==x.got then acc=acc+1/#i.log end end
   for col,xns in pairs(i.best) do
     for x,b in pairs(xns) do
       local r  = has2(i.rest,col,x)
@@ -46,9 +46,9 @@ function nb1.score(i)
   return acc, sort(out,down1) end 
  
 return function(data, log)
-  local i = nb1.new()
+  local i = _.new()
   for row in items(data) do 
     if   #i.cols == 0
-    then i.cols = collect(row,function(j,s) return {name=s, indep=j~=#row} end)
+    then i.cols = collect(row,function(j,s) return {name=s, indep=j ~= #row} end)
     else test(i,row); train(i,row) end end 
   return i end
