@@ -66,9 +66,9 @@ $D/docs/all.pdf:  all.lua
 prune = grep -v "usr.bin.env" | grep -v "vi:"
 
 # ../docs/all.lua: abcd.lua ako.lua all.lua bin.lua egs.lua \
-#                  lib.lua num.lua rule.lua summary.lua sym.lua the.lua
+#                  lib.lua num.lua rule.lua seen.lua sym.lua the.lua
 INTROS=learn101.lua learn201.lua learn301.lua
-DATA=ako.lua num.lua sym.lua summary.lua
+DATA=ako.lua num.lua sym.lua seen.lua
 EGS=egs.lua
 
 pages:

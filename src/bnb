@@ -1,18 +1,17 @@
 #!/usr/bin/env lua
 -- vi: filetype=lua :
 -- BSD 2-Clause License
+
 -- Copyright (c) 2022, Tim Menzies
---
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are met:
 
 -- 1. Redistributions of source code must retain the above copyright notice,this
 --    list of conditions and the following disclaimer.
---
 -- 2. Redistributions in binary form must reproduce the above copyright notice,
 --    this list of conditions and the following disclaimer in the documentation
 --    and/or other materials provided with the distribution.
-
+--
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 -- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 -- IMPLIED WARRANTIES OF MERCHANTABILITY & FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -29,17 +28,28 @@ local R    = require
 local the  = R"the"
 local lib  = R"lib"
 local abcd = R"abcd"
-local bin, rule                 = R"bin", R"rule"
-local num,sym                   = R"num", R"sym"
-local ako, egs, summary         = R"ako", R"egs", R"summary"
-local learn101,learn201,learn301= R"learn101", R"learn201", R"learn301"
+local bin, rule                    = R"bin", R"rule"
+local num, sym                     = R"num", R"sym"
+local ako, egs, seen               = R"ako", R"egs", R"seen"
+local learn101, learn201, learn301 = R"learn101", R"learn201", R"learn301"
 
 local ish,items,o,oo,powerset = lib.ish,lib.items,lib.o,lib.oo,lib.powerset
 local rnds, rnd = lib.rnds, lib.rnd
+
 -- ## Convenctions:
 -- lower case for instance methods, leading upper case for class methods (e.g. 
 -- start ach file witha  sime new method that lists the attributes 
--- creation, management of sets of instances)
+-- creation, management of sets of instances)
+
+---             .---------.
+---             |         |
+---           -= _________ =-
+---              ___   ___
+---             |   )=(   |
+---              ---   --- 
+---                 ###
+---               #  =  #            "This ain't chemistry. 
+---               #######             This is art."
 ---     _| _  _ _  _  _
 ---    (_|(/_| | |(_)_\
 
@@ -87,7 +97,7 @@ function demo.powerset()
   print(300,700, o(many(t,10,300,700))) end 
 
 function demo.new()
-  dent(summary.new{"Name","Age","gender","Weight-"}) end
+  dent(seen.new{"Name","Age","gender","Weight-"}) end
 
 function demo.clone(   i,t,best,rest, x)
   i={rows={},cols=nil}
@@ -131,7 +141,7 @@ function demo.nb3()
   local i = nb3(the.file); 
   abcd(i.log,true)
   local acc, out = score(i);  map(out,function(q) qq(i,q) end) end
--------------------------------------------------------------------------------                      
+--------------------------------------------------------------------------------
 fails = 0
 local defaults=lib.copy(the)
 local todos = defaults.todo == "all" and slots(demo) or {defaults.todo}
@@ -142,12 +152,3 @@ for _,todo in pairs(todos) do
 
 for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end 
 os.exit(fails)
----             .---------.
----             |         |
----           -= _________ =-
----              ___   ___
----             |   )=(   |
----              ---   --- 
----                 ###
----               #  =  #            "This ain't chemistry. 
----               #######             This is art."

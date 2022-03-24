@@ -1,5 +1,5 @@
-local summary = require"summary"
-local lib     = require"lib"
+local seen = require"seen"
+local lib  = require"lib"
 local map,sort,many = lib.map,lib.sort,lib.many
 local items,slice   = lib.items,lib.slice
 
@@ -12,8 +12,8 @@ function egs.new() return {rows={}, cols={}} end
 function egs.Init(data,    i)
   i= egs.new()
   for row in items(data) do
-    if  #i.cols==0 then i.cols=summary.new(row) else 
-      push(i.rows, summary.add(i.cols,row)) end end 
+    if  #i.cols==0 then i.cols=seen.new(row) else 
+      push(i.rows, seen.add(i.cols,row)) end end 
   return i end
 
 ---     egs      _  _  
@@ -29,8 +29,8 @@ function egs.div(i,cols)
    return map(cols or i.cols.y, div) end
 
 function egs.clone(old,rows)
-  local i={rows={}, cols=summary.new(old.cols.names)}
-  for key,row in pairs(rows or {}) do summary.add(i.cols,row) end
+  local i={rows={}, cols=seen.new(old.cols.names)}
+  for key,row in pairs(rows or {}) do seen.add(i.cols,row) end
   return i end
 
 ---     _|. __|_ _  _  _ _ 
@@ -46,14 +46,14 @@ function egs.dist(i,row1,row2)
   local function dist(c,x,y)
     return x=="?" and y=="?" and 1 or (c.nump and num or sym)(c,x,y) end
   local d, n = 0, #i.cols.x
-  for key,c in pairs(i.cols.x) do d= d + dist(c, row1[c.at], row2[c.at])^the.e end 
+  for key,c in pairs(i.cols.x) do d=d+dist(c, row1[c.at], row2[c.at])^the.e end 
   return (d/n)^(1/the.e) end
 
 ---     _ _  _ _|_ _ _  __|_ 
 ---    (_(_)| | | | (_|_\ | 
                        
 function egs.bestRest(i)
-  i.rows  = sort(i.rows, function(a,b) return summary.better(i.cols,a,b) end) 
+  i.rows  = sort(i.rows, function(a,b) return seen.better(i.cols,a,b) end) 
   local n = (#i.rows)^the.best
   return slice(i.rows, 1,          n),      -- top n things
          many( i.rows, n*the.rest, n+1) end -- some sample of the rest

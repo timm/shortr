@@ -7,7 +7,7 @@ return function(data,  log)
   local function discretize(c,x,    col)
     if x ~= "?" then 
       col = xnums[c]
-      if col then x=(x - col.lo) // ((col.hi - col.lo+1E-32) / the.bins)  end end
+      if col then x=(x - col.lo) // ((col.hi - col.lo+1E-32) / the.bins) end end
     return x end
 
   local function xnum(c,name) 

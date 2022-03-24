@@ -5,7 +5,8 @@ local map,push,sort = lib.map, lib.push, lib.sort
 local rule={}
 function rule.new(bins,   t)
   t = {}
-  for key,one in pairs(bins) do t[one.at]=t[one.at] or {}; push(t[one.at],one) end 
+  for key,one in pairs(bins) do 
+    t[one.at]=t[one.at] or{}; push(t[one.at],one) end 
   return {bins=t} end
 
 function rule.selects(i,row)

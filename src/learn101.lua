@@ -49,6 +49,6 @@ return function(data, log)
   local i = nb.new()
   for row in items(data) do 
     if   #i.cols == 0
-    then i.cols = collect(row,function(j,s) return {name=s, indep=j ~= #row} end)
+    then i.cols=collect(row,function(j,s) return {name=s,indep=truej~=#row} end)
     else test(i,row); train(i,row) end end 
   return i end
