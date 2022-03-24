@@ -2,11 +2,11 @@ local R=require
 local ako,lib,sym,num = R"ako",R"lib",R"sym",R"num"
 local norm,push = lib.norm, lib.push
 
-local _ = {}
-function _.new(names)
-  return _.init({names=names, klass=nil,xy= {}, x= {}, y={}},names) end
+local seen = {}
+function seen.new(names)
+  return seen.init({names=names, klass=nil,xy= {}, x= {}, y={}},names) end
 
-function _.init(i, names)
+function seen.init(i, names)
   for at,name in pairs(names) do
     local now = (ako.num(name) and num.new or sym.new)(at,name)
     push(i.xy, now)
@@ -16,12 +16,12 @@ function _.init(i, names)
       push(now.indep and i.x or i.y, now)          end end
   return i end
 
-function _.add(i,row)
+function seen.add(i,row)
   for _,col in pairs(i.xy) do
     (col.nump and num or sym).add(col, row[col.at]) end 
   return row end
 
-function _.better(i,row1,row2)
+function seen.better(i,row1,row2)
   local s1, s2, n, e = 0, 0, #i.y, math.exp(1)
   for _,col in pairs(i.y) do
     local a  = norm(col.lo, col.hi, row1[col.at] )
@@ -30,4 +30,4 @@ function _.better(i,row1,row2)
     s2 = s2 - e^(col.w * (b - a) / n) end
   return s1 / n < s2 / n  end
 
-return _
+return seen

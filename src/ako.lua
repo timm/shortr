@@ -1,10 +1,10 @@
-local _={}
+local ako={}
 
-_.num    = function(x) return x:find"^[A-Z]" end
-_.goal   = function(x) return x:find"[-+!]"  end
-_.klass  = function(x) return x:find"!$"     end
-_.ignore = function(x) return x:find":$"     end
-_.weight = function(x) return x:find"-$" and -1 or 1 end
-_.xnum   = function(x) return _.num(x) and not _.goal(x) end
+ako.num    = function(x) return x:find"^[A-Z]" end
+ako.goal   = function(x) return x:find"[-+!]"  end
+ako.klass  = function(x) return x:find"!$"     end
+ako.ignore = function(x) return x:find":$"     end
+ako.weight = function(x) return x:find"-$" and -1 or 1 end
+ako.xnum   = function(x) return ako.num(x) and not ako.goal(x) end
 
-return _
+return ako

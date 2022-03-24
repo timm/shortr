@@ -6,29 +6,29 @@ local items,slice   = lib.items,lib.slice
 ---     _ _ _  _ _|_ _ 
 ---    (_| (/_(_| | (/_
                 
-local _={}
-function _.new() return {rows={}, cols={}} end
+local egs={}
+function egs.new() return {rows={}, cols={}} end
 
-function _.Init(data,    i)
-  i= _.new()
+function egs.Init(data,    i)
+  i= egs.new()
   for row in items(data) do
     if  #i.cols==0 then i.cols=summary.new(row) else 
       push(i.rows, summary.add(i.cols,row)) end end 
   return i end
 
----     _      _  _  
+---     egs      _  _  
 ---    (_| |_|(/_| \/
 ---      |/        / 
 
-function _.mid(i,cols)
+function egs.mid(i,cols)
    local function mid(col) return col.nump and col.mu or col.mode end
    return map(cols or i.cols.y, mid) end
 
-function _.div(i,cols)
+function egs.div(i,cols)
    local function div(col) return col.nump and col.sd or ent(col.has) end
    return map(cols or i.cols.y, div) end
 
-function _.clone(old,rows)
+function egs.clone(old,rows)
   local i={rows={}, cols=summary.new(old.cols.names)}
   for key,row in pairs(rows or {}) do summary.add(i.cols,row) end
   return i end
@@ -36,7 +36,7 @@ function _.clone(old,rows)
 ---     _|. __|_ _  _  _ _ 
 ---    (_||_\ | (_|| |(_(/_
                     
-function _.dist(i,row1,row2)
+function egs.dist(i,row1,row2)
   local function sym(c,x,y) return x==y and 0 or 1 end
   local function num(c,x,y)
     if     x=="?" then y = norm(c.lo, c.hi, y); x=y<.5 and 1 or 0 
@@ -49,17 +49,16 @@ function _.dist(i,row1,row2)
   for key,c in pairs(i.cols.x) do d= d + dist(c, row1[c.at], row2[c.at])^the.e end 
   return (d/n)^(1/the.e) end
 
-
 ---     _ _  _ _|_ _ _  __|_ 
 ---    (_(_)| | | | (_|_\ | 
                        
-function _.bestRest(i)
+function egs.bestRest(i)
   i.rows  = sort(i.rows, function(a,b) return summary.better(i.cols,a,b) end) 
   local n = (#i.rows)^the.best
   return slice(i.rows, 1,          n),      -- top n things
          many( i.rows, n*the.rest, n+1) end -- some sample of the rest
 
-function _.Contrasts(i, rows1, rows2)
+function egs.Contrasts(i, rows1, rows2)
   local function contrast(col)
     local function asBin(x,ys,     n,div)
       n,div = ent(ys)
@@ -79,8 +78,8 @@ function _.Contrasts(i, rows1, rows2)
       for key,one in pairs(tmp) do push(out, one) end end end
    return out end
 
-function _.xplain(i)
-  best, rest = _.bestRest(i)
-  return _.contrasts(i, best,rest) end
+function egs.xplain(i)
+  best, rest = egs.bestRest(i)
+  return egs.contrasts(i, best,rest) end
 
-return _ 
+return egs 

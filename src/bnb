@@ -57,8 +57,7 @@ function demo.copy(     t,u)
   print(u.a.b.c) 
   oo(t)
   oo(u)
-  lib.dent(u)
-  end
+  lib.dent(u) end
 
 function demo.rnd()
   oo(rnds{23.1111111}) end
@@ -98,7 +97,8 @@ function demo.clone(   i,t,best,rest, x)
       x=row[col].at end end
 
 local function qq(i,q) 
-  print(q[1], fmt("%15s = %-8s best= %s/%s rest= %s/%s",i.cols[q[2]].name, q[3],q[4],q[5],q[6],q[7])) end
+  print(q[1], fmt("%15s = %-8s best= %s/%s rest= %s/%s",
+                  i.cols[q[2]].name, q[3],q[4],q[5],q[6],q[7])) end
 
 function demo.nb1() 
   local i = nb1(the.file); 
@@ -117,16 +117,12 @@ function demo.nb2a()
     print(bins)
     the.bins = bins
     local i = nb2(the.file); 
-    abcd(i.log,true)
-    --local acc, out = score(i); print(acc)
-    --map(out,function(q) q4(i,q) end)  end end
-end end
+    abcd(i.log,true) end end
 
 function demo.bins(   t)
   local t,n = {},30
   for j=1,n do push(t, {x=j, y=j<.6*n and 1 or j<.8*n and 2 or 3}) end
-  map(bins(t,20),oo)
-end
+  map(bins(t,20),oo) end
 
 function demo.nb3() 
   the.file = "../etc/data/diabetes.csv" 
@@ -134,9 +130,7 @@ function demo.nb3()
   the.bins = 16
   local i = nb3(the.file); 
   abcd(i.log,true)
-  local acc, out = score(i);  map(out,function(q) qq(i,q) end) 
-end
-
+  local acc, out = score(i);  map(out,function(q) qq(i,q) end) end
 -------------------------------------------------------------------------------                      
 fails = 0
 local defaults=lib.copy(the)
@@ -148,7 +142,6 @@ for _,todo in pairs(todos) do
 
 for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end 
 os.exit(fails)
-
 ---             .---------.
 ---             |         |
 ---           -= _________ =-
