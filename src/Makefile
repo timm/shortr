@@ -5,7 +5,7 @@ LUA    = $(shell ls *.lua)
 PDF    = $(addsuffix .pdf, $(addprefix $D/docs/,$(basename $(LUA))))
 HTML   = $(addsuffix .html,$(addprefix $D/docs/,$(basename $(LUA))))
 COMMENT= gawk 'BEGIN {"-------------------------------------------------------------------"} \
-                      /^[ \t]*$$/ {next} {print "---    "$$0} END{print}'
+                      /^[ \t]*$$/ {next} {print "---    "$$0} END{print""}'
 
 top:; echo $(LUA)
 
