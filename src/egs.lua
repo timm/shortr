@@ -4,7 +4,6 @@ local map,sort,up1     = lib.map,lib.sort,lib.up1
 local items,push,slice = lib.items,lib.push,lib.slice
 local any,many,cos     = lib.any, lib.many, lib.cosine
 local o,oo,per,norm     = lib.o, lib.oo, lib.per, lib.norm
-
 ---     _ _ _  _ _|_ _ 
 ---    (_| (/_(_| | (/_
                 
@@ -35,7 +34,6 @@ function egs.clone(old,rows)
   local i={rows={}, cols=seen.new(old.cols.names)}
   for key,row in pairs(rows or {}) do seen.add(i.cols,row) end
   return i end
-
 ---     _|. __|_ _  _  _ _ 
 ---    (_||_\ | (_|| |(_(/_
 
@@ -71,7 +69,6 @@ function egs.half(i, rows)
     if n==#rows//2 then border = projection[1] end
     egs.add(n <= #rows//2 and lefts or rights, projection[2]) end
   return lefts, rights, left, right, border, c  end
-
 ---     _ _  _ _|_ _ _  __|_ 
 ---    (_(_)| | | | (_|_\ | 
                        
