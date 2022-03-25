@@ -29,10 +29,10 @@ OPTIONS:
   -wait  -w   wait                       = 10
 
 OPTIONS (other):
-  -dump  -d   on error, dump stack+exi   = false
-  -file  -f   file name                  = ../etc/data/breastcancer.csv
-  -help  -h   show help                  = false
-  -todo  -t   start up action            = nothing
+  -dump  -d   dump stack on error then quit = false
+  -file  -f   file name        = ../etc/data/breastcancer.csv
+  -help  -h   show help        = false
+  -todo  -t   start up action  = nothing
 ]]
 
 local used={}

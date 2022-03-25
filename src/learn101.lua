@@ -6,7 +6,7 @@ local map,down1               = lib.map,lib.down1
  
 local nb={}
 function nb.new() return {
-   h={}, nh=0,e={}, n=0, wait=the.wait, log=log or {}, cols={}} end
+   h={}, nh=0,e={}, n=0, wait=the.wait, log=log or {}, cols=nil} end
 
 function nb.classify(i,t,use)
   local hi,out = -1
@@ -42,8 +42,8 @@ function nb.score(i)
 function nb.learn(data, log)
   local i = nb.new()
   for row in items(data) do 
-    if   #i.cols == 0
-    then i.cols=collect(row,function(j,s) return {name=s,indep=truej~=#row} end)
+    if   not i.cols
+    then i.cols=collect(row, function(j,s) return {name=s,indep=j~=#row} end)
     else nb.test(i,row); nb.train(i,row) end end 
   return i end
 
