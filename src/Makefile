@@ -16,6 +16,7 @@ help:
 	| awk 'BEGIN {print(FS = ":.*?## "}; {printf "\033[36m%10s :\033[0m %s\n", $$1, $$2}'
 
 h1:; @figlet -W -flarry3d     $t | $(COMMENT)
+h4:; @figlet -W -fmini $${t%%.*}  | $(COMMENT)
 h3:; @figlet -W -fsmall  $${t%%.*}  | $(COMMENT)
 h2:; @figlet -W -fcybermedium $t | $(COMMENT)
 
@@ -69,7 +70,7 @@ prune = grep -v "usr.bin.env" | grep -v "vi:"
 #                  lib.lua num.lua rule.lua seen.lua sym.lua the.lua
 INTROS=learn101.lua learn201.lua learn301.lua
 DATA=ako.lua num.lua sym.lua seen.lua
-EGS=egs.lua cluster.lua
+EGS=egs.lua
 
 pages:
 	@(t="bnb" $(MAKE) h1; cat the.lua | $(prune)) >  all.lua
@@ -78,6 +79,7 @@ pages:
 	@echo "" >> all.lua;$(foreach d,bin.lua rule.lua,(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
 	@echo "" >> all.lua;$(foreach d,$(DATA),(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
 	@echo "" >> all.lua;$(foreach d,$(EGS),(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
+	@echo "" >> all.lua;$(foreach d,cluster.lua,(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
 	@echo "" >> all.lua;$(foreach d, abcd.lua,(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
 	@echo "" >> all.lua;$(foreach d,  lib.lua,(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
 

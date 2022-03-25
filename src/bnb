@@ -93,14 +93,14 @@ function go.dist(  i)
   local yes=true
   for j=1,1000 do 
     if (j % 50)==0 then io.write(".") end
-    local d = egs.dist(i, any(i.rows), any(i.rows)) 
+    local d = cluster.dist(i, any(i.rows), any(i.rows)) 
     yes = yes and d>=0 and d<=1 end
   ok(yes, "dist") end 
 
 function go.half(  i)
   the.file = "../etc/data/diabetes.csv"
   i = egs.Init(the.file) 
-  local lefts,rights,left,right,border,c= egs.half(i)
+  local lefts,rights,left,right,border,c= cluster.half(i)
   print("rows",#i.rows)
   ok(384 == #lefts.rows,  "left")
   ok(384 == #rights.rows, "rights") end

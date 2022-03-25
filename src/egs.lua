@@ -2,8 +2,7 @@ local R = require
 local the,seen,lib     = R"the", R"seen", R"lib"
 local map,sort,up1     = lib.map,lib.sort,lib.up1
 local items,push,slice = lib.items,lib.push,lib.slice
-local any,many,cos     = lib.any, lib.many, lib.cosine
-local o,oo,per,norm     = lib.o, lib.oo, lib.per, lib.norm
+local o,oo     = lib.sort
 ---     _ _ _  _ _|_ _ 
 ---    (_| (/_(_| | (/_
                 
@@ -34,41 +33,6 @@ function egs.clone(old,rows)
   local i={rows={}, cols=seen.new(old.cols.names)}
   for key,row in pairs(rows or {}) do seen.add(i.cols,row) end
   return i end
----     _|. __|_ _  _  _ _ 
----    (_||_\ | (_|| |(_(/_
-
-function egs.dist(i,row1,row2)
-  local function sym(c,x,y) return x==y and 0 or 1 end
-  local function num(c,x,y)
-    if     x=="?" then y = norm(c.lo, c.hi, y); x=y<.5 and 1 or 0 
-    elseif y=="?" then x = norm(c.lo, c.hi, x); y=x<.5 and 1 or 0
-    else             x,y = norm(c.lo, c.hi, x), norm(c.lo, c.hi, y) end
-    return math.abs(x-y) end
-  local function dist(c,x,y)
-    return x=="?" and y=="?" and 1 or (c.nump and num or sym)(c,x,y) end
-  local d, n = 0, #i.cols.x
-  for key,c in pairs(i.cols.x) do d=d+dist(c, row1[c.at], row2[c.at])^the.p end 
-  return (d/n)^(1/the.p) end
-
-function egs.neighbors(i, r1, rows)
-  return sort(map(rows or i.rows,
-              function(r2) return {egs.dist(i,r1,r2),r2} end), up1) end
-
-function egs.half(i, rows)
-  local project,far,some,left,right,c,lefts,rights,border
-  rows    = rows or i.rows
-  far     = function(r,t) return per(egs.neighbors(i,r,t), the.far)[2] end
-  project = function(r)   
-              return {cos(egs.dist(i,left,r), egs.dist(i,right,r),c),r} end
-  some    = many(rows,     the.some)
-  left    = far(any(some), some)
-  right   = far(left,      some)
-  c       = egs.dist(i,left,right)
-  lefts,rights = egs.clone(i), egs.clone(i)
-  for n, projection in pairs(sort(map(rows,project), up1)) do
-    if n==#rows//2 then border = projection[1] end
-    egs.add(n <= #rows//2 and lefts or rights, projection[2]) end
-  return lefts, rights, left, right, border, c  end
 ---     _ _  _ _|_ _ _  __|_ 
 ---    (_(_)| | | | (_|_\ | 
                        
