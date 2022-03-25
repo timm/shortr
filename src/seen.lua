@@ -1,6 +1,6 @@
 local R=require
 local ako,lib,sym,num = R"ako",R"lib",R"sym",R"num"
-local norm,push = lib.norm, lib.push
+local norm,o,oo,push = lib.norm, lib.o, lib.oo, lib.push
 
 local seen = {}
 function seen.new(names)

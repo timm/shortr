@@ -69,7 +69,7 @@ prune = grep -v "usr.bin.env" | grep -v "vi:"
 #                  lib.lua num.lua rule.lua seen.lua sym.lua the.lua
 INTROS=learn101.lua learn201.lua learn301.lua
 DATA=ako.lua num.lua sym.lua seen.lua
-EGS=egs.lua
+EGS=egs.lua cluster.lua
 
 pages:
 	@(t="bnb" $(MAKE) h1; cat the.lua | $(prune)) >  all.lua

@@ -12,6 +12,9 @@ function lib.ent(t)
 
 function lib.norm(lo,hi,x) return math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi-lo) end
 
+function lib.cosine(a,b,c) 
+  return math.max(0,math.min(1, (a^2+c^2-b^2)/(2*c+1E-32))) end
+
 ---     _ |_  _   _ | 
 ---    (_ | |(/ _(_ |<
 
@@ -92,7 +95,7 @@ function lib.words(s,sep,   t)
   sep="([^" .. (sep or ",")  .. "]+)"
   t={}; for y in s:gmatch(sep) do t[1+#t] = y end; return t end
 
-function lib.things(s) return lib.map(lib.words(s), thing) end 
+function lib.things(s) return lib.map(lib.words(s), lib.thing) end 
 
 function lib.thing(x)
   x = x:match"^%s*(.-)%s*$"
@@ -100,17 +103,15 @@ function lib.thing(x)
   return tonumber(x) or x end 
 
 function lib.items(src,f)
-  local function file()
-    src,f = io.input(src),f or lib.things
-    return function() x=io.read()
-             print(6000,f)
+  local function file(f)
+    src,f = io.input(src),(f or lib.things)
+    return function(x) x=io.read()
              if x then return f(x) else io.close(src) end end end 
   local function tbl(   x)
-    print(300)
     x,f = 0, f or function(z) return z end
     return function() if x< #src then x=x+1; return f(src[x]) end end end 
   if src then
-    return type(src) == "string" and file() or tbl() end end
+    return type(src) == "string" and file(f) or tbl() end end
 
 ---    _|_|_ . _  _  _  '~)   __|_ _. _  _ 
 ---     | | ||| |(_|_\   /_  _\ | | || |(_|

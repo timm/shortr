@@ -1,28 +1,5 @@
 #!/usr/bin/env lua
 -- vi: filetype=lua :
--- BSD 2-Clause License
-
--- Copyright (c) 2022, Tim Menzies
--- Redistribution and use in source and binary forms, with or without
--- modification, are permitted provided that the following conditions are met:
-
--- 1. Redistributions of source code must retain the above copyright notice,this
---    list of conditions and the following disclaimer.
--- 2. Redistributions in binary form must reproduce the above copyright notice,
---    this list of conditions and the following disclaimer in the documentation
---    and/or other materials provided with the distribution.
---
--- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
--- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
--- IMPLIED WARRANTIES OF MERCHANTABILITY & FITNESS FOR A PARTICULAR PURPOSE ARE
--- DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
--- FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
--- DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
--- SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
--- CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
--- OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
--- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local R    = require
 local the  = R"the"
@@ -30,7 +7,7 @@ local lib  = R"lib"
 local abcd = R"abcd"
 local bin, rule                    = R"bin", R"rule"
 local num, sym                     = R"num", R"sym"
-local ako, egs, seen               = R"ako", R"egs", R"seen"
+local ako, egs, seen, cluster      = R"ako", R"egs", R"seen", R"cluster"
 local learn101, learn201, learn301 = R"learn101", R"learn201", R"learn301"
 
 local ish,items,o,oo,powerset = lib.ish,lib.items,lib.o,lib.oo,lib.powerset
@@ -59,8 +36,8 @@ local function ok(test,msg)
   if not test then 
     fails = fails+1 ; if the and the.dump then assert(test,msg) end end end
 
-local demo={}
-function demo.copy(     t,u)
+local go={}
+function go.copy(     t,u)
   t={a={b={c=10},d={e=200}}, f=300}
   u= lib.copy(t) 
   t.a.b.c= 20
@@ -69,58 +46,86 @@ function demo.copy(     t,u)
   oo(u)
   lib.dent(u) end
 
-function demo.rnd()
+function go.rnd()
   oo(rnds{23.1111111}) end
 
-function demo.collect()
+function go.collect()
   local function aux(x,y) return x*y end
   oo(lib.collect({10,20,30},aux)) end
 
-function demo.ent()
+function go.ent()
   local a,b = lib.ent{a=9,b=7}
-  print(a,b)
   ok(ish(lib.ent{a=9,b=7}, .98886), "entropy")  end
 
-function demo.items()
-  for  x in items{10,20,30} do print(x) end 
+function go.items()
+  for  x in items{10,20,30} do oo(x) end 
   local n=0
-  print(33)
-  for  x in items(the.file) do n=n+1; if n<=5 then print(100); oo(x) end end end
+  for x in items(the.file) do n=n+1; if n<=5 then oo(x) end end end
 
-function demo.powerset()
+function go.powerset()
   for _,x in pairs(powerset{10,20,30,40,50}) do oo(x) end end
  
- function demo.many( t)
+ function go.many( t)
+  local o,many=lib.o,lib.many
   t={};for j = 1,1000 do t[#t+1] = j end
-  print(900,"+", o(many(t,10,900)))
-  print(1,100,o(many(t,10,1,100)))
-  print(300,700, o(many(t,10,300,700))) end 
+  print(900,"+", o(many(t, 10, 900)))
+  print(1,100,   o(many(t, 10,   1, 100)))
+  print(300,700, o(many(t, 10, 300, 700))) end 
 
-function demo.new()
-  dent(seen.new{"Name","Age","gender","Weight-"}) end
+function go.new()
+  lib.dent(seen.new{"Name","Age","gender","Weight-"}) end
 
-function demo.clone(   i,t,best,rest, x)
-  i={rows={},cols=nil}
-  the.file = "../etc/data/auto93.csv"
-  bins=xplain(the.file) 
-  for _,row in pairs(i.rows) do
-      x=row[col].at end end
+-- function go.clone(   i,t,best,rest, x)
+--   i={rows={},cols=nil}
+--   the.file = "../etc/data/auto93.csv"
+--   bins=xplain(the.file) 
+--   for _,row in pairs(i.rows) do
+--       x=row[col].at end end
+
+function go.egs(  i)
+  i=egs.Init(the.file) 
+  ok(7==i.cols.x[2].has["lt40"], "counts")
+  ok(286 == #i.rows,"egs") end
+
+function go.dist(  i)
+  local any= lib.any
+  i=egs.Init(the.file) 
+  local yes=true
+  for j=1,1000 do 
+    if (j % 50)==0 then io.write(".") end
+    local d = egs.dist(i, any(i.rows), any(i.rows)) 
+    yes = yes and d>=0 and d<=1 end
+  ok(yes, "dist") end 
+
+function go.half(  i)
+  the.file = "../etc/data/diabetes.csv"
+  i = egs.Init(the.file) 
+  local lefts,rights,left,right,border,c= egs.half(i)
+  print("rows",#i.rows)
+  ok(384 == #lefts.rows,  "left")
+  ok(384 == #rights.rows, "rights") end
+
+function go.cluster(  i)
+  the.file = "../etc/data/diabetes.csv"
+  i = egs.Init(the.file) 
+  cluster.show(cluster.new(i))
+end
 
 local function qq(i,q) 
   print(q[1], fmt("%15s = %-8s best= %s/%s rest= %s/%s",
                   i.cols[q[2]].name, q[3],q[4],q[5],q[6],q[7])) end
 
-function demo.nb1() 
+function go.nb1() 
   local i = nb1(the.file); 
   local acc, out = score(i); print(acc); map(out,function(q) qq(i,q) end) end
 
-function demo.nb2() 
+function go.nb2() 
   the.file = "../etc/data/diabetes.csv" 
   the.goal = "positive"
   local i = nb2(the.file); 
   abcd(i.log,true) end 
 
-function demo.nb2a() 
+function go.nb2a() 
   the.file = "../etc/data/diabetes.csv" 
   the.goal = "positive"
   for _,bins in pairs{2,5,9} do
@@ -129,12 +134,12 @@ function demo.nb2a()
     local i = nb2(the.file); 
     abcd(i.log,true) end end
 
-function demo.bins(   t)
+function go.bins(   t)
   local t,n = {},30
   for j=1,n do push(t, {x=j, y=j<.6*n and 1 or j<.8*n and 2 or 3}) end
   map(bins(t,20),oo) end
 
-function demo.nb3() 
+function go.nb3() 
   the.file = "../etc/data/diabetes.csv" 
   the.goal = "positive"
   the.bins = 16
@@ -144,11 +149,11 @@ function demo.nb3()
 --------------------------------------------------------------------------------
 fails = 0
 local defaults=lib.copy(the)
-local todos = defaults.todo == "all" and slots(demo) or {defaults.todo}
+local todos = defaults.todo == "all" and slots(go) or {defaults.todo}
 for _,todo in pairs(todos) do
   the = lib.copy(defaults)
   math.randomseed(the.seed or 10019)
-  if demo[todo] then demo[todo]() end end 
+  if go[todo] then go[todo]() end end 
 
 for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end 
 os.exit(fails)
