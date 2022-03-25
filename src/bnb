@@ -11,12 +11,28 @@ local ako, egs, seen, cluster      = R"ako", R"egs", R"seen", R"cluster"
 local learn101, learn201, learn301 = R"learn101", R"learn201", R"learn301"
 
 local ish,items,o,oo,powerset = lib.ish,lib.items,lib.o,lib.oo,lib.powerset
-local rnds, rnd = lib.rnds, lib.rnd
+local map,fmt,rnds, rnd = lib.map,lib.fmt,lib.rnds, lib.rnd
 
 -- ## Convenctions:
 -- lower case for instance methods, leading upper case for class methods (e.g. 
 -- start ach file witha  sime new method that lists the attributes 
 -- creation, management of sets of instances)
+local fails=0
+local function ok(test,msg)
+  print("", test and "PASS "or "FAIL ",msg or "") 
+  if not test then 
+    fails = fails+1 ; if the and the.dump then assert(test,msg) end end end
+
+local go={}
+local function main()
+  local defaults=lib.copy(the)
+  local todos = defaults.todo == "all" and slots(go) or {defaults.todo}
+  for _,todo in pairs(todos) do
+    the = lib.copy(defaults)
+    math.randomseed(the.seed or 10019)
+    if go[todo] then print("\n"..todo); go[todo]() end end 
+  for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end 
+  os.exit(fails) end
 
 ---             .---------.
 ---             |         |
@@ -30,21 +46,11 @@ local rnds, rnd = lib.rnds, lib.rnd
 ---     _| _  _ _  _  _
 ---    (_|(/_| | |(_)_\
 
-local fails=0
-local function ok(test,msg)
-  print("", test and "PASS "or "FAIL ",msg or "") 
-  if not test then 
-    fails = fails+1 ; if the and the.dump then assert(test,msg) end end end
-
-local go={}
 function go.copy(     t,u)
   t={a={b={c=10},d={e=200}}, f=300}
   u= lib.copy(t) 
   t.a.b.c= 20
-  print(u.a.b.c) 
-  oo(t)
-  oo(u)
-  lib.dent(u) end
+  ok(u.a.b.c ~= 20,"copy") end
 
 function go.rnd()
   oo(rnds{23.1111111}) end
@@ -116,8 +122,13 @@ local function qq(i,q)
                   i.cols[q[2]].name, q[3],q[4],q[5],q[6],q[7])) end
 
 function go.nb1() 
-  local i = nb1(the.file); 
-  local acc, out = score(i); print(acc); map(out,function(q) qq(i,q) end) end
+  print(the.file)
+  local i = learn101.learn(the.file); 
+  local acc, out = learn101.score(i); print(acc); 
+  local cnt={}
+  for _,one in pairs(out) do local k=one.got..","..one.want; cnt[k] = 1+ (cnt[k] or 0) end
+  for k,n in pairs(cnt) do print(o(k),n) end
+  end
 
 function go.nb2() 
   the.file = "../etc/data/diabetes.csv" 
@@ -147,13 +158,4 @@ function go.nb3()
   abcd(i.log,true)
   local acc, out = score(i);  map(out,function(q) qq(i,q) end) end
 --------------------------------------------------------------------------------
-fails = 0
-local defaults=lib.copy(the)
-local todos = defaults.todo == "all" and slots(go) or {defaults.todo}
-for _,todo in pairs(todos) do
-  the = lib.copy(defaults)
-  math.randomseed(the.seed or 10019)
-  if go[todo] then go[todo]() end end 
-
-for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end 
-os.exit(fails)
+main()

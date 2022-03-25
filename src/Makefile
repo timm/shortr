@@ -72,16 +72,16 @@ INTROS=learn101.lua learn201.lua learn301.lua
 DATA=ako.lua num.lua sym.lua seen.lua
 EGS=egs.lua
 
-pages:
-	@(t="bnb" $(MAKE) h1; cat the.lua | $(prune)) >  all.lua
-	@$(foreach d,bnb,(echo " "; cat $d | $(prune)) >>  all.lua;)
-	@echo "" >> all.lua;$(foreach d,$(INTROS),(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
-	@echo "" >> all.lua;$(foreach d,bin.lua rule.lua,(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
-	@echo "" >> all.lua;$(foreach d,$(DATA),(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
-	@echo "" >> all.lua;$(foreach d,$(EGS),(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
-	@echo "" >> all.lua;$(foreach d,cluster.lua,(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
-	@echo "" >> all.lua;$(foreach d, abcd.lua,(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
-	@echo "" >> all.lua;$(foreach d,  lib.lua,(t="$d" $(MAKE) h3; cat $d | $(prune)) >>  all.lua;)
+pages: 				the.lua bnb eof \
+							learn101.lua learn201.lua learn301.lua eof \
+							bin.lua rule.lua eof \
+							ako.lua num.lua sym.lua seen.lua eof \
+							egs.lua eof \
+							cluster.lua eof \
+							abcd.lua eof \
+							lib.lua 
+	@t="brknbad" $(MAKE) h1 > all.lua
+	@bash ../etc/pages.sh $+ >> all.lua
 
 book: pages
 	$(MAKE) ../docs/all.pdf
