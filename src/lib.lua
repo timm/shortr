@@ -75,6 +75,23 @@ function lib.slots(t, u)
   u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
   return lib.sort(u) end
 
+---      _   _   _|_  _|_  o  ._    _    _ 
+---     _>  (/_   |_   |_  |  | |  (_|  _> 
+---                                 _|     
+
+function lib.settings(helps,options,     d,x,key,flag1,help)
+  d={}
+  for _,four in pairs(options) do
+    key, flag1, help, x = table.unpack(four)
+    for n,flag2 in ipairs(arg) do 
+      if flag1==flag2 then 
+        if x==false then x=true elseif x==true then x=false else 
+          x = tonumber(arg[n+1]) or arg[n+1] end end end 
+    d[key] = x
+    helps  = helps .. string.format("\n  %s  %s  =  %s", flag1,help,x) end 
+  if d.help then os.exit(print(helps)) end 
+  return d end
+
 ---     _ _ | _  __|_. _  _ 
 ---    _\(/_|(/_(_ | |(_)| |
                      
