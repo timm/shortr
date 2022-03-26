@@ -1,6 +1,7 @@
-local lib,see = require"lib", require"seen"
+local b4={}; for k,v in pairs(_ENV) do b4[k]=v end
+local lib,see     = require"lib", require"seen"
 local push, items = lib.push, lib.items
-local the = lib.settings([[
+local the         = lib.settings([[
 
 brknbad: explore the world better, explore the world for good.
 (c) 2022, Tim Menzies
@@ -74,3 +75,5 @@ end--                                 old
 
 -- 11,19,31,38,45,55 o           11    19          31   38      45        55
  --                                  new
+
+os.exit(onTheGo(the,go,b4))

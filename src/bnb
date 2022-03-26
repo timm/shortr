@@ -24,15 +24,17 @@ local function ok(test,msg)
     fails = fails+1 ; if the and the.dump then assert(test,msg) end end end
 
 local go={}
-local function main()
-  local defaults=lib.copy(the)
+local function main(the,go)
+  local defaults={}
+  for k,v in pairs(the) do defaults[k]=v end
   local todos = defaults.todo == "all" and slots(go) or {defaults.todo}
   for _,todo in pairs(todos) do
-    the = lib.copy(defaults)
+    for k,v in pairs(defaults) do the[k]=v end
     math.randomseed(the.seed or 10019)
     if go[todo] then print("\n"..todo); go[todo]() end end 
-  for k,v in pairs(_ENV) do if not b4[k] then print("??",k,type(v)) end end 
-  os.exit(fails) end
+  if b4 then
+    for k,v in pairs(_ENV) do 
+       if not b4[k] then print("?",k,type(v)) end end end end
 
 ---             .---------.
 ---             |         |
@@ -158,4 +160,4 @@ function go.nb3()
   abcd(i.log,true)
   local acc, out = score(i);  map(out,function(q) qq(i,q) end) end
 --------------------------------------------------------------------------------
-main()
+os.exit( lib.onTheGo(the,go) )

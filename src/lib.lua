@@ -75,9 +75,9 @@ function lib.slots(t, u)
   u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
   return lib.sort(u) end
 
----      _   _   _|_  _|_  o  ._    _    _ 
----     _>  (/_   |_   |_  |  | |  (_|  _> 
----                                 _|     
+---      _  _|_   _.  ._  _|_         ._  
+---     _>   |_  (_|  |    |_    |_|  |_) 
+---                                   |   
 
 function lib.settings(helps,options,     d,x,key,flag1,help)
   d={}
@@ -91,6 +91,17 @@ function lib.settings(helps,options,     d,x,key,flag1,help)
     helps  = helps .. string.format("\n  %s  %s  =  %s", flag1,help,x) end 
   if d.help then os.exit(print(helps)) end 
   return d end
+
+function lib.onTheGo(the,go,b4,           old,todos)
+  old={}; for k,v in pairs(the) do old[k]=v end
+  todos = old.todo == "all" and slots(go) or {old.todo}
+  for _,todo in pairs(todos) do
+    for k,v in pairs(old) do the[k]=v end
+    math.randomseed(the.seed or 10019)
+    if go[todo] then print("\n"..todo); go[todo]() end end 
+  if b4 then
+    for k,v in pairs(_ENV) do 
+       if not b4[k] then print("?",k,type(v)) end end end  end
 
 ---     _ _ | _  __|_. _  _ 
 ---    _\(/_|(/_(_ | |(_)| |
