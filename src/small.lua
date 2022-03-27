@@ -36,44 +36,68 @@ OPTIONS:]], {
   {"todo"  , "-t", "start up action           " , nothing},
   {"wait"  , "-w", "wait                      " , 10}})
 
-local span={}
-function span.new(lo,hi) 
-  return {cache={},max=20,lo=lo or 100 , hi=1E31, bins=16, seen={}} end
+local go={}
+-- end--                                 old
+-- -- 10,20,30,40,50    n        10         20      30        40       50
+-- -- 11,19,31,38,45,55 o     9      11    19          31   38      45        55
+--  --                                  new
 
-take 10  into 
-function span.add(i,x,y,inc)
-  local function covers(lo,hi,news)
-    local out, span1, span2 = {}
-    for p = 1,#news do
-      span1 = news[p]
-      if lo >= span1.lo and lo < span1.hi then 
-        for q = p+1,#news do
-          span2 = news[q]
-          if hi >= span2.lo and hi < span2.hi then
-            for r = p,q do 
-              push(out, news[r]) end end end end end 
-    return out end
-  for _,old in pairs(i.seen) do -- a,b,c,d
+function span.new() return {lo=1E31, hi=-1E31, all=nil} end
 
-    for _,new1 in pairs(covers(old.lo, old.hi, news)) do -- some is subset of some
+local function lohi(t,  lo,hi)
+  lo,hi = 1E31,-1E31
+  for _,one in pairs(t) do
+    lo = math.min(lo, one.x)
+    hi = math.max(hi, one.x) end
+  return lo,hi end
+
+function aa()
+  b4  = (i.all[#i.all].hi - i.all[1].lo)/256
+  now = (hi - lo)/b4
+  for _,one in pairs(i.all) do
+  w 
+    for j=one.lo, one.hi, (one.hi - one.lo)/16 do
+      t[j] = {}
+      for k,n in pairs(one.has) do
+        t[j][k] = (t[j][k] or 0) + n/16 end end end end
+  
+    10   14   18   22    26   30
+  9      14     19      25    30
+--    4   4   4   4   4   4   4
+-- 12123232234423455532234455532222
+
+function span.add(i, x,y,inc)
+  push(i.cache,{x=x,y=y,inc=inc or 1})
+  lo0,hi  = i.all[1].lo
+  hi0 = i.all[#i.all].hi
+  lo, hi = lo0, hi0
+  if #i.cache> i.max then
+    for _,xy in pairs(i.cache) do
+      lo = math.min(lo,xy.x)
+      hi = math.min(hi,xy.x) end 
+    if lo < lo0 or hi > hi0 then
+      news={}
+      gap = (hi-lo)/the.bins
+      for j=1,the.bins do
+        push(news,{lo=lo,hi=lo+gap,has={}})
+        lo=lo+gap end 
+      span.Spred(olds,news) end end end
       
- 10    20
-    14         26
-    if new.lo >= old.lo and new.hi < old.hi then add all of old into new
-    if new.lo <  old.lo and 
+function span.spread(i,news)
+  for _,old in pairs(olds) do
+    for _,new in pairs(news) do
+      d, gap = 0, old.hi - old.lo
+      if     old.lo>=new.lo and old.hi< new.hi then d= gap
+      elseif old.hi>=new.lo and old.lo< new.lo then d= old.hi - new.lo
+      elseif old.lo< new.hi and old.hi>=new.hi then d= new.hi - old.lo
+      end
+      for k,v in pairs(old.has) do
+        new.has[k] = v*d/gap + (new.has[k] or 0) end end end
+  return news end
 
-    s1 = math.max(0,(old.lo - new.lo)/(old.hi - old.lo))
-    s2 = math.max(0,(old.hi- new.hi)/(old.hi - old.lo))
-    if old.lo>new.lo and old.hi<new.lo then s3 = 
-    
-    (o.hi - o.lo)
-    (o.hi - o.lo)
-    (o.hi - o.lo)
-
-end--                                 old
--- 10,20,30,40,50    n        10         20      30        40       50
-
--- 11,19,31,38,45,55 o           11    19          31   38      45        55
- --                                  new
-
-os.exit(onTheGo(the,go,b4))
+function go.one() 
+  olds={{lo=10,hi=20,has={y=10,n=20}},
+        {lo=20,hi=30,has={y=10,n=5}},
+        {lo=30,hi=40,has={y=100,n=100}}}
+  
+os.exit(lib.onTheGo(the,go,b4))

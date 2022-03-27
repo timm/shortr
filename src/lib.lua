@@ -93,6 +93,7 @@ function lib.settings(helps,options,     d,x,key,flag1,help)
   return d end
 
 function lib.onTheGo(the,go,b4,           old,todos)
+  the,go = (the or {}),(go or {})
   old={}; for k,v in pairs(the) do old[k]=v end
   todos = old.todo == "all" and slots(go) or {old.todo}
   for _,todo in pairs(todos) do
@@ -101,7 +102,7 @@ function lib.onTheGo(the,go,b4,           old,todos)
     if go[todo] then print("\n"..todo); go[todo]() end end 
   if b4 then
     for k,v in pairs(_ENV) do 
-       if not b4[k] then print("?",k,type(v)) end end end  end
+       if not b4[k] then print("?",k,type(v)) end end end end
 
 ---     _ _ | _  __|_. _  _ 
 ---    _\(/_|(/_(_ | |(_)| |
