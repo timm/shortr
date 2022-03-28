@@ -79,17 +79,16 @@ function lib.slots(t, u)
 ---     _>   |_  (_|  |    |_    |_|  |_) 
 ---                                   |   
 
-function lib.settings(helps,options,     d,s,x,key,flag1,help)
-  d={}
-  for _,four in pairs(options) do
-    key, flag1, help, x = table.unpack(four)
-    for n,flag2 in ipairs(arg) do 
-      if flag1==flag2 then 
-        if x==false then x=true elseif x==true then x=false else 
-          x = lib.int_or_float_or_string(arg[n+1]) end end end
-    d[key] = x
-    helps  = helps .. string.format("\n  %s  %s  =  %s", flag1,help,x) end 
-  if d.help then os.exit(print(helps)) end 
+function lib.settings(help)
+  local d,used = {},{}
+  help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+    function(long,key,short,x)
+      assert(not used[short], "repeated short flag ["..short.."]")
+      used[short]=short
+      for n,flag in ipairs(arg) do 
+        if flag==short or flag==long then
+          x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
+      d[key] = lib.coerce(s) end)
   return d end
 
 function lib.onTheGo(the,go,b4,           old,todos)
@@ -102,7 +101,7 @@ function lib.onTheGo(the,go,b4,           old,todos)
     if go[todo] then print("\n"..todo); go[todo]() end end 
   if b4 then
     for k,v in pairs(_ENV) do 
-       if not b4[k] then print("?",k,type(v)) end end end end
+       if not b4[k] then print("?",k,type(v)) end end end end 
 
 ---     _ _ | _  __|_. _  _ 
 ---    _\(/_|(/_(_ | |(_)| |
@@ -120,8 +119,8 @@ function lib.slice(a,lo,hi,    u)
 ---    _\ | | || |(_|   /_   | | ||| |(_|
 ---                _|                  _|
 
-function lib.int_or_float_or_string(s) 
-  return math.tointeger(s) or tonumber(s) or s end
+function lib.coerce(s) 
+  return type(s)~="string" and s or math.tointeger(s) or tonumber(s) or s end
 
 function lib.words(s,sep,   t)
   sep="([^" .. (sep or ",")  .. "]+)"
@@ -134,7 +133,7 @@ function lib.thing(x)
   if type(x) ~= "string" then return x end
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
-  return lib.int_or_float_or_string(x) end
+  return lib.coerce(x) end
 
 function lib.items(src,f)
   local function file(f)
