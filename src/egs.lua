@@ -2,7 +2,7 @@ local R = require
 local the,seen,lib     = R"the", R"seen", R"lib"
 local map,sort,up1     = lib.map,lib.sort,lib.up1
 local items,push,slice = lib.items,lib.push,lib.slice
-local o,oo             = lib.sort
+local o,oo,sort,many   = lib.o,lib.oo,lib.sort,lib.many
 ---     _ _ _  _ _|_ _ 
 ---    (_| (/_(_| | (/_
                 

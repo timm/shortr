@@ -1,6 +1,7 @@
 local the=require"the"
 local lib=require"lib"
-local fmt,per,push,sort = lib.fmt, lib.per, lib.push, lib.sort
+local fmt,per,upx,push,sort = lib.fmt,lib.per,lib.upx,lib.push,lib.sort
+local ent = lib.ent
 
 local bin={}
 function bin.new(id,at,name,lo,hi,n,div) 
@@ -48,7 +49,7 @@ function bin.Xys(xys,at,name)
   local triviallySmall = the.cohen*(per(xys,.9).x - per(xys, .1).x)/2.56 
   local enoughItems    = #xys / the.bins
   local out            = {}
-  argmin(1,#xys, xys, triviallySmall, enoughItems, -math.huge, at.name, out)
+  argmin(1,#xys, xys, triviallySmall, enoughItems, -math.huge, at,name, out)
   out[#out].hi =  math.huge 
   return out end
 

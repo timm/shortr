@@ -79,14 +79,14 @@ function lib.slots(t, u)
 ---     _>   |_  (_|  |    |_    |_|  |_) 
 ---                                   |   
 
-function lib.settings(helps,options,     d,x,key,flag1,help)
+function lib.settings(helps,options,     d,s,x,key,flag1,help)
   d={}
   for _,four in pairs(options) do
     key, flag1, help, x = table.unpack(four)
     for n,flag2 in ipairs(arg) do 
       if flag1==flag2 then 
         if x==false then x=true elseif x==true then x=false else 
-          x = tonumber(arg[n+1]) or arg[n+1] end end end 
+          x = lib.int_or_float_or_string(arg[n+1]) end end end
     d[key] = x
     helps  = helps .. string.format("\n  %s  %s  =  %s", flag1,help,x) end 
   if d.help then os.exit(print(helps)) end 
@@ -120,16 +120,21 @@ function lib.slice(a,lo,hi,    u)
 ---    _\ | | || |(_|   /_   | | ||| |(_|
 ---                _|                  _|
 
+function lib.int_or_float_or_string(s) 
+  return math.tointeger(s) or tonumber(s) or s end
+
 function lib.words(s,sep,   t)
   sep="([^" .. (sep or ",")  .. "]+)"
   t={}; for y in s:gmatch(sep) do t[1+#t] = y end; return t end
 
-function lib.things(s) return lib.map(lib.words(s), lib.thing) end 
+function lib.things(s) 
+  return lib.map(lib.words(s), lib.thing) end 
 
 function lib.thing(x)
+  if type(x) ~= "string" then return x end
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
-  return tonumber(x) or x end 
+  return lib.int_or_float_or_string(x) end
 
 function lib.items(src,f)
   local function file(f)
