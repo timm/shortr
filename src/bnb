@@ -55,7 +55,7 @@ function go.copy(     t,u)
   ok(u.a.b.c ~= 20,"copy") end
 
 function go.rnd()
-  oo(rnds{23.1111111}) end
+  ok("23.11" == rnds({23.11111})[1],"rounds") end
 
 function go.collect()
   local function aux(x,y) return x*y end
@@ -101,8 +101,15 @@ function go.dist(  i)
   local yes=true
   for j=1,1000 do 
     if (j % 50)==0 then io.write(".") end
-    local d = cluster.dist(i, any(i.rows), any(i.rows)) 
-    yes = yes and d>=0 and d<=1 end
+    local a,b,c = any(i.rows), any(i.rows), any(i.rows)
+    local aa = cluster.dist(i,a,a)
+    local ba = cluster.dist(i,b,a)
+    local ab = cluster.dist(i,a,b)
+    local bc = cluster.dist(i,b,c)
+    local ac = cluster.dist(i,a,c)
+    yes = yes and aa==0 and ab == ba and ab+bc >= ac
+    yes = yes and aa>=0 and aa<=1 and ba>=0 and ba<=1 and ab>=0 and ab<=1 and
+                  bc>=0 and bc <=1 and ac >= 0 and ac <= 1 end
   ok(yes, "dist") end 
 
 function go.half(  i)
@@ -123,14 +130,18 @@ local function qq(i,q)
   print(q[1], fmt("%15s = %-8s best= %s/%s rest= %s/%s",
                   i.cols[q[2]].name, q[3],q[4],q[5],q[6],q[7])) end
 
-function go.nb1() 
+local function gonb1(file) 
   print(the.file)
-  local i = learn101.learn(the.file); 
+  local i = learn101.learn(file); 
   local acc, out = learn101.score(i); print(acc); 
   local cnt={}
   for _,one in pairs(out) do local k=one.got..","..one.want; cnt[k] = 1+ (cnt[k] or 0) end
   for k,n in pairs(cnt) do print(o(k),n) end
+  abcd(i.log,true)
   end
+
+function go.nb1a() gonb1(the.file) end 
+function go.nb1b() gonb1("../etc/data/diabetes.csv") end 
 
 function go.nb2() 
   the.file = "../etc/data/diabetes.csv" 

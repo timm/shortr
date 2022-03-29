@@ -1,4 +1,5 @@
 local lib=require"lib"
+local fmt=lib.fmt
 
 local abcd={}
 
@@ -43,7 +44,7 @@ function abcd.pretty(t)
                               u.acc, u.pd, u.pf, u.prec, u.f, u.g, x)) end end
 
 function abcd.adds(gotwants, show,data, rx)
-  local i = abcd.is(data,rx)
+  local i = abcd.new(data,rx)
   for key,one in pairs(gotwants) do 
     abcd.exists(i,one.want) 
     abcd.exists(i,one.got)  

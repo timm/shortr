@@ -26,7 +26,7 @@ local function import(t,...)
 return function(name,base)
   local klass, base_ctor = {}
   if base then
-    import(klass,base)
+    --import(klass,base)
     klass._base = base
     base_ctor = rawget(base,'new') end
   klass.__index = klass

@@ -182,4 +182,17 @@ function lib.rnds(t,f)
 function lib.rnd(x,f) 
   return lib.fmt(type(x)=="number" and (x~=x//1 and f or "%5.2f") or "%s",x) end
 
+---      _   |_    o   _    _  _|_ 
+---     (_)  |_)   |  (/_  (_   |_ 
+---               _|               
+
+local _id=0
+function lib.id() _id=_id+1; return _id end
+
+lib.as = setmetatable
+function lib.is(s,   t)
+  t={__tostring=lib.o,_is=s or ""}; t.__index=t
+  return lib.as(t, {__call=function(...) return t.new(...) end}) end
+
+
 return lib

@@ -1,6 +1,6 @@
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local class = require"class"
-local the,help = [],[[
+local the,help = {},[[
 
 brknbad: explore the world better, explore the world for good.
 (c) 2022, Tim Menzies
@@ -64,24 +64,24 @@ function Main:add(help)
   if d.help then os.exit(print(help)) end
   return d end
 
-function bsearch(t,want,firstp,  lo,mid,hi,out)
-  out, lo, hi = 1, lo or 1, #t
-  while lo <= hi do
-    mid = (lo + hi)//2;
-    if want == t[mid] then 
-      out = mid
-      if firstp then hi=mid-1 else lo=mid+1 end
-    else 
-      if want < t[mid] then hi=mid-1 else lo=mid+1 end end end
-  return out end 
-
-local key,t = 20,{10,20,20,20,40,50}
-
-
-lo = bsearch(t,key,true)
-hi = bsearch(t,key,false,lo)
-print(lo,hi)
-
+-- function bsearch(t,want,firstp,  lo,mid,hi,out)
+--   out, lo, hi = 1, lo or 1, #t
+--   while lo <= hi do
+--     mid = (lo + hi)//2;
+--     if want == t[mid] then 
+--       out = mid
+--       if firstp then hi=mid-1 else lo=mid+1 end
+--     else 
+--       if want < t[mid] then hi=mid-1 else lo=mid+1 end end end
+--   return out end 
+--
+-- local key,t = 20,{10,20,20,20,40,50}
+--
+--
+-- lo = bsearch(t,key,true)
+-- hi = bsearch(t,key,false,lo)
+-- print(lo,hi)
+--
 local Bins = class("Bins", Obj)
 function Bins:new(lo,hi) 
   self.all, gap = {}, (hi-lo)/the.bins

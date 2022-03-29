@@ -1,6 +1,6 @@
 local R=require
 local ako,lib,sym,num = R"ako",R"lib",R"sym",R"num"
-local norm,o,oo,push = lib.norm, lib.o, lib.oo, lib.push
+local norm,o,oo,push  = lib.norm, lib.o, lib.oo, lib.push
 
 local seen = {}
 function seen.new(names)
@@ -10,10 +10,10 @@ function seen.init(i, names)
   for at,name in pairs(names) do
     local now = (ako.num(name) and num.new or sym.new)(at,name)
     push(i.xy, now)
+    now.indep = not ako.goal(name)
     if not ako.ignore(name)  then
-      if not ako.goal(name)  then now.indep = true end
-      if     ako.klass(name) then i.klass=now      end 
-      push(now.indep and i.x or i.y, now)          end end
+      if ako.klass(name) then i.klass=now end 
+      push(now.indep and i.x or i.y, now) end end
   return i end
 
 function seen.add(i,row)
