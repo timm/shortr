@@ -36,6 +36,12 @@ function Obj:__tostring()
     sep=" " end
   return (self._is or "").."{"..s.."}" end
 
+local function push(t,a) t[1+#t]=a; return a end 
+local function push(t,a) t[1+#t]=a; return a end 
+local function last(t)   return t[#t] end
+local function coerce(x) 
+  return type(x)~="string" and x or math.tointeger(x) or tonumber(x) or x end
+
 ---     ._ _    _.  o  ._  
 ---     | | |  (_|  |  | | 
 
@@ -54,11 +60,10 @@ function Main:add(help)
       for n,flag in ipairs(arg) do 
         if flag==short or flag==long then
           x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
-      d[key]=type(s)~="string" and s or math.tointeger(s) or tonumber(s) or s end)
+      d[key] = coerce(x) end)
+  if d.help then os.exit(print(help)) end
   return d end
 
-local function push(t,a) t[1+#t]=a; return a end 
-local function last(t)   return t[#t] end
 function bsearch(t,want,firstp,  lo,mid,hi,out)
   out, lo, hi = 1, lo or 1, #t
   while lo <= hi do
