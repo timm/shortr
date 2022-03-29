@@ -1,0 +1,51 @@
+class = require"class"
+
+Obj=class("Obj")
+function Obj:__tostring()
+  local s,sep,t,v="","",{}
+  for k,_ in pairs(self) do 
+    if tostring(k):sub(1,1) ~= "_" then t[1+#t]= k end end
+  table.sort(t)
+  for _,k in pairs(t) do
+    v = self[k]
+    s = s .. sep .. string.format(":%s %s",k,v)
+    sep=" " end
+  return (self._is or "").."{"..s.."}" end
+
+Col = class("Col", Obj)
+function Col:new(at,name)
+  self.n = 0 
+  self.at = at or 0
+  self.name = name or "" end
+
+function Col:adds(t)
+  for _,v in pairs(t) do self:add(v) end; return self end
+
+function Col:add(x)
+  if x ~= "?" then self.n = self.n + 1; self:add1(x) end 
+  return x end
+
+Num = class("Num", Col) 
+function Num:new(at,name)
+  self:super(at,name)
+  self.w = self.name:find"-$" and -1 or 1
+  self.mu,self.sd,self.lo,self.hi = 0,0,math.huge,-math.huge end
+
+function Num:add1(x)
+  self.hi = math.max(x, self.hi)
+  self.lo = math.min(x, self.lo)
+  self.mu = self.mu + (x - self.mu)/self.n end
+
+Sym = class("Sym", Col) 
+function Sym:new(at,name)
+  self:super(at,name)
+  self._all = {}
+  self.mode,self.most = nil,0 end
+
+function Sym:add1(x)
+  self._all[x] = (self._all[x] or 0) + 1
+  if self._all[x] > self.most then
+    self.most, self.mode = self._all[x], x end end
+
+print(Num(23,"thing"):adds{100,200,300})
+print(Sym(23,"thing"):adds{"a","a","b"})
