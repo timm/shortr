@@ -1,16 +1,19 @@
-local sym = {}
+local ako,_   =require"ako", require"lib"
+local obj,new,ent = _.obj, _.new ,  _.ent
 
-function sym.new(at,name)   
-  return {at=at or 0, name=name or "", 
-          nump=false, indep=false, n=0, 
-          has={}, most=0, mode=nil} end
+local SYM = obj"SYM"
 
-function sym.add(i,x)
+function SYM:new(at,name)   
+  return new(SYM,{at=at or 0, name=name or "", 
+            nump=false, indep=false, n=0, 
+            has={}, most=0, mode=nil}) end
+
+function SYM:add(x)
   if x ~= "?" then
-    i.n = i.n + 1
-    i.has[x] = 1 + (i.has[x] or 0) 
-    if i.has[x] > i.most then 
-      i.mode,i.most = x,i.has[x] end end 
+    self.n = self.n + 1
+    self.has[x] = 1 + (self.has[x] or 0) 
+    if self.has[x] > self.most then 
+      self.mode,self.most = x,self.has[x] end end 
    return x end
 
-return sym
+return SYM

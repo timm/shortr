@@ -102,8 +102,8 @@ function lib.ok(test,msg)
     if the and the.dump then assert(test,msg) end end end
 
 function lib.main(the,go,b4,           resets,todos)
-  resets={}; for k,v in pairs(the) do resets[k]=v end
   todos = the.todo == "all" and slots(go) or {the.todo}
+  resets={}; for k,v in pairs(the) do resets[k]=v end
   go._fails = 0
   for _,todo in pairs(todos) do
     math.randomseed(the.seed or 10019)

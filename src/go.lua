@@ -1,13 +1,13 @@
 local R = require
-local the,lib,abcd,bin,rule        = R"the", R"lib", R"abcd",R"bin",R"rule"
+local the,_,abcd,bin,rule        = R"the", R"lib", R"abcd",R"bin",R"rule"
 local num, sym                     = R"num", R"sym"
 local ako, egs, seen, cluster      = R"ako", R"egs", R"seen", R"cluster"
 local learn101, learn201, learn301 = R"learn101", R"learn201", R"learn301"
 
-local ish,items,o,oo,powerset = lib.ish,lib.items,lib.o,lib.oo,lib.powerset
-local map,fmt,rnds, rnd       = lib.map,lib.fmt,lib.rnds, lib.rnd
+local ish,items,o,oo,powerset = _.ish,_.items,_.o,_.oo,_.powerset
+local map,fmt,rnds, rnd,push       = _.map,_.fmt,_.rnds, _.rnd,_.push
 
-local go,ok = lib.go,lib.ok
+local go,ok = _.go,_.ok
 
 function go.copy(     t,u)
   t={a={b={c=10},d={e=200}}, f=300}
@@ -87,17 +87,24 @@ function go.cluster(  i)
   cluster.show(cluster.new(i))
 end
 
+function go.abcd()
+  local t={}
+  for _ = 1,6 do push(t,{want="yes",got="yes"}) end
+  for _ = 1,2 do push(t,{want="no",got="no"}) end
+  for _ = 1,6 do push(t,{want="maybe",got="maybe"}) end
+  for _ = 1,1 do push(t,{want="maybe", got="no"}) end
+  abcd(t,true) end
+
 local function qq(i,q) 
   print(q[1], fmt("%15s = %-8s best= %s/%s rest= %s/%s",
                   i.cols[q[2]].name, q[3],q[4],q[5],q[6],q[7])) end
 
 local function gonb1(file) 
-  print(the.file)
   local i = require"learn101"(file)
-  local acc, out = learn101.score(i); print(acc); 
+  local _, out = i:score()
   local cnt={}
   for _,one in pairs(out) do local k=one.got..","..one.want; cnt[k] = 1+ (cnt[k] or 0) end
-  for k,n in pairs(cnt) do print(o(k),n) end
+  for k,n in pairs(cnt) do print(n,o(k)) end
   abcd(i.log,true) end
 
 function go.nb1a() gonb1(the.file) end 
@@ -113,7 +120,6 @@ function go.nb2a()
   the.file = "../etc/data/diabetes.csv" 
   the.goal = "positive"
   for _,bins in pairs{2,5,9} do
-    print(bins)
     the.bins = bins
     local i = nb2(the.file); 
     abcd(i.log,true) end end

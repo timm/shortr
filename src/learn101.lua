@@ -29,7 +29,6 @@ function NB:train(row)
 
 function NB:classify(t,use)
   local hi,out = -math.huge
-  print("")
   for h,val in pairs(self.h) do 
     local prior = ((self.h[h] or 0) + the.K)/(self.n + the.K*self.nh)
     local l = math.log(prior)
@@ -37,14 +36,12 @@ function NB:classify(t,use)
       if x ~= "?" and self.cols[col].indep then
         l = l + math.log((has3(self.e,col,x,h) + the.M*prior) /
                          ((self.h[h] or 0) + the.M)) end end 
-    if l>hi then hi,out=l,h end
-    oo(rnds{prior,l,hi,out}) end
+    if l>hi then hi,out=l,h end end
   return out end
 
 function NB:score()
-  local acc=0
-  for key,x in pairs(self.log) do 
-    if x.want==x.got then acc=acc+1/#self.log end end
+  local a=0
+  for key,x in pairs(self.log) do if x.want==x.got then a=a+1/#self.log end end
   return acc,self.log end 
 
 return NB

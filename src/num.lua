@@ -1,20 +1,21 @@
-local ako = require"ako"
+local ako,_   =require"ako", require"lib"
+local obj,new = _.obj, _.new 
 
-local num = {}
-function num.new(at,name)   
-  return {at=at or 0, name=name or "", 
-          nump=true, indep=false, n=0, w = ako.weight(name or ""), 
-          lo=math.huge, hi=-math.huge, mu=0, m2=0, sd=0, bins={}} end
+local NUM = obj"NUM"
+function NUM:new(at,name)   
+  return new(NUM, {at=at or 0, name=name or "", 
+           nump=true, indep=false, n=0, w = ako.weight(name or ""), 
+           lo=math.huge, hi=-math.huge, mu=0, m2=0, sd=0, bins={}}) end
 
-function num.add(i,x,   d)
+function NUM:add(x,   d)
   if x ~= "?" then
-    i.n = i.n+1
-    i.lo = math.min(x, i.lo)
-    i.hi = math.max(x, i.hi) 
-    d      = x - i.mu
-    i.mu = i.mu + d/i.n
-    i.m2 = i.m2 + d*(x - i.mu)
-    i.sd = ((i.m2<0 or i.n<2) and 0) or ((i.m2/(i.n - 1))^0.5) end
+    self.n  = self.n+1
+    self.lo = math.min(x, self.lo)
+    self.hi = math.max(x, self.hi) 
+    d       = x - self.mu
+    self.mu = self.mu + d/self.n
+    self.m2 = self.m2 + d*(x - self.mu)
+    self.sd = ((self.m2<0 or self.n<2) and 0) or ((self.m2/(self.n -1))^0.5) end
  return x end
 
-return num
+return NUM

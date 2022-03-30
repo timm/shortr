@@ -9,6 +9,9 @@ COMMENT= gawk 'BEGIN {"---------------------------------------------------------
 
 top:; echo $(LUA)
 
+basic:
+	$(foreach d,copy rnd collect ent items powerset many,lua brknbad.lua -t $d;)
+
 help:
 	@printf "\nmake [OPTIONS]\n\nOPTIONS:\n"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
