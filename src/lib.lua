@@ -89,19 +89,22 @@ function lib.settings(help)
         if flag==short or flag==long then
           x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
       d[key] = lib.coerce(s) end)
+  if d.help then os.exit(print(help)) end
   return d end
 
 function lib.onTheGo(the,go,b4,           old,todos)
   the,go = (the or {}),(go or {})
   old={}; for k,v in pairs(the) do old[k]=v end
   todos = old.todo == "all" and slots(go) or {old.todo}
+  go.fails = 0
   for _,todo in pairs(todos) do
-    for k,v in pairs(old) do the[k]=v end
     math.randomseed(the.seed or 10019)
-    if go[todo] then print("\n"..todo); go[todo]() end end 
+    if go[todo] then print("\n"..todo); go[todo]() end 
+    for k,v in pairs(old) do the[k]=v end end
   if b4 then
     for k,v in pairs(_ENV) do 
-       if not b4[k] then print("?",k,type(v)) end end end end 
+       if not b4[k] then print("?",k,type(v)) end end end 
+  os.exit(go.fails) end 
 
 ---     _ _ | _  __|_. _  _ 
 ---    _\(/_|(/_(_ | |(_)| |
@@ -189,10 +192,10 @@ function lib.rnd(x,f)
 local _id=0
 function lib.id() _id=_id+1; return _id end
 
-lib.as = setmetatable
-function lib.is(s,   t)
-  t={__tostring=lib.o,_is=s or ""}; t.__index=t
-  return lib.as(t, {__call=function(...) return t.new(...) end}) end
+function lib.new(x,y) return setmetatable(y,x) end
 
+function lib.obj(s,   t)
+  t={__tostring=lib.o,_is=s or ""}; t.__index=t
+  return setmetatable(t, {__call=function(...) return t.new(...) end}) end
 
 return lib

@@ -1,4 +1,4 @@
-local the,help = {},[[
+return require("lib").settings[[
 brknbad: explore the world better, explore the world for good.
 (c) 2022, Tim Menzies
 
@@ -34,21 +34,3 @@ OPTIONS (other):
   -help  -h   show help        = false
   -todo  -t   start up action  = nothing
 ]]
-
-local used={}
-local function cli(long,key,short,x)
-  assert(not used[short], "repeated short flag ["..short.."]")
-  used[short]=short
-  for n,flag in ipairs(arg) do 
-    if flag==short or flag==long then
-      x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
-  if type(x)=="string" then 
-    x = x:match"^%s*(.-)%s*$"
-    if     x=="true"  then x=true 
-    elseif x=="false" then x= false 
-    else   x=tonumber(x) or x end end
-  the[key]=x end
-
-help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",cli)
-if the.help then os.exit(print(help)) end
-return the
