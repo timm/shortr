@@ -4,9 +4,10 @@ local obj,new,ent = _.obj, _.new ,  _.ent
 local SYM = obj"SYM"
 
 function SYM:new(at,name)   
-  return new(SYM,{at=at or 0, name=name or "", 
-            nump=false, indep=false, n=0, 
-            has={}, most=0, mode=nil}) end
+  name = name or ""
+  return new(SYM,{at=at or 0, name=name, 
+            nump=false, indep=not ako.goal(name), 
+            n=0, has={}, most=0, mode=nil}) end
 
 function SYM:add(x)
   if x ~= "?" then

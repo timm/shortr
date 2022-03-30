@@ -10,7 +10,6 @@ function seen.init(i, names)
   for at,name in pairs(names) do
     local now = (ako.num(name) and num.new or sym.new)(at,name)
     push(i.xy, now)
-    now.indep = not ako.goal(name)
     if not ako.ignore(name)  then
       if ako.klass(name) then i.klass=now end 
       push(now.indep and i.x or i.y, now) end end

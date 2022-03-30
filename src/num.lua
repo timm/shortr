@@ -3,9 +3,11 @@ local obj,new = _.obj, _.new
 
 local NUM = obj"NUM"
 function NUM:new(at,name)   
-  return new(NUM, {at=at or 0, name=name or "", 
-           nump=true, indep=false, n=0, w = ako.weight(name or ""), 
-           lo=math.huge, hi=-math.huge, mu=0, m2=0, sd=0, bins={}}) end
+  name=name or ""
+  return new(NUM, {at=at or 0, name=name, 
+            indep=not ako.goal(name), 
+            n=0, has={}, nump=true, n=0, w = ako.weight(name or ""), 
+            lo=math.huge, hi=-math.huge, mu=0, m2=0, sd=0, bins={}}) end
 
 function NUM:add(x,   d)
   if x ~= "?" then
