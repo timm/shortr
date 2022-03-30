@@ -72,14 +72,15 @@ INTROS=learn101.lua learn201.lua learn301.lua
 DATA=ako.lua num.lua sym.lua seen.lua
 EGS=egs.lua
 
-pages: 				the.lua bnb eof \
+pages: 				the.lua brknbad.lua eof \
 							learn101.lua learn201.lua learn301.lua eof \
 							bin.lua rule.lua eof \
 							ako.lua num.lua sym.lua seen.lua eof \
 							egs.lua eof \
 							cluster.lua eof \
 							abcd.lua eof \
-							lib.lua 
+							lib.lua eof\
+							go.lua
 	@t="brknbad" $(MAKE) h1 > all.lua
 	@bash ../etc/pages.sh $+ >> all.lua
 
@@ -87,9 +88,6 @@ book: pages
 	$(MAKE) ../docs/all.pdf
 	open ../docs/all.pdf
 	rm all.lua
-
-bnb.lua: bnb
-	cp $< $@
 
 optA:
 	lua brknbad.lua -f ../etc/data/auto93.csv -minItems .4 -t optimize2 | tee ~/tmp/dat

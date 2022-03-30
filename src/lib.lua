@@ -1,5 +1,4 @@
 local lib={}
-
 ---     _ _  _ _|_|_  _
 ---    | | |(_| | | |_\
 
@@ -82,29 +81,38 @@ function lib.slots(t, u)
 function lib.settings(help)
   local d,used = {},{}
   help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+    -- e.g.    "  -bins -b  max.number of bins       = 16"
+    --parses to ((-)(bins)) (-b) max number of bins = (16)
+    -- i.e.    (long (key)) (short)                   (x)
     function(long,key,short,x)
       assert(not used[short], "repeated short flag ["..short.."]")
       used[short]=short
       for n,flag in ipairs(arg) do 
         if flag==short or flag==long then
           x = x=="false" and true or x=="true" and "false" or arg[n+1] end end 
-      d[key] = lib.coerce(s) end)
+      d[key] = lib.coerce(x) end)
   if d.help then os.exit(print(help)) end
   return d end
 
-function lib.onTheGo(the,go,b4,           old,todos)
-  the,go = (the or {}),(go or {})
-  old={}; for k,v in pairs(the) do old[k]=v end
-  todos = old.todo == "all" and slots(go) or {old.todo}
-  go.fails = 0
+lib.go = {_fails=0}
+function lib.ok(test,msg)
+  print("", test and "PASS "or "FAIL ",msg or "") 
+  if not test then 
+    lib.go._fails= lib.go._fails+1 
+    if the and the.dump then assert(test,msg) end end end
+
+function lib.main(the,go,b4,           resets,todos)
+  resets={}; for k,v in pairs(the) do resets[k]=v end
+  todos = the.todo == "all" and slots(go) or {the.todo}
+  go._fails = 0
   for _,todo in pairs(todos) do
     math.randomseed(the.seed or 10019)
     if go[todo] then print("\n"..todo); go[todo]() end 
-    for k,v in pairs(old) do the[k]=v end end
+    for k,v in pairs(resets) do the[k]=v end end
   if b4 then
     for k,v in pairs(_ENV) do 
        if not b4[k] then print("?",k,type(v)) end end end 
-  os.exit(go.fails) end 
+  os.exit(go._fails) end 
 
 ---     _ _ | _  __|_. _  _ 
 ---    _\(/_|(/_(_ | |(_)| |
@@ -116,31 +124,28 @@ function lib.many(a,n,lo,hi,  u)
   u={}; for j=1,n do lib.push(u, lib.any(a,lo,hi)) end; return u end
 
 function lib.slice(a,lo,hi,    u)
-  u,lo,hi = {},lo or 1,hi or #a; for j=lo,hi do u[1+#u]=a[j] end; return u end
+  u,lo,hi = {},lo or 1,hi or #a; for j=lo,hi do u[1+#u]=a[j] end; return u end
 
 ---     __|_ _. _  _   '~)  _|_|_ . _  _ 
 ---    _\ | | || |(_|   /_   | | ||| |(_|
 ---                _|                  _|
 
-function lib.coerce(s) 
-  return type(s)~="string" and s or math.tointeger(s) or tonumber(s) or s end
-
 function lib.words(s,sep,   t)
   sep="([^" .. (sep or ",")  .. "]+)"
   t={}; for y in s:gmatch(sep) do t[1+#t] = y end; return t end
 
-function lib.things(s) 
-  return lib.map(lib.words(s), lib.thing) end 
+function lib.coerces(s) 
+  return lib.map(lib.words(s), lib.coerce) end 
 
-function lib.thing(x)
+function lib.coerce(x)
   if type(x) ~= "string" then return x end
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
-  return lib.coerce(x) end
+  return math.tointeger(x) or tonumber(x) or x end
 
 function lib.items(src,f)
   local function file(f)
-    src,f = io.input(src),(f or lib.things)
+    src,f = io.input(src),(f or lib.coerces)
     return function(x) x=io.read()
              if x then return f(x) else io.close(src) end end end 
   local function tbl(   x)

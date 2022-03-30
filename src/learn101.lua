@@ -1,19 +1,16 @@
-local the = require"the"
-local lib = require"lib"
-local has2,has3,inc,inc2,inc3 = lib.has2,lib.has3,lib.inc,lib.inc2,lib.inc3
-local push,sort,collect,items = lib.push,lib.sort,lib.collect,lib.items
-local map,down1,rnds,oo       = lib.map,lib.down1,lib.rnds,lib.oo
-local new,obj                 = lib.new, lib.obj
+local the,_ = require"the", require"lib"
+local has2,has3,inc,inc2,inc3   = _.has2,_.has3,_.inc,_.inc2,_.inc3
+local push,sort,collect,items   = _.push,_.sort,_.collect,_.items
+local map,down1,rnds,oo,new,obj = _.map,_.down1,_.rnds,_.oo,_.new,_.obj
 
-print(the.seed)
 local NB=obj"NB"
-function NB:new(data, i) 
-  i = new(NB,{h={}, nh=0,e={}, n=0, wait=the.wait, log=log or {}, cols=nil}) 
+function NB:new(data, this) 
+  this = new(NB,{h={}, nh=0,e={}, n=0, wait=the.wait, log=log or {}, cols=nil}) 
   for row in items(data) do 
-    if   not i.cols
-    then i.cols= collect(row,function(j,s) return {name=s,indep=j~=#row} end)
-    else i:test(row); i:train(row) end end 
-  return i end
+    if   not this.cols
+    then this.cols= collect(row,function(j,s) return {name=s,indep=j~=#row} end)
+    else this:test(row); this:train(row) end end 
+  return this end
 
 function NB:test(row)
   if self.n > the.wait then 
@@ -33,15 +30,13 @@ function NB:train(row)
 function NB:classify(t,use)
   local hi,out = -math.huge
   print("")
-  for h,val in pairs(i.h) do 
+  for h,val in pairs(self.h) do 
     local prior = ((self.h[h] or 0) + the.K)/(self.n + the.K*self.nh)
     local l = math.log(prior)
     for col,x in pairs(t) do
       if x ~= "?" and self.cols[col].indep then
         l = l + math.log((has3(self.e,col,x,h) + the.M*prior) /
-                         ((self.h[h] or 0) + the.M)) 
-        print(col,x,h,has3(self.e,col,x,h),l)
-        end end 
+                         ((self.h[h] or 0) + the.M)) end end 
     if l>hi then hi,out=l,h end
     oo(rnds{prior,l,hi,out}) end
   return out end

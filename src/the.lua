@@ -1,4 +1,5 @@
-return require("lib").settings[[
+return require"lib".settings[[
+
 brknbad: explore the world better, explore the world for good.
 (c) 2022, Tim Menzies
 

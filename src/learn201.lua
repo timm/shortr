@@ -1,6 +1,6 @@
 local R=require
-local the,lib, ako, nb1 = R"the",R"lib",R"ako", R"learn101"
-local collect = lib.collect
+local the,_, ako, NB = R"the",R"lib",R"ako", R"learn101"
+local push,items,collect = _.push, _.collect, _.items
 
 return function(data,  log)
   local tmp,xnums = {}
@@ -25,4 +25,4 @@ return function(data,  log)
     if   xnums then collect(row, train) 
     else xnums = collect(row,xnum)  end end
   for j=2,#tmp do tmp[j] = collect(tmp[j], discretize) end
-  return nb1(tmp) end
+  return NB(tmp) end

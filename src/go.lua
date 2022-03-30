@@ -1,52 +1,13 @@
-#!/usr/bin/env lua
--- vi: filetype=lua :
-local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local R    = require
-local the  = R"the"
-local lib  = R"lib"
-local abcd = R"abcd"
-local bin, rule                    = R"bin", R"rule"
+local R = require
+local the,lib,abcd,bin,rule        = R"the", R"lib", R"abcd",R"bin",R"rule"
 local num, sym                     = R"num", R"sym"
 local ako, egs, seen, cluster      = R"ako", R"egs", R"seen", R"cluster"
 local learn101, learn201, learn301 = R"learn101", R"learn201", R"learn301"
 
 local ish,items,o,oo,powerset = lib.ish,lib.items,lib.o,lib.oo,lib.powerset
-local map,fmt,rnds, rnd = lib.map,lib.fmt,lib.rnds, lib.rnd
+local map,fmt,rnds, rnd       = lib.map,lib.fmt,lib.rnds, lib.rnd
 
--- ## Convenctions:
--- lower case for instance methods, leading upper case for class methods (e.g. 
--- start ach file witha  sime new method that lists the attributes 
--- creation, management of sets of instances)
-local fails=0
-local function ok(test,msg)
-  print("", test and "PASS "or "FAIL ",msg or "") 
-  if not test then 
-    fails = fails+1 ; if the and the.dump then assert(test,msg) end end end
-
-local go={}
-local function main(the,go)
-  local defaults={}
-  for k,v in pairs(the) do defaults[k]=v end
-  local todos = defaults.todo == "all" and slots(go) or {defaults.todo}
-  for _,todo in pairs(todos) do
-    for k,v in pairs(defaults) do the[k]=v end
-    math.randomseed(the.seed or 10019)
-    if go[todo] then print("\n"..todo); go[todo]() end end 
-  if b4 then
-    for k,v in pairs(_ENV) do 
-       if not b4[k] then print("?",k,type(v)) end end end end
-
----             .---------.
----             |         |
----           -= _________ =-
----              ___   ___
----             |   )=(   |
----              ---   --- 
----                 ###
----               #  =  #            "This ain't chemistry. 
----               #######             This is art."
----     _| _  _ _  _  _
----    (_|(/_| | |(_)_\
+local go,ok = lib.go,lib.ok
 
 function go.copy(     t,u)
   t={a={b={c=10},d={e=200}}, f=300}
@@ -132,13 +93,12 @@ local function qq(i,q)
 
 local function gonb1(file) 
   print(the.file)
-  local i = learn101.learn(file); 
+  local i = require"learn101"(file)
   local acc, out = learn101.score(i); print(acc); 
   local cnt={}
   for _,one in pairs(out) do local k=one.got..","..one.want; cnt[k] = 1+ (cnt[k] or 0) end
   for k,n in pairs(cnt) do print(o(k),n) end
-  abcd(i.log,true)
-  end
+  abcd(i.log,true) end
 
 function go.nb1a() gonb1(the.file) end 
 function go.nb1b() gonb1("../etc/data/diabetes.csv") end 
@@ -146,7 +106,7 @@ function go.nb1b() gonb1("../etc/data/diabetes.csv") end
 function go.nb2() 
   the.file = "../etc/data/diabetes.csv" 
   the.goal = "positive"
-  local i = nb2(the.file); 
+  local i = require("learn201")(the.file); 
   abcd(i.log,true) end 
 
 function go.nb2a() 
@@ -170,5 +130,5 @@ function go.nb3()
   local i = nb3(the.file); 
   abcd(i.log,true)
   local acc, out = score(i);  map(out,function(q) qq(i,q) end) end
---------------------------------------------------------------------------------
-os.exit( lib.onTheGo(the,go) )
+
+return go
