@@ -5,6 +5,7 @@ local push,sort,collect,items = lib.push,lib.sort,lib.collect,lib.items
 local map,down1,rnds,oo       = lib.map,lib.down1,lib.rnds,lib.oo
 local new,obj                 = lib.new, lib.obj
 
+print(the.seed)
 local NB=obj"NB"
 function NB:new(data, i) 
   i = new(NB,{h={}, nh=0,e={}, n=0, wait=the.wait, log=log or {}, cols=nil}) 
