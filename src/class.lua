@@ -8,10 +8,10 @@ return function(name,base)
   klass._is     = name
   klass._class  = klass
   return setmetatable(klass,{
-     __call = function(klass,...)
-       local obj = setmetatable({},klass)
-       if     rawget(klass,'new') 
-       then   klass.super = base_ctor
-              klass.new(obj,...) 
-       elseif base_ctor then base_ctor(obj,...) end
-       return obj end}) end
+    __call = function(klass,...)
+      local obj = setmetatable({},klass)
+      if     rawget(klass,'new') 
+      then   klass.super = base_ctor
+             klass.new(obj,...) 
+      elseif base_ctor then base_ctor(obj,...) end
+      return obj end}) end
