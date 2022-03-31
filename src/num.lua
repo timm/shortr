@@ -49,19 +49,18 @@ function NUM:delta(other)
   local xys = {}
   for _,x in pairs(i.has    ) do push(xys,{x=x,y=true} ) end
   for _,x in pairs(other.has) do push(xys,{x=x,y=false}) end
-  merge(div(sort(xys,upx))) end
+  merge(div(at,name,sort(xys,upx))) end
 
-function div(xys)
-  local now     = BIN(xys[1].x)
+function div(at,name,xys)
+  local now     = BIN(at, name, xys[1].x)
   local out     = {now}
   local minSize = #xys^the.leaves
   local epsilon = (per(xys,.9).x - per(xys,.1).x)/2.56
   for j,xy in pairs(xys) do
-    if j + minSize < #xys then
-      if now.ys.n > minSize then
-        if xy.x ~= xys[j+1].x then
-          if now.hi - now.lo > epsilon then
-            now = push(out, Bin(now.hi)) end end end end
+    if j > minSize and j + minSize < #xys then 
+      if xy.x ~= xys[j+1].x then
+        if now.hi - now.lo > epsilon then
+           now = push(out, BIN(at, name, now.hi)) end end end
     now:add(xy.x, xy.y) end 
   out[1].lo    = -math.huge
   out[#out].hi =  math.huge
@@ -73,9 +72,9 @@ function merge(b4,      j,tmp,n,a,b,merged)
     a = b4[j]
     if j < n - 1 then
       b = b4[j+1]
-      merged = a.ys:merged(b.ys)
+      merged = a.ys:merged(b.ys) -- merge has to rereturn a new bin eith at name
       if merged then
-        a = Bin(a.lo, b.hi,  merged)
+        a = BIN(a.lo, b.hi,  merged)
         j = j+1 end end 
     tmp[#tmp+1] = a
     j = j+1 end
