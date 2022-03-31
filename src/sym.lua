@@ -9,12 +9,23 @@ function SYM:new(at,name)
             nump=false, indep=not ako.goal(name), 
             n=0, has={}, most=0, mode=nil}) end
 
-function SYM:add(x)
+function SYM:add(x,inc)
   if x ~= "?" then
-    self.n = self.n + 1
-    self.has[x] = 1 + (self.has[x] or 0) 
+    inc = inc or 1
+    self.n = self.n + inc
+    self.has[x] = inc + (self.has[x] or 0) 
     if self.has[x] > self.most then 
-      self.mode,self.most = x,self.has[x] end end 
+      self.mode, self.most = x, self.has[x] end end 
    return x end
+
+function SYM:div() return ent(i.has) end
+function SYM:mid() return i.mode end
+
+function SYM.merged(i,j,      k)
+  k = SYM:new(i.at, i.name)
+  for x,n in pairs(i.has) do k:add(x,n) end
+  for x,n in pairs(j.has) do k:add(x,n) end
+  if ent(k.has) * .95 <= (i.n*ent(i.has) + j.n*ent(j.has))/k.n then
+    return k end end
 
 return SYM

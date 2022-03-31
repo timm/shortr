@@ -1,4 +1,4 @@
-local ako,_   =require"ako", require"lib"
+local the,ako,_   = require"the", require"ako", require"lib"
 local obj,new = _.obj, _.new 
 
 local NUM = obj"NUM"
@@ -19,5 +19,10 @@ function NUM:add(x,   d)
     self.m2 = self.m2 + d*(x - self.mu)
     self.sd = ((self.m2<0 or self.n<2) and 0) or ((self.m2/(self.n -1))^0.5) end
  return x end
+
+function NUM:div() return i.sd end
+function NUM:mid() return i,mu end
+
+function NUM:same(x,y) return math.abs(x - y) <= the.cohen * self.sd end
 
 return NUM
