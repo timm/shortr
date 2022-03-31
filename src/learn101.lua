@@ -4,7 +4,7 @@ local push,sort,collect,items   = _.push,_.sort,_.collect,_.items
 local map,down1,rnds,oo,new,obj = _.map,_.down1,_.rnds,_.oo,_.new,_.obj
 
 local NB=obj"NB"
-function NB:new(data, this) 
+function NB.new(data, this) 
   this = new(NB,{h={}, nh=0,e={}, n=0, wait=the.wait, log=log or {}, cols=nil}) 
   for row in items(data) do 
     if   not this.cols

@@ -3,7 +3,7 @@ local obj,new,ent = _.obj, _.new ,  _.ent
 
 local SYM = obj"SYM"
 
-function SYM:new(at,name)   
+function SYM.new(at,name)   
   name = name or ""
   return new(SYM,{at=at or 0, name=name, 
             nump=false, indep=not ako.goal(name), 
@@ -21,11 +21,15 @@ function SYM:add(x,inc)
 function SYM:div() return ent(i.has) end
 function SYM:mid() return i.mode end
 
-function SYM.merged(i,j,      k)
-  k = SYM:new(i.at, i.name)
-  for x,n in pairs(i.has) do k:add(x,n) end
-  for x,n in pairs(j.has) do k:add(x,n) end
-  if ent(k.has) * .95 <= (i.n*ent(i.has) + j.n*ent(j.has))/k.n then
+function SYM:merge(other,      out)
+  out = SYM:new(self.at, self.name)
+  for x,n in pairs(self.has)  do out:add(x,n) end
+  for x,n in pairs(other.has) do out:add(x,n) end
+  return out end
+
+function SYM:merged(other,    out)
+  out = self:merge(other)
+  if out:div()*.95 <= (self.n*self:div() + other.n*other:div())/out.n then
     return k end end
 
 return SYM

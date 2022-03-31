@@ -1,47 +1,44 @@
-local the=require"the"
-local lib=require"lib"
-local fmt,per,upx,push,sort = lib.fmt,lib.per,lib.upx,lib.push,lib.sort
-local ent = lib.ent
+local the,_,SYM = require"the", require"lib", require"sym"
+local fmt,per,upx,push,sort = _.fmt,_.per,_.upx,_.push,_.sort
+local ent,id = _.ent,_.id
 
-local bin={}
-function bin.new(id,at,name,lo,hi,n,div) 
-  return {id=id,at=at,name=name,lo=lo,hi=hi,n=n,div=div} end
+local BIN=obj"BIN"
+function BIN.new(mark,at,name,lo,hi,has) 
+  return new(BIN, {id=id(), mark=mark,at=at,name=name,
+                   lo=lo,hi=hi,ys=ys or SYM()}) end
 
-function bin.show(i,negative)
-  local x,lo,hi,big, s = i.name, i.lo, i.hi, math.huge
-  if negative then
-    if     lo== hi  then s=fmt("%s != %s",x,lo)  
-    elseif hi== big then s=fmt("%s <  %s",x,lo) 
-    elseif lo==-big then s=fmt("%s >= %s",x,hi)  
-    else                 s=fmt("%s < %s and %s >= %s",x,lo,x,hi) end 
-  else
-    if     lo== hi  then s=fmt("%s == %s",x,lo)  
-    elseif hi== big then s=fmt("%s >= %s",x,lo)  
-    elseif lo==-big then s=fmt("%s <  %s",x,hi)  
-    else                 s=fmt("%s <= %s < %s",lo,x,hi) end end
-  return s end
+function BIN:_tostring()
+  local x,lo,hi,big = self.name, self.lo, self.hi. math.huge
+ if      lo ==  hi  then return fmt("%s == %s",x,lo)  
+  elseif hi ==  big then return fmt("%s >= %s",x,lo)  
+  elseif lo == -big then return fmt("%s <  %s",x,hi)  
+  else                   return fmt("%s <= %s < %s",lo,x,hi) end end
 
-function bin.select(i,row)
-  local x, lo, hi = row[i.at], i.lo, i.hi
+function BIN:select(row)
+  local x, lo, hi = row[self.at], self.lo, self.hi
   return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
+
+function BIN:add(x,y)
+  if x<self.lo then self.lo = x end 
+  if x>self.lo then self.hi = x end 
+  ys:add(y) end
 
 ---     _  | _  _ _   _ _  _ _|_|_  _  _| _
 ---    (_  |(_|_\_\  | | |(/_ | | |(_)(_|_\
 
-function bin.Merges(bins)
-  local j,n,new = 0,length(bins),{}
+function BIN.merges(bins)
+  local j,n,new = 1,length(bins),{}
   while j <= n do
-    j=j+1
     a=bins[j]
     if j < n then
       b = bins[j+1]
       if a.hi == b.lo then
-        a.hi  = b.hi
-        a.div = (a.div*a.n + b.div*b.n)/(a.n+b.n)
-        a.n   = a.n + b.n
-        j     = j + 1 end end
+        a.hi = b.hi
+        a.ys = a.ys:merge(b.ys)
+        j    = j + 1 end end
+    j=j+1
     push(new,a) end
-  return #new < #bins and bin.Merges(new) or bins end
+  return #new < #bins and BIN.merges(new) or bins end
 
 local argmin
 function bin.Xys(xys,at,name)
