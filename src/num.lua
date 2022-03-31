@@ -19,8 +19,7 @@ function NUM:add(x,   d)
     self.mu = self.mu + d/self.n
     self.m2 = self.m2 + d*(x - self.mu)
     self.sd = ((self.m2<0 or self.n<2) and 0) or ((self.m2/(self.n -1))^0.5) 
-    local r = math.random
-    if     #i._has < the.some then push(i._has,x) 
+    if #i._has < the.some then push(i._has,x) 
     elseif r() < the.some/self.n then i._has[1 + (r()*#i.has) // 1] = x end end
  return x end
 
