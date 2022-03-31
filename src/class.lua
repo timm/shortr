@@ -12,6 +12,7 @@ return function(name,base)
       local obj = setmetatable({},klass)
       if     rawget(klass,'new') 
       then   klass.super = base_ctor
-             klass.new(obj,...) 
+             local res = klass.new(obj,...) 
+             if res then obj = setmetatable(res,klass) end
       elseif base_ctor then base_ctor(obj,...) end
       return obj end}) end

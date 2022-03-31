@@ -1,11 +1,12 @@
-local the,_,SYM = require"the", require"lib", require"sym"
+local _,the,SYM = require"lib", require"the", require"sym"
 local fmt,per,upx,push,sort = _.fmt,_.per,_.upx,_.push,_.sort
-local ent,id = _.ent,_.id
+local ent,id = _.ent
+local class,OBJ,id = _.class, _.OBJ,_.id
 
-local BIN=obj"BIN"
-function BIN.new(mark,at,name,lo,hi,has) 
-  return new(BIN, {id=id(), mark=mark,at=at,name=name,
-                   lo=lo,hi=hi,ys=ys or SYM()}) end
+local BIN=class("BIN",OBJ)
+function BIN:new(lo,hi,ys, at,name) 
+  return new(BIN, {id=id(), at=at or 0,name=name or "",
+                   lo=lo,hi=hi or lo,ys=ys or SYM()}) end
 
 function BIN:_tostring()
   local x,lo,hi,big = self.name, self.lo, self.hi. math.huge

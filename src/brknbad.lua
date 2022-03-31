@@ -23,8 +23,8 @@
 -- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local the, lib = require"the", require"lib"
-lib.main(the, lib.go, b4)
+local the, lib, go = require"the", require"lib", require"go"
+lib.main(the, go, b4)
 
 ---             .---------.
 ---             |         |

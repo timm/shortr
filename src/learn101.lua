@@ -1,16 +1,16 @@
 local the,_ = require"the", require"lib"
 local has2,has3,inc,inc2,inc3   = _.has2,_.has3,_.inc,_.inc2,_.inc3
 local push,sort,collect,items   = _.push,_.sort,_.collect,_.items
-local map,down1,rnds,oo,new,obj = _.map,_.down1,_.rnds,_.oo,_.new,_.obj
+local map,down1,rnds,oo,class,OBJ = _.map,_.down1,_.rnds,_.oo,_.class,_.OBJ
 
-local NB=obj"NB"
-function NB.new(data, this) 
-  this = new(NB,{h={}, nh=0,e={}, n=0, wait=the.wait, log=log or {}, cols=nil}) 
+local NB=class("NB",OBJ)
+function NB:new(data, this) 
+  self.n, self.nh, self.wait         = 0,0, the.wait
+  self.e, self.h, self.log,self.cols = {},{},{},nil
   for row in items(data) do 
-    if   not this.cols
-    then this.cols= collect(row,function(j,s) return {name=s,indep=j~=#row} end)
-    else this:test(row); this:train(row) end end 
-  return this end
+    if   not self.cols
+    then self.cols= collect(row,function(j,s) return {name=s,indep=j~=#row} end)
+    else self:test(row); self:train(row) end end  end
 
 function NB:test(row)
   if self.n > the.wait then 
@@ -40,8 +40,8 @@ function NB:classify(t,use)
   return out end
 
 function NB:score()
-  local a=0
-  for key,x in pairs(self.log) do if x.want==x.got then a=a+1/#self.log end end
+  local a,n = 0,#self.log
+  for key,x in pairs(self.log) do if x.want==x.got then a=a+1/n end end
   return acc,self.log end 
 
 return NB

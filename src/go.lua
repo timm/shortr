@@ -1,17 +1,26 @@
 local R = require
-local the,_,abcd,bin,rule        = R"the", R"lib", R"abcd",R"bin",R"rule"
-local num, sym                     = R"num", R"sym"
-local ako, egs, seen, cluster      = R"ako", R"egs", R"seen", R"cluster"
-local learn101, learn201, learn301 = R"learn101", R"learn201", R"learn301"
+--local the,_,abcd,bin,rule        = R"the", R"lib", R"abcd",R"bin",R"rule"
+local _,the,ABCD = R"lib", R"the",R"ABCD"
+--local num, sym                     = R"num", R"sym"
+--local ako, egs, seen, cluster      = R"ako", R"egs", R"seen", R"cluster"
+--local learn101, learn201, learn301 = R"learn101", R"learn201", R"learn301"
 
-local ish,items,o,oo,powerset = _.ish,_.items,_.o,_.oo,_.powerset
+local ish,copy,items,o,oo,powerset = _.ish,_.copy,_.items,_.o,_.oo,_.powerset
 local map,fmt,rnds, rnd,push       = _.map,_.fmt,_.rnds, _.rnd,_.push
-
+local class,Obj = _.class, _.Obj
 local go,ok = _.go,_.ok
+
+function go.class()
+  local EMP=class("EMP",Obj)
+  function EMP:new(name) self.name=name end 
+  local fred = EMP("tim")
+  local MANAGER=class("MANAGER",EMP)
+  local jane = MANAGER("jane")
+  print(jane) end
 
 function go.copy(     t,u)
   t={a={b={c=10},d={e=200}}, f=300}
-  u= lib.copy(t) 
+  u= copy(t) 
   t.a.b.c= 20
   ok(u.a.b.c ~= 20,"copy") end
 
@@ -20,10 +29,10 @@ function go.rnd()
 
 function go.collect()
   local function aux(x,y) return x*y end
-  oo(lib.collect({10,20,30},aux)) end
+  oo(_.collect({10,20,30},aux)) end
 
 function go.ent()
-  local a,b = lib.ent{a=9,b=7}
+  local a,b = _.ent{a=9,b=7}
   ok(ish(lib.ent{a=9,b=7}, .98886), "entropy")  end
 
 function go.items()
@@ -104,8 +113,8 @@ local function gonb1(file)
   local _, out = i:score()
   local cnt={}
   for _,one in pairs(out) do local k=one.got..","..one.want; cnt[k] = 1+ (cnt[k] or 0) end
-  for k,n in pairs(cnt) do print(n,o(k)) end
-  abcd(i.log,true) end
+  for k,n in pairs(cnt) do print(n,o(k)) end 
+  ABCD():adds(i.log,true) end
 
 function go.nb1a() gonb1(the.file) end 
 function go.nb1b() gonb1("../etc/data/diabetes.csv") end 
@@ -114,7 +123,7 @@ function go.nb2()
   the.file = "../etc/data/diabetes.csv" 
   the.goal = "positive"
   local i = require("learn201")(the.file); 
-  abcd(i.log,true) end 
+  ABCD():adds(i.log,true) end 
 
 function go.nb2a() 
   the.file = "../etc/data/diabetes.csv" 

@@ -109,9 +109,8 @@ function lib.main(the,go,b4,           resets,todos)
     math.randomseed(the.seed or 10019)
     if go[todo] then print("\n"..todo); go[todo]() end 
     for k,v in pairs(resets) do the[k]=v end end
-  if b4 then
-    for k,v in pairs(_ENV) do 
-       if not b4[k] then print("?",k,type(v)) end end end 
+  for k,v in pairs(_ENV) do 
+    if b4 and not b4[k] then print("?",k,type(v)) end end 
   os.exit(go._fails) end 
 
 ---     _ _ | _  __|_. _  _ 
@@ -170,7 +169,7 @@ function lib.o(t,  seen, u)
   local function show1(x) return lib.o(x, seen) end
   local function show2(k) return lib.fmt(":%s %s",k, lib.o(t[k],seen)) end
   u = #t>0 and lib.map(t,show1) or lib.map(lib.slots(t),show2)
-  return (t._is or "").."{"..table.concat(u," ").."}" end
+  return "{"..table.concat(u," ").."}" end
 
 function lib.dent(t,  seen,pre)  
   pre,seen = pre or "", seen or {}
@@ -197,10 +196,34 @@ function lib.rnd(x,f)
 local _id=0
 function lib.id() _id=_id+1; return _id end
 
-function lib.new(x,y) return setmetatable(y,x) end
+function lib.class(name,base)
+  local klass, base_ctor = {}
+  if base then
+    for k,v in pairs(base) do klass[k] = v end
+    klass._base = base
+    base_ctor   = rawget(base,'new') end
+  klass.__index = klass
+  klass._is     = name
+  klass._class  = klass
+  return setmetatable(klass,{
+    __call = function(klass,...)
+      local obj = setmetatable({},klass)
+      if     rawget(klass,'new') 
+      then   klass.super = base_ctor
+             local res = klass.new(obj,...) 
+             if res then obj = setmetatable(res,klass) end
+      elseif base_ctor then base_ctor(obj,...) end 
+      return obj end }) end
 
-function lib.obj(s,   t)
-  t={__tostring=lib.o,_is=s or ""}; t.__index=t
-  return setmetatable(t, {__call=function(...) return t.new(...) end}) end
+lib.Obj = lib.class("Obj")
+
+function lib.Obj:show(  t)
+  t={}
+  for k,v in pairs(self) do if tostring(k):sub(1,1)~="_" then t[1+#t]=k end end
+  return lib.sort(t) end
+
+function lib.Obj:__tostring(  u)
+  u={}; for _,k in pairs(self:show()) do u[1+#u]=lib.fmt(":%s %s",k,self[k]) end
+  return self._is .."{"..table.concat(u," ").."}" end
 
 return lib
