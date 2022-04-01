@@ -47,6 +47,20 @@ function lib.powerset(s)
     return t end
   return lib.sort(aux(s), function(a,b) return #a < #b end) end
 
+function lib.merge(b4,merge)
+  local j,n,tmp = 1,#b4,{}
+  while j<=n do
+    a = b4[j]
+    if j < n - 1 then
+      local a_plus_next = merge(a, b4[j+1]) -- returns nil if merge fails
+      if a_plus_next then
+        a = a_plus_next
+        j = j+1 end end 
+    tmp[#tmp+1] = a
+    j = j+1 end
+  return #tmp==#b4 and tmp or lib.merge(tmp) end
+
+
 ---     |`.|_|_ _  _. _  _ 
 ---    ~|~|| | (/_| || |(_|
 ---                      _|
@@ -159,16 +173,16 @@ function lib.items(src,f)
 
 lib.fmt = string.format
 
-function lib.oo(t) print(lib.o(t)) end
+function lib.oo(t, slots) print(lib.o(t,slots)) end
 
-function lib.o(t,  seen, u)  
+function lib.o(t,slots,   seen, u)  
   if type(t)~="table" then return tostring(t) end
   seen = seen or {}
   if seen[t] then return "..." end
   seen[t] = t
-  local function show1(x) return lib.o(x, seen) end
-  local function show2(k) return lib.fmt(":%s %s",k, lib.o(t[k],seen)) end
-  u = #t>0 and lib.map(t,show1) or lib.map(lib.slots(t),show2)
+  local function show1(x) return lib.o(x, nil, seen) end
+  local function show2(k) return lib.fmt(":%s %s",k, lib.o(t[k], nil, seen)) end
+  u = #t>0 and lib.map(t,show1) or lib.map(slots or lib.slots(t),show2)
   return "{"..table.concat(u," ").."}" end
 
 function lib.dent(t,  seen,pre)  
@@ -222,8 +236,9 @@ function lib.Obj:show(  t)
   for k,v in pairs(self) do if tostring(k):sub(1,1)~="_" then t[1+#t]=k end end
   return lib.sort(t) end
 
-function lib.Obj:__tostring(  u)
-  u={}; for _,k in pairs(self:show()) do u[1+#u]=lib.fmt(":%s %s",k,self[k]) end
-  return self._is .."{"..table.concat(u," ").."}" end
+function lib.Obj:__tostring(  u) return lib.o(self,self:show()) end
+
+--u={}; for _,k in pairs(self:show()) do u[1+#u]=lib.fmt(":%s %s",k,self[k]) end
+--  return self._is .."{"..table.concat(u," ").."}" end
 
 return lib

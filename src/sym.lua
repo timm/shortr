@@ -27,4 +27,13 @@ function SYM:merge(other,      out)
   for x,n in pairs(other.has) do out[x] = n+(out[x] or 0) end
   return out end
 
+function SYM:bins(other, BIN)
+  local out = {}
+  local function has(x) 
+    out[x] = out[x] or BIN(self.at, self.name, x,x) -- out has an entry for x
+    return out[x].ys.has end
+  for x,n in pairs(self.has ) do t = has(x); t[true]  = (t[true]  or 0) + n end
+  for x,n in pairs(self.has ) do t = has(x); t[false] = (t[false] or 0) + n end
+  return map(slots(out), function(k) return out[k] end) end
+
 return SYM

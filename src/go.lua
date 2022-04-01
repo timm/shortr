@@ -12,7 +12,8 @@ local go,ok = _.go,_.ok
 
 function go.class()
   local EMP=class("EMP",Obj)
-  function EMP:new(name) self.name=name end 
+  function EMP:show() return {"name", "age", "_id"} end
+  function EMP:new(name) self._id=1;  self.name=name; self.age=0 end 
   local fred = EMP("tim")
   local MANAGER=class("MANAGER",EMP)
   local jane = MANAGER("jane")

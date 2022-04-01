@@ -1,6 +1,6 @@
 local _,the,COL = require"lib", require"the", require"col"
 local class = _.class
-local sort,upx = _.sort, _.upx
+local sort,upx,merge = _.sort, _.upx,_.merge
 
 local NUM = class("NUM",COL)
 function NUM:new(at,name)   
@@ -44,40 +44,22 @@ function NUM:all()
   self.ok=true
   return i.has end
 
-local div,merge
-function NUM:delta(other)
-  local xys = {}
-  for _,x in pairs(i.has    ) do push(xys,{x=x,y=true} ) end
-  for _,x in pairs(other.has) do push(xys,{x=x,y=false}) end
-  merge(div(at,name,sort(xys,upx))) end
-
-function div(at,name,xys)
-  local now     = BIN(at, name, xys[1].x)
-  local out     = {now}
-  local minSize = #xys^the.leaves
-  local epsilon = (per(xys,.9).x - per(xys,.1).x)/2.56
-  for j,xy in pairs(xys) do
-    if j > minSize and j + minSize < #xys then 
-      if xy.x ~= xys[j+1].x then
-        if now.hi - now.lo > epsilon then
-           now = push(out, BIN(at, name, now.hi)) end end end
+function NUM:bins(other, BIN)
+  local tmp,out = {},{}
+  for _,x in pairs(self.has ) do push(tmp, {x=x, y=true} ) end
+  for _,x in pairs(other.has) do push(tmp, {x=x, y=false}) end
+  tmp = sort(tmp,upx) -- ascending on x
+  local epsilon = ((per(tmp,.9).x - per(tmp,.1).x)/2.56)*the.cohen
+  local minSize = #tmp^the.leaves
+  local now     = push(out, BIN(self.at, self.name, tmp[1].x))
+  for j,xy in pairs(tmp) do
+    if j > minSize and j + minSize < #tmp then -- leaves enough for other out
+      if xy.x ~= tmp[j+1].x then               -- there is a break in the data
+        if now.hi - now.lo > epsilon then      -- "now" not trivially small
+           now = push(out,  BIN(self.at, self.name, now.hi)) end end end
     now:add(xy.x, xy.y) end 
   out[1].lo    = -math.huge
   out[#out].hi =  math.huge
-  return out end
-
-function merge(b4,      j,tmp,n,a,b,merged)
-  j, tmp, n = 1, {}, #b4
-  while j<=n do
-    a = b4[j]
-    if j < n - 1 then
-      b = b4[j+1]
-      merged = a.ys:merged(b.ys) -- merge has to rereturn a new bin eith at name
-      if merged then
-        a = BIN(a.lo, b.hi,  merged)
-        j = j+1 end end 
-    tmp[#tmp+1] = a
-    j = j+1 end
-  return #tmp==#b4 and tmp or merge(tmp) end
+  return merge(out, BIN.mergeSimilarDistributions) end
 
 return NUM
