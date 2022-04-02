@@ -1,7 +1,7 @@
 local R = require
 --local the,_,abcd,bin,rule        = R"the", R"lib", R"abcd",R"bin",R"rule"
 local _, the, ABCD  = R"lib", R"the", R"ABCD"
-local NUM, SYM, BIN = R"num", R"sym", R"bin"
+local NUM, SYM, BIN,EGS,COLS = R"num", R"sym", R"bin", R"egs", R"cols"
 --local num, sym                     = R"num", R"sym"
 --local ako, egs, seen, cluster      = R"ako", R"egs", R"seen", R"cluster"
 --local learn101, learn201, learn301 = R"learn101", R"learn201", R"learn301"
@@ -56,8 +56,10 @@ function go.some( n)
   for k,v in pairs(SYM():adds(n:all()).has) do print(k,v) end end
 
 function go.ent()
-  local n = NUM()
-  ok(ish(lib.ent{a=9,b=7}, .98886), "entropy")  end
+  local n = SYM()
+  n:add("a",9)
+  n:add("b",7)
+  ok(ish(n:div(), .98886), "entropy")  end
 
 function go.normal( n)
   n=NUM()
@@ -78,30 +80,36 @@ function go.bins(   n1,n2)
       function(b) 
         print(b.ys.n, rnd(b.lo), rnd(b.hi), o(b.ys.has)) end) end 
 
-function go.new()
-  lib.dent(seen.new{"Name","Age","gender","Weight-"}) end
+function go.cols()
+  _.dent(COLS{"Name","Age:","gender","Weight-"}) end
 
 function go.egs(  i)
-  i=egs.Init(the.file) 
+  i= EGS():adds(the.file)
   ok(7==i.cols.x[2].has["lt40"], "counts")
   ok(286 == #i.rows,"egs") end
 
-function go.dist(  i)
-  local any= lib.any
-  i=egs.Init(the.file) 
+local function _dist(file,  i,all)
+  local any= _.any
+  i= EGS():adds(file)
   local yes=true
+  all=NUM()
   for j=1,1000 do 
     if (j % 50)==0 then io.write(".") end
     local a,b,c = any(i.rows), any(i.rows), any(i.rows)
-    local aa = cluster.dist(i,a,a)
-    local ba = cluster.dist(i,b,a)
-    local ab = cluster.dist(i,a,b)
-    local bc = cluster.dist(i,b,c)
-    local ac = cluster.dist(i,a,c)
+    local aa = i:dist(a,a)
+    local ba = i:dist(b,a)
+    local ab = i:dist(a,b)
+    local bc = i:dist(b,c)
+    local ac = i:dist(a,c)
+    all:adds{aa,ba,ab,bc,ac}
     yes = yes and aa==0 and ab == ba and ab+bc >= ac
     yes = yes and aa>=0 and aa<=1 and ba>=0 and ba<=1 and ab>=0 and ab<=1 and
                   bc>=0 and bc <=1 and ac >= 0 and ac <= 1 end
+  oo(rnds(all:all()))
   ok(yes, "dist") end 
+
+function go.dist1() _dist(the.file) end
+function go.dist2() _dist("../etc/data/diabetes.csv") end
 
 function go.half(  i)
   the.file = "../etc/data/diabetes.csv"

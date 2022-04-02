@@ -1,6 +1,6 @@
 local _, the, COL = require"lib", require"the", require"col"
 local class,merge,per,push,sort,upx = _.class,_.merge,_.per,_.push,_.sort,_.upx
-local oo = _.oo
+local norm,oo = _.norm,_.oo
 
 local NUM = class("NUM",COL)
 function NUM:new(at,name)   
@@ -17,7 +17,7 @@ function NUM:add1(x,inc,        pos)
     elseif r()   < the.some/self.n then pos = 1 + ((r()*#self.has)//1) end
     if pos then 
       self.ok = false
-      self.has[pos]=x end end end
+      self.has[pos] = x end end end
 
 function NUM:div(   a) a=self:all(); return (per(a,.9) - per(a,.1))/2.56 end
 function NUM:mid()     return per(self:all(), .5)  end
