@@ -75,10 +75,12 @@ INTROS=learn101.lua learn201.lua learn301.lua
 DATA=ako.lua num.lua sym.lua seen.lua
 EGS=egs.lua
 
-pages: 				the.lua brknbad.lua eof \
+pages: 				the.lua brknbad.lua ako.lua eof \
 							learn101.lua learn201.lua learn301.lua eof \
 							bin.lua rule.lua eof \
-							ako.lua num.lua sym.lua seen.lua eof \
+							col.lua sym.lua eof \
+							num.lua eof \
+							seen.lua eof \
 							egs.lua eof \
 							cluster.lua eof \
 							abcd.lua eof \

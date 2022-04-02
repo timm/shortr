@@ -57,11 +57,11 @@ function NUM:bins(other, BIN)
   local epsilon = ((per(tmp, .9).x - per(tmp, .1).x)/2.56) * the.cohen
   local minSize = (#tmp)^the.leaves
   for j,xy in pairs(tmp) do
-    if j > minSize and j + minSize < #tmp then -- leaves enough for other out
+    if j > minSize and j + minSize < #tmp then -- leave enough for other bins
       if now.ys.n > minSize then               -- enough in this bins
         if xy.x ~= tmp[j+1].x then             -- there is a break in the data
           if now.hi - now.lo > epsilon then    -- "now" not trivially small
-             now = push(out,  BIN(self.at, self.name, now.hi)) end end end end
+            now = push(out,  BIN(self.at, self.name, now.hi)) end end end end
     now:add(xy.x, xy.y) end 
   out[1].lo    = -math.huge
   out[#out].hi =  math.huge
