@@ -2,12 +2,12 @@ local lib={}
 ---     _ _  _ _|_|_  _
 ---    | | |(_| | | |_\
 
-function lib.per(t,p) return t[ (p or .5)*#t//1 ] end 
+local r = math.random
+function lib.normal(mu,sd) 
+  mu, sd = (mu or 0), (sd or 1)
+  return mu + sd*math.sqrt(-2*math.log(r()))*math.cos(6.2831853*r()) end
 
-function lib.ent(t) 
-  local n=0; for _,m in pairs(t) do n = n+m end
-  local e=0; for _,m in pairs(t) do if m>0 then e= e+m/n*math.log(m/n,2) end end
-  return -e,n end
+function lib.per(t,p) return t[ ((p or .5)*#t) // 1 ] end 
 
 function lib.norm(lo,hi,x) return math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi-lo) end
 
@@ -39,26 +39,25 @@ lib.unpack = table.unpack
 function lib.push(t,x) t[1 + #t] = x; return x end
 
 function lib.powerset(s)
-  local function aux(s)
+  local function fun(s)
     local t = {{}}
     for i = 1, #s do
       for j = 1, #t do
         t[#t+1] = {s[i], lib.unpack(t[j])} end end
     return t end
-  return lib.sort(aux(s), function(a,b) return #a < #b end) end
+  return lib.sort(fun(s), function(a,b) return #a < #b end) end
 
-function lib.merge(b4,merge)
+function lib.merge(b4, merge)
   local j,n,tmp = 1,#b4,{}
   while j<=n do
-    a = b4[j]
-    if j < n - 1 then
-      local a_plus_next = merge(a, b4[j+1]) -- returns nil if merge fails
-      if a_plus_next then
-        a = a_plus_next
-        j = j+1 end end 
+    local a, b = b4[j], b4[j+1]
+    if b then
+      local c = merge(a, b) -- returns nil if merge fails
+      if c then
+        a,j = c,j+1 end end 
     tmp[#tmp+1] = a
     j = j+1 end
-  return #tmp==#b4 and tmp or lib.merge(tmp) end
+  return #tmp==#b4 and tmp or lib.merge(tmp,merge) end
 
 
 ---     |`.|_|_ _  _. _  _ 
@@ -183,7 +182,7 @@ function lib.o(t,slots,   seen, u)
   local function show1(x) return lib.o(x, nil, seen) end
   local function show2(k) return lib.fmt(":%s %s",k, lib.o(t[k], nil, seen)) end
   u = #t>0 and lib.map(t,show1) or lib.map(slots or lib.slots(t),show2)
-  return "{"..table.concat(u," ").."}" end
+  return (t._is or "").. "{"..table.concat(u," ").."}" end
 
 function lib.dent(t,  seen,pre)  
   pre,seen = pre or "", seen or {}

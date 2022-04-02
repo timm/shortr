@@ -1,9 +1,11 @@
 local R = require
 --local the,_,abcd,bin,rule        = R"the", R"lib", R"abcd",R"bin",R"rule"
-local _,the,ABCD = R"lib", R"the",R"ABCD"
+local _, the, ABCD  = R"lib", R"the", R"ABCD"
+local NUM, SYM, BIN = R"num", R"sym", R"bin"
 --local num, sym                     = R"num", R"sym"
 --local ako, egs, seen, cluster      = R"ako", R"egs", R"seen", R"cluster"
 --local learn101, learn201, learn301 = R"learn101", R"learn201", R"learn301"
+local per,map,dent = _.per, _.map, _.dent
 
 local ish,copy,items,o,oo,powerset = _.ish,_.copy,_.items,_.o,_.oo,_.powerset
 local map,fmt,rnds, rnd,push       = _.map,_.fmt,_.rnds, _.rnd,_.push
@@ -32,10 +34,6 @@ function go.collect()
   local function aux(x,y) return x*y end
   oo(_.collect({10,20,30},aux)) end
 
-function go.ent()
-  local a,b = _.ent{a=9,b=7}
-  ok(ish(lib.ent{a=9,b=7}, .98886), "entropy")  end
-
 function go.items()
   for  x in items{10,20,30} do oo(x) end 
   local n=0
@@ -51,15 +49,37 @@ function go.powerset()
   print(1,100,   o(many(t, 10,   1, 100)))
   print(300,700, o(many(t, 10, 300, 700))) end 
 
+function go.some( n)
+  the.some=512
+  n=NUM()
+  for i=1,999 do n:add( i//100) end
+  for k,v in pairs(SYM():adds(n:all()).has) do print(k,v) end end
+
+function go.ent()
+  local n = NUM()
+  ok(ish(lib.ent{a=9,b=7}, .98886), "entropy")  end
+
+function go.normal( n)
+  n=NUM()
+  for i=1,10^3 do n:add( _.normal(10,2) //1) end
+  for n,k in pairs(SYM():adds(n:all()).has) do print(n,k) end end
+
+function go.nums( n)
+  n=NUM()
+  for i=1,10^6 do n:add(_.normal(8,1)) end
+  print(n:mid(), n:div()) end
+
+function go.bins(   n1,n2)
+  n1,n2 = NUM(),NUM()
+  for i=1,100 do n1:add(_.normal(-4,1)) end
+  for i=1,100 do n2:add(_.normal( 0,1)) end
+  for i=1,100 do n1:add(_.normal( 4,1)) end
+  map(n1:bins(n2, BIN),
+      function(b) 
+        print(b.ys.n, rnd(b.lo), rnd(b.hi), o(b.ys.has)) end) end 
+
 function go.new()
   lib.dent(seen.new{"Name","Age","gender","Weight-"}) end
-
--- function go.clone(   i,t,best,rest, x)
---   i={rows={},cols=nil}
---   the.file = "../etc/data/auto93.csv"
---   bins=xplain(the.file) 
---   for _,row in pairs(i.rows) do
---       x=row[col].at end end
 
 function go.egs(  i)
   i=egs.Init(the.file) 
@@ -133,11 +153,6 @@ function go.nb2a()
     the.bins = bins
     local i = nb2(the.file); 
     abcd(i.log,true) end end
-
-function go.bins(   t)
-  local t,n = {},30
-  for j=1,n do push(t, {x=j, y=j<.6*n and 1 or j<.8*n and 2 or 3}) end
-  map(bins(t,20),oo) end
 
 function go.nb3() 
   the.file = "../etc/data/diabetes.csv" 

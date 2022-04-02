@@ -87,4 +87,4 @@ mytmux() {
   fi
 }
 hi
-#mytmux
+mytmux
