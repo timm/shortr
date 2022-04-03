@@ -35,6 +35,6 @@ function SYM:bins(other, BIN)
   local function known(x) out[x] = out[x] or BIN(self.at, self.name, x,x) end
   for x,n in pairs(self.has)  do known(x); out[x].ys:add("left", n) end
   for x,n in pairs(other.has) do known(x); out[x].ys:add("right", n) end
-  return #out<=1 and {} or map(slots(out), function(k) return out[k] end) end
+  return map(slots(out), function(k) return out[k] end) end
 
 return SYM

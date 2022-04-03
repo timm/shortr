@@ -44,7 +44,10 @@ function EGS:better(row1,row2)
   return s1 / n < s2 / n  end
 
 function EGS:bins(other)
-end
+  local out = {}
+  for n,col1 in pairs(self.cols.x) do
+    tmp=col1:bins(other.cols.x[n],BIN)
+    if #tmp > 1 then for _,bin in pairs(tmp) do push(out,bin) end end end end
 
 function EGS:bestRest()
   self.rows = sort(self.rows, function(a,b) return self:better(a,b) end) 

@@ -34,3 +34,5 @@ function BIN.mergeNext(b4,after)
    return BIN(b4.at, b4.name, b4.lo, after.hi, b4.ys:merge(after.ys)) end end
 
 return BIN
+
+-- 23 45  {:left 100 :right 45} n=145
