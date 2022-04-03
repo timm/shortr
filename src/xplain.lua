@@ -26,8 +26,8 @@ function XPLAIN:like(rule, klass, h, n) -- h={"true"=100, "false"=40} n=100+40
   return out end
 
 local z=1E-32
-XPLAIN.rules={}
-local goal = XPLAIN.rules
+XPLAIN.rules = {}
+local goal   = XPLAIN.rules
 function goal.optimize(b,r) return (b<r or (b+r)>.01) and 0 or b^2/(b+r+z) end
 function goal.monitor( b,r) return (r<b or (b+r)>.01) and 0 or r^2/(b+r+z) end
 function goal.tabu(    b,r) return 1/(b+r+z) end
