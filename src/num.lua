@@ -1,5 +1,6 @@
 local _, the, COL = require"lib", require"the", require"col"
 local class,merge,per,push,sort,upx = _.class,_.merge,_.per,_.push,_.sort,_.upx
+local sd = _.sd 
 local norm,oo = _.norm,_.oo
 
 local NUM = class("NUM",COL)
@@ -54,7 +55,7 @@ function NUM:bins(other, BIN)
   for _,x in pairs(other.has) do push(tmp, {x=x, y="right"}) end
   tmp = sort(tmp,upx) -- ascending on x
   local now     = push(out, BIN(self.at, self.name, tmp[1].x))
-  local epsilon = ((per(tmp, .9).x - per(tmp, .1).x)/2.56) * the.cohen
+  local epsilon = sd(tmp,function(z) return z.x end) * the.cohen
   local minSize = (#tmp)^the.leaves
   for j,xy in pairs(tmp) do
     if j > minSize and j + minSize < #tmp then -- leave enough for other bins

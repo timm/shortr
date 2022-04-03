@@ -1,5 +1,4 @@
 local R = require
---local the,_,abcd,bin,rule        = R"the", R"lib", R"abcd",R"bin",R"rule"
 local _, the, ABCD  = R"lib", R"the", R"ABCD"
 local NUM, SYM, BIN,EGS,COLS = R"num", R"sym", R"bin", R"egs", R"cols"
 --local num, sym                     = R"num", R"sym"
@@ -68,8 +67,8 @@ function go.normal( n)
 
 function go.nums( n)
   n=NUM()
-  for i=1,10^6 do n:add(_.normal(8,1)) end
-  print(n:mid(), n:div()) end
+  for i=1,10^2 do n:add(_.normal(8,1)) end
+  oo(rnds{n:mid(), n:div()}) end
 
 function go.bins(   n1,n2)
   n1,n2 = NUM(),NUM()
@@ -87,6 +86,21 @@ function go.egs(  i)
   i= EGS():adds(the.file)
   ok(7==i.cols.x[2].has["lt40"], "counts")
   ok(286 == #i.rows,"egs") end
+
+function go.mid(  i)
+  i= EGS():adds("../etc/data/auto93.csv")
+  j,k=i:bestRest()
+  j=i:clone(j)
+  k=i:clone(k)
+
+  oo(i.mid())
+  oo(j:mid()) 
+  oo(k:mid()) 
+
+  end
+
+function go.bestRest(  i)
+  i= EGS():adds("../etc/data/auto93.csv") end
 
 local function _dist(file,  i,all)
   local any= _.any
@@ -122,8 +136,7 @@ function go.half(  i)
 function go.cluster(  i)
   the.file = "../etc/data/diabetes.csv"
   i = egs.Init(the.file) 
-  cluster.show(cluster.new(i))
-end
+  cluster.show(cluster.new(i)) end
 
 function go.abcd()
   local t={}
@@ -131,7 +144,7 @@ function go.abcd()
   for _ = 1,2 do push(t,{want="no",got="no"}) end
   for _ = 1,6 do push(t,{want="maybe",got="maybe"}) end
   for _ = 1,1 do push(t,{want="maybe", got="no"}) end
-  abcd(t,true) end
+  ABCD():adds(t,true) end 
 
 local function qq(i,q) 
   print(q[1], fmt("%15s = %-8s best= %s/%s rest= %s/%s",

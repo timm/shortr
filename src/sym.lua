@@ -11,11 +11,9 @@ function SYM:add1(x,inc)
   if self.has[x] > self.most then 
     self.mode, self.most = x, self.has[x] end end 
 
-function SYM:div(    e) 
-  e=0; for _,v in pairs(self.has) do e=e-v/self.n*math.log(v/self.n,2) end
-  return e end
 
 function SYM:mid()      return self.mode end
+function SYM:div()      return ent(self.has, self.n) end
 function SYM:same(x,y)  return x==y end
 
 function SYM:dist1(x,y) 

@@ -1,8 +1,8 @@
 local R = require
-local _,COLS,the                 = R"lib", R"cols", R"the"
-local map,sort,up1,items,push    = _.map, _.sort, _.up1, _.items, _.push
-local items,slice,o,oo,sort,many = _.items, _.slice, _.o, _.oo, _.sort, _.many
-local class,OBJ                  = _.class, _.OBJ
+local _,COLS,the                  = R"lib", R"cols", R"the"
+local map,sort,up1,items,push,norm= _.map,_.sort,_.up1,_.items,_.push,_.norm
+local items,slice,o,oo,sort,many  = _.items, _.slice, _.o, _.oo, _.sort, _.many
+local class,OBJ                   = _.class, _.OBJ
                 
 local EGS = class("EGS",OBJ)
 function EGS:new() 

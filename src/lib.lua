@@ -11,6 +11,16 @@ function lib.per(t,p) return t[ ((p or .5)*#t) // 1 ] end
 
 function lib.norm(lo,hi,x) return math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi-lo) end
 
+function lib.ent(t, n)
+  if not n then n=0; for _,v in pairs(t) do n=n+v end end
+  local e=0;         for _,v in pairs(t) do e=e-v/n*math.log(v/n,2) end
+  return e,n end
+
+function lib.sd(sorted, f)
+  f=f or function(x) return x end
+  local denom = 2.564 -- 2*(1.2 + 0.1*(0.9-0.88493)/(0.9032-0.88493))
+  return (f(per(sorted, .9)) - f(per(sorted,.1)))/denom end
+ 
 function lib.cosine(a,b,c) 
   return math.max(0,math.min(1, (a^2+c^2-b^2)/(2*c+1E-32))) end
 
