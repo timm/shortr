@@ -5,12 +5,9 @@ local items,slice,o,oo,sort,many  = _.items, _.slice, _.o, _.oo, _.sort, _.many
 local class,OBJ                   = _.class, _.OBJ
                 
 local EGS = class("EGS",OBJ)
-function EGS:new() 
-  self.rows, self.cols = {}, nil end
+function EGS:new() self.rows, self.cols = {}, nil end
 
-function EGS:adds(data)
-  for row in items(data) do self:add(row) end
-  return self end
+function EGS:adds(x) for row in items(x) do self:add(row) end; return self end
 
 function EGS:add(row)
   if not self.cols then self.cols = COLS(row)

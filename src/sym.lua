@@ -11,13 +11,10 @@ function SYM:add1(x,inc)
   if self.has[x] > self.most then 
     self.mode, self.most = x, self.has[x] end end 
 
-
 function SYM:mid()      return self.mode end
 function SYM:div()      return ent(self.has, self.n) end
 function SYM:same(x,y)  return x==y end
-
-function SYM:dist1(x,y) 
-  return self:same(x,y)  and 0 or 1 end
+function SYM:dist1(x,y) return self:same(x,y)  and 0 or 1 end
 
 function SYM:like1(x,prior)
   return ((i.has[x] or 0) + the.M*prior)/(self.n + the.M) end
