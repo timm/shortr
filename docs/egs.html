@@ -41,14 +41,65 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
               <div class="sswrap ">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              <p>Simple data storage tool.</p>
-
+              
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _   = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;tricks&quot;</span>
-<span class="hljs-keyword">local</span> the = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;the&quot;</span>
-<span class="hljs-keyword">local</span> as, is, <span class="hljs-built_in">lines</span> = _.as, _.is, _.<span class="hljs-built_in">lines</span>
-<span class="hljs-keyword">local</span> Egs,Cols,Nominal,Ratio = is<span class="hljs-string">&quot;Egs&quot;</span>,is<span class="hljs-string">&quot;Cols&quot;</span>,is<span class="hljs-string">&quot;Nominal&quot;</span>,is<span class="hljs-string">&quot;Ratio&quot;</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> R = <span class="hljs-built_in">require</span>
+<span class="hljs-keyword">local</span> _,COLS,the                  = R<span class="hljs-string">&quot;lib&quot;</span>, R<span class="hljs-string">&quot;cols&quot;</span>, R<span class="hljs-string">&quot;the&quot;</span>
+<span class="hljs-keyword">local</span> map,<span class="hljs-built_in">sort</span>,up1,items,push,norm= _.map,_.<span class="hljs-built_in">sort</span>,_.up1,_.items,_.push,_.norm
+<span class="hljs-keyword">local</span> items,slice,o,oo,<span class="hljs-built_in">sort</span>,many  = _.items, _.slice, _.o, _.oo, _.<span class="hljs-built_in">sort</span>, _.many
+<span class="hljs-keyword">local</span> class,OBJ                   = _.class, _.OBJ
+                
+<span class="hljs-keyword">local</span> EGS = class(<span class="hljs-string">&quot;EGS&quot;</span>,OBJ)
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:new</span><span class="hljs-params">()</span></span> 
+  <span class="hljs-built_in">self</span>.rows, <span class="hljs-built_in">self</span>.cols = {}, <span class="hljs-literal">nil</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:adds</span><span class="hljs-params">(data)</span></span>
+  <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> items(data) <span class="hljs-keyword">do</span> <span class="hljs-built_in">self</span>:add(row) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">self</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:add</span><span class="hljs-params">(row)</span></span>
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">self</span>.cols <span class="hljs-keyword">then</span> <span class="hljs-built_in">self</span>.cols = COLS(row)
+                   <span class="hljs-keyword">else</span> push(<span class="hljs-built_in">self</span>.rows, <span class="hljs-built_in">self</span>.cols:add(row)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.mid</span><span class="hljs-params">(i,cols)</span></span>
+   <span class="hljs-keyword">return</span> map(cols <span class="hljs-keyword">or</span> i.cols.y, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(col)</span></span> <span class="hljs-keyword">return</span> col:mid() <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:div</span><span class="hljs-params">(cols)</span></span>
+   <span class="hljs-keyword">return</span> map(cols <span class="hljs-keyword">or</span> i.cols.y, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(col)</span></span> <span class="hljs-keyword">return</span> col:div() <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:clone</span><span class="hljs-params">(rows)</span></span>
+  <span class="hljs-keyword">local</span> out = EGS(<span class="hljs-built_in">self</span>.cols.name)
+  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> out:add(row) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:dist</span><span class="hljs-params">(row1,row2)</span></span>
+  <span class="hljs-keyword">local</span> d, n = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">self</span>.cols.x) <span class="hljs-keyword">do</span> 
+    n = n + <span class="hljs-number">1</span>
+    d = d + col:dist(row1[col.at], row2[col.at])^the.p <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> (d/n) ^ (<span class="hljs-number">1</span>/the.p) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:better</span><span class="hljs-params">(row1,row2)</span></span>
+  <span class="hljs-keyword">local</span> s1, s2, n, e = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, #<span class="hljs-built_in">self</span>.cols.y, <span class="hljs-built_in">math</span>.<span class="hljs-built_in">exp</span>(<span class="hljs-number">1</span>)
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">self</span>.cols.y) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">local</span> a = norm(col.lo, col.hi, row1[col.at] )
+    <span class="hljs-keyword">local</span> b = norm(col.lo, col.hi, row2[col.at] )
+    s1      = s1 - e^(col.w * (a - b) / n)
+    s2      = s2 - e^(col.w * (b - a) / n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> s1 / n &lt; s2 / n  <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:bins</span><span class="hljs-params">(other)</span></span>
+  <span class="hljs-keyword">local</span> out = {}
+  <span class="hljs-keyword">for</span> n,col1 <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">self</span>.cols.x) <span class="hljs-keyword">do</span>
+    tmp=col1:bins(other.cols.x[n],BIN)
+    <span class="hljs-keyword">if</span> #tmp &gt; <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span> _,bin <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(tmp) <span class="hljs-keyword">do</span> push(out,bin) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:bestRest</span><span class="hljs-params">()</span></span>
+  <span class="hljs-built_in">self</span>.rows = <span class="hljs-built_in">sort</span>(<span class="hljs-built_in">self</span>.rows, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">self</span>:better(a,b) <span class="hljs-keyword">end</span>) 
+  <span class="hljs-keyword">local</span> n = (#<span class="hljs-built_in">self</span>.rows)^the.best
+  <span class="hljs-keyword">return</span> slice(<span class="hljs-built_in">self</span>.rows, <span class="hljs-number">1</span>,          n),      <span class="hljs-comment">-- top n things</span>
+               many( <span class="hljs-built_in">self</span>.rows, n*the.rest, n+<span class="hljs-number">1</span>) <span class="hljs-keyword">end</span> <span class="hljs-comment">-- some sample of the rest</span></pre></div></div>
             
         </li>
         
@@ -59,145 +110,14 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
               </div>
-              <h2 id="egs">Egs</h2>
-<p>Egs store examples (in <code>rows</code>), summarized in columns (in <code>cols</code>)</p>
+              <p>function egs.xplain(i)
+  best, rest = egs.bestRest(i)
+  return egs.contrasts(i, best,rest) end</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs:new</span><span class="hljs-params">(names)</span></span> <span class="hljs-keyword">return</span> as({rows={}, cols=Cols(names)}, Egs) <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs:new4file</span><span class="hljs-params">(file,  i)</span></span>
-  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">lines</span>(file) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> i <span class="hljs-keyword">then</span> i:add(row) <span class="hljs-keyword">else</span> i=Egs(row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.add</span><span class="hljs-params">(i,t)</span></span>
-  t = t.cells <span class="hljs-keyword">or</span> t <span class="hljs-comment">-- detail (for future extension)</span>
-  push(i.rows, map(i.cols.all, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(col)</span></span> <span class="hljs-keyword">return</span> col:add(t[col.at]) <span class="hljs-keyword">end</span>)) <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Egs.mid</span><span class="hljs-params">(i,cols)</span></span> 
-  <span class="hljs-keyword">return</span> map(cols <span class="hljs-keyword">or</span> i.cols.all, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(col)</span></span> <span class="hljs-keyword">return</span> col:mid() <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-3">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-3">&#x00a7;</a>
-              </div>
-              <h2 id="col">Col</h2>
-<p>Convert  names into various Column types.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> ako={}
-ako.ratio  = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">end</span>
-ako.goal   = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;[-+!]&quot;</span>  <span class="hljs-keyword">end</span>
-ako.klass  = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;!$&quot;</span>     <span class="hljs-keyword">end</span>
-ako.ignore = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span>     <span class="hljs-keyword">end</span>
-ako.less   = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span>     <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-4">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-4">&#x00a7;</a>
-              </div>
-              <p>Every new column goes into <code>all</code>.  Also, for any column that we we
-are not ignoring, then that also gets added to (a) either the list
-of <code>x</code> independent columns or <code>y</code> dependent columns; and (b) maybe,
-the <code>klass</code> slot.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cols:new</span><span class="hljs-params">(names)</span></span>
-  <span class="hljs-keyword">local</span> i = new({names=names, klass=<span class="hljs-literal">nil</span>,all={}, x={}, y={}}, Cols)
-  <span class="hljs-keyword">for</span> at,name <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(names) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">local</span> col = (ako.ratio(name) <span class="hljs-keyword">and</span> Ratio <span class="hljs-keyword">or</span> Nominal)(at,name) 
-    col.is_goal = ako.goal(name)
-    push(i.all, col)
-    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> ako.ignore(name) <span class="hljs-keyword">then</span>
-      <span class="hljs-keyword">if</span> ako.klass(name) <span class="hljs-keyword">then</span> i.klass = col <span class="hljs-keyword">end</span>
-      push(ako.goal(name) <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x, col) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-5">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-5">&#x00a7;</a>
-              </div>
-              <h2 id="nominal">Nominal</h2>
-<p>Summarize symbols in <code>Nominal</code>s</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Nominal:new</span><span class="hljs-params">(at,name)</span></span>
-  at,name = at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, name <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
-  <span class="hljs-keyword">return</span> as({at=at,name=name,n=<span class="hljs-number">0</span>,has={},mode=<span class="hljs-literal">nil</span>,most=<span class="hljs-number">0</span>},Nominal) <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Nominal.add</span><span class="hljs-params">(i,x)</span></span>
-  <span class="hljs-keyword">if</span> x ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> 
-    i.n =i.n+<span class="hljs-number">1</span>
-    i.has[x] = <span class="hljs-number">1</span> + (i.has[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) 
-    <span class="hljs-keyword">if</span> i.has[x] &gt; i.most <span class="hljs-keyword">then</span> i.most, i.mode = i.has[x], x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Nominal.mid</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.mode <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-6">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-6">&#x00a7;</a>
-              </div>
-              <h2 id="ratio">Ratio</h2>
-<p> Summarize numbers in <code>Ratio</code>s</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Ratio:new</span><span class="hljs-params">(at,name)</span></span>
-  at,name = at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, name <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
-  <span class="hljs-keyword">return</span> as({at=at,name=name,n=<span class="hljs-number">0</span>,mu=<span class="hljs-number">0</span>,m2=<span class="hljs-number">0</span>,sd=<span class="hljs-number">0</span>,
-             w=ako.less(name) <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>},Ratio) <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Ratio.add</span><span class="hljs-params">(i,x)</span></span>
-  <span class="hljs-keyword">if</span> x ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> 
-    i.n =i.n+<span class="hljs-number">1</span>
-    <span class="hljs-keyword">local</span> d= x - i.mu
-    i.mu = i.mu + d/i.n
-    i.m2 = i.m2 + d*(x - i.mu)
-    i.sd = ((i.m2&lt;<span class="hljs-number">0</span> <span class="hljs-keyword">or</span> i.n&lt;<span class="hljs-number">2</span>) <span class="hljs-keyword">and</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">or</span> ((i.m2/(i.n - <span class="hljs-number">1</span>))^<span class="hljs-number">0.5</span>)
-    i.lo = i.lo <span class="hljs-keyword">and</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(x, i.lo) <span class="hljs-keyword">or</span> x
-    i.hi = i.hi <span class="hljs-keyword">and</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(x, i.hi) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Ratio.mid</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.mu <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-7">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-7">&#x00a7;</a>
-              </div>
-              <h2 id="return">Return</h2>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">return</span> {Egs=Egs, Ratio=Ratio, Nominal=Nominal}</pre></div></div>
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">return</span> EGS</pre></div></div>
             
         </li>
         
