@@ -1,6 +1,6 @@
 local R = require
 local _, the, ABCD  = R"lib", R"the", R"ABCD"
-local NUM, SYM, BIN,EGS,COLS = R"num", R"sym", R"bin", R"egs", R"cols"
+local NUM, SYM, BIN,EGS,COLS,RULE = R"num",R"sym",R"bin",R"egs",R"cols",R"rule"
 local per,map,dent = _.per, _.map, _.dent
 
 local ish,copy,items,o,oo,powerset = _.ish,_.copy,_.items,_.o,_.oo,_.powerset
@@ -103,6 +103,13 @@ function go.bins(     all,best,rest,b4)
           bin.ys.has["left"] or 0, 
           bin.ys.has["right"] or 0) 
     b4 = bin.at end end
+
+function go.rules(     all,best,rest,b4,bins)
+  all       = EGS():adds("../etc/data/auto93.csv")
+  best,rest = all:bestRest()
+  best      = all:clone(best)
+  rest      = all:clone(rest)
+  RULE.fromBins(best:bins(rest)) end
 
 local function _dist(file,  i,all)
   local any= _.any

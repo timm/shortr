@@ -43,8 +43,9 @@ function EGS:better(row1,row2)
 
 function EGS:bins(other)
   local out = {}
-  for n,col1 in pairs(self.cols.x) do
-    local tmp = col1:bins(other.cols.x[n],BIN)
+  for n,left in pairs(self.cols.x) do
+    local right = other.cols.x[n]
+    local tmp   = left:bins(right,BIN)
     if #tmp > 1 then for _,bin in pairs(tmp) do push(out,bin) end end end 
   return out end
 
