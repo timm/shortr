@@ -1,5 +1,5 @@
 local _,ako,COL = require"lib", require"ako", require"COL"
-local class,ent = _.class,  _.ent
+local map,slots,class,ent = _.map,_.slots,_.class,  _.ent
 
 local SYM = class("SYM",COL)
 function SYM:new(at,name)   

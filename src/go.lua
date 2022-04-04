@@ -1,15 +1,12 @@
 local R = require
 local _, the, ABCD  = R"lib", R"the", R"ABCD"
 local NUM, SYM, BIN,EGS,COLS = R"num", R"sym", R"bin", R"egs", R"cols"
---local num, sym                     = R"num", R"sym"
---local ako, egs, seen, cluster      = R"ako", R"egs", R"seen", R"cluster"
---local learn101, learn201, learn301 = R"learn101", R"learn201", R"learn301"
 local per,map,dent = _.per, _.map, _.dent
 
 local ish,copy,items,o,oo,powerset = _.ish,_.copy,_.items,_.o,_.oo,_.powerset
 local map,fmt,rnds, rnd,push       = _.map,_.fmt,_.rnds, _.rnd,_.push
 local class,Obj = _.class, _.Obj
-local go,ok = _.go,_.ok
+local go,ok     = _.go,_.ok
 
 function go.class()
   local EMP=class("EMP",Obj)
@@ -70,37 +67,42 @@ function go.nums( n)
   for i=1,10^2 do n:add(_.normal(8,1)) end
   oo(rnds{n:mid(), n:div()}) end
 
-function go.bins(   n1,n2)
-  n1,n2 = NUM(),NUM()
-  for i=1,100 do n1:add(_.normal(-4,1)) end
-  for i=1,100 do n2:add(_.normal( 0,1)) end
-  for i=1,100 do n1:add(_.normal( 4,1)) end
-  map(n1:bins(n2, BIN),
-      function(b) 
-        print(b.ys.n, rnd(b.lo), rnd(b.hi), o(b.ys.has)) end) end 
-
 function go.cols()
   _.dent(COLS{"Name","Age:","gender","Weight-"}) end
 
 function go.egs(  i)
   i= EGS():adds(the.file)
-  ok(7==i.cols.x[2].has["lt40"], "counts")
+  ok(7   == i.cols.x[2].has["lt40"], "counts")
   ok(286 == #i.rows,"egs") end
 
-function go.mid(  i)
+function go.clone(    i,j)
   i= EGS():adds("../etc/data/auto93.csv")
-  j,k=i:bestRest()
-  j=i:clone(j)
-  k=i:clone(k)
+  j= i:clone(i.rows) 
+  local flag = true
+  for k,n in pairs(i.cols.y[1]:all()) do 
+    flag=flag and n==j.cols.y[1]:all()[k] end
+  ok(flag,"clone") end
 
-  oo(i.mid())
-  oo(j:mid()) 
-  oo(k:mid()) 
+function go.mid(     all,best,rest)
+  all       = EGS():adds("../etc/data/auto93.csv")
+  best,rest = all:bestRest()
+  best      = all:clone(best)
+  rest      = all:clone(rest)
+  print("all ",o(all:mid()))
+  print("best",o(best:mid()))
+  print("rest",o(rest:mid())) end
 
-  end
-
-function go.bestRest(  i)
-  i= EGS():adds("../etc/data/auto93.csv") end
+function go.bins(     all,best,rest,b4)
+  all       = EGS():adds("../etc/data/auto93.csv")
+  best,rest = all:bestRest()
+  best      = all:clone(best)
+  rest      = all:clone(rest)
+  for _,bin in pairs(best:bins(rest)) do
+    if bin.at ~= b4 then print("") end
+    print(bin.name, bin.at,bin.lo,bin.hi, 
+          bin.ys.has["left"] or 0, 
+          bin.ys.has["right"] or 0) 
+    b4 = bin.at end end
 
 local function _dist(file,  i,all)
   local any= _.any

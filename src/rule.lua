@@ -1,22 +1,23 @@
-local lib=require"lib"
-local bin=require"bin"
-local map,push,sort = lib.map, lib.push, lib.sort
+local R = require
+local _,the,COLS,BIN         = R"lib", R"the", R"COLS", R"BIN"
+local map,push,sort,powerset = _.map,_.push,_.sort,_.powerset
+local class,OBJ              = _.class, _.OBJ
 
-local rule={}
-function rule.new(bins,   t)
+local RULE = class("RULE",OBJ)
+function RULE:new(bins,   t)
   t = {}
   for key,one in pairs(bins) do 
     t[one.at]=t[one.at] or{}; push(t[one.at],one) end 
   return {bins=t} end
 
-function rule.selects(i,row)
+function RULE:selects(row)
   local function ors(bins)
     for key,x in pairs(bins) do if bin.select(x,row) then return true end end
     return false end
   for at,bins in pairs(i.bins) do if not ors(bins) then return false end end
   return true end 
 
-function rule.show(i,bins)
+function RULE:show(bins)
   local cat, order, ors
   cat =  function(t,sep) return table.concat(t,sep) end
   order= function(a,b)  return a.lo < b.lo end
@@ -24,4 +25,4 @@ function rule.show(i,bins)
           return cat(map(bin.Merges(sort(bins,order)),bin.show)," or ") end
   return cat(map(i.bins, ors)," and ") end
 
-return rule
+return RULE

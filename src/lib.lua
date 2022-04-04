@@ -19,7 +19,7 @@ function lib.ent(t, n)
 function lib.sd(sorted, f)
   f=f or function(x) return x end
   local denom = 2.564 -- 2*(1.2 + 0.1*(0.9-0.88493)/(0.9032-0.88493))
-  return (f(per(sorted, .9)) - f(per(sorted,.1)))/denom end
+  return (f(lib.per(sorted, .9)) - f(lib.per(sorted,.1)))/denom end
  
 function lib.cosine(a,b,c) 
   return math.max(0,math.min(1, (a^2+c^2-b^2)/(2*c+1E-32))) end

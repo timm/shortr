@@ -1,26 +1,27 @@
 local R = require
-local _,COLS,the                  = R"lib", R"cols", R"the"
-local map,sort,up1,items,push,norm= _.map,_.sort,_.up1,_.items,_.push,_.norm
-local items,slice,o,oo,sort,many  = _.items, _.slice, _.o, _.oo, _.sort, _.many
-local class,OBJ                   = _.class, _.OBJ
+local _,the,COLS,BIN               = R"lib", R"the", R"COLS", R"BIN"
+local map,sort,up1,items,push,norm = _.map,_.sort,_.up1,_.items,_.push,_.norm
+local items,slice,o,oo,sort,many   = _.items,_.slice,_.o,_.oo,_.sort,_.many
+local class,OBJ                    = _.class, _.OBJ
                 
 local EGS = class("EGS",OBJ)
 function EGS:new() self.rows, self.cols = {}, nil end
 
-function EGS:adds(x) for row in items(x) do self:add(row) end; return self end
+function EGS:adds(y) for x in items(y) do self:add(x) end; return self end
 
 function EGS:add(row)
   if not self.cols then self.cols = COLS(row)
                    else push(self.rows, self.cols:add(row)) end end
 
-function EGS.mid(i,cols)
-   return map(cols or i.cols.y, function(col) return col:mid() end) end
+function EGS:mid(cols)
+   return map(cols or self.cols.y, function(col) return col:mid() end) end
 
 function EGS:div(cols)
-   return map(cols or i.cols.y, function(col) return col:div() end) end
+   return map(cols or self.cols.y, function(col) return col:div() end) end
 
 function EGS:clone(rows)
-  local out = EGS(self.cols.name)
+  local out = EGS()
+  out:add(self.cols.names)
   for _,row in pairs(rows or {}) do out:add(row) end
   return out end
 
@@ -43,8 +44,9 @@ function EGS:better(row1,row2)
 function EGS:bins(other)
   local out = {}
   for n,col1 in pairs(self.cols.x) do
-    tmp=col1:bins(other.cols.x[n],BIN)
-    if #tmp > 1 then for _,bin in pairs(tmp) do push(out,bin) end end end end
+    local tmp = col1:bins(other.cols.x[n],BIN)
+    if #tmp > 1 then for _,bin in pairs(tmp) do push(out,bin) end end end 
+  return out end
 
 function EGS:bestRest()
   self.rows = sort(self.rows, function(a,b) return self:better(a,b) end) 
