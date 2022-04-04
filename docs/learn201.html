@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>learn201.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+<a href="tricks.html">tricks</a>
+::   <a href="think.html">think</a> 
+:: &copy;2022, <a href="mailto:timm@ieee.org">Tim Menzies</a>
+<hr><img 
+align=right width=250 src=heads2.png>
+<a 
+href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <img 
+src="https://img.shields.io/badge/platform-osx,linux-informational?logo=linux&logoColor=white&color=red"> <img 
+src="https://img.shields.io/badge/purpose-se,ai-informational?logo=hyper&logoColor=white&color=orange"> <img 
+src="https://img.shields.io/badge/language-lua-informational?logo=lua&logoColor=white&color=yellow"> <a
+href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a
+href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://img.shields.io/badge/license-BSD2-informational?logo=adblock&logoColor=white&color=blueviolet"></a>
+<br>
+
+                  <h1>learn201.lua</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> R=<span class="hljs-built_in">require</span>
+<span class="hljs-keyword">local</span> the,_, ako, NB = R<span class="hljs-string">&quot;the&quot;</span>,R<span class="hljs-string">&quot;lib&quot;</span>,R<span class="hljs-string">&quot;ako&quot;</span>, R<span class="hljs-string">&quot;learn101&quot;</span>
+<span class="hljs-keyword">local</span> push,items,collect = _.push, _.items, _.collect
+
+<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(data)</span></span>
+  <span class="hljs-keyword">local</span> tmp,xnums = {}
+  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go</span><span class="hljs-params">(c,x,    col)</span></span>
+    <span class="hljs-keyword">if</span> x ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> 
+      col = xnums[c]
+      <span class="hljs-keyword">if</span> col <span class="hljs-keyword">then</span> x=(x - col.lo) // ((col.hi - col.lo+<span class="hljs-number">1E-32</span>) / the.bins) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+
+  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">xnum</span><span class="hljs-params">(c,name)</span></span> 
+    <span class="hljs-keyword">if</span> ako.xnum(name) <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> {lo=<span class="hljs-number">1E32</span>, hi=<span class="hljs-number">-1E32</span>} <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">train</span><span class="hljs-params">(c,x,    col)</span></span> 
+    col = xnums[c]
+    <span class="hljs-keyword">if</span> col <span class="hljs-keyword">and</span> x ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> 
+       col.hi = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(x, col.hi)
+       col.lo = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(x, col.lo) <span class="hljs-keyword">end</span> 
+    <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;dat&quot;</span>,data)
+  <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> items(data) <span class="hljs-keyword">do</span> 
+    push(tmp, row) 
+    <span class="hljs-keyword">if</span>   xnums <span class="hljs-keyword">then</span> collect(row, train) 
+    <span class="hljs-keyword">else</span> xnums = collect(row,xnum)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> j=<span class="hljs-number">2</span>,#tmp <span class="hljs-keyword">do</span> tmp[j] = collect(tmp[j], go) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> NB(tmp) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

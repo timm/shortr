@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>learn101.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+<a href="tricks.html">tricks</a>
+::   <a href="think.html">think</a> 
+:: &copy;2022, <a href="mailto:timm@ieee.org">Tim Menzies</a>
+<hr><img 
+align=right width=250 src=heads2.png>
+<a 
+href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <img 
+src="https://img.shields.io/badge/platform-osx,linux-informational?logo=linux&logoColor=white&color=red"> <img 
+src="https://img.shields.io/badge/purpose-se,ai-informational?logo=hyper&logoColor=white&color=orange"> <img 
+src="https://img.shields.io/badge/language-lua-informational?logo=lua&logoColor=white&color=yellow"> <a
+href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a
+href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://img.shields.io/badge/license-BSD2-informational?logo=adblock&logoColor=white&color=blueviolet"></a>
+<br>
+
+                  <h1>learn101.lua</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> the,_ = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;the&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
+<span class="hljs-keyword">local</span> has2,has3,inc,inc2,inc3   = _.has2,_.has3,_.inc,_.inc2,_.inc3
+<span class="hljs-keyword">local</span> push,<span class="hljs-built_in">sort</span>,collect,items   = _.push,_.<span class="hljs-built_in">sort</span>,_.collect,_.items
+<span class="hljs-keyword">local</span> map,down1,rnds,oo,class,OBJ = _.map,_.down1,_.rnds,_.oo,_.class,_.OBJ
+
+<span class="hljs-keyword">local</span> NB=class(<span class="hljs-string">&quot;NB&quot;</span>,OBJ)
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB:new</span><span class="hljs-params">(data, this)</span></span> 
+  <span class="hljs-built_in">self</span>.n, <span class="hljs-built_in">self</span>.nh, <span class="hljs-built_in">self</span>.wait         = <span class="hljs-number">0</span>,<span class="hljs-number">0</span>, the.wait
+  <span class="hljs-built_in">self</span>.e, <span class="hljs-built_in">self</span>.h, <span class="hljs-built_in">self</span>.<span class="hljs-built_in">log</span>,<span class="hljs-built_in">self</span>.cols = {},{},{},<span class="hljs-literal">nil</span>
+  <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> items(data) <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">if</span>   <span class="hljs-keyword">not</span> <span class="hljs-built_in">self</span>.cols
+    <span class="hljs-keyword">then</span> <span class="hljs-built_in">self</span>.cols= collect(row,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(j,s)</span></span> <span class="hljs-keyword">return</span> {name=s,indep=j~=#row} <span class="hljs-keyword">end</span>)
+    <span class="hljs-keyword">else</span> <span class="hljs-built_in">self</span>:test(row); <span class="hljs-built_in">self</span>:train(row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>  <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB:test</span><span class="hljs-params">(row)</span></span>
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">self</span>.n &gt; the.wait <span class="hljs-keyword">then</span> 
+    push(<span class="hljs-built_in">self</span>.<span class="hljs-built_in">log</span>,{want=row[#row], got=<span class="hljs-built_in">self</span>:classify(row)}) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB:train</span><span class="hljs-params">(row)</span></span>
+  <span class="hljs-keyword">local</span> more, kl = <span class="hljs-literal">false</span>, row[#row]
+  <span class="hljs-keyword">for</span> col,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(row) <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">if</span> x ~=<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> 
+      more = <span class="hljs-literal">true</span>
+      inc3(<span class="hljs-built_in">self</span>.e, col, x, kl)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> more <span class="hljs-keyword">then</span>
+    <span class="hljs-built_in">self</span>.n = <span class="hljs-built_in">self</span>.n + <span class="hljs-number">1</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">self</span>.h[kl] <span class="hljs-keyword">then</span> <span class="hljs-built_in">self</span>.nh = <span class="hljs-built_in">self</span>.nh + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+    inc(<span class="hljs-built_in">self</span>.h, kl) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB:classify</span><span class="hljs-params">(t,use)</span></span>
+  <span class="hljs-keyword">local</span> hi,out = -<span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
+  <span class="hljs-keyword">for</span> h,val <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">self</span>.h) <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">local</span> prior = ((<span class="hljs-built_in">self</span>.h[h] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) + the.K)/(<span class="hljs-built_in">self</span>.n + the.K*<span class="hljs-built_in">self</span>.nh)
+    <span class="hljs-keyword">local</span> l = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(prior)
+    <span class="hljs-keyword">for</span> col,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span>
+      <span class="hljs-keyword">if</span> x ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">self</span>.cols[col].indep <span class="hljs-keyword">then</span>
+        l = l + <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>((has3(<span class="hljs-built_in">self</span>.e,col,x,h) + the.M*prior) /
+                         ((<span class="hljs-built_in">self</span>.h[h] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) + the.M)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+    <span class="hljs-keyword">if</span> l&gt;hi <span class="hljs-keyword">then</span> hi,out=l,h <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB:score</span><span class="hljs-params">()</span></span>
+  <span class="hljs-keyword">local</span> a,n = <span class="hljs-number">0</span>,#<span class="hljs-built_in">self</span>.<span class="hljs-built_in">log</span>
+  <span class="hljs-keyword">for</span> key,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">self</span>.<span class="hljs-built_in">log</span>) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> x.want==x.got <span class="hljs-keyword">then</span> a=a+<span class="hljs-number">1</span>/n <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> acc,<span class="hljs-built_in">self</span>.<span class="hljs-built_in">log</span> <span class="hljs-keyword">end</span> 
+
+<span class="hljs-keyword">return</span> NB</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

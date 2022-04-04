@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>small.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+<a href="tricks.html">tricks</a>
+::   <a href="think.html">think</a> 
+:: &copy;2022, <a href="mailto:timm@ieee.org">Tim Menzies</a>
+<hr><img 
+align=right width=250 src=heads2.png>
+<a 
+href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <img 
+src="https://img.shields.io/badge/platform-osx,linux-informational?logo=linux&logoColor=white&color=red"> <img 
+src="https://img.shields.io/badge/purpose-se,ai-informational?logo=hyper&logoColor=white&color=orange"> <img 
+src="https://img.shields.io/badge/language-lua-informational?logo=lua&logoColor=white&color=yellow"> <a
+href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a
+href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://img.shields.io/badge/license-BSD2-informational?logo=adblock&logoColor=white&color=blueviolet"></a>
+<br>
+
+                  <h1>small.lua</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=v <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">local</span> R=<span class="hljs-built_in">require</span>
+<span class="hljs-keyword">local</span> lib,seen,egs,bin   = R<span class="hljs-string">&quot;lib&quot;</span>, R<span class="hljs-string">&quot;seen&quot;</span>, R<span class="hljs-string">&quot;egs&quot;</span>, R<span class="hljs-string">&quot;bin&quot;</span>
+<span class="hljs-keyword">local</span> o,oo,upx,<span class="hljs-built_in">sort</span>,push = lib.o,lib.oo,lib.upx,lib.<span class="hljs-built_in">sort</span>,lib.push
+<span class="hljs-keyword">local</span> items              = lib.items
+<span class="hljs-keyword">local</span> the                = lib.settings<span class="hljs-string">[[
+
+brknbad: explore the world better, explore the world for good.
+(c) 2022, Tim Menzies
+
+     |    56 |          |  monitor = (bad - better)
+             | Be   |   v  
+             |    4 | Better  
+
+USAGE:
+  ./bnb [OPTIONS]
+
+OPTIONS:
+  -K       -K  manage low class counts     = 1
+  -M       -M  manage low evidence counts  = 2
+  -best    -B  best set                    = .5
+  -bins    -b  max. number of bins         = 16
+  -cohen   -c  cohen                       = .35
+  -dump    -d  dump stack+exit on error    = false
+  -far     -F  how far to go for far       = .9
+  -file    -f  file name                   = ../etc/data/auto93.csv
+  -goal    -g  goal                        = recurrence-events
+  -help    -h  show help                   = false
+  -leaves  -l  number of items in leaves   = .5
+  -p       -p  coefficient on distance     = 2
+  -rest    -R  rest is -R*best             = 4
+  -seed    -S  seed                        = 10019
+  -some    -s  sample size for distances   = 512
+  -todo    -t  start up action             = nothing
+  -wait    -w  wait                        = 10]]</span>
+
+<span class="hljs-keyword">local</span> go={}
+<span class="hljs-keyword">local</span> cols=<span class="hljs-literal">nil</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.one</span><span class="hljs-params">()</span></span>
+  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">order</span><span class="hljs-params">(c,a,b)</span></span>
+    <span class="hljs-keyword">local</span> x,y = a[c], b[c]
+    x = x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> -<span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span> <span class="hljs-keyword">or</span> x
+    y = y==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> -<span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span> <span class="hljs-keyword">or</span> y
+    <span class="hljs-keyword">return</span> x &lt; y <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">xys_add</span><span class="hljs-params">(col,t,klass,xys,       x)</span></span>
+    xys = xys <span class="hljs-keyword">or</span> {}
+    <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> 
+      x = row[col.at]
+      <span class="hljs-keyword">if</span> x~=<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> push(xys,{x=x,y=klass}) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+    <span class="hljs-keyword">return</span> xys <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">local</span> i=egs.Init(the.file) 
+  <span class="hljs-keyword">local</span> bests,rests = egs.bestRest(i)
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.x) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">if</span> col.nump <span class="hljs-keyword">then</span>
+      <span class="hljs-keyword">local</span> xys = bin.Xys(<span class="hljs-built_in">sort</span>(xys_add(col,rests,<span class="hljs-literal">false</span>, 
+                                xys_add(col,bests,<span class="hljs-literal">true</span>)),upx),
+                          col.at,col.name)
+      lib.map(xys,oo)
+  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-built_in">os</span>.<span class="hljs-built_in">exit</span>(lib.onTheGo(the,go,b4))</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

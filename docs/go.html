@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>go.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+<a href="tricks.html">tricks</a>
+::   <a href="think.html">think</a> 
+:: &copy;2022, <a href="mailto:timm@ieee.org">Tim Menzies</a>
+<hr><img 
+align=right width=250 src=heads2.png>
+<a 
+href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <img 
+src="https://img.shields.io/badge/platform-osx,linux-informational?logo=linux&logoColor=white&color=red"> <img 
+src="https://img.shields.io/badge/purpose-se,ai-informational?logo=hyper&logoColor=white&color=orange"> <img 
+src="https://img.shields.io/badge/language-lua-informational?logo=lua&logoColor=white&color=yellow"> <a
+href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a
+href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://img.shields.io/badge/license-BSD2-informational?logo=adblock&logoColor=white&color=blueviolet"></a>
+<br>
+
+                  <h1>go.lua</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> R = <span class="hljs-built_in">require</span>
+<span class="hljs-keyword">local</span> _, the, ABCD  = R<span class="hljs-string">&quot;lib&quot;</span>, R<span class="hljs-string">&quot;the&quot;</span>, R<span class="hljs-string">&quot;ABCD&quot;</span>
+<span class="hljs-keyword">local</span> NUM, SYM, BIN,EGS,COLS = R<span class="hljs-string">&quot;num&quot;</span>, R<span class="hljs-string">&quot;sym&quot;</span>, R<span class="hljs-string">&quot;bin&quot;</span>, R<span class="hljs-string">&quot;egs&quot;</span>, R<span class="hljs-string">&quot;cols&quot;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-2">&#x00a7;</a>
+              </div>
+              <p>local num, sym                     = R”num”, R”sym”
+local ako, egs, seen, cluster      = R”ako”, R”egs”, R”seen”, R”cluster”
+local learn101, learn201, learn301 = R”learn101”, R”learn201”, R”learn301”</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> per,map,dent = _.per, _.map, _.dent
+
+<span class="hljs-keyword">local</span> ish,copy,items,o,oo,powerset = _.ish,_.copy,_.items,_.o,_.oo,_.powerset
+<span class="hljs-keyword">local</span> map,fmt,rnds, rnd,push       = _.map,_.fmt,_.rnds, _.rnd,_.push
+<span class="hljs-keyword">local</span> class,Obj = _.class, _.Obj
+<span class="hljs-keyword">local</span> go,ok = _.go,_.ok
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.class</span><span class="hljs-params">()</span></span>
+  <span class="hljs-keyword">local</span> EMP=class(<span class="hljs-string">&quot;EMP&quot;</span>,Obj)
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EMP:show</span><span class="hljs-params">()</span></span> <span class="hljs-keyword">return</span> {<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>, <span class="hljs-string">&quot;_id&quot;</span>} <span class="hljs-keyword">end</span>
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EMP:new</span><span class="hljs-params">(name)</span></span> <span class="hljs-built_in">self</span>._id=<span class="hljs-number">1</span>;  <span class="hljs-built_in">self</span>.name=name; <span class="hljs-built_in">self</span>.age=<span class="hljs-number">0</span> <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">local</span> fred = EMP(<span class="hljs-string">&quot;tim&quot;</span>)
+  <span class="hljs-keyword">local</span> MANAGER=class(<span class="hljs-string">&quot;MANAGER&quot;</span>,EMP)
+  <span class="hljs-keyword">local</span> jane = MANAGER(<span class="hljs-string">&quot;jane&quot;</span>)
+  <span class="hljs-built_in">print</span>(jane) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.copy</span><span class="hljs-params">(     t,u)</span></span>
+  t={a={b={c=<span class="hljs-number">10</span>},d={e=<span class="hljs-number">200</span>}}, f=<span class="hljs-number">300</span>}
+  u= copy(t) 
+  t.a.b.c= <span class="hljs-number">20</span>
+  ok(u.a.b.c ~= <span class="hljs-number">20</span>,<span class="hljs-string">&quot;copy&quot;</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.rnd</span><span class="hljs-params">()</span></span>
+  ok(<span class="hljs-string">&quot;23.11&quot;</span> == rnds({<span class="hljs-number">23.11111</span>})[<span class="hljs-number">1</span>],<span class="hljs-string">&quot;rounds&quot;</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.collect</span><span class="hljs-params">()</span></span>
+  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">aux</span><span class="hljs-params">(x,y)</span></span> <span class="hljs-keyword">return</span> x*y <span class="hljs-keyword">end</span>
+  oo(_.collect({<span class="hljs-number">10</span>,<span class="hljs-number">20</span>,<span class="hljs-number">30</span>},aux)) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.items</span><span class="hljs-params">()</span></span>
+  <span class="hljs-keyword">for</span>  x <span class="hljs-keyword">in</span> items{<span class="hljs-number">10</span>,<span class="hljs-number">20</span>,<span class="hljs-number">30</span>} <span class="hljs-keyword">do</span> oo(x) <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">local</span> n=<span class="hljs-number">0</span>
+  <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> items(the.file) <span class="hljs-keyword">do</span> n=n+<span class="hljs-number">1</span>; <span class="hljs-keyword">if</span> n&lt;=<span class="hljs-number">5</span> <span class="hljs-keyword">then</span> oo(x) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.powerset</span><span class="hljs-params">()</span></span>
+  <span class="hljs-keyword">for</span> _,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(powerset{<span class="hljs-number">10</span>,<span class="hljs-number">20</span>,<span class="hljs-number">30</span>,<span class="hljs-number">40</span>,<span class="hljs-number">50</span>}) <span class="hljs-keyword">do</span> oo(x) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+ 
+ <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.many</span><span class="hljs-params">( t)</span></span>
+  <span class="hljs-keyword">local</span> o,many=lib.o,lib.many
+  t={};<span class="hljs-keyword">for</span> j = <span class="hljs-number">1</span>,<span class="hljs-number">1000</span> <span class="hljs-keyword">do</span> t[#t+<span class="hljs-number">1</span>] = j <span class="hljs-keyword">end</span>
+  <span class="hljs-built_in">print</span>(<span class="hljs-number">900</span>,<span class="hljs-string">&quot;+&quot;</span>, o(many(t, <span class="hljs-number">10</span>, <span class="hljs-number">900</span>)))
+  <span class="hljs-built_in">print</span>(<span class="hljs-number">1</span>,<span class="hljs-number">100</span>,   o(many(t, <span class="hljs-number">10</span>,   <span class="hljs-number">1</span>, <span class="hljs-number">100</span>)))
+  <span class="hljs-built_in">print</span>(<span class="hljs-number">300</span>,<span class="hljs-number">700</span>, o(many(t, <span class="hljs-number">10</span>, <span class="hljs-number">300</span>, <span class="hljs-number">700</span>))) <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.some</span><span class="hljs-params">( n)</span></span>
+  the.some=<span class="hljs-number">512</span>
+  n=NUM()
+  <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">999</span> <span class="hljs-keyword">do</span> n:add( i//<span class="hljs-number">100</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(SYM():adds(n:all()).has) <span class="hljs-keyword">do</span> <span class="hljs-built_in">print</span>(k,v) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.ent</span><span class="hljs-params">()</span></span>
+  <span class="hljs-keyword">local</span> n = SYM()
+  n:add(<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-number">9</span>)
+  n:add(<span class="hljs-string">&quot;b&quot;</span>,<span class="hljs-number">7</span>)
+  ok(ish(n:div(), <span class="hljs-number">.98886</span>), <span class="hljs-string">&quot;entropy&quot;</span>)  <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.normal</span><span class="hljs-params">( n)</span></span>
+  n=NUM()
+  <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">10</span>^<span class="hljs-number">3</span> <span class="hljs-keyword">do</span> n:add( _.normal(<span class="hljs-number">10</span>,<span class="hljs-number">2</span>) //<span class="hljs-number">1</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> n,k <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(SYM():adds(n:all()).has) <span class="hljs-keyword">do</span> <span class="hljs-built_in">print</span>(n,k) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.nums</span><span class="hljs-params">( n)</span></span>
+  n=NUM()
+  <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">10</span>^<span class="hljs-number">2</span> <span class="hljs-keyword">do</span> n:add(_.normal(<span class="hljs-number">8</span>,<span class="hljs-number">1</span>)) <span class="hljs-keyword">end</span>
+  oo(rnds{n:mid(), n:div()}) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.bins</span><span class="hljs-params">(   n1,n2)</span></span>
+  n1,n2 = NUM(),NUM()
+  <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">100</span> <span class="hljs-keyword">do</span> n1:add(_.normal(<span class="hljs-number">-4</span>,<span class="hljs-number">1</span>)) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">100</span> <span class="hljs-keyword">do</span> n2:add(_.normal( <span class="hljs-number">0</span>,<span class="hljs-number">1</span>)) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">100</span> <span class="hljs-keyword">do</span> n1:add(_.normal( <span class="hljs-number">4</span>,<span class="hljs-number">1</span>)) <span class="hljs-keyword">end</span>
+  map(n1:bins(n2, BIN),
+      <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(b)</span></span> 
+        <span class="hljs-built_in">print</span>(b.ys.n, rnd(b.lo), rnd(b.hi), o(b.ys.has)) <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.cols</span><span class="hljs-params">()</span></span>
+  _.dent(COLS{<span class="hljs-string">&quot;Name&quot;</span>,<span class="hljs-string">&quot;Age:&quot;</span>,<span class="hljs-string">&quot;gender&quot;</span>,<span class="hljs-string">&quot;Weight-&quot;</span>}) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.egs</span><span class="hljs-params">(  i)</span></span>
+  i= EGS():adds(the.file)
+  ok(<span class="hljs-number">7</span>==i.cols.x[<span class="hljs-number">2</span>].has[<span class="hljs-string">&quot;lt40&quot;</span>], <span class="hljs-string">&quot;counts&quot;</span>)
+  ok(<span class="hljs-number">286</span> == #i.rows,<span class="hljs-string">&quot;egs&quot;</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.mid</span><span class="hljs-params">(  i)</span></span>
+  i= EGS():adds(<span class="hljs-string">&quot;../etc/data/auto93.csv&quot;</span>)
+  j,k=i:bestRest()
+  j=i:clone(j)
+  k=i:clone(k)
+
+  oo(i.mid())
+  oo(j:mid()) 
+  oo(k:mid()) 
+
+  <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.bestRest</span><span class="hljs-params">(  i)</span></span>
+  i= EGS():adds(<span class="hljs-string">&quot;../etc/data/auto93.csv&quot;</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_dist</span><span class="hljs-params">(file,  i,all)</span></span>
+  <span class="hljs-keyword">local</span> any= _.any
+  i= EGS():adds(file)
+  <span class="hljs-keyword">local</span> yes=<span class="hljs-literal">true</span>
+  all=NUM()
+  <span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,<span class="hljs-number">1000</span> <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">if</span> (j % <span class="hljs-number">50</span>)==<span class="hljs-number">0</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">io</span>.<span class="hljs-built_in">write</span>(<span class="hljs-string">&quot;.&quot;</span>) <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">local</span> a,b,c = any(i.rows), any(i.rows), any(i.rows)
+    <span class="hljs-keyword">local</span> aa = i:dist(a,a)
+    <span class="hljs-keyword">local</span> ba = i:dist(b,a)
+    <span class="hljs-keyword">local</span> ab = i:dist(a,b)
+    <span class="hljs-keyword">local</span> bc = i:dist(b,c)
+    <span class="hljs-keyword">local</span> ac = i:dist(a,c)
+    all:adds{aa,ba,ab,bc,ac}
+    yes = yes <span class="hljs-keyword">and</span> aa==<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> ab == ba <span class="hljs-keyword">and</span> ab+bc &gt;= ac
+    yes = yes <span class="hljs-keyword">and</span> aa&gt;=<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> aa&lt;=<span class="hljs-number">1</span> <span class="hljs-keyword">and</span> ba&gt;=<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> ba&lt;=<span class="hljs-number">1</span> <span class="hljs-keyword">and</span> ab&gt;=<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> ab&lt;=<span class="hljs-number">1</span> <span class="hljs-keyword">and</span>
+                  bc&gt;=<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> bc &lt;=<span class="hljs-number">1</span> <span class="hljs-keyword">and</span> ac &gt;= <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> ac &lt;= <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+  oo(rnds(all:all()))
+  ok(yes, <span class="hljs-string">&quot;dist&quot;</span>) <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.dist1</span><span class="hljs-params">()</span></span> _dist(the.file) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.dist2</span><span class="hljs-params">()</span></span> _dist(<span class="hljs-string">&quot;../etc/data/diabetes.csv&quot;</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.half</span><span class="hljs-params">(  i)</span></span>
+  the.file = <span class="hljs-string">&quot;../etc/data/diabetes.csv&quot;</span>
+  i = egs.Init(the.file) 
+  <span class="hljs-keyword">local</span> lefts,rights,left,right,border,c= cluster.half(i)
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;rows&quot;</span>,#i.rows)
+  ok(<span class="hljs-number">384</span> == #lefts.rows,  <span class="hljs-string">&quot;left&quot;</span>)
+  ok(<span class="hljs-number">384</span> == #rights.rows, <span class="hljs-string">&quot;rights&quot;</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.cluster</span><span class="hljs-params">(  i)</span></span>
+  the.file = <span class="hljs-string">&quot;../etc/data/diabetes.csv&quot;</span>
+  i = egs.Init(the.file) 
+  cluster.show(cluster.new(i)) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.abcd</span><span class="hljs-params">()</span></span>
+  <span class="hljs-keyword">local</span> t={}
+  <span class="hljs-keyword">for</span> _ = <span class="hljs-number">1</span>,<span class="hljs-number">6</span> <span class="hljs-keyword">do</span> push(t,{want=<span class="hljs-string">&quot;yes&quot;</span>,got=<span class="hljs-string">&quot;yes&quot;</span>}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _ = <span class="hljs-number">1</span>,<span class="hljs-number">2</span> <span class="hljs-keyword">do</span> push(t,{want=<span class="hljs-string">&quot;no&quot;</span>,got=<span class="hljs-string">&quot;no&quot;</span>}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _ = <span class="hljs-number">1</span>,<span class="hljs-number">6</span> <span class="hljs-keyword">do</span> push(t,{want=<span class="hljs-string">&quot;maybe&quot;</span>,got=<span class="hljs-string">&quot;maybe&quot;</span>}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _ = <span class="hljs-number">1</span>,<span class="hljs-number">1</span> <span class="hljs-keyword">do</span> push(t,{want=<span class="hljs-string">&quot;maybe&quot;</span>, got=<span class="hljs-string">&quot;no&quot;</span>}) <span class="hljs-keyword">end</span>
+  ABCD():adds(t,<span class="hljs-literal">true</span>) <span class="hljs-keyword">end</span> 
+
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">qq</span><span class="hljs-params">(i,q)</span></span> 
+  <span class="hljs-built_in">print</span>(q[<span class="hljs-number">1</span>], fmt(<span class="hljs-string">&quot;%15s = %-8s best= %s/%s rest= %s/%s&quot;</span>,
+                  i.cols[q[<span class="hljs-number">2</span>]].name, q[<span class="hljs-number">3</span>],q[<span class="hljs-number">4</span>],q[<span class="hljs-number">5</span>],q[<span class="hljs-number">6</span>],q[<span class="hljs-number">7</span>])) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">gonb1</span><span class="hljs-params">(file)</span></span> 
+  <span class="hljs-keyword">local</span> i = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;learn101&quot;</span>(file)
+  <span class="hljs-keyword">local</span> _, out = i:score()
+  <span class="hljs-keyword">local</span> cnt={}
+  <span class="hljs-keyword">for</span> _,one <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(out) <span class="hljs-keyword">do</span> <span class="hljs-keyword">local</span> k=one.got..<span class="hljs-string">&quot;,&quot;</span>..one.want; cnt[k] = <span class="hljs-number">1</span>+ (cnt[k] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> k,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(cnt) <span class="hljs-keyword">do</span> <span class="hljs-built_in">print</span>(n,o(k)) <span class="hljs-keyword">end</span> 
+  ABCD():adds(i.<span class="hljs-built_in">log</span>,<span class="hljs-literal">true</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.nb1a</span><span class="hljs-params">()</span></span> gonb1(the.file) <span class="hljs-keyword">end</span> 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.nb1b</span><span class="hljs-params">()</span></span> gonb1(<span class="hljs-string">&quot;../etc/data/diabetes.csv&quot;</span>) <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.nb2</span><span class="hljs-params">()</span></span> 
+  the.file = <span class="hljs-string">&quot;../etc/data/diabetes.csv&quot;</span> 
+  the.goal = <span class="hljs-string">&quot;positive&quot;</span>
+  <span class="hljs-keyword">local</span> i = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;learn201&quot;</span>)(the.file); 
+  ABCD():adds(i.<span class="hljs-built_in">log</span>,<span class="hljs-literal">true</span>) <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.nb2a</span><span class="hljs-params">()</span></span> 
+  the.file = <span class="hljs-string">&quot;../etc/data/diabetes.csv&quot;</span> 
+  the.goal = <span class="hljs-string">&quot;positive&quot;</span>
+  <span class="hljs-keyword">for</span> _,bins <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{<span class="hljs-number">2</span>,<span class="hljs-number">5</span>,<span class="hljs-number">9</span>} <span class="hljs-keyword">do</span>
+    the.bins = bins
+    <span class="hljs-keyword">local</span> i = nb2(the.file); 
+    abcd(i.<span class="hljs-built_in">log</span>,<span class="hljs-literal">true</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.nb3</span><span class="hljs-params">()</span></span> 
+  the.file = <span class="hljs-string">&quot;../etc/data/diabetes.csv&quot;</span> 
+  the.goal = <span class="hljs-string">&quot;positive&quot;</span>
+  the.bins = <span class="hljs-number">16</span>
+  <span class="hljs-keyword">local</span> i = nb3(the.file); 
+  abcd(i.<span class="hljs-built_in">log</span>,<span class="hljs-literal">true</span>)
+  <span class="hljs-keyword">local</span> acc, out = score(i);  map(out,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(q)</span></span> qq(i,q) <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">return</span> go</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

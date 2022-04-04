@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>bin.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+<a href="tricks.html">tricks</a>
+::   <a href="think.html">think</a> 
+:: &copy;2022, <a href="mailto:timm@ieee.org">Tim Menzies</a>
+<hr><img 
+align=right width=250 src=heads2.png>
+<a 
+href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <img 
+src="https://img.shields.io/badge/platform-osx,linux-informational?logo=linux&logoColor=white&color=red"> <img 
+src="https://img.shields.io/badge/purpose-se,ai-informational?logo=hyper&logoColor=white&color=orange"> <img 
+src="https://img.shields.io/badge/language-lua-informational?logo=lua&logoColor=white&color=yellow"> <a
+href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a
+href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://img.shields.io/badge/license-BSD2-informational?logo=adblock&logoColor=white&color=blueviolet"></a>
+<br>
+
+                  <h1>bin.lua</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _,the,SYM = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;the&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;sym&quot;</span>
+<span class="hljs-keyword">local</span> fmt,per,upx,push,<span class="hljs-built_in">sort</span> = _.fmt,_.per,_.upx,_.push,_.<span class="hljs-built_in">sort</span>
+<span class="hljs-keyword">local</span> ent,o,oo = _.ent,_.o, _.oo
+<span class="hljs-keyword">local</span> class,OBJ = _.class, _.OBJ
+
+<span class="hljs-keyword">local</span> BIN=class(<span class="hljs-string">&quot;BIN&quot;</span>,OBJ)
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN:new</span><span class="hljs-params">(at,name, lo,hi,ys)</span></span> 
+  <span class="hljs-built_in">self</span>.at, <span class="hljs-built_in">self</span>.name        = at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, name <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
+  <span class="hljs-built_in">self</span>.lo, <span class="hljs-built_in">self</span>.hi, <span class="hljs-built_in">self</span>.ys = lo, hi <span class="hljs-keyword">or</span> lo, ys <span class="hljs-keyword">or</span> SYM() <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN:_tostring</span><span class="hljs-params">()</span></span>
+  <span class="hljs-keyword">local</span> x,lo,hi,big = <span class="hljs-built_in">self</span>.name, <span class="hljs-built_in">self</span>.lo, <span class="hljs-built_in">self</span>.hi. <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
+  <span class="hljs-keyword">if</span>     lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x, lo)  
+  <span class="hljs-keyword">elseif</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x, lo)  
+  <span class="hljs-keyword">elseif</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;  %s&quot;</span>,x, hi)  
+  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s &lt; %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN:select</span><span class="hljs-params">(row)</span></span>
+  <span class="hljs-keyword">local</span> x, lo, hi = row[<span class="hljs-built_in">self</span>.at], <span class="hljs-built_in">self</span>.lo, <span class="hljs-built_in">self</span>.hi
+  <span class="hljs-keyword">return</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">or</span> lo == hi <span class="hljs-keyword">and</span> lo == x <span class="hljs-keyword">or</span> lo &lt;= x <span class="hljs-keyword">and</span> x &lt; hi <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN:add</span><span class="hljs-params">(x,y)</span></span>
+  <span class="hljs-keyword">if</span> x&lt;<span class="hljs-built_in">self</span>.lo <span class="hljs-keyword">then</span> <span class="hljs-built_in">self</span>.lo = x <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">if</span> x&gt;<span class="hljs-built_in">self</span>.hi <span class="hljs-keyword">then</span> <span class="hljs-built_in">self</span>.hi = x <span class="hljs-keyword">end</span> 
+  <span class="hljs-built_in">self</span>.ys:add(y) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN.mergeSameDivs</span><span class="hljs-params">(b4,after)</span></span>
+  <span class="hljs-keyword">local</span> merged = b4.ys:merged(after.ys)
+  <span class="hljs-keyword">if</span> merged <span class="hljs-keyword">then</span>
+   <span class="hljs-keyword">return</span> BIN(b4.at, b4.name, b4.lo, after.hi, merged) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN.mergeNext</span><span class="hljs-params">(b4,after)</span></span>
+  <span class="hljs-keyword">if</span> b4.hi == after.lo <span class="hljs-keyword">then</span>
+   <span class="hljs-keyword">return</span> BIN(b4.at, b4.name, b4.lo, after.hi, b4.ys:merge(after.ys)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">return</span> BIN</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-2">&#x00a7;</a>
+              </div>
+              <p>23 45  {:left 100 :right 45} n=145</p>
+
+            </div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
