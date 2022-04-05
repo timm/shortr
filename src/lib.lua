@@ -118,6 +118,7 @@ function lib.settings(help)
   return d end
 
 lib.go = {_fails=0}
+lib.no = {}
 function lib.ok(test,msg)
   print("", test and "PASS "or "FAIL ",msg or "") 
   if not test then 
@@ -125,7 +126,7 @@ function lib.ok(test,msg)
     if the and the.dump then assert(test,msg) end end end
 
 function lib.main(the,go,b4,           resets,todos)
-  todos = the.todo == "all" and slots(go) or {the.todo}
+  todos = the.todo == "all" and lib.slots(go) or {the.todo}
   resets={}; for k,v in pairs(the) do resets[k]=v end
   go._fails = 0
   for _,todo in pairs(todos) do

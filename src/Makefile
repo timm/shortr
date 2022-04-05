@@ -2,27 +2,39 @@
 
 D      = ..
 LUA    = $(shell ls *.lua)
-MDS    = $(addsuffix .md, $(addprefix $D/docs/,$(basename $(LUA))))
 PDF    = $(addsuffix .pdf, $(addprefix $D/docs/,$(basename $(LUA))))
 HTML   = $(addsuffix .html,$(addprefix $D/docs/,$(basename $(LUA))))
 COMMENT= gawk 'BEGIN {"-------------------------------------------------------------------"} \
                       /^[ \t]*$$/ {next} {print "---    "$$0} END{print""}'
 
-basic:
-	$(foreach d,copy rnd collect ent items powerset many,lua brknbad.lua -t $d;)
+COLORS =  gawk '          BEGIN {fails=passes=0; \
+                                 GREEN=sprintf("%c[1;32m",27,27); \
+                                 RED=sprintf("%c[1:33m",27); \
+                                 NORMAL=sprintf("%c[0m",27) } \
+                  gsub(/PASS/,"") {passes++;$$0=  GREEN "PASS" NORMAL $$0 } \
+                   gsub(/FAIL/,"") {fails++; $$0=  RED "PASS" NORMAL $$0 } \
+                     {print} END {print "\nERRORS ==> " fails; exit(fails)}' 
+
+top:; echo $(LUA)
+
+words:
+	$(MAKE) wordsa| $(COLORS)
+
+wordsa:
+	$(foreach d,copy rnd collect ent items powerset many,lua brknbad.lua -t $d;) 
 
 help:
-	@printf "\n\033[33mmake [OPTIONS]\033[0m\n\nOPTIONS:\n"
+	@printf "\nmake [OPTIONS]\n\nOPTIONS:\n"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 	| sort \
-	| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%10s :\033[0m %s\n", $$1, $$2}'
+	| awk 'BEGIN {print(FS = ":.*?## "}; {printf "\033[36m%10s :\033[0m %s\n", $$1, $$2}'
 
 h1:; @figlet -W -flarry3d     $t | $(COMMENT)
 h4:; @figlet -W -fmini $${t%%.*}  | $(COMMENT)
 h3:; @figlet -W -fsmall  $${t%%.*}  | $(COMMENT)
 h2:; @figlet -W -fcybermedium $t | $(COMMENT)
 
-doc: $(PDF) $(HTML) $(MDS) $D/docs/index.html ## generate pdfs
+doc: $(PDF) $(HTML) $D/docs/index.html ## generate pdfs
 
 tests: ## run tests
 	ls $D/src/*.lua |entr -c etc/tasks.sh
