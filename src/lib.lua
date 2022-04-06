@@ -147,7 +147,9 @@ function lib.many(a,n,lo,hi,  u)
   u={}; for j=1,n do lib.push(u, lib.any(a,lo,hi)) end; return u end
 
 function lib.slice(a,lo,hi,    u)
-  u,lo,hi = {},lo or 1,hi or #a; for j=lo,hi do u[1+#u]=a[j] end; return u end
+  u, lo, hi = {}, lo or 1, hi or #a 
+  hi = math.min(hi,#a)
+  for j=lo,hi do u[1+#u]=a[j] end; return u end
 
 ---     __|_ _. _  _   '~)  _|_|_ . _  _ 
 ---    _\ | | || |(_|   /_   | | ||| |(_|
