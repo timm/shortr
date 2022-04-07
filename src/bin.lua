@@ -30,7 +30,7 @@ function BIN.mergeSameDivs(b4,after)
    return BIN(b4.at, b4.name, b4.lo, after.hi, merged) end end
 
 function BIN.mergeNext(b4,after)
-  if b4.hi == after.lo then
+  if b4.hi == after.lo and  b4.lo ~= b4.hi then
    return BIN(b4.at, b4.name, b4.lo, after.hi, b4.ys:merge(after.ys)) end end
 
 return BIN

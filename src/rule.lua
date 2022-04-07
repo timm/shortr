@@ -1,7 +1,7 @@
 local R = require
 local _,the,COLS,BIN,NUM         = R"lib", R"the", R"cols", R"bin", R"num"
 local o,oo,down1,map,push,sort,powerset = _.o,_.oo,_.down1,_.map,_.push,_.sort,_.powerset
-local slice =  _.slice
+local slice,merge,slots =  _.slice, _.merge,_.slots
 local class,OBJ              = _.class, _.OBJ
 
 local RULE = class("RULE",OBJ)
@@ -9,7 +9,7 @@ local RULE = class("RULE",OBJ)
 function RULE.best(bins,h)
    local function score1(b1,b2) return RULE({b1},h).score > RULE({b2},h).score end
    return slice(sort(bins, score1), 1, the.beam) end 
-   
+  
 function RULE.fromBins(bins,h,   n,out,rule,sizes,scores)
   out={}
   sizes=NUM()
@@ -24,8 +24,7 @@ function RULE.fromBins(bins,h,   n,out,rule,sizes,scores)
    return ((0 - sizes:norm(one.size))^2 + (1 - scores:norm(one.score))^2)^.5 end
   out = slice(sort(out,function(a,b) return order(a) < order(b) end),1,the.beam)
   for _,three in pairs(out) do 
-    print(three.score, three.size, 
-            o(map(three.rule.bins, function(x) for k,v in pairs(x) do tostring(v) end ; return tostring(x) end))) end
+    print(three.score, three.size, three.rule) end
   return out end 
 
   -- 3  {-0.66967110414431 RULE{:bins {:2 {BIN{:at 2 :hi 108 :lo -inf :name Volume :ys SYM{:at 0 :has {:left 19 :right 13} :indep true :mode left :most 19 :n 32 :name  :w 1}}}} :score -0.66967110414431 :seen {:left {:2 19} :right {:2 13}}}}
@@ -44,8 +43,10 @@ function RULE:new(bins,h,   t)
   for _,bin in pairs(bins) do 
     self.bins[bin.at] = self.bins[bin.at] or {}
     push(self.bins[bin.at],  bin) end 
-   self.score = self:scored(h) 
+  for _,one in pairs(self.bins) do sort(one, function(a,b) return a.lo < b.lo end) end
+  self.score = self:scored(h) 
   end
+function RULE:__tostring() return self:show(self.bins)  end --return self:show(self.bins) end
 
 function RULE:like(klass,h) -- h={"true"=100, "false"=40} n=100+40
   local n=0; for _,v in pairs(h) do n = n + v end 
@@ -80,12 +81,19 @@ function RULE:selects(row)
   for at,bins in pairs(i.bins) do if not ors(bins) then return false end end
   return true end 
 
-function RULE:show(bins)
-  local cat, order, ors
-  cat =  function(t,sep) return table.concat(t,sep) end
-  order= function(a,b)  return a.lo < b.lo end
-  ors=   function(bins) 
-          return cat(map(bin.Merges(sort(bins,order)),bin.show)," or ") end
-  return cat(map(i.bins, ors)," and ") end
+function RULE:show(ands)
+  local cat, order, sortor, sortand
+  cat    = function(t,sep) return table.concat(t,sep) end
+  sortand= function(t) return map(slots(t) ,function(k) return t[k] end) end
+  sortor = function(a,b)  return a.lo < b.lo end
+  return cat(map(sortand(ands),
+          function(and1) 
+           return cat(map(sort(and1,sortor), 
+                   function(or1) return tostring(or1) end)," or ") end)," and ")
+end
+  --sort(bins,order)
+  -- ors=   function(bins) 
+  --         return cat(map(merge(sort(bins,order),BIN.mergeNext))," or ") end
+  -- return cat(map(bins, ors)," and ") end
 
 return RULE
