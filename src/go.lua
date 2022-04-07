@@ -104,15 +104,18 @@ function go.bins(     all,best,rest,b4)
           bin.ys.has["right"] or 0) 
     b4 = bin.at end end
 
-function go.rules(     all,best,rest,b4,bins,rules,h)
-  all       = EGS():adds("../etc/data/auto93.csv")
-  best,rest = all:bestRest()
-  best      = all:clone(best)
-  rest      = all:clone(rest)
-  h         = {left=#best.rows, right=#rest.rows}
-  rules     =  RULE.fromBins(best:bins(rest),h)
+local function _rules(file,     all,bests,rests,left,right,b4,bins,rules,h)
+  all       = EGS():adds(file)
+  bests,rests = all:bestRest()
+  left      = all:clone(bests)
+  right     = all:clone(rests)
+  h         = {left=#bests, right=#rests}
+  rules     =  RULE.fromBins(left:bins(right),h,bests,rests)
   end
 
+function go.rules1() _rules("../etc/data/auto93.csv") end
+function go.rules2() _rules("../etc/data/china.csv") end
+function go.rules3() _rules("../etc/data/nasa93dem.csv") end
 
 
 local function _dist(file,  i,all)

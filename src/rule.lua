@@ -1,7 +1,7 @@
 local R = require
 local _,the,COLS,BIN,NUM         = R"lib", R"the", R"cols", R"bin", R"num"
 local o,oo,down1,map,push,sort,powerset = _.o,_.oo,_.down1,_.map,_.push,_.sort,_.powerset
-local slice,merge,slots =  _.slice, _.merge,_.slots
+local slice,merge,slots,fmt =  _.slice, _.merge,_.slots,_.fmt
 local class,OBJ              = _.class, _.OBJ
 
 local RULE = class("RULE",OBJ)
@@ -10,7 +10,7 @@ function RULE.best(bins,h)
    local function score1(b1,b2) return RULE({b1},h).score > RULE({b2},h).score end
    return slice(sort(bins, score1), 1, the.beam) end 
   
-function RULE.fromBins(bins,h,   n,out,rule,sizes,scores)
+function RULE.fromBins(bins,h,bests,rests,    n,out,rule,sizes,scores)
   out={}
   sizes=NUM()
   scores=NUM()
@@ -20,11 +20,16 @@ function RULE.fromBins(bins,h,   n,out,rule,sizes,scores)
       sizes:add(#some)
       scores:add(rule.score)
       push(out, {size=#some,score=rule.score,rule=rule}) end end
- local function order(one) 
-   return ((0 - sizes:norm(one.size))^2 + (1 - scores:norm(one.score))^2)^.5 end
-  out = slice(sort(out,function(a,b) return order(a) < order(b) end),1,the.beam)
-  for _,three in pairs(out) do 
-    print(three.score, three.size, three.rule) end
+  local function order(one) 
+    return ((0 - sizes:norm(one.size))^2 + (1 - scores:norm(one.score))^2)^.5 end
+  local n = 0
+  for _,three in pairs(sort(out, function(a,b) return order(a) < order(b) end)) do
+     local cover1= 100*#three.rule:selects(bests)/#bests//1
+     local cover2= 100*#three.rule:selects(rests)/#rests//1 
+     if cover1 < 100 or cover2 < 100 then
+       print(fmt("%5.3f %4u %4u %s",three.score, cover1, cover2, three.rule)) 
+       n=n+1
+       if n > the.beam then return end  end end
   return out end 
 
 function RULE:new(bins,h,   t)
@@ -56,18 +61,21 @@ function RULE:like(klass,h) -- h={"true"=100, "false"=40} n=100+40
 
 RULE.bias = {}
 local bias = RULE.bias
-function bias.optimize(b,r) return b+r==0 and 0 or b^2/(b+r) end
+function bias.optimize(b,r) return b+r==0 and 0 or b^2/(b+r) end 
 function bias.monitor( b,r) return b+r==0 and 0 or r^2/(b+r) end
 function bias.tabu(    b,r) return b+r==0 and 0 or 1/(b+r) end
 
 function RULE:scored(h)
   return self.bias[the.rule](self:like("left",h), self:like("right",h)) end
 
-function RULE:selects(row)
+function RULE:selects(rows)
+  return map(rows, function(row) if self:select(row) then return row end end) end
+
+function RULE:select(row)
   local function ors(bins)
-    for key,x in pairs(bins) do if bin.select(x,row) then return true end end
+    for _,bin in pairs(bins) do if bin:select(row) then return true end end
     return false end
-  for at,bins in pairs(i.bins) do if not ors(bins) then return false end end
+  for at,bins in pairs(self.bins) do if not ors(bins) then return false end end
   return true end 
 
 function RULE:show(ands)

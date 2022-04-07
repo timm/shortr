@@ -24,6 +24,7 @@ function BIN:add(x,y)
   if x>self.hi then self.hi = x end 
   self.ys:add(y) end
 
+  
 function BIN.mergeSameDivs(b4,after)
   local merged = b4.ys:merged(after.ys)
   if merged then
