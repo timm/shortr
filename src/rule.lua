@@ -27,16 +27,6 @@ function RULE.fromBins(bins,h,   n,out,rule,sizes,scores)
     print(three.score, three.size, three.rule) end
   return out end 
 
-  -- 3  {-0.66967110414431 RULE{:bins {:2 {BIN{:at 2 :hi 108 :lo -inf :name Volume :ys SYM{:at 0 :has {:left 19 :right 13} :indep true :mode left :most 19 :n 32 :name  :w 1}}}} :score -0.66967110414431 :seen {:left {:2 19} :right {:2 13}}}}
-  -- 4  {-0.96579945994854 RULE{:bins {{BIN{:at 1 :hi 6 :lo -inf :name Clndrs :ys SYM{:at 0 :has {:left 19 :right 37} :indep true :mode right :most 37 :n 56 :name  :w 1}}}} :score -0.96579945994854 :seen {:left {19} :right {37}}}}
-  -- 5  {-0.97977068533578 RULE{:bins {:7 {BIN{:at 7 :hi 3 :lo 3 :name origin :ys SYM{:at 0 :has {:left 11 :right 9} :indep true :mode left :most 11 :n 20 :name  :w 1}}}} :score -0.97977068533578 :seen {:left {:7 11} :right {:7 9}}}}
-  -- 6  {-1.0240113472546 RULE{:bins {:6 {BIN{:at 6 :hi inf :lo 79 :name Model :ys SYM{:at 0 :has {:left 11 :right 11} :indep true :mode right :most 11 :n 22 :name  :w 1}}}} :score -1.0240113472546 :seen {:left {:6 11} :right {:6 11}}}}
-  -- 7  {-1.279073376322 RULE{:bins {:7 {BIN{:at 7 :hi 2 :lo 2 :name origin :ys SYM{:at 0 :has {:left 7 :right 8} :indep true :mode right :most 8 :n 15 :name  :w 1}}}} :score -1.279073376322 :seen {:left {:7 7} :right {:7 8}}}}
-  -- 8  {-1.8826371927774 RULE{:bins {:6 {BIN{:at 6 :hi 79 :lo -inf :name Model :ys SYM{:at 0 :has {:left 8 :right 48} :indep true :mode right :most 48 :n 56 :name  :w 1}}}} :score -1.8826371927774 :seen {:left {:6 8} :right {:6 48}}}}
-  -- 9  {-3.4837551504235 RULE{:bins {:7 {BIN{:at 7 :hi 1 :lo 1 :name origin :ys SYM{:at 0 :has {:left 1 :right 42} :indep true :mode right :most 42 :n 43 :name  :w 1}}}} :score -3.4837551504235 :seen {:left {:7 1} :right {:7 42}}}}
-  -- 10  {-4.1245662484181 RULE{:bins {{BIN{:at 1 :hi inf :lo 6 :name Clndrs :ys SYM{:at 0 :has {:right 22} :indep true :mode right :most 22 :n 22 :name  :w 1}}}} :score -4.1245662484181 :seen {:left {0} :right {22}}}}
-  -- 11  {-4.6372270804193 RULE{:bins {:2 {BIN{:at 2 :hi inf :lo 108 :name Volume :ys SYM{:at 0 :has {:right 46} :indep true :mode right :most 46 :n 46 :name  :w 1}}}} :score -4.6372270804193 :seen {:left {:2 0} :right {:2 46}}}}
-  --
 function RULE:new(bins,h,   t)
   self.seen={}
   self.bins = {}
@@ -64,7 +54,6 @@ function RULE:like(klass,h) -- h={"true"=100, "false"=40} n=100+40
      end
   return out end
 
-
 RULE.bias = {}
 local bias = RULE.bias
 function bias.optimize(b,r) return b+r==0 and 0 or b^2/(b+r) end
@@ -88,9 +77,11 @@ function RULE:show(ands)
   sortor = function(a,b)  return a.lo < b.lo end
   return cat(map(sortand(ands),
           function(and1) 
-           return cat(map(sort(and1,sortor), 
-                   function(or1) return tostring(or1) end)," or ") end)," and ")
+           return "("..cat(map(sort(and1,sortor), 
+                   function(or1) return tostring(or1) end)," or ")..")" end)," and ")
 end
+
+-- print has to wipe out fullranges and print selected items
   --sort(bins,order)
   -- ors=   function(bins) 
   --         return cat(map(merge(sort(bins,order),BIN.mergeNext))," or ") end
