@@ -117,6 +117,7 @@ local function _rules(file,     all,bests,rests,left,right,b4,bins,rules,h)
 function go.rules1() _rules("../etc/data/auto93.csv") end
 function go.rules2() _rules("../etc/data/china.csv") end
 function go.rules3() _rules("../etc/data/nasa93dem.csv") end
+function go.rules4() _rules("../etc/data/pom.csv") end
 
 
 local function _dist(file,  i,all)

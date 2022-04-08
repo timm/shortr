@@ -28,9 +28,12 @@ function RULE.fromBins(bins,all,h,bests,rests,    n,out,rule,sizes,scores)
      local cover1   = 100*#selected1/#bests//1
      local selected2= three.rule:selects(rests)
      local cover2   = 100*#selected2/#rests//1 
-     local some = all:clone(selected1):adds(selected2)
+     local some     = all:clone(three.rule:selects(all.rows))
      if cover1 < 100 or cover2 < 100 then
-       print(o(rnds(some:mid())), o(rnds(some:div())),fmt("%5.3f %4u %4u %s",three.score, cover1, cover2, three.rule)) 
+       print(o(rnds(some:mid())), 
+             o(rnds(some:div())),
+              fmt("%5.3f %4u %4u %s", three.score, cover1, cover2, three.rule)
+              ) 
        n=n+1
        if n > the.beam then return end  end end
   return out end 

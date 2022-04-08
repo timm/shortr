@@ -20,7 +20,7 @@ function NUM:add1(x,inc,        pos)
       self.ok = false
       self.has[pos] = x end end end
 
-function NUM:div(   a) a=self:all(); return (per(a,.9) - per(a,.1))/2.56 end
+function NUM:div(   a) a=self:all(); return sd(a) end --(per(a,.9) - per(a,.1))/2.56 end
 function NUM:mid()     return per(self:all(), .5)  end
 function NUM:same(x,y) return math.abs(x - y) <= the.cohen * self:div() end
 
