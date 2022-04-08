@@ -106,7 +106,7 @@ function go.bins(     all,best,rest,b4)
 
 local function _rules(file,     all,bests,rests,left,right,b4,bins,rules,h)
   all       = EGS():adds(file)
-  print(o(rnds(all:mid())), o(rnds(all:div())),"<== before \n")
+  print(o(rnds(all:mid())), o(rnds(map(all:div(),function(x)return x*the.cohen end))),"<== before \n")
   bests,rests = all:bestRest()
   left      = all:clone(bests)
   right     = all:clone(rests)
@@ -118,6 +118,8 @@ function go.rules1() _rules("../etc/data/auto93.csv") end
 function go.rules2() _rules("../etc/data/china.csv") end
 function go.rules3() _rules("../etc/data/nasa93dem.csv") end
 function go.rules4() _rules("../etc/data/pom.csv") end
+function go.rules5() _rules("../etc/data/coc10000.csv") end
+function go.rules6() _rules("../etc/data/auto2.csv") end
 
 
 local function _dist(file,  i,all)
