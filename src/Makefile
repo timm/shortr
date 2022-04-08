@@ -83,7 +83,7 @@ prune = grep -v "usr.bin.env" | grep -v "vi:"
 # ../docs/all.lua: abcd.lua ako.lua all.lua bin.lua egs.lua \
 #                  lib.lua num.lua rule.lua seen.lua sym.lua the.lua
 INTROS=learn101.lua learn201.lua learn301.lua
-DATA=ako.lua num.lua sym.lua seen.lua
+DATA=ako.lua num.lua sym.lua cols.lua
 EGS=egs.lua
 
 pages: 				the.lua brknbad.lua ako.lua eof \
@@ -91,7 +91,7 @@ pages: 				the.lua brknbad.lua ako.lua eof \
 							bin.lua rule.lua eof \
 							col.lua sym.lua eof \
 							num.lua eof \
-							seen.lua eof \
+							cols.lua eof \
 							egs.lua eof \
 							cluster.lua eof \
 							abcd.lua eof \

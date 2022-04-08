@@ -106,11 +106,12 @@ function go.bins(     all,best,rest,b4)
 
 local function _rules(file,     all,bests,rests,left,right,b4,bins,rules,h)
   all       = EGS():adds(file)
+  print(o(rnds(all:mid())), o(rnds(all:div())),"<== before \n")
   bests,rests = all:bestRest()
   left      = all:clone(bests)
   right     = all:clone(rests)
   h         = {left=#bests, right=#rests}
-  rules     =  RULE.fromBins(left:bins(right),h,bests,rests)
+  rules     =  RULE.fromBins(left:bins(right),all,h,bests,rests)
   end
 
 function go.rules1() _rules("../etc/data/auto93.csv") end
