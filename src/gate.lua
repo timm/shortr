@@ -11,9 +11,10 @@
 
 b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local r,abs,log,ent,min,max
-local sort,slots,copy,push,fmt,fmt2,map,map2,cat,cat2,rnd,rnds
+local sort,slots,copy,push,fmt,fmt2,map,map2,o,oo,ooo,rnd,rnds
 local adds,class,thing,things,csv
 local ok,cli,demos,demo
+
 local fails,go,no = 0, {}, {}
 local Num,Sym,Cols,Egs
 
@@ -51,10 +52,11 @@ slots= function(t,     u,public)
          u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
          return sort(u) end
 
-cat=  function(t)     return "{"..table.concat(map(t,tostring),   ", ").."}" end
-cat2= function(t,sep,    slot) 
-        function slot(k) return fmt2(k, t[k]) end
-        return (t.is or"").."{"..table.concat(map(slots(t),slot),sep or " ").."}" end
+o =  function(t)  return "{"..table.concat(map(t,tostring),   ", ").."}" end
+oo=  function(t,sep,    slot) 
+       function slot(k) return fmt2(k, t[k]) end
+       return (t.is or"").."{"..table.concat(map(slots(t),slot),sep or " ").."}" end
+ooo= function(t) print( #t>1 and o(t) or oo(t)) end
 
 rnd= function(x,f) 
        return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or"%s",x) end
@@ -84,7 +86,7 @@ class= function(name,    t,new)
            local res= klass.new(obj,...) 
            if res then obj = setmetatable(res,klass) end
            return obj end
-         t={__tostring=cat2, is=name or ""}; t.__index=t
+         t={__tostring=oo, is=name or ""}; t.__index=t
          return setmetatable(t, {__call=new}) end
 
 adds= function(obj,data)
@@ -224,8 +226,7 @@ function Egs:betters()
   return sort(self.rows, function(a,b) return self:better(a,b) end)  end
  
 --------------------------------------------------------------------------------
-function go.the() print(cat2(the)) end
-function go.aa() print(11) end
+function go.the() ooo(the) end
 
 the = cli(the)
 demos(the,go)
