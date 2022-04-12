@@ -7,7 +7,7 @@ function lib.normal(mu,sd)
   mu, sd = (mu or 0), (sd or 1)
   return mu + sd*math.sqrt(-2*math.log(r()))*math.cos(6.2831853*r()) end
 
-function lib.per(t,p) return t[ ((p or .5)*#t) // 1 ] end 
+function lib.per(t,p)  return t[ ((p or .5)*#t) // 1 ] end 
 
 function lib.norm(lo,hi,x) return math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi-lo) end
 
@@ -17,9 +17,12 @@ function lib.ent(t, n)
   return e,n end
 
 function lib.sd(sorted, f)
+  if #sorted <= 10 then return 0 end
   f=f or function(x) return x end
   local denom = 2.564 -- 2*(1.2 + 0.1*(0.9-0.88493)/(0.9032-0.88493))
-  return (f(lib.per(sorted, .9)) - f(lib.per(sorted,.1)))/denom end
+  local x= f(lib.per(sorted, .9)) 
+  local y= f(lib.per(sorted, .1))
+  return (x - y) /denom end
  
 function lib.cosine(a,b,c) 
   return math.max(0,math.min(1, (a^2+c^2-b^2)/(2*c+1E-32))) end
@@ -118,6 +121,7 @@ function lib.settings(help)
   return d end
 
 lib.go = {_fails=0}
+lib.no = {}
 function lib.ok(test,msg)
   print("", test and "PASS "or "FAIL ",msg or "") 
   if not test then 
@@ -125,7 +129,7 @@ function lib.ok(test,msg)
     if the and the.dump then assert(test,msg) end end end
 
 function lib.main(the,go,b4,           resets,todos)
-  todos = the.todo == "all" and slots(go) or {the.todo}
+  todos = the.todo == "all" and lib.slots(go) or {the.todo}
   resets={}; for k,v in pairs(the) do resets[k]=v end
   go._fails = 0
   for _,todo in pairs(todos) do
@@ -146,7 +150,9 @@ function lib.many(a,n,lo,hi,  u)
   u={}; for j=1,n do lib.push(u, lib.any(a,lo,hi)) end; return u end
 
 function lib.slice(a,lo,hi,    u)
-  u,lo,hi = {},lo or 1,hi or #a; for j=lo,hi do u[1+#u]=a[j] end; return u end
+  u, lo, hi = {}, lo or 1, hi or #a 
+  hi = math.min(hi,#a)
+  for j=lo,hi do u[1+#u]=a[j] end; return u end
 
 ---     __|_ _. _  _   '~)  _|_|_ . _  _ 
 ---    _\ | | || |(_|   /_   | | ||| |(_|

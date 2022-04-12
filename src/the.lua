@@ -26,9 +26,10 @@ OPTIONS:
   -p      -p  coefficient on distance        = 2
   -rule   -r  rule for assessing bins;       = optimize
               one of: (optimize,monitor,tabu)
-  -rest   -R  rest is -R*best                = 4
+  -rest   -R  rest is -R*best                = 3
   -some   -s  sample size for distances      = 512
   -seed   -S  seed                           = 10019
+  -beam   -T  how many things to call top    = 10
   -wait   -w  wait                           = 10
 
 OPTIONS (other):

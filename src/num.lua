@@ -20,14 +20,16 @@ function NUM:add1(x,inc,        pos)
       self.ok = false
       self.has[pos] = x end end end
 
-function NUM:div(   a) a=self:all(); return (per(a,.9) - per(a,.1))/2.56 end
+function NUM:div(   a) a=self:all(); return sd(a) end --(per(a,.9) - per(a,.1))/2.56 end
 function NUM:mid()     return per(self:all(), .5)  end
 function NUM:same(x,y) return math.abs(x - y) <= the.cohen * self:div() end
 
+function NUM:norm(x) return norm(self.lo, self.hi,x) end
+
 function NUM:dist1(x,y)
-  if     x=="?" then y = norm(self.lo, self.hi, y); x=y<.5 and 1 or 0 
-  elseif y=="?" then x = norm(self.lo, self.hi, x); y=x<.5 and 1 or 0
-  else             x,y = norm(self.lo, self.hi, x), norm(self.lo, self.hi,y) end
+  if     x=="?" then y = self:norm(y); x=y<.5 and 1 or 0 
+  elseif y=="?" then x = self:norm(x); y=x<.5 and 1 or 0
+  else             x,y = self:norm(x); self:norm(y) end
   return math.abs(x-y) end
   
 function NUM:like1(i,x)

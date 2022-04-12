@@ -14,10 +14,12 @@ function EGS:add(row)
                    else push(self.rows, self.cols:add(row)) end end
 
 function EGS:mid(cols)
-   return map(cols or self.cols.y, function(col) return col:mid() end) end
+   local mid=function(col) return #self.rows==0 and 0 or col:mid() end 
+   return map(cols or self.cols.y, mid) end
 
 function EGS:div(cols)
-   return map(cols or self.cols.y, function(col) return col:div() end) end
+   local div=function(col) return #self.rows==0 and 0 or col:div() end 
+   return map(cols or self.cols.y, div) end
 
 function EGS:clone(rows)
   local out = EGS()

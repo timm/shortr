@@ -6,7 +6,7 @@ local per,map,dent = _.per, _.map, _.dent
 local ish,copy,items,o,oo,powerset = _.ish,_.copy,_.items,_.o,_.oo,_.powerset
 local map,fmt,rnds, rnd,push       = _.map,_.fmt,_.rnds, _.rnd,_.push
 local class,Obj = _.class, _.Obj
-local go,ok     = _.go,_.ok
+local no,go,ok     = _.no, _.go,_.ok
 
 function go.class()
   local EMP=class("EMP",Obj)
@@ -39,7 +39,7 @@ function go.powerset()
   for _,x in pairs(powerset{10,20,30,40,50}) do oo(x) end end
  
  function go.many( t)
-  local o,many=lib.o,lib.many
+  local o,many=_.o,_.many
   t={};for j = 1,1000 do t[#t+1] = j end
   print(900,"+", o(many(t, 10, 900)))
   print(1,100,   o(many(t, 10,   1, 100)))
@@ -104,12 +104,23 @@ function go.bins(     all,best,rest,b4)
           bin.ys.has["right"] or 0) 
     b4 = bin.at end end
 
-function go.rules(     all,best,rest,b4,bins)
-  all       = EGS():adds("../etc/data/auto93.csv")
-  best,rest = all:bestRest()
-  best      = all:clone(best)
-  rest      = all:clone(rest)
-  RULE.fromBins(best:bins(rest)) end
+local function _rules(file,     all,bests,rests,left,right,b4,bins,rules,h)
+  all       = EGS():adds(file)
+  print(o(rnds(all:mid())), o(rnds(map(all:div(),function(x)return x*the.cohen end))),"<== before \n")
+  bests,rests = all:bestRest()
+  left      = all:clone(bests)
+  right     = all:clone(rests)
+  h         = {left=#bests, right=#rests}
+  rules     =  RULE.fromBins(left:bins(right),all,h,bests,rests)
+  end
+
+function go.rules1() _rules("../etc/data/auto93.csv") end
+function go.rules2() _rules("../etc/data/china.csv") end
+function go.rules3() _rules("../etc/data/nasa93dem.csv") end
+function go.rules4() _rules("../etc/data/pom.csv") end
+function go.rules5() _rules("../etc/data/coc10000.csv") end
+function go.rules6() _rules("../etc/data/auto2.csv") end
+
 
 local function _dist(file,  i,all)
   local any= _.any
@@ -134,7 +145,7 @@ local function _dist(file,  i,all)
 function go.dist1() _dist(the.file) end
 function go.dist2() _dist("../etc/data/diabetes.csv") end
 
-function go.half(  i)
+function no.half(  i)
   the.file = "../etc/data/diabetes.csv"
   i = egs.Init(the.file) 
   local lefts,rights,left,right,border,c= cluster.half(i)
@@ -142,7 +153,7 @@ function go.half(  i)
   ok(384 == #lefts.rows,  "left")
   ok(384 == #rights.rows, "rights") end
 
-function go.cluster(  i)
+function no.cluster(  i)
   the.file = "../etc/data/diabetes.csv"
   i = egs.Init(the.file) 
   cluster.show(cluster.new(i)) end
@@ -176,15 +187,15 @@ function go.nb2()
   local i = require("learn201")(the.file); 
   ABCD():adds(i.log,true) end 
 
-function go.nb2a() 
+function no.nb2a() 
   the.file = "../etc/data/diabetes.csv" 
   the.goal = "positive"
   for _,bins in pairs{2,5,9} do
     the.bins = bins
-    local i = nb2(the.file); 
-    abcd(i.log,true) end end
+    local i = require("learn201")(the.file); 
+    ABCD()(i.log,true) end end
 
-function go.nb3() 
+function no.nb3() 
   the.file = "../etc/data/diabetes.csv" 
   the.goal = "positive"
   the.bins = 16
