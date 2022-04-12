@@ -11,7 +11,7 @@
 
 b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local r,abs,log,ent,min,max
-local copy,push,fmt,fmt2,map,map2,cat,cat2,rnd,rnds
+local sort,slots,copy,push,fmt,fmt2,map,map2,cat,cat2,rnd,rnds
 local adds,class,thing,things,csv
 local ok,cli,demos,demo
 local fails,go,no = 0, {}, {}
@@ -32,7 +32,9 @@ abs=  math.abs
 log=  math.log
 min=  math.min
 max = math.max
+
 push= function(t,x) t[1 + #t] = x; return x end
+sort= function(t,f) table.sort(t,f); return t end
 
 fmt=  string.format
 fmt2= function(k,v) return fmt(":%s %s",k,v) end 
@@ -44,8 +46,15 @@ copy= function(t,   u)
         if type(t) ~= "table" then return t end
         u={};for k,v in pairs(t) do u[copy(k)]=copy(v) end; return u end
 
+slots= function(t,     u,public)
+         function public(k) return tostring(k):sub(1,1) ~= "_" end
+         u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
+         return sort(u) end
+
 cat=  function(t)     return "{"..table.concat(map(t,tostring),   ", ").."}" end
-cat2= function(t,sep) return "{"..table.concat(map2(t,fmt2),sep or " ").."}" end
+cat2= function(t,sep,    slot) 
+        function slot(k) return fmt2(k, t[k]) end
+        return (t.is or"").."{"..table.concat(map(slots(t),slot),sep or " ").."}" end
 
 rnd= function(x,f) 
        return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or"%s",x) end
@@ -75,7 +84,7 @@ class= function(name,    t,new)
            local res= klass.new(obj,...) 
            if res then obj = setmetatable(res,klass) end
            return obj end
-         t={__tostring=cat2, _is=name or ""}; t.__index=t
+         t={__tostring=cat2, is=name or ""}; t.__index=t
          return setmetatable(t, {__call=new}) end
 
 adds= function(obj,data)
@@ -108,7 +117,7 @@ demos= function(the,go,   old,demo1)
          ---------
          old = copy(the)
          if   the.todo=="all" 
-         then for txt,fun in pairs(go) do demo1(txt, fun) end 
+         then for _,txt in pairs(slots(go)) do demo1(txt, go[txt]) end 
          else demo1(the.todo, go[the.todo]) end end
        
 --------------------------------------------------------------------------------
@@ -142,6 +151,9 @@ function Num:like(x,_)
   if x > self.mu + 4*self.sd then return 0 end 
   return e^(-(x - self.mu)^2 / (z + 2*self.sd^2))/(z + (pi*2*self.sd^2)^.5) end
 
+function Num:norm(x,   lo,hi)
+  lo,hi= self.lo, self.hi
+  return x=="?" and x or hi-lo < 1E-9 and 0 or (x - lo)/(hi - lo) end 
 --------------------------------------------------------------------------------
 Sym=class("Sym")
 function Sym:new(at,name) 
@@ -199,8 +211,21 @@ function Egs:like(row,egs,       n,prior,like,col)
     if x ~= "?" and col.indep then like= like + log(col:like(x,prior)) end end
   return like end
 
+function Egs:better(row1,row2)
+  local s1, s2, n, e = 0, 0, #self.cols.y, math.exp(1)
+  for _,col in pairs(self.cols.y) do
+    local a = col:norm(row1[col.at])
+    local b = col:norm(row2[col.at])
+    s1      = s1 - e^(col.w * (a - b) / n)
+    s2      = s2 - e^(col.w * (b - a) / n) end
+  return s1 / n < s2 / n  end
+
+function Egs:betters()
+  return sort(self.rows, function(a,b) return self:better(a,b) end)  end
+ 
 --------------------------------------------------------------------------------
 function go.the() print(cat2(the)) end
+function go.aa() print(11) end
 
 the = cli(the)
 demos(the,go)
