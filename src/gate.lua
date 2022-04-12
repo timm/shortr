@@ -97,11 +97,12 @@ adds= function(obj,data)
 
 cli= function(the,    k,v)
        for n,flag in ipairs(arg) do
-         k = flag:sub(3)  
-         v = the[k]
-         if v ~= nil then 
-           v = v==false and"true" or v==true and"false" or arg[n+1]
-           the[k] = thing(v) end end
+         if flag:sub(1,2)=="--" then
+           k = flag:sub(3)  
+           v = the[k]
+           if v ~= nil then 
+             v = v==false and "true" or v==true and "false" or arg[n+1]
+             the[k] = thing(v) end end end
        return the end 
 
 ok=  function(test,msg)
@@ -116,7 +117,6 @@ demos= function(the,go,   old,demo1)
            math.randomseed(the.seed or 10019)
            print(txt)
            fun() end
-         ---------
          old = copy(the)
          if   the.todo=="all" 
          then for _,txt in pairs(slots(go)) do demo1(txt, go[txt]) end 
