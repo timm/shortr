@@ -1,6 +1,6 @@
 -- gate: explore the world better, explore the world for good.
 -- (c) 2022, Tim Menzies
--- 
+
 --      .-------.  
 --      | Ba    | Bad <----.  planning= (better - bad)
 --      |    56 |          |  monitor = (bad - better)
@@ -94,22 +94,22 @@ cli= function(the,    k,v)
        return the end 
 
 ok=  function(test,msg)
-       print("", test and "PASS "or "FAIL ",msg or "") 
+       print("", test and "PASS "or "FAIL ", msg or "") 
        if not test then 
          fails= fails+1 
          if  the.dump then assert(test,msg) end end end
 
-demo= function(txt,f,old) 
-        the = copy(old)
-        math.randomseed(the.seed or 10019)
-        print(txt)
-        f() end
-
-demos= function(the,go, old)
+demos= function(the,go,   old,demo1)
+         function demo1(txt,fun) 
+           the = copy(old)
+           math.randomseed(the.seed or 10019)
+           print(txt)
+           fun() end
+         ---------
          old = copy(the)
          if   the.todo=="all" 
-         then for s,f in pairs(go) do demo(s, f, old) end 
-         else demo(the.todo, go[the.todo], old) end end
+         then for txt,fun in pairs(go) do demo1(txt, fun) end 
+         else demo1(the.todo, go[the.todo]) end end
        
 --------------------------------------------------------------------------------
 Num=class("Num")
