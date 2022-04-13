@@ -1,5 +1,10 @@
 #!/usr/bin/env lua
 -- vim: ts=2 sw=2 et:
+-- (c) 2022, Tim Menzies
+-- Usage of the works is permitted provided that this instrument is
+-- retained with the works, so that any entity that uses the works is
+-- notified of this instrument.  DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
+-------------------------------------------------------------------------------
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local help = [[
 
@@ -28,29 +33,47 @@ OTHER:
   -todo  str   start-up action ("all" == run all) = the ]]
 
 -------------------------------------------------------------------------------
--- (c) 2022, Tim Menzies
--- Usage of the works is permitted provided that this instrument is
--- retained with the works, so that any entity that uses the works is
--- notified of this instrument.  DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
 
--------------------------------------------------------------------------------
 -- define the local names
 local the,go,no,fails = {}, {}, {}, 0
 local abs,adds,cli,coerce,copy,csv ,demos,ent,fu,fmt,fmt2,log,lt
 local map,map2,max,merges,min,new,o,ok,obj,oo,ooo,per,push
 local r,rnd,rnds,sd,settings,slots,sort
 
--------------------------------------------------------------------------------
---
---             .---------.
---             |         |
---           -= _________ =-
---              ___   ___
---             |   )=(   |
---              ---   --- 
---                 ###
---               #  =  #            "This ain't chemistry. 
---               #######             This is art."
+--           
+--                                                        ,:
+--                                                      ,' |
+--                                                     /   :
+--                                                  --'   /
+--                                                  \/ />/
+--                                                  / /_\
+--                                               __/   /
+--                                               )'-. /
+--                                               ./  :\
+--                                                /.' '
+--                                              '/'
+--                                              +
+--                                             '
+--                                           `.
+--                                       .-"-
+--                                      (    |
+--                                   . .-'  '.
+--                                  ( (.   )8:
+--                              .'    / (_  )
+--                               _. :(.   )8P  `
+--                           .  (  `-' (  `.   .
+--                            .  :  (   .a8a)
+--                           /_`( "a `a. )"'
+--                       (  (/  .  ' )=='
+--                      (   (    )  .8"   +
+--                        (`'8a.( _(   (
+--                     ..-. `8P    ) `  )  +
+--                   -'   (      -ab:  )
+--                 '    _  `    (8P"Ya
+--               _(    (    )b  -`.  ) +
+--              ( 8)  ( _.aP" _a   \( \   *
+--            +  )/    (8P   (88    )  )
+--               (a:f   "     `"       `
 -------------------------------------------------------------------------------
 -- maths
 r=    math.random
@@ -68,7 +91,7 @@ function sd(sorted,f,             ninety,ten)
   if #sorted <= 10 then return 0 end
   ninety,ten = per(sorted, .90), per(sorted, .10) 
   if f then ninety,ten = f(ninety), f(ten) end
-  return (ninety-ten) / 2.564 end -- 2*(1.2 + 0.1*(0.9-0.88493)/(0.9032-0.88493))
+  return (ninety-ten)/2.564 end -- 2*(1.2 + 0.1*(0.9-0.88493)/(0.9032-0.88493))
   
 -- lists
 function push(t,x) t[1 + #t] = x; return x end
