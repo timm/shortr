@@ -25,128 +25,138 @@ OTHER:
   -todo  str   start-up action ("all" == run all) = the ]]
 -------------------------------------------------------------------------------
 local the,go,no,fails = {}, {}, {}, 0
+local abs,adds,class,cli,coerce,copy,csv ,demos,ent,fmt,fmt2,log
+local map,map2,max,min,o,ok ,oo,ooo,push,r,rnd,rnds,settings,slots,sort
 
-local r,abs,log,min,max,ent -- maths
+-- maths
 r=    math.random
 abs=  math.abs
 log=  math.log
 min=  math.min
 max=  math.max
-ent=  function(t,   n,e)
-        n=0; for _,v in pairs(t) do n=n+v end 
-        e=0; for _,v in pairs(t) do e=e-v/n*log(v/n,2) end; return e end
+function ent(t,   n,e)
+  n=0; for _,v in pairs(t) do n=n+v end 
+  e=0; for _,v in pairs(t) do e=e-v/n*log(v/n,2) end; return e end
 
-local push,sort,map,map2,copy,slots -- lists
-push= function(t,x) t[1 + #t] = x; return x end
-sort= function(t,f) table.sort(t,f); return t end
-map=  function(t,f, u) u={};for _,v in pairs(t)do u[1+#u]=f(v)  end;return u end
-map2= function(t,f, u) u={};for k,v in pairs(t)do u[k] = f(k,v) end;return u end
+-- lists
+function push(t,x) t[1 + #t] = x; return x end
+function sort(t,f) table.sort(t,f); return t end
+function map(t,f, u) u={};for _,v in pairs(t)do u[1+#u]=f(v)  end;return u end
+function map2(t,f, u) u={};for k,v in pairs(t)do u[k] = f(k,v) end;return u end
 
-copy= function(t,   u)
-        if type(t) ~= "table" then return t end
-        u={};for k,v in pairs(t) do u[copy(k)]=copy(v) end; return u end
+function copy(t,   u)
+  if type(t) ~= "table" then return t end
+  u={};for k,v in pairs(t) do u[copy(k)]=copy(v) end; return u end
 
-slots= function(t,     u,public)
-         function public(k) return tostring(k):sub(1,1) ~= "_" end
-         u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
-         return sort(u) end
+function slots(t,     u,public)
+  function public(k) return tostring(k):sub(1,1) ~= "_" end
+  u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
+  return sort(u) end
 
-local fmt,fmt2,o,oo,ooo,rnd,rnds -- things to strings
+-- things to strings
 fmt=  string.format
 fmt2= function(k,v) return fmt(":%s %s",k,v) end 
 
-o =  function(t,s) return "{"..table.concat(map(t,tostring),s or", ").."}" end
-oo=  function(t,sep,    slot) 
-       function slot(k) return fmt2(k, t[k]) end
-       return (t.is or"")..o(map(slots(t),slot),sep or" ") end
-ooo= function(t) print( #t>1 and o(t) or oo(t)) end
+function ooo(t) print( #t>1 and o(t) or oo(t)) end
+function o(t,s) return "{"..table.concat(map(t,tostring),s or", ").."}" end
+function oo(t,sep,    slot) 
+  function slot(k) return fmt2(k, t[k]) end
+  return (t.is or"")..o(map(slots(t),slot),sep or" ") end
 
-rnd= function(x,f) 
-       return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or"%s",x) end
-rnds= function(t,f) return map(t, function(x) return rnd(x,f) end) end
+function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
+function rnd(x,f) 
+  return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or"%s",x) end
 
-local coerce, csv,class,adds -- misc
-coerce = function(x)
-           x = x:match"^%s*(.-)%s*$"
-           if x=="true" then return true elseif x=="false" then return false end
-           return math.tointeger(x) or tonumber(x) or x end
+-- strings to things
+function coerce(x)
+  x = x:match"^%s*(.-)%s*$"
+  if x=="true" then return true elseif x=="false" then return false end
+  return math.tointeger(x) or tonumber(x) or x end
 
-csv= function(src,      things)
-       function things(s,sep,   t)
-          t={}; for y in s:gmatch("([^,]+)") do t[1+#t]=coerce(y) end
-          return t end
-       src = io.input(src)
-       return function(x) x=io.read()
-         if x then return things(x) else io.close(src) end end end 
+function csv(src,      things)
+  function things(s,  t) 
+    t={}; for y in s:gmatch("([^,]+)") do t[1+#t]=coerce(y) end; return t end
+  src = io.input(src)
+  return function(x) x=io.read()
+    if x then return things(x) else io.close(src) end end end 
 
-class= function(name,    t,new)
-         function new(klass,...) 
-           local obj= setmetatable({},klass)
-           local res= klass.new(obj,...) 
-           if res then obj = setmetatable(res,klass) end
-           return obj end
-         t={__tostring=oo, is=name or ""}; t.__index=t
-         return setmetatable(t, {__call=new}) end
+function class(name,    t,new)
+  function new(klass,...) 
+    local obj = setmetatable({},klass)
+    local res = klass.new(obj,...) 
+    if res then obj = setmetatable(res,klass) end
+    return obj 
+  end --------
+  t={__tostring=oo, is=name or ""}; t.__index=t
+  return setmetatable(t, {__call=new}) end
 
-adds= function(obj,data)
-        if   type(data)=="string" 
-        then for   row in csv(data)         do obj:add(row) end 
-        else for _,row in pairs(data or {}) do obj:add(row) end end 
-        return obj end
+function adds(obj,data)
+  if   type(data)=="string" 
+  then for   row in csv(data)         do obj:add(row) end 
+  else for _,row in pairs(data or {}) do obj:add(row) end end 
+  return obj end
 
-local ok,demos,cli,settings -- startup, execution, unit tests
-settings= function(t,help)
-            help:gsub("\n  [-]([^%s]+)[%s]+[^\n]*%s([^%s]+)",
-                      function(k,x) t[k] = coerce(x) end)
-            return t end
+-- startup, execution, unit tests
+function settings(t,help)
+  help:gsub("\n  [-]([^%s]+)[%s]+[^\n]*%s([^%s]+)",function(k,x) t[k]=coerce(x) end)
+  return t end
 
-cli = function(the)
-        for k,v in pairs(the) do 
-          local flag="-"..k
-          for n,flag1 in ipairs(arg) do 
-             if flag1 == flag then 
-               v = v==false and"true" or v==true and"false" or arg[n+1]
-               the[k] = coerce(v) end end end
-        if the.h then os.exit(print(help)) else return the end end 
+function cli(the,  flag)
+  for k,v in pairs(the) do 
+    flag="-"..k
+    for n,flag1 in ipairs(arg) do 
+      if flag1 == flag then 
+        v = v==false and"true" or v==true and"false" or arg[n+1]
+        the[k] = coerce(v) end end end
+  if the.h then os.exit(print(help)) else return the end end 
 
-ok=  function(test,msg)
-       print("", test and "PASS "or "FAIL ", msg or "") 
-       if not test then 
-         fails= fails+1 
-         if  the.dump then assert(test,msg) end end end
+function ok(test,msg)
+  print("", test and "PASS "or "FAIL ", msg or "") 
+  if not test then 
+    fails= fails+1 
+    if  the.dump then assert(test,msg) end end end
 
-demos = function(the,go,      demo1,defaults)
-          function demo1(txt,fun) 
-            assert(fun, fmt("unknown start-up action: %s ",txt))
-            the = copy(defaults)
-            math.randomseed(the.seed or 10019)
-            print(txt)
-            fun() 
-          end ---------------
-          defaults = copy(the)
-          if   the.todo=="all" 
-          then for _,txt in pairs(slots(go)) do demo1(txt, go[txt]) end 
-          else demo1(the.todo, go[the.todo])  end end
+function demos(the,go,      demo1,defaults)
+  function demo1(txt,fun) 
+    assert(fun, fmt("unknown start-up action: %s ",txt))
+    the = copy(defaults)
+    math.randomseed(the.seed or 10019)
+    print(txt)
+    fun() 
+  end ---------------
+  defaults = copy(the)
+  if   the.todo=="all" 
+  then for _,txt in pairs(slots(go)) do 
+         demo1(txt,      go[txt]) end 
+  else   demo1(the.todo, go[the.todo])  end end
+-------------------------------------------------------------------------------
+local Some=class("Some")
+function Some:new() 
+  self.kept, self.ok, self.n = {}, false,0 end
+
+function Some:add(x) 
+   a      = self.kept
+   if     #a  < the.kept        then self.ok=false; push(a,x)  
+   elseif r() < the.kept/self.n then self.ok=false; a[r(#a)]=x end end 
+
 -------------------------------------------------------------------------------
 local Num=class("Num")
 function Num:new(at,name) 
   self.at, self.name = at or 0, name or ""
   self.w = self.name:find"$-" and -1 or 1
-  self.some, self.ok = {}, false
-  self.n,self.md,self.sd,self.lo,self.hi = 0,0,0,1E32,-1E32 end
+  self.some=Some()
+  self.n,self.mu,self.sd,self.lo,self.hi = 0,0,0,1E32,-1E32 end
 
 function Num:add(x,_,   a,d)
   if x ~="?" then
-    self.n = self.n + 1
-    d      = x - self.mu
-    self.mu= self.mu + d/self.n
-    self.m2= self.m2 + d*(x - self.mu)
-    self.sd= (self.m2<0 or self.n<2) and 0 or ((self.m2/(self.n - 1))^0.5)
-    self.lo= min(x, self.lo)
-    self.hi= max(x, self.hi) 
-    a      = self.some
-    if     #a  < the.num.keep        then self.ok=false; push(a,x)  
-    elseif r() < the.num.keep/self.n then self.ok=false; a[r(#a)]=x end end 
+    self.some:add(x) 
+    self.n  = self.n + 1
+    self.lo = min(x, self.lo)
+    self.hi = max(x, self.hi) 
+    d       = x - self.mu
+    self.mu = self.mu + d/self.n
+    self.m2 = self.m2 + d*(x - self.mu)
+    self.sd = (self.m2<0 or self.n<2) and 0 or ((self.m2/(self.n - 1))^0.5) end
   return x end
 
 function Num:mid() return self.mu end
