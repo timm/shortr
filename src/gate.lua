@@ -1,3 +1,4 @@
+#!/usr/bin/env lua
 -- vim: ts=2 sw=2 et:
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local help = [[
@@ -22,6 +23,7 @@ OPTIONS (inference control):
 OTHER:
   -h           show help                          = false
   -dump        enable stack dump on failures      = false
+  -file        file with data                     = ../etc/data/auto93.csv
   -rnd   str   pretty print control for floats    = %5.3f
   -todo  str   start-up action ("all" == run all) = the ]]
 
@@ -156,10 +158,16 @@ local Some=class("Some")
 function Some:new() 
   self.kept, self.ok, self.n = {}, false,0 end
 
-function Some:add(x) 
-   a      = self.kept
-   if     #a  < the.kept        then self.ok=false; push(a,x)  
-   elseif r() < the.kept/self.n then self.ok=false; a[r(#a)]=x end end 
+function Some:add(x,     a) 
+  self.n = 1 + self.n
+  a      = self.kept
+  if     #a  < the.keep        then self.ok=false; push(a,x)  
+  elseif r() < the.keep/self.n then self.ok=false; a[r(#a)]=x end end 
+
+function Some:has()
+  if not self.ok then table.sort(self.kept) end
+  self.ok = true
+  return self.kept end
 
 -------------------------------------------------------------------------------
 local Num=class("Num")
@@ -167,7 +175,7 @@ function Num:new(at,name)
   self.at, self.name = at or 0, name or ""
   self.w = self.name:find"$-" and -1 or 1
   self.some=Some()
-  self.n,self.mu,self.sd,self.lo,self.hi = 0,0,0,1E32,-1E32 end
+  self.n,self.mu,self.m2,self.sd,self.lo,self.hi = 0,0,0,0,1E32,-1E32 end
 
 function Num:add(x,_,   a,d)
   if x ~="?" then
@@ -197,15 +205,14 @@ function Num:norm(x,   lo,hi)
 local Sym=class("Sym")
 function Sym:new(at,name) 
   self.at, self.name = at or 0, name or ""
-  self.has, self.mode, self.most = {},nil,0 end
+  self.n, self.has, self.mode, self.most = 0,{},nil,0 end
 
 function Sym:add(x,inc)
   if x ~= "?" then
     inc = inc or 1
     self.n = self.n + inc
     self.has[x] = inc + (self.has[x] or 0)
-    if self.has[x] > self.most then
-      self.most, self.mode = self.has[x], x end end
+    if self.has[x] > self.most then self.most,self.mode = self.has[x],x end end
   return x end
 
 function Sym:mid() return self.mode end
@@ -260,11 +267,44 @@ function Egs:better(row1,row2)
   return s1 / n < s2 / n  end
 
 function Egs:betters()
-  return sort(self.rows, function(a,b) return self:better(a,b) end)  end
- 
---------------------------------------------------------------------------------
+  return sort(self.rows, function(a,b) return self:better(a,b) end)  end
+--------------------------------------------------------------------------------
 function go.the() ooo(the) end
 
+function go.ent() ok(abs(1.3788 - ent{a=4,b=2,c=1}) < 0.001,"enting") end 
+
+function go.ooo() ooo{cc=1,bb={ff=4,dd=5,bb=6}, aa=3} end
+
+function go.copy(  t,u)
+  t = {a=1,b=2,c={d=3,e=4,f={g=5,h=6}}}
+  u = copy(t)
+  t.c.f.g = 100
+  ok(u.c.f.g ~= t.c.f.g, "deep copy") end
+
+function go.rnds() ooo(rnds{3.421212, 10.1121, 9.1111, 3.44444}) end
+
+function go.csv(  n)
+  n=0; for row in csv(the.file) do n=n+1 end; ok(n==399,"stuff") end
+
+function go.some(  s)
+  the.keep = 64
+  s = Some(); for i=1,10^6 do s:add(i) end
+  ooo(s:has()) end
+
+function go.num(     n,mu,sd) 
+  n, mu, sd = Num(), 10, 1
+  for i=1,10^3 do
+    n:add(mu + sd*math.sqrt(-2*math.log(r()))*math.cos(2*math.pi*r())) end
+  ok(abs(n:mid() - mu) < 0.025, "sd")
+  ok(abs(n:div() - sd) < 0.05,  "div")  end
+
+function go.sym(     s,mu,sd) 
+  s= Sym()
+  for i=1,100 do 
+    for k,n in pairs{a=4,b=2,c=1} do s:add(k,n) end end 
+  ooo(s.has) end
+ 
+--------------------------------------------------------------------------------
 the = settings(the,help) 
 
 if   pcall(debug.getlocal, 4, 1) 
