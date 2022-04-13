@@ -115,9 +115,11 @@ function class(name,    t,new)
   return setmetatable(t, {__call=new}) end
 
 function adds(obj,data)
+  print(obj)
+  ooo(data)
   if   type(data)=="string" 
-  then for   row in csv(data)         do obj:add(row) end 
-  else for _,row in pairs(data or {}) do obj:add(row) end end 
+  then for   row in csv(data)       do obj:add(row) end 
+  else for _,x in pairs(data or {}) do print(2); obj:add(x) end end 
   return obj end
 
 -- startup, execution, unit tests
@@ -189,6 +191,12 @@ function Num:add(x,_,   a,d)
     self.sd = (self.m2<0 or self.n<2) and 0 or ((self.m2/(self.n - 1))^0.5) end
   return x end
 
+function Num:__add(other,    out)
+  out=Num(self.at,self.name)
+  for _,x in pairs(self.some.kept) do out:add(x) end
+  for _,x in pairs(other.some.kept) do out:add(x) end
+  return out end
+
 function Num:mid() return self.mu end
 function Num:div() return self.sd end
 
@@ -220,6 +228,12 @@ function Sym:div() return ent(self.has) end
 
 function Sym:like(x,prior) 
   return ((self.has[x] or 0) + the.m*prior)/(self.n + the.m) end
+
+function Sym:__add(other,    out)
+  out=Sym(self.at,self.name)
+  for x,n in pairs(self.has) do out:add(x,n) end
+  for x,n in pairs(other.has) do out:add(x,n) end
+  return out end
 
 --------------------------------------------------------------------------------
 local Cols=class("Cols")
@@ -297,6 +311,11 @@ function go.num(     n,mu,sd)
     n:add(mu + sd*math.sqrt(-2*math.log(r()))*math.cos(2*math.pi*r())) end
   ok(abs(n:mid() - mu) < 0.025, "sd")
   ok(abs(n:div() - sd) < 0.05,  "div")  end
+
+function go.adds( n)
+  print(adds(Num(),{1,2,3,4,5})) 
+  print(adds(Num(),{1,2,3,4,5}) + adds(Num(),{1,2,3,4,5})) 
+  end
 
 function go.sym(     s,mu,sd) 
   s= Sym()
