@@ -36,8 +36,9 @@ OTHER:
 -------------------------------------------------------------------------------
 -- define the local names
 local the,go,no,fails = {}, {}, {}, 0
-local abs,adds,class,cli,coerce,copy,csv ,demos,ent,fmt,fmt2,log
-local map,map2,max,min,o,ok ,oo,ooo,push,r,rnd,rnds,settings,slots,sort
+local abs,adds,cli,coerce,copy,csv ,demos,ent,fu,fmt,fmt2,log,lt
+local map,map2,max,merges,min,new,o,ok,obj,oo,ooo,per,push
+local r,rnd,rnds,sd,settings,slots,sort
 
 -------------------------------------------------------------------------------
 --
@@ -61,6 +62,14 @@ function ent(t,   n,e)
   n=0; for _,v in pairs(t) do n=n+v end 
   e=0; for _,v in pairs(t) do e=e-v/n*log(v/n,2) end; return e end
 
+function per(t,p)  return t[ ((p or .5)*#t) // 1 ] end 
+
+function sd(sorted,f,             ninety,ten)
+  if #sorted <= 10 then return 0 end
+  ninety,ten = per(sorted, .90), per(sorted, .10) 
+  if f then ninety,ten = f(ninety), f(ten) end
+  return (ninety-ten) / 2.564 end -- 2*(1.2 + 0.1*(0.9-0.88493)/(0.9032-0.88493))
+  
 -- lists
 function push(t,x) t[1 + #t] = x; return x end
 function sort(t,f) table.sort(t,f); return t end
@@ -104,23 +113,18 @@ function csv(src,      things)
     if x then return things(x) else io.close(src) end end end 
 
 -- misc
-function class(name,    t,new)
-  function new(klass,...) 
-    local obj = setmetatable({},klass)
-    local res = klass.new(obj,...) 
-    if res then obj = setmetatable(res,klass) end
-    return obj 
-  end --------
-  t={__tostring=oo, is=name or ""}; t.__index=t
-  return setmetatable(t, {__call=new}) end
+function fu(x) return function(t)   return t[x]        end end
+function lt(x) return function(t,u) return t[x] < u[x] end end
 
 function adds(obj,data)
-  print(obj)
-  ooo(data)
   if   type(data)=="string" 
   then for   row in csv(data)       do obj:add(row) end 
-  else for _,x in pairs(data or {}) do print(2); obj:add(x) end end 
+  else for _,x in pairs(data or {}) do obj:add(x) end end 
   return obj end
+
+function merges(i,j,     k)
+  k = i + j
+  if k:div()*.95 <= (i.n*i:div() + j.n*j:div())/k.n then return k end end 
 
 -- startup, execution, unit tests
 function settings(t,help)
@@ -143,20 +147,56 @@ function ok(test,msg)
     if  the.dump then assert(test,msg) end end end
 
 function demos(the,go,      demo1,defaults)
-  function demo1(txt,fun) 
-    assert(fun, fmt("unknown start-up action: %s ",txt))
+  function demo1(txt,f) 
+    assert(f, fmt("unknown start-up action: %s ",txt))
     the = copy(defaults)
     math.randomseed(the.seed or 10019)
     print(txt)
-    fun() 
+    f() 
   end ---------------
   defaults = copy(the)
   if   the.todo=="all" 
   then for _,txt in pairs(slots(go)) do 
          demo1(txt,      go[txt]) end 
-  else   demo1(the.todo, go[the.todo])  end end
--------------------------------------------------------------------------------
-local Some=class("Some")
+  else   demo1(the.todo, go[the.todo])  end end
+-----------------------------------------------------------------------------
+function new(klass,...) 
+  local obj = setmetatable({},klass)
+  local res = klass.new(obj,...) 
+  if res then obj = setmetatable(res,klass) end
+  return obj end 
+
+function obj(name,    t)
+  t={__tostring=oo, is=name or ""}; t.__index=t
+  return setmetatable(t, {__call=new}) end
+
+local Some,Sym,Num = obj"Some",obj"Sym",obj"Num"
+local Bin,Cols,Egs = obj"Bin",obj"Cols",obj"Egs"
+----------------------------------------------------------------------------
+function Sym:new(at,name) 
+  self.at, self.name = at or 0, name or ""
+  self.n, self.has, self.mode, self.most = 0,{},nil,0 end
+
+function Sym:add(x,inc)
+  if x ~= "?" then
+    inc = inc or 1
+    self.n = self.n + inc
+    self.has[x] = inc + (self.has[x] or 0)
+    if self.has[x] > self.most then self.most,self.mode = self.has[x],x end end
+  return x end
+
+function Sym:mid() return self.mode end
+function Sym:div() return ent(self.has) end
+
+function Sym:like(x,prior) 
+  return ((self.has[x] or 0) + the.m*prior)/(self.n + the.m) end
+
+function Sym:__add(other,    out)
+  out=Sym(self.at,self.name)
+  for x,n in pairs(self.has) do out:add(x,n) end
+  for x,n in pairs(other.has) do out:add(x,n) end
+  return out end
+----------------------------------------------------------------------------
 function Some:new() 
   self.kept, self.ok, self.n = {}, false,0 end
 
@@ -170,9 +210,7 @@ function Some:has()
   if not self.ok then table.sort(self.kept) end
   self.ok = true
   return self.kept end
-
--------------------------------------------------------------------------------
-local Num=class("Num")
+----------------------------------------------------------------------------
 function Num:new(at,name) 
   self.at, self.name = at or 0, name or ""
   self.w = self.name:find"$-" and -1 or 1
@@ -209,34 +247,38 @@ function Num:like(x,_)
 function Num:norm(x,   lo,hi)
   lo,hi= self.lo, self.hi
   return x=="?" and x or hi-lo < 1E-9 and 0 or (x - lo)/(hi - lo) end 
---------------------------------------------------------------------------------
-local Sym=class("Sym")
-function Sym:new(at,name) 
-  self.at, self.name = at or 0, name or ""
-  self.n, self.has, self.mode, self.most = 0,{},nil,0 end
 
-function Sym:add(x,inc)
-  if x ~= "?" then
-    inc = inc or 1
-    self.n = self.n + inc
-    self.has[x] = inc + (self.has[x] or 0)
-    if self.has[x] > self.most then self.most,self.mode = self.has[x],x end end
-  return x end
-
-function Sym:mid() return self.mode end
-function Sym:div() return ent(self.has) end
-
-function Sym:like(x,prior) 
-  return ((self.has[x] or 0) + the.m*prior)/(self.n + the.m) end
-
-function Sym:__add(other,    out)
-  out=Sym(self.at,self.name)
-  for x,n in pairs(self.has) do out:add(x,n) end
-  for x,n in pairs(other.has) do out:add(x,n) end
-  return out end
-
---------------------------------------------------------------------------------
-local Cols=class("Cols")
+local _merge
+function Num:bins(other) 
+  local tmp,out = {},{}
+  for _,x in pairs(self.some.kept ) do push(tmp, {x=x, y="left"}) end
+  for _,x in pairs(other.some.kept) do push(tmp, {x=x, y="right"}) end
+  tmp = sort(tmp,lt"x") -- ascending on x
+  local now     = push(out, Bin(self.at, self.name, tmp[1].x))
+  local epsilon = sd(tmp,fu"x") * the.cohen
+  local minSize = (#tmp)^the.leaves
+  for j,xy in pairs(tmp) do
+    if j > minSize and j + minSize < #tmp then -- leave enough for other bins
+      if now.ys.n > minSize then               -- enough in this bins
+        if xy.x ~= tmp[j+1].x then             -- there is a break in the data
+          if now.hi - now.lo > epsilon then    -- "now" not trivially small
+            now = push(out,  Bin(self.at, self.name, now.hi)) end end end end
+    now:add(xy.x, xy.y) end 
+  out[1].lo    = -math.huge
+  out[#out].hi =  math.huge
+  return _merge(out, BIN.mergeSameDivs) end
+ 
+function _merge(b4,             a,b,c,j,n,tmp)
+  j,n,tmp = 1,#b4,{}
+  while j<=n do
+    a, b = b4[j], b4[j+1]
+    if b then 
+      c = a:merged(b)
+      if c then a, j = c, j+1 end end 
+    tmp[#tmp+1] = a
+    j = j+1 end
+  return #tmp==#b4 and tmp or _merge(tmp) end
+----------------------------------------------------------------------------
 function Cols:new(names,    col)
   self.names = names
   self.all, self.x, self.y = {}, {}, {}
@@ -246,9 +288,7 @@ function Cols:new(names,    col)
       if name:find"!$" then self.klass=col end 
       col.indep = not name:find"[-+!]$"
       push(col.indep and self.x or self.y, col) end end end
-
--------------------------------------------------------------------------------
-local Egs=class("Egs")
+----------------------------------------------------------------------------
 function Egs:new() self.rows, self.cols = {},nil end
 
 function Egs:add(row,   add)
@@ -313,8 +353,7 @@ function go.num(     n,mu,sd)
   ok(abs(n:div() - sd) < 0.05,  "div")  end
 
 function go.adds( n)
-  print(adds(Num(),{1,2,3,4,5})) 
-  print(adds(Num(),{1,2,3,4,5}) + adds(Num(),{1,2,3,4,5})) 
+  print(adds(Num(),{1,2,3,4,5}) + adds(Num(),{11,12,13,14,15})) 
   end
 
 function go.sym(     s,mu,sd) 
