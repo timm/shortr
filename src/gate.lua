@@ -1,6 +1,7 @@
 -- vim: ts=2 sw=2 et:
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local help = [[
+
 gate: explore the world better, explore the world for good.
 (c) 2022, Tim Menzies
 
@@ -23,11 +24,31 @@ OTHER:
   -dump        enable stack dump on failures      = false
   -rnd   str   pretty print control for floats    = %5.3f
   -todo  str   start-up action ("all" == run all) = the ]]
+
 -------------------------------------------------------------------------------
+-- (c) 2022, Tim Menzies
+-- Usage of the works is permitted provided that this instrument is
+-- retained with the works, so that any entity that uses the works is
+-- notified of this instrument.  DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
+
+-------------------------------------------------------------------------------
+-- define the local names
 local the,go,no,fails = {}, {}, {}, 0
 local abs,adds,class,cli,coerce,copy,csv ,demos,ent,fmt,fmt2,log
 local map,map2,max,min,o,ok ,oo,ooo,push,r,rnd,rnds,settings,slots,sort
 
+-------------------------------------------------------------------------------
+--
+--             .---------.
+--             |         |
+--           -= _________ =-
+--              ___   ___
+--             |   )=(   |
+--              ---   --- 
+--                 ###
+--               #  =  #            "This ain't chemistry. 
+--               #######             This is art."
+-------------------------------------------------------------------------------
 -- maths
 r=    math.random
 abs=  math.abs
@@ -80,6 +101,7 @@ function csv(src,      things)
   return function(x) x=io.read()
     if x then return things(x) else io.close(src) end end end 
 
+-- misc
 function class(name,    t,new)
   function new(klass,...) 
     local obj = setmetatable({},klass)
@@ -245,10 +267,9 @@ function go.the() ooo(the) end
 
 the = settings(the,help) 
 
-if pcall(debug.getlocal, 4, 1) then -- called as sub-module
-  return {Num=Num, Sym=Sym, Egs=Egs}
-else -- called as main from command line
-  the = cli(the)  -- update `the` from command line
-  demos(the,go)
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end 
-  os.exit(fails) end 
+if   pcall(debug.getlocal, 4, 1) 
+then return {Num=Num, Sym=Sym, Egs=Egs} -- called as sub-module. return classes
+else the = cli(the)  -- update `the` from command line
+     demos(the,go)   -- run some demos
+     for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end 
+     os.exit(fails) end 
