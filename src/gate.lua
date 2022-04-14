@@ -252,7 +252,7 @@ function Sym:bins(other)
   local function known(x) out[x] = out[x] or Bin(self.at, self.name, x,x) end
   for x,n in pairs(self.has)  do known(x); out[x].ys:update("left", n) end
   for x,n in pairs(other.has) do known(x); out[x].ys:update("right", n) end
-  return map(slots(out), function(k) return out[k] end) end
+  return map(slots(out), function(k) return out[k] end) end
 ----------------------------------------------------------------------------
 function Some:new() 
   self.kept, self.ok, self.n = {}, false,0 end
@@ -380,7 +380,7 @@ function Egs:better(row1,row2)
   return s1 / n < s2 / n  end
 
 function Egs:betters()
-  return sort(self.rows, function(a,b) return self:better(a,b) end)  end
+  return sort(self.rows, function(a,b) return self:better(a,b) end)  end
 
 function Egs:tree(other,min,       kids,score)
   function gain(col1, col2, all,   sum,bins)
@@ -406,8 +406,7 @@ function Egs:tree(other,min,       kids,score)
               if bin:select(row) then sub:update(row); break end end end end
        self.kids = map(bins, 
            function(bin) bin.kid = bin.has[1]:tree(bin.has[2]) end) end end  
--- XXX not done yet. need to return the ocal kids
-
+-- XXX not done yet. need to return the ocal kids
 --------------------------------------------------------------------------------
 function go.the() ooo(the) end
 
