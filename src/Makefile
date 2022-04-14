@@ -76,6 +76,10 @@ $D/docs/%.pdf : %.lua
 		-M letter -o $@.ps $<
 	@ps2pdf $@.ps $@; rm $@.ps; git add $@
 
+gate:
+	$(MAKE) $D/docs/gate.pdf
+	open $D/docs/gate.pdf
+
 $D/docs/all.pdf:  all.lua
 
 prune = grep -v "usr.bin.env" | grep -v "vi:"

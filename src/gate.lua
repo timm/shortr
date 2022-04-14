@@ -22,6 +22,7 @@ gate: explore the world better, explore the world for good.
 OPTIONS (inference control):
   -k     int   Bayes: handle rare classes         = 2
   -m     int   Bayes: handle rare values          = 1
+  -min   real  min size                           = .5
   -seed  int   random number seed                 = 10019
   -keep  int   numbers to keep per column         = 512
 
@@ -36,9 +37,9 @@ OTHER:
 
 -- define the local names
 local the,go,no,fails = {}, {}, {}, 0
-local abs,adds,cli,coerce,copy,csv ,demos,ent,fu,fmt,fmt2,log,lt
+local abs,updates,cli,coerce,copy,csv ,demos,ent,fu,fmt,fmt2,log,lt
 local map,map2,max,merges,min,new,o,ok,obj,oo,ooo,per,push
-local r,rnd,rnds,sd,settings,slots,sort
+local r,rnd,rnds,sd,settings,slots,sort,sum
 
 --           
 --                                                        ,:
@@ -138,11 +139,12 @@ function csv(src,      things)
 -- misc
 function fu(x) return function(t)   return t[x]        end end
 function lt(x) return function(t,u) return t[x] < u[x] end end
+function gt(x) return function(t,u) return t[x] > u[x] end end
 
-function adds(obj,data)
+function updates(obj,data)
   if   type(data)=="string" 
-  then for   row in csv(data)       do obj:add(row) end 
-  else for _,x in pairs(data or {}) do obj:add(x) end end 
+  then for   row in csv(data)       do obj:update(row) end 
+  else for _,x in pairs(data or {}) do obj:update(x) end end 
   return obj end
 
 function merges(i,j,     k)
@@ -200,7 +202,7 @@ function Sym:new(at,name)
   self.at, self.name = at or 0, name or ""
   self.n, self.has, self.mode, self.most = 0,{},nil,0 end
 
-function Sym:add(x,inc)
+function Sym:update(x,inc)
   if x ~= "?" then
     inc = inc or 1
     self.n = self.n + inc
@@ -216,14 +218,22 @@ function Sym:like(x,prior)
 
 function Sym:__add(other,    out)
   out=Sym(self.at,self.name)
-  for x,n in pairs(self.has) do out:add(x,n) end
-  for x,n in pairs(other.has) do out:add(x,n) end
+  for x,n in pairs(self.has) do out:update(x,n) end
+  for x,n in pairs(other.has) do out:update(x,n) end
   return out end
+
+function Sym:bins(other)
+  local out = {}
+  local function known(x) out[x] = out[x] or Bin(self.at, self.name, x,x) end
+  for x,n in pairs(self.has)  do known(x); out[x].ys:update("left", n) end
+  for x,n in pairs(other.has) do known(x); out[x].ys:update("right", n) end
+  return map(slots(out), function(k) return out[k] end) end
+
 ----------------------------------------------------------------------------
 function Some:new() 
   self.kept, self.ok, self.n = {}, false,0 end
 
-function Some:add(x,     a) 
+function Some:update(x,     a) 
   self.n = 1 + self.n
   a      = self.kept
   if     #a  < the.keep        then self.ok=false; push(a,x)  
@@ -240,9 +250,9 @@ function Num:new(at,name)
   self.some=Some()
   self.n,self.mu,self.m2,self.sd,self.lo,self.hi = 0,0,0,0,1E32,-1E32 end
 
-function Num:add(x,_,   a,d)
+function Num:update(x,_,   a,d)
   if x ~="?" then
-    self.some:add(x) 
+    self.some:update(x) 
     self.n  = self.n + 1
     self.lo = min(x, self.lo)
     self.hi = max(x, self.hi) 
@@ -254,8 +264,8 @@ function Num:add(x,_,   a,d)
 
 function Num:__add(other,    out)
   out=Num(self.at,self.name)
-  for _,x in pairs(self.some.kept) do out:add(x) end
-  for _,x in pairs(other.some.kept) do out:add(x) end
+  for _,x in pairs(self.some.kept) do out:update(x) end
+  for _,x in pairs(other.some.kept) do out:update(x) end
   return out end
 
 function Num:mid() return self.mu end
@@ -286,10 +296,10 @@ function Num:bins(other)
         if xy.x ~= tmp[j+1].x then             -- there is a break in the data
           if now.hi - now.lo > epsilon then    -- "now" not trivially small
             now = push(out,  Bin(self.at, self.name, now.hi)) end end end end
-    now:add(xy.x, xy.y) end 
+    now:update(xy.x, xy.y) end 
   out[1].lo    = -math.huge
   out[#out].hi =  math.huge
-  return _merge(out, BIN.mergeSameDivs) end
+  return _merge(out) end
  
 function _merge(b4,             a,b,c,j,n,tmp)
   j,n,tmp = 1,#b4,{}
@@ -314,8 +324,11 @@ function Cols:new(names,    col)
 ----------------------------------------------------------------------------
 function Egs:new() self.rows, self.cols = {},nil end
 
-function Egs:add(row,   add)
-  add = function(col) col:add(row[col.at]) end
+function Egs:clone(data)
+  return updates(Egs():update(self.cols.name), data) end
+
+function Egs:update(row,   add)
+  add = function(col) col:update(row[col.at]) end
   if self.cols then push(self.rows, map(self.cols,add)) else 
      self.cols = Cols(row) end end
 
@@ -345,6 +358,33 @@ function Egs:better(row1,row2)
 
 function Egs:betters()
   return sort(self.rows, function(a,b) return self:better(a,b) end)  end
+
+function Egs:tree(other,min,       kids,score)
+  function gain(col1, col2, all,   sum,bins)
+    sum = 0
+    bins = col1:bins(col2)
+    map(bins, function(bin) 
+                bin.here  = self
+                bin.has = {self:clone(),self:clone()}
+                sum = sum + bin.ys.n/all * bin.ys:div() end) 
+    return {bins=bins, gain=sum} 
+  end ------------------------
+  n    = #self.rows + #other.rows
+  stop = stop or n^the.min
+  if   n < stop 
+  then return self 
+  else cols = map2(self.col.x, function(at,col)
+                     return {w=gain(col, other.col.x[at], n), col=col} end)
+       bins = sort(cols,fu"w")[1].bins
+       for at,eg in pairs{self,other} do
+         for _,row in pairs(eg.rows) do
+           for _,bin in pairs(bins) do 
+              sub = bin.has[at]
+              if bin:select(row) then sub:update(row); break end end end end
+       self.kids = map(bins, 
+           function(bin) bin.kid = bin.has[1]:tree(bin.has[2]) end) end end  
+-- XXX not done yet. need to return the ocal kids
+
 --------------------------------------------------------------------------------
 function go.the() ooo(the) end
 
@@ -365,24 +405,24 @@ function go.csv(  n)
 
 function go.some(  s)
   the.keep = 64
-  s = Some(); for i=1,10^6 do s:add(i) end
+  s = Some(); for i=1,10^6 do s:update(i) end
   ooo(s:has()) end
 
 function go.num(     n,mu,sd) 
   n, mu, sd = Num(), 10, 1
   for i=1,10^3 do
-    n:add(mu + sd*math.sqrt(-2*math.log(r()))*math.cos(2*math.pi*r())) end
+    n:update(mu + sd*math.sqrt(-2*math.log(r()))*math.cos(2*math.pi*r())) end
   ok(abs(n:mid() - mu) < 0.025, "sd")
   ok(abs(n:div() - sd) < 0.05,  "div")  end
 
-function go.adds( n)
-  print(adds(Num(),{1,2,3,4,5}) + adds(Num(),{11,12,13,14,15})) 
+function go.updates( n)
+  print(updates(Num(),{1,2,3,4,5}) + updates(Num(),{11,12,13,14,15})) 
   end
 
 function go.sym(     s,mu,sd) 
   s= Sym()
   for i=1,100 do 
-    for k,n in pairs{a=4,b=2,c=1} do s:add(k,n) end end 
+    for k,n in pairs{a=4,b=2,c=1} do s:update(k,n) end end 
   ooo(s.has) end
  
 --------------------------------------------------------------------------------
