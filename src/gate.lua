@@ -198,6 +198,31 @@ function obj(name,    t)
 local Some,Sym,Num = obj"Some",obj"Sym",obj"Num"
 local Bin,Cols,Egs = obj"Bin",obj"Cols",obj"Egs"
 ----------------------------------------------------------------------------
+function Bin:new(at,name, lo,hi,ys) 
+  self.at, self.name        = at or 0, name or ""
+  self.lo, self.hi, self.ys = lo, hi or lo, ys or Sym() end
+
+function Bin:__tostring()
+  local x,lo,hi,big = self.name, self.lo, self.hi, math.huge
+  if     lo ==  hi  then return fmt("%s==%s",x, lo)  
+  elseif hi ==  big then return fmt("%s>=%s",x, lo)  
+  elseif lo == -big then return fmt("%s<%s",x, hi)  
+  else                   return fmt("%s<=%s < %s",lo,x,hi) end end
+
+function Bin:select(row)
+  local x, lo, hi = row[self.at], self.lo, self.hi
+  return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
+
+function Bin:update(x,y)
+  if x<self.lo then self.lo = x end 
+  if x>self.hi then self.hi = x end 
+  self.ys:update(y) end
+
+function Bin:div() return self.ys:div() end
+
+function Bin:__add(other)
+  return Bin(self.at, self.name, self.lo, after.hi, self.ys + other.ys) end 
+----------------------------------------------------------------------------
 function Sym:new(at,name) 
   self.at, self.name = at or 0, name or ""
   self.n, self.has, self.mode, self.most = 0,{},nil,0 end
@@ -228,7 +253,6 @@ function Sym:bins(other)
   for x,n in pairs(self.has)  do known(x); out[x].ys:update("left", n) end
   for x,n in pairs(other.has) do known(x); out[x].ys:update("right", n) end
   return map(slots(out), function(k) return out[k] end) end
-
 ----------------------------------------------------------------------------
 function Some:new() 
   self.kept, self.ok, self.n = {}, false,0 end
@@ -281,15 +305,25 @@ function Num:norm(x,   lo,hi)
   lo,hi= self.lo, self.hi
   return x=="?" and x or hi-lo < 1E-9 and 0 or (x - lo)/(hi - lo) end 
 
-local merges
 function Num:bins(other) 
-  local tmp,out = {},{}
+  function merges(b4,             a,b,c,j,n,tmp)
+    j,n,tmp = 1,#b4,{}
+    while j<=n do
+      a, b = b4[j], b4[j+1]
+      if b then 
+        c = merged(a,b)
+        if c then a, j = c, j+1 end end 
+      tmp[#tmp+1] = a
+      j = j+1 end 
+    return #tmp==#b4 and tmp or merges(tmp)
+  end -------------------------------------
+  local tmp,out,now,epsilon,minSize = {},{}
   for _,x in pairs(self.some.kept ) do push(tmp, {x=x, y="left"}) end
   for _,x in pairs(other.some.kept) do push(tmp, {x=x, y="right"}) end
-  tmp = sort(tmp,lt"x") -- ascending on x
-  local now     = push(out, Bin(self.at, self.name, tmp[1].x))
-  local epsilon = sd(tmp,fu"x") * the.cohen
-  local minSize = (#tmp)^the.leaves
+  tmp     = sort(tmp,lt"x") -- ascending on x
+  now     = push(out, Bin(self.at, self.name, tmp[1].x))
+  epsilon = sd(tmp,fu"x") * the.cohen
+  minSize = (#tmp)^the.leaves
   for j,xy in pairs(tmp) do
     if j > minSize and j + minSize < #tmp then -- leave enough for other bins
       if now.ys.n > minSize then               -- enough in this bins
@@ -299,18 +333,7 @@ function Num:bins(other)
     now:update(xy.x, xy.y) end 
   out[1].lo    = -math.huge
   out[#out].hi =  math.huge
-  return _merges(out) end
- 
-function merges(b4,             a,b,c,j,n,tmp)
-  j,n,tmp = 1,#b4,{}
-  while j<=n do
-    a, b = b4[j], b4[j+1]
-    if b then 
-      c = merged(a,b)
-      if c then a, j = c, j+1 end end 
-    tmp[#tmp+1] = a
-    j = j+1 end
-  return #tmp==#b4 and tmp or merges(tmp) end
+  return merges(out) end
 ----------------------------------------------------------------------------
 function Cols:new(names,    col)
   self.names = names
