@@ -31,8 +31,12 @@ OTHER:
   -dump        enable stack dump on failures      = false
   -file        file with data                     = ../etc/data/auto93.csv
   -rnd   str   pretty print control for floats    = %5.3f
-  -todo  str   start-up action ("all" == run all) = the 
- ]]
+  -todo  str   start-up action                    = the 
+
+EXAMPLES:
+  lua gate.lua -todo list    :   list all actions
+  lua gate.lua -todo all     :   run all actions
+]]
 
 -------------------------------------------------------------------------------
 
@@ -450,6 +454,9 @@ function go.sym(     s,mu,sd)
   for i=1,100 do 
     for k,n in pairs{a=4,b=2,c=1} do s:update(k,n) end end 
   ooo(s.has) end
+
+function go.diabetes()
+  adds(Eg(),"../etc/data/diabetes.csv")
  
 --------------------------------------------------------------------------------
 the = settings(the,help) 
