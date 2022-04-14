@@ -8,12 +8,15 @@ COMMENT= gawk 'BEGIN {"---------------------------------------------------------
                       /^[ \t]*$$/ {next} {print "---    "$$0} END{print""}'
 
 COLORS =  gawk '          BEGIN {fails=passes=0; \
-                                 GREEN=sprintf("%c[1;32m",27,27); \
-                                 RED=sprintf("%c[1:33m",27); \
+                                 GREEN=sprintf("%c[1;32m",27); \
+                                 RED=  sprintf("%c[1;31m",27); \
                                  NORMAL=sprintf("%c[0m",27) } \
                   gsub(/PASS/,"") {passes++;$$0=  GREEN "PASS" NORMAL $$0 } \
                    gsub(/FAIL/,"") {fails++; $$0=  RED "PASS" NORMAL $$0 } \
-                     {print} END {print "\nERRORS ==> " fails; exit(fails)}' 
+                     {print} END {print "\n" RED "ERRORS ==> " fails " " NORMAL; exit(fails)}' 
+
+all:
+	@lua gate.lua -todo all | $(COLORS)
 
 top:; echo $(LUA)
 
