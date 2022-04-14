@@ -371,7 +371,7 @@ function Egs:tree(other,min,       kids,score)
   end ------------------------
   n    = #self.rows + #other.rows
   stop = stop or n^the.min
-  if   n < stop 
+  if   n < stop  
   then return self 
   else cols = map2(self.col.x, function(at,col)
                      return {w=gain(col, other.col.x[at], n), col=col} end)
