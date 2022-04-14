@@ -147,7 +147,7 @@ function updates(obj,data)
   else for _,x in pairs(data or {}) do obj:update(x) end end 
   return obj end
 
-function merges(i,j,     k)
+function merged(i,j,     k)
   k = i + j
   if k:div()*.95 <= (i.n*i:div() + j.n*j:div())/k.n then return k end end 
 
@@ -281,7 +281,7 @@ function Num:norm(x,   lo,hi)
   lo,hi= self.lo, self.hi
   return x=="?" and x or hi-lo < 1E-9 and 0 or (x - lo)/(hi - lo) end 
 
-local _merge
+local merges
 function Num:bins(other) 
   local tmp,out = {},{}
   for _,x in pairs(self.some.kept ) do push(tmp, {x=x, y="left"}) end
@@ -299,18 +299,18 @@ function Num:bins(other)
     now:update(xy.x, xy.y) end 
   out[1].lo    = -math.huge
   out[#out].hi =  math.huge
-  return _merge(out) end
+  return _merges(out) end
  
-function _merge(b4,             a,b,c,j,n,tmp)
+function merges(b4,             a,b,c,j,n,tmp)
   j,n,tmp = 1,#b4,{}
   while j<=n do
     a, b = b4[j], b4[j+1]
     if b then 
-      c = a:merged(b)
+      c = merged(a,b)
       if c then a, j = c, j+1 end end 
     tmp[#tmp+1] = a
     j = j+1 end
-  return #tmp==#b4 and tmp or _merge(tmp) end
+  return #tmp==#b4 and tmp or merges(tmp) end
 ----------------------------------------------------------------------------
 function Cols:new(names,    col)
   self.names = names
