@@ -201,7 +201,8 @@ function demos(the,go,      demo1,defaults)
   then for _,txt in pairs(slots(go)) do 
          demo1(txt,      go[txt]) end 
   else   demo1(the.todo, go[the.todo])  end end
------------------------------------------------------------------------------
+
+-- classes
 function new(klass,...) 
   local obj = setmetatable({},klass)
   local res = klass.new(obj,...) 
@@ -210,8 +211,8 @@ function new(klass,...)
 
 function obj(name,    t)
   t={__tostring=oo, is=name or ""}; t.__index=t
-  return setmetatable(t, {__call=new}) end
-
+  return setmetatable(t, {__call=new}) end
+-----------------------------------------------------------------------------
 local Some,Sym,Num,Bin = obj"Some", obj"Sym", obj"Num", obj"Bin"
 local Cols,Egs,Nb,Abcd = obj"Cols", obj"Egs", obj"Nb",  obj"Abcd"
 ----------------------------------------------------------------------------
@@ -269,7 +270,7 @@ function Sym:bins(other)
   local function known(x) out[x] = out[x] or Bin(self.at, self.name, x,x) end
   for x,n in pairs(self.has)  do known(x); out[x].ys:update("left", n) end
   for x,n in pairs(other.has) do known(x); out[x].ys:update("right", n) end
-  return map(slots(out), function(k) return out[k] end) end
+  return map(slots(out), function(k) return out[k] end) end
 ----------------------------------------------------------------------------
 function Some:new() 
   self.kept, self.ok, self.n = {}, false,0 end
@@ -480,10 +481,10 @@ function Abcd:pretty(t,    s1,s2,d,s,u)
   d,s = "---", (s1 .. s2)
   print(fmt(s,"db","rx","a","b","c","d","acc","pd","pf","prec","f","g"))
   print(fmt(s,d,d,d,d,d,d,d,d,d,d,d,d))
-  for key,x in pairs(slots(t)) do
-    u = t[x]
+  for x,u in pairs(sort(map(t,function(x) return x end),
+                       function(a,b) return (a.c+a.d> b.c+b.d) end)) do
     print(fmt(s.." %s", u.data,u.rx,u.a, u.b, u.c, u.d,
-                         u.acc, u.pd, u.pf, u.prec, u.f, u.g, x)) end end
+                        u.acc, u.pd, u.pf, u.prec, u.f, u.g, u.class)) end end
 
 function Abcd:adds(gotwants, show)
   for key,one in pairs(gotwants) do 
@@ -494,12 +495,16 @@ function Abcd:adds(gotwants, show)
       if   one.want == x
       then inc(one.want == one.got and self.d or self.b, x)
       else inc(one.got  == x       and self.c or self.a, x) end end end 
-  return show and self:pretty(self:report()) or self:report() end
+  return show and self:pretty(self:report()) or self:report() end
 --------------------------------------------------------------------------------
 function go.list() 
   map(slots(go), function(x) print(fmt("lua gate.lua -todo %s",x)) end) end
 
 function go.the() ooo(the) end
+
+function go.sort(   t)
+  t={10,9,3}
+  ooo(sort(t)) end
 
 function go.ent() ok(abs(1.3788 - ent{a=4,b=2,c=1}) < 0.001,"enting") end 
 
@@ -560,6 +565,9 @@ function go.abcd()
 function go.nb(f,    nb)
   nb = updates(Nb(),f or "../etc/data/diabetes.csv")
   Abcd():adds(nb.log, true) end 
+
+function go.nbsb()
+  go.nb("../etc/data/soybean.csv") end
 --------------------------------------------------------------------------------
 the = settings(the,help) 
 
