@@ -25,6 +25,7 @@ OPTIONS (inference control):
   -min   real  min size                           = .5
   -seed  int   random number seed                 = 10019
   -keep  int   numbers to keep per column         = 512
+  -wait  int   pre-learning, wait a few examples  = 5
 
 OTHER:
   -h           show help                          = false
@@ -146,7 +147,7 @@ function lt(x) return function(t,u) return t[x] < u[x] end end
 function gt(x) return function(t,u) return t[x] > u[x] end end
 
 function updates(obj,data)
-  if   type(data)=="string" 
+  if   type(data) == "string" 
   then for   row in csv(data)       do obj:update(row) end 
   else for _,x in pairs(data or {}) do obj:update(x) end end 
   return obj end
@@ -211,7 +212,7 @@ function obj(name,    t)
   return setmetatable(t, {__call=new}) end
 
 local Some,Sym,Num = obj"Some",obj"Sym",obj"Num"
-local Bin,Cols,Egs = obj"Bin",obj"Cols",obj"Egs"
+local Bin,Cols,Egs,Nb = obj"Bin",obj"Cols",obj"Egs",obj"Nb"
 ----------------------------------------------------------------------------
 function Bin:new(at,name, lo,hi,ys) 
   self.at, self.name        = at or 0, name or ""
@@ -341,8 +342,7 @@ function Num:bins(other,         tmp,out,now,epsilon,minSize)
   return merges(out) end
 ----------------------------------------------------------------------------
 function Cols:new(names,    col)
-  self.names = names
-  self.all, self.x, self.y = {}, {}, {}
+  self.names, self.all, self.x, self.y, self.klass = names, {}, {}, {}, nil
   for at,name in pairs(names) do
     col = push(self.all, (name:find"^[A-Z]" and Num or Sym)(at,name))
     if not name:find":$"  then
@@ -353,12 +353,14 @@ function Cols:new(names,    col)
 function Egs:new() self.rows, self.cols = {},nil end
 
 function Egs:clone(data)
-  return updates(Egs():update(self.cols.name), data) end
+  return updates(Egs():update(self.cols.names), data) end
 
 function Egs:update(row,   add)
   add = function(col) col:update(row[col.at]) end
-  if self.cols then push(self.rows, map(self.cols,add)) else 
-     self.cols = Cols(row) end end
+  if   self.cols 
+  then map(self.cols.all,add); push(self.rows, row) 
+  else self.cols = Cols(row) end 
+  return self end
 
 function Egs:mid(cols) 
   return map(cols or self.cols.y, function(col) return col:mid() end) end
@@ -366,14 +368,15 @@ function Egs:mid(cols)
 function Egs:div(cols) 
   return map(cols or self.cols.y, function(col) return col:div() end) end
 
-function Egs:like(row,egs,       n,prior,like,col)
-  n=0; for _,eg in pairs(egs) do n = n + #eg.rows end
-  prior = (#self.rows + the.k) / (n + the.k * #egs)
+function Egs:like(row,egs,overall,       prior,like,col)
+  prior = (#self.rows + the.k) / (overall + the.k * #egs)
   like  = log(prior)
   for at,x in pairs(row) do
     col = self.cols.all[at]
-    if x ~= "?" and col.indep then like= like + log(col:like(x,prior)) end end
+    if x ~= "?" and col.indep then like=like + log(col:like(x,prior)) end end
   return like end
+
+function Egs:klass(row) return row[self.cols.klass.at] end
 
 function Egs:better(row1,row2)
   local s1, s2, n, e = 0, 0, #self.cols.y, math.exp(1)
@@ -386,7 +389,31 @@ function Egs:better(row1,row2)
 
 function Egs:betters()
   return sort(self.rows, function(a,b) return self:better(a,b) end)  end
+----------------------------------------------------------------------------
+function Nb:new()
+  self.all, self.some, self.log = nil, {}, {} end
 
+function Nb:update(row)
+  if   self.all
+  then if #self.all.rows > the.wait then 
+          push(self.log, { want = self.all:klass(row), 
+                           got  = self:classify(row)   }) end
+       self:train(row)
+  else self.all = Egs():update(row) end end
+ 
+function Nb:train(row,      k)
+   k = self.all:klass(row) 
+   self.some[k] = self.some[k] or self.all:clone()
+   self.some[k]:update(row)
+   self.all:update(row)  end
+
+function Nb:classify(row,   most,klass,tmp,out)
+  most = -math.huge
+  for klass,eg in pairs(self.some) do
+    tmp = eg:like(row, self.some, #self.all.rows)
+    if tmp > most then most,out = tmp, klass end end
+  return klass,most end
+----------------------------------------------------------------------------
 function Egs:tree(other,min,       kids,score)
   function gain(col1, col2, all,   sum,bins)
     sum = 0
@@ -455,9 +482,21 @@ function go.sym(     s,mu,sd)
     for k,n in pairs{a=4,b=2,c=1} do s:update(k,n) end end 
   ooo(s.has) end
 
-function go.diabetes()
-  adds(Eg(),"../etc/data/diabetes.csv")
- 
+function go.egs(f)
+  for _,col in pairs(updates(Egs(),f or "../etc/data/diabetes.csv").cols.all) do
+    print("\n",col) end end
+
+function go.clone(f,     a,b)
+  a = updates(Egs(),f or "../etc/data/diabetes.csv")
+  b = a:clone(a.rows) 
+  print(a.cols.x[1].sd)
+  print(b.cols.x[1].sd)
+  ok(a.cols.x[1].sd == b.cols.x[1].sd, "same y") end
+
+function go.nb(f,    nb)
+  nb = updates(Nb(),f or "../etc/data/diabetes.csv")
+  map(nb.log, function(x) ooo(x) end) 
+  end 
 --------------------------------------------------------------------------------
 the = settings(the,help) 
 
