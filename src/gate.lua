@@ -43,8 +43,8 @@ EXAMPLES:
 
 -- define the local names
 local the,go,no,fails = {}, {}, {}, 0
-local abs,updates,cli,coerce,copy,csv ,demos,ent,fu,fmt,fmt2,gt,log,lt
-local map,map2,max,merge,merges,min,new,o,ok,obj,oo,ooo,per,push
+local abs,updates,cli,coerce,copy,csv ,demos,ent,fu,fmt,fmt2,gt,inc,log
+local lt,map,map2,max,merge,merges,min,new,o,ok,obj,oo,ooo,per,push
 local r,rnd,rnds,sd,settings,slots,sort,sum
 
 --                                                        ,:
@@ -100,9 +100,10 @@ function sd(sorted,f,             ninety,ten)
   return (ninety-ten)/2.564 end -- 2*(1.2 + 0.1*(0.9-0.88493)/(0.9032-0.88493))
   
 -- lists
-function push(t,x) t[1 + #t] = x; return x end
-function sort(t,f) table.sort(t,f); return t end
-function map(t,f, u) u={};for _,v in pairs(t)do u[1+#u]=f(v)  end;return u end
+function inc(f,a,n)   f=f or{}; f[a]=(f[a] or 0) + (n or 1) return f end
+function push(t,x)    t[1 + #t] = x; return x end
+function sort(t,f)    table.sort(t,f); return t end
+function map(t,f, u)  u={};for _,v in pairs(t)do u[1+#u]=f(v)  end;return u end
 function map2(t,f, u) u={};for k,v in pairs(t)do u[k] = f(k,v) end;return u end
 
 function copy(t,   u)
@@ -211,8 +212,8 @@ function obj(name,    t)
   t={__tostring=oo, is=name or ""}; t.__index=t
   return setmetatable(t, {__call=new}) end
 
-local Some,Sym,Num = obj"Some",obj"Sym",obj"Num"
-local Bin,Cols,Egs,Nb = obj"Bin",obj"Cols",obj"Egs",obj"Nb"
+local Some,Sym,Num,Bin = obj"Some", obj"Sym", obj"Num", obj"Bin"
+local Cols,Egs,Nb,Abcd = obj"Cols", obj"Egs", obj"Nb",  obj"Abcd"
 ----------------------------------------------------------------------------
 function Bin:new(at,name, lo,hi,ys) 
   self.at, self.name        = at or 0, name or ""
@@ -230,8 +231,8 @@ function Bin:select(row)
   return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
 
 function Bin:update(x,y)
-  if x<self.lo then self.lo = x end 
-  if x>self.hi then self.hi = x end 
+  if x<self.lo then self.lo = x end
+  if x>self.hi then self.hi = x end
   self.ys:update(y) end
 
 function Bin:div() return self.ys:div() end
@@ -410,9 +411,10 @@ function Nb:train(row,      k)
 function Nb:classify(row,   most,klass,tmp,out)
   most = -math.huge
   for klass,eg in pairs(self.some) do
+    out = out or klass
     tmp = eg:like(row, self.some, #self.all.rows)
     if tmp > most then most,out = tmp, klass end end
-  return klass,most end
+  return out,most end
 ----------------------------------------------------------------------------
 function Egs:tree(other,min,       kids,score)
   function gain(col1, col2, all,   sum,bins)
@@ -439,6 +441,60 @@ function Egs:tree(other,min,       kids,score)
        self.kids = map(bins, 
            function(bin) bin.kid = bin.has[1]:tree(bin.has[2]) end) end end  
 -- XXX not done yet. need to return the ocal kids
+--------------------------------------------------------------------------------
+function Abcd:new(data,rx) 
+  self.data, self.rx = data or "", rx or ""
+  self.yes, self.no  = 0,0
+  self.known, self.a, self.b, self.c, self.d = {},{},{},{},{} end
+
+function Abcd:exists(x,   new) 
+  new = not self.known[x]
+  inc(self.known,x)
+  if new then
+    self.a[x]=self.yes + self.no; self.b[x]=0; self.c[x]=0; self.d[x]=0 end end
+
+function Abcd:report(    p,out,a,b,c,d,pd,pf,pn,f,acc,g,prec)
+  p = function (z) return math.floor(100*z + 0.5) end
+  out= {}
+  for x,xx in pairs( self.known ) do
+    pd,pf,pn,prec,g,f,acc = 0,0,0,0,0,0,0
+    a= (self.a[x] or 0); b= (self.b[x] or 0); 
+    c= (self.c[x] or 0); d= (self.d[x] or 0);
+    if b+d > 0     then pd   = d     / (b+d)        end
+    if a+c > 0     then pf   = c     / (a+c)        end
+    if a+c > 0     then pn   = (b+d) / (a+c)        end
+    if c+d > 0     then prec = d     / (c+d)        end
+    if 1-pf+pd > 0 then g=2*(1-pf) * pd / (1-pf+pd) end 
+    if prec+pd > 0 then f=2*prec*pd / (prec + pd)   end
+    if self.yes + self.no > 0 then 
+       acc= self.yes /(self.yes + self.no) end
+    out[x] = {data=self.data,rx=self.rx,num=self.yes+self.no,
+              a=a,b=b,c=c,d=d,acc=p(acc),
+              prec=p(prec), pd=p(pd), pf=p(pf),f=p(f), g=p(g), class=x} end
+  return out end
+
+function Abcd:pretty(t,    s1,s2,d,s,u)
+  print""
+  s1  = "%10s | %10s | %4s | %4s | %4s | %4s "
+  s2  = "| %3s | %3s| %3s | %4s | %3s | %3s |"
+  d,s = "---", (s1 .. s2)
+  print(fmt(s,"db","rx","a","b","c","d","acc","pd","pf","prec","f","g"))
+  print(fmt(s,d,d,d,d,d,d,d,d,d,d,d,d))
+  for key,x in pairs(slots(t)) do
+    u = t[x]
+    print(fmt(s.." %s", u.data,u.rx,u.a, u.b, u.c, u.d,
+                         u.acc, u.pd, u.pf, u.prec, u.f, u.g, x)) end end
+
+function Abcd:adds(gotwants, show)
+  for key,one in pairs(gotwants) do 
+    self:exists(one.want) 
+    self:exists(one.got)  
+    if one.want == one.got then self.yes=self.yes+1 else self.no=self.no+1 end
+    for x,xx in pairs(self.known) do 
+      if   one.want == x
+      then inc(one.want == one.got and self.d or self.b, x)
+      else inc(one.got  == x       and self.c or self.a, x) end end end 
+  return show and self:pretty(self:report()) or self:report() end
 --------------------------------------------------------------------------------
 function go.list() 
   map(slots(go), function(x) print(fmt("lua gate.lua -todo %s",x)) end) end
@@ -493,10 +549,17 @@ function go.clone(f,     a,b)
   print(b.cols.x[1].sd)
   ok(a.cols.x[1].sd == b.cols.x[1].sd, "same y") end
 
+function go.abcd()
+  local t={}
+  for _ = 1,6 do push(t,{want="yes",got="yes"}) end
+  for _ = 1,2 do push(t,{want="no",got="no"}) end
+  for _ = 1,6 do push(t,{want="maybe",got="maybe"}) end
+  for _ = 1,1 do push(t,{want="maybe", got="no"}) end
+  Abcd():adds(t,true) end 
+
 function go.nb(f,    nb)
   nb = updates(Nb(),f or "../etc/data/diabetes.csv")
-  map(nb.log, function(x) ooo(x) end) 
-  end 
+  Abcd():adds(nb.log, true) end 
 --------------------------------------------------------------------------------
 the = settings(the,help) 
 
