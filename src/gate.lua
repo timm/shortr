@@ -45,7 +45,7 @@ EXAMPLES:
 local the,go,no,fails = {}, {}, {}, 0
 local abs,updates,cli,coerce,copy,csv ,demos,ent,fu,fmt,fmt2,gt,inc,log
 local lt,map,map2,max,merge,merges,min,new,o,ok,obj,oo,ooo,per,push
-local r,rnd,rnds,sd,settings,slots,sort,sum
+local r,rnd,rnds,sd,settings,slots,sort,splice,sum
 
 --                                                        ,:
 --                                                      ,' |
@@ -114,6 +114,10 @@ function slots(t,     u,public)
   function public(k) return tostring(k):sub(1,1) ~= "_" end
   u={};for k,v in pairs(t) do if public(k) then u[1+#u]=k end end
   return sort(u) end
+
+function splice(t,lo,hi,   j,u)
+  lo, hi = lo or 1, hi or #t
+  u={}; for j=lo,hi do u[1+#u]=t[j] end; return u end
 
 -- things to strings
 fmt=  string.format
@@ -288,7 +292,7 @@ function Some:has()
 ----------------------------------------------------------------------------
 function Num:new(at,name) 
   self.at, self.name = at or 0, name or ""
-  self.w = self.name:find"$-" and -1 or 1
+  self.w = self.name:find"-$" and -1 or 1
   self.some=Some()
   self.n,self.mu,self.m2,self.sd,self.lo,self.hi = 0,0,0,0,1E32,-1E32 end
 
@@ -568,6 +572,19 @@ function go.nb(f,    nb)
 
 function go.nbsb()
   go.nb("../etc/data/soybean.csv") end
+
+function go.bestrest(   eg,best,rest,rows,n)
+  eg= updates(Egs(),"../etc/data/auto93.csv") 
+  rows = eg:betters() 
+  n    = (#rows)^.5 // 1
+  best = splice(rows, 1,n)
+  rest = splice(rows, #rows-n)
+  best = eg:clone(best)
+  rest = eg:clone(rest)
+  ooo(rnds(best:mid()))
+  ooo(rnds(rest:mid()))
+end
+  
 --------------------------------------------------------------------------------
 the = settings(the,help) 
 
