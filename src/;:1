@@ -45,7 +45,7 @@ EXAMPLES:
 
 -- define the local names
 local the,go,no,fails = {}, {}, {}, 0
-local abs,updates,cli,coerce,copy,csv ,demos,ent,fu,fmt,fmt2,gt,inc,last,log
+local abs,updates,cli,coerce,copy,csv ,demos,ent,fu,fmt,fmt2,gt,inc,log
 local lt,map,map2,max,merge,merges,min,new,o,ok,obj,oo,ooo,per,push
 local r,rnd,rnds,sd,settings,slots,sort,splice,sum
 
@@ -358,7 +358,7 @@ function Num:bins(other,         tmp,out,now,epsilon,minSize)
             now = push(out,  Bin(self.at, self.name, now.hi)) end end end end
     now:update(xy.x, xy.y) end 
   out[1].lo    = -math.huge
-  last(out).hi =  math.huge
+  out[#out].hi =  math.huge
   return merges(out) end
 ----------------------------------------------------------------------------
 function Cols:new(names,    col)
@@ -421,61 +421,33 @@ function Egs:around(row1, rows)
   return sort(map(rows or self.rows,around), lt"dist") end
 
 ----------------------------------------------------------------------------
-function halves(eg,top,   here)
-  top = top or eg
-  here = Halved(eg,top)
-  if helf.lefts and #here.lefts.rows < #eg.rows then
-    here.lefts  = halves(here.lefts,  top)
-    here.rights = halves(here.rights, top) end 
-  return here end
+function Half:new(eg,rows)
 
--- this is all wrong. now sure if i am returnt theing the tree or what
-function bestRest(top,       best,other,fun)
-  other = {} 
-  function fun(eg, b4) 
-    here = Halved(eg,top, b4 )
-    if   not half.lefts
-    then return here.egs
-    else if #here.lefts.rows < #eg.rows then
-            here.lefts  = fun(here.lefts, here.left)
-            map(here.rights.rows, function (row) push(other,row) end) 
-            here.rights = nil end end 
-  end --------------
-  bests = fun(top)
-  return bests, bests:clone( many(other, the.rest*#best.rows))  end
-    
-function Halved:new(eg,top,b4,     optimizing, rows,some)
-  rows        = eg.rows
-  some        = many(rows, the.some)
-  self.top    = top
-  self.eg     = eg
-  self.left   = b4 or self:far( any(some), some)
-  self.right  = self:far(self.left,  some)
-  if b4 and eg:better(right,left) then 
-    left,right = right,left end
-  self.c      = self:dist(self.left, self.right)
-  if #eg.rows < (#top.rows)^the.min then
-    self.lefts  = self.eg:clone()
-    self.rights = self.eg:clone()
-    for n,projection in pairs(self:projections(rows)) do
-      (n < #rows//2 and self.lefts or self.rights):update(projection.row) end
-    self.gaurd  = self:dist(left, last(left.rows)) end
-  return self end
-
-function Halved:dist(r1,r1) return self.top:dist(r1,r2) end
-
-function Halved:far(r,some) return per(self.eg:around(r,some)).row end
-
-function Halved:projections(rows)
+function Half:projections(rows)
   return sort(map(rows, function(r) return self:project(r) end), lt"x") end
 
-function Halved:project(row,   cos,z)
-  z   = 1/math.huge
-  cos = function(a,b,c) return (a^2 + self.c^2 - b^2) / (2*self.c + z) end
-  return {x  = cos(self:dist(row,self.left), self:dist(row,self.right), self.c), 
-         row = row} end
+function Half:project(r1,   d)
+  cos = function(a,b,c) return (a*a + c*c - b*b) / (2*c + 1/math.huge) end
+  d   = function(r2)    return self.eg.dist(r1,r2) end
+  return {x  = cos(d(sefl.left), d(self.right), self.c), 
+         row = r} end
 
+function Half:far(r,some) return per(self.eg:around(r,some)).row end
 
+function Half:new(eg,rows,     some)
+  self.eg     = eg
+  rows        = rows or eg.rows
+  some        = many(rows, the.some)
+  self.left   = self:far( any(some), some)
+  self.right  = self:far(self.left,  some)
+  self.c      = self.eg:dist(self.left ,self.right)
+  self.lefts  = self.eg:clone()
+  self.rights = self.eg:clone()
+  for n,projection in pairs(self:projections(rows)) do
+    if n == #rows//2 then self.gaurd = projection.row end
+    (n < #rows//2 and self.lefts or self.rights):update(projection.row) end
+
+  return self end
 ----------------------------------------------------------------------------
 function Nb:new()
   self.all, self.some, self.log = nil, {}, {} end
