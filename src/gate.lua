@@ -482,7 +482,7 @@ function Abcd:pretty(t,    s1,s2,d,s,u)
   print(fmt(s,"db","rx","a","b","c","d","acc","pd","pf","prec","f","g"))
   print(fmt(s,d,d,d,d,d,d,d,d,d,d,d,d))
   for x,u in pairs(sort(map(t,function(x) return x end),
-                       function(a,b) return (a.c+a.d> b.c+b.d) end)) do
+                       function(a,b) return (a.b+a.d> b.b+b.d) end)) do
     print(fmt(s.." %s", u.data,u.rx,u.a, u.b, u.c, u.d,
                         u.acc, u.pd, u.pf, u.prec, u.f, u.g, u.class)) end end
 
