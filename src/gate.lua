@@ -20,6 +20,8 @@ gate: explore the world better, explore the world for good.
               .------.  
 
 OPTIONS (inference control):
+  -far   real  limit for search for far points    = .9
+  -l     int   dist. co-efficient. Euclidean if 2 = 2
   -k     int   Bayes: handle rare classes         = 2
   -m     int   Bayes: handle rare values          = 1
   -min   real  min size                           = .5
@@ -219,6 +221,7 @@ function obj(name,    t)
 -----------------------------------------------------------------------------
 local Some,Sym,Num,Bin = obj"Some", obj"Sym", obj"Num", obj"Bin"
 local Cols,Egs,Nb,Abcd = obj"Cols", obj"Egs", obj"Nb",  obj"Abcd"
+local Cluster = obj"Cluster"
 ----------------------------------------------------------------------------
 function Bin:new(at,name, lo,hi,ys) 
   self.at, self.name        = at or 0, name or ""
@@ -262,6 +265,9 @@ function Sym:div() return ent(self.has) end
 
 function Sym:like(x,prior) 
   return ((self.has[x] or 0) + the.m*prior)/(self.n + the.m) end
+
+function Sym:dist(x,y)
+  return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
 
 function Sym:__add(other,    out)
   out=Sym(self.at,self.name)
@@ -322,6 +328,13 @@ function Num:like(x,_)
   if x < self.mu - 4*self.sd then return 0 end 
   if x > self.mu + 4*self.sd then return 0 end 
   return e^(-(x - self.mu)^2 / (z + 2*self.sd^2))/(z + (pi*2*self.sd^2)^.5) end
+
+function Num:dist(x,y)
+  if x=="?" and y=="?" then return 1 end
+  if     x=="?" then y = self:norm(y); x = y<.5 and 1 or 0 
+  elseif y=="?" then x = self:norm(x); y = x<.5 and 1 or 0
+  else   x,y = self:norm(x), self:norm(y) end
+  return abs(x - y) end
 
 function Num:norm(x,   lo,hi)
   lo,hi= self.lo, self.hi
@@ -395,6 +408,19 @@ function Egs:better(row1,row2)
 
 function Egs:betters()
   return sort(self.rows, function(a,b) return self:better(a,b) end)  end
+
+function Egs:dist(row1,row2,   d,n)
+  d,n = 0, #self.cols.x
+  for _,col in pairs(self.cols.x) do
+    d = d + col:dist(row1[col.at], row2[col.at])^the.l end
+  return (d/n)^(1/the.l) end
+  
+function Egs:around(row1, rows)
+  function around(row2) return  {dist=self:dist(row1,row2),row=row2} end
+  return sort(map(rows or self.rows,around), lt"dist") end
+
+----------------------------------------------------------------------------
+
 ----------------------------------------------------------------------------
 function Nb:new()
   self.all, self.some, self.log = nil, {}, {} end
