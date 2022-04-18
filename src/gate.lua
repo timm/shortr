@@ -421,62 +421,59 @@ function Egs:around(row1, rows)
   return sort(map(rows or self.rows,around), lt"dist") end
 
 ----------------------------------------------------------------------------
-function halves(eg,top,   here)
-  top = top or eg
-  here = Halved(eg,top)
-  if helf.lefts and #here.lefts.rows < #eg.rows then
-    here.lefts  = halves(here.lefts,  top)
-    here.rights = halves(here.rights, top) end 
-  return here end
-
--- this is all wrong. now sure if i am returnt theing the tree or what
-function bestRest(top,       best,other,fun)
-  other = {} 
-  function fun(eg, b4) 
-    here = Halved(eg,top, b4 )
-    if   not half.lefts
-    then return here.egs
-    else if #here.lefts.rows < #eg.rows then
-            here.lefts  = fun(here.lefts, here.left)
-            map(here.rights.rows, function (row) push(other,row) end) 
-            here.rights = nil end end 
-  end --------------
-  bests = fun(top)
-  return bests, bests:clone( many(other, the.rest*#best.rows))  end
-    
-function Halved:new(eg,top,b4,     optimizing, rows,some)
-  rows        = eg.rows
-  some        = many(rows, the.some)
-  self.top    = top
-  self.eg     = eg
-  self.left   = b4 or self:far( any(some), some)
-  self.right  = self:far(self.left,  some)
-  if b4 and eg:better(right,left) then 
-    left,right = right,left end
-  self.c      = self:dist(self.left, self.right)
-  if #eg.rows < (#top.rows)^the.min then
+function Halved:new(eg,top,b4,     rows,some)
+  self.top   = top or eg
+  self.eg    = eg
+  rows       = self.eg.rows
+  if #eg.rows >= (#top.rows)^the.min then
+    some       = many(rows, the.some)
+    self.left  = b4 or self:far( any(some), some)
+    self.right =       self:far(self.left,  some)
+    self.c     = self:dist(self.left, self.right)
+    if b4 and eg:better(right,left) then 
+      self.left, self.right = self.right, self.left end
     self.lefts  = self.eg:clone()
     self.rights = self.eg:clone()
     for n,projection in pairs(self:projections(rows)) do
       (n < #rows//2 and self.lefts or self.rights):update(projection.row) end
-    self.gaurd  = self:dist(left, last(left.rows)) end
+    self.gaurd  = self:dist(left, last(left.rows)) end 
   return self end
 
-function Halved:dist(r1,r1) return self.top:dist(r1,r2) end
+function Halved:dist(row1,row2) return self.top:dist(row1,row2) end
 
-function Halved:far(r,some) return per(self.eg:around(r,some)).row end
+function Halved:far(row,some) return per(self.top:around(row,some)).row end
 
 function Halved:projections(rows)
   return sort(map(rows, function(r) return self:project(r) end), lt"x") end
 
-function Halved:project(row,   cos,z)
+function Halved:project(row,   z,a,b,c)
   z   = 1/math.huge
-  cos = function(a,b,c) return (a^2 + self.c^2 - b^2) / (2*self.c + z) end
-  return {x  = cos(self:dist(row,self.left), self:dist(row,self.right), self.c), 
+  c,b,a = self.c, self:dist(row,self.right), self:dist(row,self.left)
+  return {x  = (a^2 + c^2 - b^2) / (2*c + z),
          row = row} end
 
+function treeOfHalves(eg,top,   here)
+  top = top or eg
+  here = Halved(eg,top)
+  if here.lefts and #here.lefts.rows < #eg.rows then
+    here.lefts  = treeOfHalves(here.lefts,  top)
+    here.rights = treeOfHalves(here.rights, top) end 
+  return here end
 
-----------------------------------------------------------------------------
+function bestsRests(top,       bests,rests,keep,best)
+  rests = top:clone()
+  keep  = (#top.rows)^the.min
+  keep  = the.keep*keep / (#top.rows - keep)
+  function best(eg, b4,   here) 
+    here = Halved(eg,top, b4 )
+    if here.lefts and #here.lefts.rows < #eg.rows then
+      map(here.rights.rows,function(r) if r()<keep then rests:update(r) end end)
+      return worker(here.lefts, here.left) 
+    else
+      return eg end end
+  return best(top, any(top.rows)),rests end
+  -- todo, have to call far here to init. so far has to move into egs
+ ----------------------------------------------------------------------------
 function Nb:new()
   self.all, self.some, self.log = nil, {}, {} end
 
