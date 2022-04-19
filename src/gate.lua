@@ -369,7 +369,7 @@ function Cols:new(names,    col)
       if name:find"!$" then self.klass=col end 
       col.indep = not name:find"[-+!]$"
       push(col.indep and self.x or self.y, col) end end end
-----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 function Egs:new() self.rows, self.cols = {},nil end
 
 function Egs:clone(data)
@@ -420,59 +420,58 @@ function Egs:around(row1, rows)
   function around(row2) return  {dist=self:dist(row1,row2),row=row2} end
   return sort(map(rows or self.rows,around), lt"dist") end
 
-----------------------------------------------------------------------------
+function Egs:far(row, rows) 
+  return per(self:around(row, rows or many(self.rows, the.some))).row end
+
+function Eg:halves(top,   here)
+  top = top or self
+  here = Halved(eg,top)
+  if here.lefts and #here.lefts.rows < #eg.rows then
+    here.lefts  = here.lefts:halves(top)
+    here.rights = here.rights:halves(top) end 
+  return here end
+
+function Eg:bestsRests(     rests, keep, run, b4)
+  function run(eg,b4,       here) 
+    here = Halved(eg, top, b4)
+    if   here.lefts and #here.lefts.rows < #eg.rows 
+    then map(here.rights.rows,
+             function(r) if r()<keep then rests:update(r) end end)
+         return run(here.lefts, here.left) 
+    else return eg, rests end 
+  end -----------------------
+  rests = self:clone()
+  keep  = (#self.rows)^the.min
+  keep  = the.keep*keep / (#self.rows - keep)
+  b4    = self:far(any(self.rows))
+  return run(self, b4) end
+----------------------------------------------------------------------------
 function Halved:new(eg,top,b4,     rows,some)
-  self.top   = top or eg
-  self.eg    = eg
-  rows       = self.eg.rows
+  self.top    = top or eg
+  self.eg     = eg
+  rows        = self.eg.rows
   if #eg.rows >= (#top.rows)^the.min then
-    some       = many(rows, the.some)
-    self.left  = b4 or self:far( any(some), some)
-    self.right =       self:far(self.left,  some)
-    self.c     = self:dist(self.left, self.right)
+    some      = many(rows, the.some)
+    self.left = b4 or top:far( any(some), some)
+    self.right=       top:far(self.left,  some)
+    self.c    = self.top:dist(self.left, self.right)
     if b4 and eg:better(right,left) then 
       self.left, self.right = self.right, self.left end
     self.lefts  = self.eg:clone()
     self.rights = self.eg:clone()
     for n,projection in pairs(self:projections(rows)) do
       (n < #rows//2 and self.lefts or self.rights):update(projection.row) end
-    self.gaurd  = self:dist(left, last(left.rows)) end 
+    self.gaurd  = self.top:dist(left, last(left.rows)) end 
   return self end
-
-function Halved:dist(row1,row2) return self.top:dist(row1,row2) end
-
-function Halved:far(row,some) return per(self.top:around(row,some)).row end
 
 function Halved:projections(rows)
   return sort(map(rows, function(r) return self:project(r) end), lt"x") end
 
 function Halved:project(row,   z,a,b,c)
   z   = 1/math.huge
-  c,b,a = self.c, self:dist(row,self.right), self:dist(row,self.left)
+  c,b,a = self.c, self.top:dist(row,self.right), self,top:dist(row,self.left)
   return {x  = (a^2 + c^2 - b^2) / (2*c + z),
          row = row} end
-
-function treeOfHalves(eg,top,   here)
-  top = top or eg
-  here = Halved(eg,top)
-  if here.lefts and #here.lefts.rows < #eg.rows then
-    here.lefts  = treeOfHalves(here.lefts,  top)
-    here.rights = treeOfHalves(here.rights, top) end 
-  return here end
-
-function bestsRests(top,       bests,rests,keep,best)
-  rests = top:clone()
-  keep  = (#top.rows)^the.min
-  keep  = the.keep*keep / (#top.rows - keep)
-  function best(eg, b4,   here) 
-    here = Halved(eg,top, b4 )
-    if here.lefts and #here.lefts.rows < #eg.rows then
-      map(here.rights.rows,function(r) if r()<keep then rests:update(r) end end)
-      return worker(here.lefts, here.left) 
-    else
-      return eg end end
-  return best(top, any(top.rows)),rests end
-  -- todo, have to call far here to init. so far has to move into egs
  ----------------------------------------------------------------------------
 function Nb:new()
   self.all, self.some, self.log = nil, {}, {} end
