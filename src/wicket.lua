@@ -2,8 +2,8 @@ local b4={}; for k,v in pairs(_ENV) do b4[k]=v end
 local any,coerce,csv,fails,fmt,go,id,lt,many,map,obj,push
 local no,o,oo,ok,per,r,rnd,rnds,sort,sum,the,work1,work
 local the,help={},[[ 
-small: explore the world better, explore the world for good.
-(c) 2022, Tim Menzies
+lua wicked.lua [OPTIONS]: explore better, explore for good.
+(c) 2022, Tim Menzies, BSD 2-clause “simplified” license
 
      .-------.  
      | Ba    | Bad <----.  planning= (better - bad)
