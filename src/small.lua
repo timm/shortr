@@ -36,7 +36,7 @@ OPTIONS:
   -todo    -t  start up action             = nothing
   -wait    -w  wait                        = 10]]
 
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 r = math.random
 fmt = string.format
 function lt(x) return function(t,u) return t[x] < u[x] end end
@@ -169,7 +169,7 @@ function Cols:add(row)
 local Row=obj"Row"
 function Row:new(t) self.cells = t end
 
---------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 local Egs=obj"Egs"
 function Egs:new() self.rows,self.cols = {}, nil end
 
