@@ -235,7 +235,9 @@ function Egs:unsuper(n,     recurse,known,rows,used,rest)
       recurse(best, many(best,n), x)  end
   end --------------------------
   used, rest = {}, {}
-  recurse(self.rows, many(self.rows,n)) end
+  recurse(self.rows, many(self.rows,n)) 
+ -- for id,_ in pairs(used) do io.write(id," ") end 
+  end
 
 --------------------------------------------------------------------------------
 fails,go,no = 0,{},{}
@@ -252,7 +254,7 @@ function go.unsuper(   eg,best)
   eg = Egs():load(the.file) 
   oo(eg:mid())
   print("---")
-  for i=1,10 do eg:unsuper(64) end 
+  for i=1,20 do eg:unsuper(64) end 
   eg:betters()
   best = eg:clone()
   for i=1,20 do best:add(eg.rows[i]) end
@@ -273,8 +275,8 @@ function go.dist(  eg,row2,t)
 
 function go.mids( eg,hi,lo,out)
   eg = Egs():load(the.file)
-  oo(map(eg.cols.y,function(col) return col.txt end))
-  oo(map(eg.cols.y,function(col) return col.w end))
+  oo(map(eg.cols.y, function(col) return col.txt end))
+  oo(map(eg.cols.y, function(col) return col.w end))
   print("all",o(eg:mid())) 
   lo,hi = eg:clone(), eg:clone()
   for i,row in pairs(eg:betters()) do 
