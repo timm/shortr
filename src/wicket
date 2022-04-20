@@ -1,9 +1,15 @@
+#!/usr/bin/env lua
+-- vim: filetype=lua ts=2 sw=2 et:
+-- (c) 2022, Tim Menzies,  opensource.org/licenses/Fair
+-- Les œuvres peuvent être réutilisées à condition d'être accompagnées du
+-- texte de cette licence, afin que tout utilisateur en soit informé.
+-- AVERTISSEMENT : LES ŒUVRES N'ONT AUCUNE GARANTIE.
 local b4={}; for k,v in pairs(_ENV) do b4[k]=v end
 local any,coerce,csv,fails,fmt,go,id,lt,many,map,obj,push
 local no,o,oo,ok,per,r,rnd,rnds,sort,sum,the,work1,work
 local the,help={},[[ 
-lua wicked.lua [OPTIONS]: explore better, explore for good.
-(c) 2022, Tim Menzies, BSD 2-clause “simplified” license
+wicked: explore the world better, explore the world for good.
+(c) 2022, Tim Menzies, opensource.org/licenses/Fair
 
      .-------.  
      | Ba    | Bad <----.  planning= (better - bad)
@@ -14,27 +20,23 @@ lua wicked.lua [OPTIONS]: explore better, explore for good.
              .------.  
 
 USAGE:
-  ./bnb [OPTIONS]
+  wicket [OPTIONS]
 
 OPTIONS:
-  -K       -K  manage low class counts     = 1
-  -M       -M  manage low evidence counts  = 2
-  -best    -B  best set                    = .5
-  -bins    -b  max. number of bins         = 16
-  -cohen   -c  cohen                       = .35
-  -dump    -d  dump stack+exit on error    = false
-  -far     -F  how far to go for far       = .9
-  -file    -f  file name                   = ../etc/data/auto93.csv
-  -goal    -g  goal                        = recurrence-events
-  -help    -h  show help                   = false
-  -leaves  -l  number of items in leaves   = .5
-  -p       -p  coefficient on distance     = 2
-  -rest    -R  rest is -R*best             = 4
-  -rnd     -r  rounding numbers            = %5.3f
-  -seed    -S  seed                        = 10019
-  -some    -s  sample size for distances   = 512
-  -todo    -t  start up action             = nothing
-  -wait    -w  wait                        = 10]]
+  --K       -K  manage low class counts     = 1
+  --M       -M  manage low evidence counts  = 2
+  --far     -F  how far to go for far       = .9
+  --p       -p  coefficient on distance     = 2
+  --seed    -S  seed                        = 10019
+  --some    -s  sample size for distances   = 512
+  --stop    -T  how far to go for far       = 20
+
+OPTIONS (other):
+  --dump    -d  dump stack+exit on error    = false
+  --file    -f  file name                   = ../etc/data/auto93.csv
+  --help    -h  show help                   = false
+  --rnd     -r  rounding numbers            = %5.3f
+  --todo    -t  start up action             = nothing ]]
 
 --------------------------------------------------------------------------------
 r = math.random
@@ -46,17 +48,16 @@ function push(t,x)   t[1+#t]=x; return x end
 function map(t,f, u) u={};for _,v in pairs(t) do u[1+#u]=f(v) end;return u end
 function sum(t,f, u) u=0; for _,v in pairs(t) do u=u+f(v)     end;return u end
 
-function any(a) return a[r()*(#a)//1] end
-function many(a,n,  u) u={};for j=1,n do push(u,any(a)) end;return u end
+function any(a, i)    i=r()*(#a)//1; i=math.max(1,math.min(i,#a)); return a[i] end
+function many(a,n, u) u={};for j=1,n do push(u,any(a)) end;return u end
 
 function per(t,p) return t[ ((p or .5)*#t) // 1 ] end 
-
-function oo(t) print(o(t)) end
 
 function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or"%s",x) end
 
+function oo(t) print(o(t)) end
 function o(t,    u,one)
   one= function(k,v) return #t>0 and tostring(v) or fmt(":%s %s",k,v) end
   u={}; for k,v in pairs(t) do u[1+#u] = one(k,v) end
@@ -68,12 +69,13 @@ function coerce(x)
   if x=="true" then return true elseif x=="false" then return false end
   return math.tointeger(x) or tonumber(x) or x end
 
-function csv(src,      cells)
-  function cells(s,  t) 
-    t={}; for y in s:gmatch("([^,]+)") do t[1+#t]=coerce(y) end; return t end
+function csv(src)
   src = io.input(src)
-  return function(x) x=io.read()
-    if x then return cells(x) else io.close(src) end end end 
+  return function(line, row) 
+    line=io.read()
+    if not line then io.close(src) else
+      row={}; for x in line:gmatch("([^,]+)") do row[1+#row]=coerce(x) end
+      return row end end end 
 
 function work1(x,    b4)
   b4={}; for k,v in pairs(the) do b4[k]=v end
@@ -213,21 +215,24 @@ function Egs:around(row1, rows,    around)
   return sort(map(rows or self.rows,around), lt"dist") end
 
 function Egs:far(row, rows) 
-  return per(self:around(row, rows or many(self.rows, the.some))).row end
+  return per(self:around(row, rows or many(self.rows,the.some)),the.far).row end
 
 function Egs:unsuper(n,     recurse,known,rows,used,rest)
   function known(row) used[row.id]=true; return row end
-  function recurse(rows,some,x,      y,tmp)
+  function recurse(rows,some,x,      y,best,a,b,c)
     if #rows <= 20 then
       oo(self:clone(rows):mid())
     else
       x = known( x or self:far(any(some),some))
       y = known(      self:far(x,some))
       if self:better(y, x) then x,y = y,x end
-      tmp = {}
-      for _,row in pairs(rows) do 
-        push(self:dist(row,x) < self:dist(row,y) and tmp or rest, row) end
-      recurse(tmp, many(tmp,n), x)  end
+      c = self:dist(x,y)
+      best = {}
+      for _,r in pairs(rows) do
+        a,b= self:dist(r,x), self:dist(r,y); r.x = (a^2+ c^2-b^2) / (2*c) end 
+      for i,row in pairs(sort(rows, lt"x")) do
+         push(i < #rows//2 and best or rest,row) end
+      recurse(best, many(best,n), x)  end
   end --------------------------
   used, rest = {}, {}
   recurse(self.rows, many(self.rows,n)) end
@@ -243,13 +248,20 @@ function ok(test,msg)
 function go.many()
   oo(many({10,20,30,40,50,60,70,80,90,100},3)) end
 
-function go.unsuper(   eg)
+function go.unsuper(   eg,best)
   eg = Egs():load(the.file) 
-  for i=1,10 do eg:unsuper(64) end end
+  oo(eg:mid())
+  print("---")
+  for i=1,10 do eg:unsuper(64) end 
+  eg:betters()
+  best = eg:clone()
+  for i=1,20 do best:add(eg.rows[i]) end
+  print("---")
+  oo(best:mid()) end
 
 function go.eg1(   eg)
   eg = Egs():load(the.file)
-  print(eg.cols.y[1]) end
+  print(#eg.rows, eg.cols.y[1]) end
 
 function go.dist(  eg,row2,t)
   eg = Egs():load(the.file)
@@ -262,16 +274,17 @@ function go.dist(  eg,row2,t)
 function go.mids( eg,hi,lo,out)
   eg = Egs():load(the.file)
   oo(map(eg.cols.y,function(col) return col.txt end))
-  oo(eg:mid()) 
+  oo(map(eg.cols.y,function(col) return col.w end))
+  print("all",o(eg:mid())) 
   lo,hi = eg:clone(), eg:clone()
-  for i,row in pairs(eg.rows) do 
+  for i,row in pairs(eg:betters()) do 
     if i < 20            then lo:add(row) end
     if i > #eg.rows - 20 then hi:add(row) end end
-  oo(lo:mid())
-  oo(hi:mid()) end
+  print("lo",o(lo:mid()))
+  print("hi",o(hi:mid())) end
 
 --------------------------------------------------------------------------------
-help:gsub("\n  ([-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+help:gsub("\n  ([-][-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
   function(long,key,short,x)
     for n,flag in ipairs(arg) do 
       if flag==short or flag==long then
