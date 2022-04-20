@@ -220,12 +220,13 @@ function Egs:far(row, rows)
 function Egs:unsuper(n,     recurse,known,rows,used,rest)
   function known(row) used[row.id]=true; return row end
   function recurse(rows,some,x,      y,best,a,b,c)
+    --if #rows <= math.min(20,(#self.rows)^.5) then
     if #rows <= 20 then
       oo(self:clone(rows):mid())
     else
       x = known( x or self:far(any(some),some))
       y = known(      self:far(x,some))
-      if self:better(y, x) then x,y = y,x end
+      if self:better(y, x) then io.write("/"); x,y = y,x else io.write(".") end
       c = self:dist(x,y)
       best = {}
       for _,r in pairs(rows) do
@@ -252,9 +253,11 @@ function go.many()
 
 function go.unsuper(   eg,best)
   eg = Egs():load(the.file) 
+  oo(map(eg.cols.y, function(col) return col.txt end))
+  oo(map(eg.cols.y, function(col) return col.w end))
   oo(eg:mid())
   print("---")
-  for i=1,20 do eg:unsuper(64) end 
+  for i=1,20 do eg:unsuper(128) end 
   eg:betters()
   best = eg:clone()
   for i=1,20 do best:add(eg.rows[i]) end
