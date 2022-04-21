@@ -38,11 +38,11 @@ alphabets are
 case sensitive
 
 keywords in Keyword are
-    self, and, false, ipairs, nil, not, or, pairs, rawequal, rawget, 
+    and, false, ipairs, nil, not, or, pairs, rawequal, rawget, 
     rawlen, rawset, select, tonumber, tostring, true, type
 end keywords
 
-
+#keywords in Keyword_strong are
 keywords in Keyword_strong are
     assert, break, collectgarbage, do, dofile, else, elseif, "end", 
     error, for, function, getmetatable, goto, if, "in", local, 

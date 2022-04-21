@@ -83,6 +83,10 @@ gate:
 	$(MAKE) $D/docs/gate.pdf
 	open $D/docs/gate.pdf
 
+wicket:
+	$(MAKE) $D/docs/wicket.pdf
+	open $D/docs/wicket.pdf
+
 $D/docs/all.pdf:  all.lua
 
 prune = grep -v "usr.bin.env" | grep -v "vi:"
