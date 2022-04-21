@@ -5,19 +5,19 @@
 -- texte de cette licence, afin que tout utilisateur en soit informé.
 -- AVERTISSEMENT : LES ŒUVRES N'ONT AUCUNE GARANTIE.
 local b4={}; for k,v in pairs(_ENV) do b4[k]=v end
-local any,coerce,csv,fails,fmt,go,id,lt,many,map,obj,push
-local no,o,oo,ok,per,r,rnd,rnds,sort,sum,the,work1,work
-local the,help={},[[ 
-wicked: explore the world better, explore the world for good.
+local any, coerce, csv, ent, fails, fmt, fu, go, id, lt, many, map, obj, push
+local no, o, oo, ok, per, r, rnd, rnds, same, sd, sort, sum, the, work1, work
+local the, help={}, [[ 
+wicked: explore the world better,  explore the world for good.
 (c) 2022, Tim Menzies, opensource.org/licenses/Fair
 
-     .-------.  
-     | Ba    | Bad <----.  planning= (better - bad)
-     |    56 |          |  monitor = (bad - better)
-     .-------.------.   |  
-             | Be   |   v  
-             |    4 | Better  
-             .------.  
+   .-------.  
+   | Ba    | Bad <----.  planning = (better - bad)
+   |    56 |          |  monitor  = (bad - better)
+   .-------.------.   |  
+           | Be   |   v  
+           |    4 | Better  
+           .------.  
 
 USAGE:
   wicket [OPTIONS]
@@ -30,6 +30,7 @@ OPTIONS:
   --seed    -S  seed                        = 10019
   --some    -s  sample size for distances   = 512
   --stop    -T  how far to go for far       = 20
+  --min     -m  size of min space           = .5
 
 OPTIONS (other):
   --dump    -d  dump stack+exit on error    = false
@@ -41,6 +42,8 @@ OPTIONS (other):
 --------------------------------------------------------------------------------
 r = math.random
 fmt = string.format
+function fu(x) return function(t) return t[x] end end
+
 function lt(x) return function(t,u) return t[x] < u[x] end end
 function sort(t,f) table.sort(t,type(f)=="string" and lt(f) or f);return t end
 
@@ -51,6 +54,8 @@ function sum(t,f, u) u=0; for _,v in pairs(t) do u=u+f(v)     end;return u end
 function any(a, i)    i=r()*(#a)//1; i=math.max(1,math.min(i,#a)); return a[i] end
 function many(a,n, u) u={};for j=1,n do push(u,any(a)) end;return u end
 
+function same(x) return x end
+function sd(t,f)  f=f or same; return (f(per(t,.9)) - f(per(t,.1)))/2.56 end
 function per(t,p) return t[ ((p or .5)*#t) // 1 ] end 
 
 function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
@@ -97,6 +102,56 @@ function obj(name,    t,new,str)
   t = {__tostring=o, is=name or ""}; t.__index=t
   return setmetatable(t, {__call=new}) end
 
+--------------------------------------------------------------------------------
+local Bin=obj"Bin"
+function Bin:new(txt,at,n, lo,hi,ystats) 
+  self.at, self.txt, self.n = at, txt, n
+  self.lo, self.hi, self.ystats = lo, hi, ystats end
+
+function Bin:__tostring()
+  local x,lo,hi,big = self.name, self.lo, self.hi, math.huge
+  if     lo ==  hi  then return fmt("%s==%s",x, lo)  
+  elseif hi ==  big then return fmt("%s>=%s",x, lo)  
+  elseif lo == -big then return fmt("%s<%s",x, hi)  
+  else                   return fmt("%s<=%s < %s",lo,x,hi) end end
+
+function Bin:select(row)
+  local x, lo, hi = row[self.at], self.lo, self.hi
+  return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
+
+--------------------------------------------------------------------------------
+local Sym=obj"Sym"
+function Sym:new(at,txt) 
+   self.at  = at or 0
+   self.txt = txt or ""
+   self.n   = 0
+   self.has, self.mode, self.most = {},nil,0 end
+
+function Sym:sub(x) return self:add(x,-1) end
+
+function Sym:add(x,inc)
+  if x ~= "?" then
+    inc = inc or 1
+    self.n = self.n + inc
+    self.has[x] = (self.has[x] or 0) + inc
+    if self.has[x] > self.most then self.most,self.mode = self.has[x],x end end
+  return x end
+
+function Sym:mid() return self.mode end
+function Sym:div(  e) 
+  e=0;for _,m in pairs(t) do e=e-m/self.n*math.log(m/self.n,2); return e end end
+
+function Sym:dist(x,y) return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
+
+function Sym:bins(left,right,     out,has,n)
+  n,out = 0,{}
+  function has(x) 
+    n=n+1
+    out[x] = out[x] or Bin(self.at, self.name,n, x,x,Sym()) end
+  for _,r in pairs(left)  do has(x); out[x].ystats:add(1) end
+  for _,r in pairs(right) do has(x); out[x].ystats:add(0) end
+  return map(out, function(x) return x end) end
+
 -------------------------------------------------------------------------------
 local Num=obj"Num"
 function Num:new(at,txt) 
@@ -130,27 +185,39 @@ function Num:dist(x,y)
   else x,y = self:norm(x), self:norm(y) end
   return math.abs(x - y) end
 
---------------------------------------------------------------------------------
-local Sym=obj"Sym"
-function Sym:new(at,txt) 
-   self.at  = at or 0
-   self.txt = txt or ""
-   self.n   = 0
-   self.has, self.mode, self.most = {},nil,0 end
-
-function Sym:add(x,inc)
-  if x ~= "?" then
-    inc = inc or 1
-    self.n = self.n + inc
-    self.has[x] = inc + (self.has[x] or 0)
-    if self.has[x] > self.most then self.most,self.mode = self.has[x],x end end
-  return x end
-
-function Sym:mid() return self.mode end
-function Sym:div(  e)
-  e=0; for _,v in pairs(t) do e=e-v/self.n*log(v/self.n,2) end; return e end
-
-function Sym:dist(x,y) return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
+function Num:bins(left,right,       xy,out,recurse,div,xy,epsilon,small)
+  function div(lo,hi,        cut,lhs,rhs,best,b4,x0,x,xmax,y,t,stats)
+    lhs, rhs, ystats = Sym(), Sym(), Sym()
+    for i=lo,hi do ystats:add( rhs:add(xy[i].y) ) end
+    best = rhs:div()
+    for i=lo,hi do
+      x, y = xy[i].x, xy[i].y
+      lhs:add(y)
+      rhs:sub(y)
+      if lhs.n>small and rhs.n>small then
+        if x-xy[lo].x > epsilon and xy[hi].x-x > epsilon then
+          if x ~= xy[i+1].x then
+            tmp = (lhs.n*lhs:div() + rhs.n*rhs:div())  / (lhs.n + rhs.n)
+            if tmp*.95 < best then
+              best,cut = tmp,i end end end end end 
+    return cut, ystats 
+  end ----------------
+  function recurse(lo,hi,     cut,systats)
+    cut, ystats = div(lo,hi)
+    if cut then recurse(lo,    cut)
+                recurse(cut+1, hi) 
+           else b4= push(out,
+                         Bin(self.txt,self.at,1+#out,b4,xy[hi].x,ystats)).hi end 
+  end ---------------------------- 
+  b4, xy, out = -math.huge, {}, {}
+  for _,r in pairs(left)  do if x ~="?" then push(xy,{x=r.cells[c],y=1}) end end
+  for _,r in pairs(right) do if x ~="?" then push(xy,{x=r.cells[c],y=0}) end end
+  xy      = sort(xy, lt"x")
+  epsilon = sd(xy, fu"x")*the.cohen
+  small   = (#xy)^the.min
+  recurse(1,#xy) 
+  out[#out].hi = math.huge
+  return out end
 
 --------------------------------------------------------------------------------
 local Cols=obj"Cols"
@@ -220,7 +287,6 @@ function Egs:far(row, rows)
 function Egs:unsuper(n,     recurse,known,rows,used,rest)
   function known(row) used[row.id]=true; return row end
   function recurse(rows,some,x,      y,best,a,b,c)
-    --if #rows <= math.min(20,(#self.rows)^.5) then
     if #rows <= 20 then
       oo(self:clone(rows):mid())
     else
@@ -233,12 +299,10 @@ function Egs:unsuper(n,     recurse,known,rows,used,rest)
         a,b= self:dist(r,x), self:dist(r,y); r.x = (a^2+ c^2-b^2) / (2*c) end 
       for i,row in pairs(sort(rows, lt"x")) do
          push(i < #rows//2 and best or rest,row) end
-      recurse(best, many(best,n), x)  end
-  end --------------------------
+      recurse(best, many(best,n), x)  end end
+
   used, rest = {}, {}
-  recurse(self.rows, many(self.rows,n)) 
- -- for id,_ in pairs(used) do io.write(id," ") end 
-  end
+  recurse(self.rows, many(self.rows,n)) end
 
 --------------------------------------------------------------------------------
 fails,go,no = 0,{},{}
