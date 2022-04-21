@@ -20,7 +20,7 @@ wicked: explore the world better,  explore the world for good.
            .------.  
 
 USAGE:
-  wicket [OPTIONS]
+  wicket.lua [OPTIONS]
 
 OPTIONS:
   --K       -K  manage low class counts     = 1
@@ -40,7 +40,7 @@ OPTIONS (other):
   --todo    -t  start up action             = nothing ]]
 
 --------------------------------------------------------------------------------
-r = math.random
+r   = math.random
 fmt = string.format
 function fu(x) return function(t) return t[x] end end
 
@@ -147,7 +147,7 @@ function Sym:bins(left,right,     out,has,n)
   n,out = 0,{}
   function has(x) 
     n=n+1
-    out[x] = out[x] or Bin(self.at, self.name,n, x,x,Sym()) end
+    out[x] = out[x] or Bin(self.at, self.txt, n, x, x, Sym()) end
   for _,r in pairs(left)  do has(x); out[x].ystats:add(1) end
   for _,r in pairs(right) do has(x); out[x].ystats:add(0) end
   return map(out, function(x) return x end) end
@@ -195,7 +195,7 @@ function Num:bins(left,right,       xy,out,recurse,div,xy,epsilon,small)
       lhs:add(y)
       rhs:sub(y)
       if lhs.n>small and rhs.n>small then
-        if x-xy[lo].x > epsilon and xy[hi].x-x > epsilon then
+        if x - xy[lo].x > epsilon and xy[hi].x - x > epsilon then
           if x ~= xy[i+1].x then
             tmp = (lhs.n*lhs:div() + rhs.n*rhs:div())  / (lhs.n + rhs.n)
             if tmp*.95 < best then
@@ -204,10 +204,11 @@ function Num:bins(left,right,       xy,out,recurse,div,xy,epsilon,small)
   end ----------------
   function recurse(lo,hi,     cut,systats)
     cut, ystats = div(lo,hi)
-    if cut then recurse(lo,    cut)
-                recurse(cut+1, hi) 
-           else b4= push(out,
-                         Bin(self.txt,self.at,1+#out,b4,xy[hi].x,ystats)).hi end 
+    if   cut 
+    then recurse(lo,    cut)
+         recurse(cut+1, hi) 
+    else b4=push(out,
+                 Bin(self.txt, self.at, 1+#out, b4, xy[hi].x, ystats)).hi end 
   end ---------------------------- 
   b4, xy, out = -math.huge, {}, {}
   for _,r in pairs(left)  do if x ~="?" then push(xy,{x=r.cells[c],y=1}) end end
