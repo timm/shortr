@@ -51,7 +51,7 @@ function push(t,x)   t[1+#t]=x; return x end
 function map(t,f, u) u={};for _,v in pairs(t) do u[1+#u]=f(v) end;return u end
 function sum(t,f, u) u=0; for _,v in pairs(t) do u=u+f(v)     end;return u end
 
-function any(a, i)    i=r()*(#a)//1; i=math.max(1,math.min(i,#a)); return a[i] end
+function any(a, i)    i=r()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
 function many(a,n, u) u={};for j=1,n do push(u,any(a)) end;return u end
 
 function same(x) return x end
@@ -102,7 +102,7 @@ function obj(name,    t,new,str)
   t = {__tostring=o, is=name or ""}; t.__index=t
   return setmetatable(t, {__call=new}) end
 
---------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 local Bin=obj"Bin"
 function Bin:new(txt,at,n, lo,hi,ystats) 
   self.at, self.txt, self.n = at, txt, n
@@ -143,16 +143,17 @@ function Sym:div(  e)
 
 function Sym:dist(x,y) return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
 
-function Sym:bins(left,right,     out,has,n)
-  n,out = 0,{}
+function Sym:bins(left,right,     tmp,out,has,n)
+  n,out,tmp = 0,{},{}
   function has(x) 
     n=n+1
-    out[x] = out[x] or Bin(self.at, self.txt, n, x, x, Sym()) end
-  for _,r in pairs(left)  do has(x); out[x].ystats:add(1) end
-  for _,r in pairs(right) do has(x); out[x].ystats:add(0) end
-  return map(out, function(x) return x end) end
+    tmp[x] = tmp[x] or Bin(self.at, self.txt, n, x, x, Sym()) end
+  for _,r in pairs(left) do x=r.cells[self.at]; has(x); tmp[x].ystats:add(1) end
+  for _,r in pairs(right)do x=r.cells[self.at]; has(x); tmp[x].ystats:add(0) end
+  for _,x in pairs(tmp) do push(out, x) end
+  return out end
 
--------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 local Num=obj"Num"
 function Num:new(at,txt) 
    self.at  = at or 0
@@ -220,6 +221,10 @@ function Num:bins(left,right,       xy,out,recurse,div,xy,epsilon,small)
   out[#out].hi = math.huge
   return out end
 
+-------------------------------------------------------------------------------
+local Row=obj"Row"
+function Row:new(t) self.cells = t end
+
 --------------------------------------------------------------------------------
 local Cols=obj"Cols"
 function Cols:new(names,    col)
@@ -236,10 +241,6 @@ function Cols:add(row)
   return row end
 
 --------------------------------------------------------------------------------
-local Row=obj"Row"
-function Row:new(t) self.cells = t end
-
---------------------------------------------------------------------------------
 local Egs=obj"Egs"
 function Egs:new() self.rows,self.cols = {}, nil end
 
@@ -300,8 +301,8 @@ function Egs:unsuper(n,     recurse,known,rows,used,rest)
         a,b= self:dist(r,x), self:dist(r,y); r.x = (a^2+ c^2-b^2) / (2*c) end 
       for i,row in pairs(sort(rows, lt"x")) do
          push(i < #rows//2 and best or rest,row) end
-      recurse(best, many(best,n), x)  end end
-
+      recurse(best, many(best,n), x)  end 
+  end ---------------
   used, rest = {}, {}
   recurse(self.rows, many(self.rows,n)) end
 
@@ -312,6 +313,14 @@ function ok(test,msg)
   if not test then 
     fails= fails+1 
     if  the.dump then assert(test,msg) end end end
+
+function go.symbins(  eg,right,left,rows,x)
+  eg = Egs():load(the.file) 
+  rows =eg:betters()
+  left,right = {},{}
+  for i=1,50            do push(left,  rows[i]) end
+  for i=#rows-50, #rows do push(right, rows[i]) end
+  map(eg.cols.x[4]:bins(left,right),print) end
 
 function go.many()
   oo(many({10,20,30,40,50,60,70,80,90,100},3)) end
