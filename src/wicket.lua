@@ -115,8 +115,9 @@ function Bin:__tostring()
   elseif lo == -big then return fmt("%s<%s",x, hi)  
   else                   return fmt("%s<=%s < %s",lo,x,hi) end end
 
-function Bin:select(row)
-  local x, lo, hi = row[self.at], self.lo, self.hi
+function Bin:select(t)
+  t = t.cells and t.cells or t
+  local x, lo, hi = t[self.at], self.lo, self.hi
   return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
 
 --------------------------------------------------------------------------------
@@ -143,14 +144,13 @@ function Sym:div(  e)
 
 function Sym:dist(x,y) return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
 
-function Sym:bins(left,right,     tmp,out,has,n)
+function Sym:bins(left,right,     tmp,out,has,n,inc)
   n,out,tmp = 0,{},{}
-  function has(x) 
-    n=n+1
-    tmp[x] = tmp[x] or Bin(self.at, self.txt, n, x, x, Sym()) end
+  function inc() n=n+1; return n end
+  function has(x) tmp[x]=tmp[x] or Bin(self.at,self.txt,inc(),x,x,Sym()) end
   for _,r in pairs(left) do x=r.cells[self.at]; has(x); tmp[x].ystats:add(1) end
   for _,r in pairs(right)do x=r.cells[self.at]; has(x); tmp[x].ystats:add(0) end
-  for _,x in pairs(tmp) do push(out, x) end
+  for _,x in pairs(tmp) do  push(out, x) end
   return out end
 
 -------------------------------------------------------------------------------
@@ -320,7 +320,7 @@ function go.symbins(  eg,right,left,rows,x)
   left,right = {},{}
   for i=1,50            do push(left,  rows[i]) end
   for i=#rows-50, #rows do push(right, rows[i]) end
-  map(eg.cols.x[4]:bins(left,right),print) end
+  for k,v in pairs(eg.cols.x[4]:bins(left,right)) do print(v) end end
 
 function go.many()
   oo(many({10,20,30,40,50,60,70,80,90,100},3)) end
