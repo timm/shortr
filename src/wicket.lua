@@ -18,7 +18,7 @@ local any,bins,coerce,csv,ent,fails,fmt,fu,go,id,lt,many,map,obj,push
 local no,o,oo,ok,per,r,rnd,rnds,same,sd,sort,sum,the,work1,work
 --------------------------------------------------------------------------------
 local the, help={}, [[ 
-wicked: explore the world better,  explore the world for good.
+wicket: explore the world better,  explore the world for good.
 (c) 2022, Tim Menzies, opensource.org/licenses/Fair
 
    .-------.            (planning = (better - bad))
@@ -73,11 +73,11 @@ function rnd(x,f)
   return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or"%s",x) end
 
 function oo(t) print(o(t)) end
-function o(t,    u,one)
-  one= function(k,v) return #t>0 and tostring(v) or fmt(":%s %s",k,v) end
+function o(t,    u,one,sorted)
+  sorted = #t>0 -- true when array's indexes are 1,2...#t
+  one= function(k,v) return sorted and tostring(v) or fmt(":%s %s",k,v) end
   u={}; for k,v in pairs(t) do u[1+#u] = one(k,v) end
-  if #t==0 then sort(u) end
-  return (t.is or "").."{"..table.concat(u," ").."}" end
+  return (t.is or "").."{"..table.concat(sorted and u or sort(u)," ").."}" end
 
 function coerce(x)
   x = x:match"^%s*(.-)%s*$"
