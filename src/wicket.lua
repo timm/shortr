@@ -112,8 +112,8 @@ function Bin:__tostring()
   local x,lo,hi,big = self.txt, self.lo, self.hi, math.huge
   if     lo ==  hi  then return fmt("%s==%s",x, lo)  
   elseif hi ==  big then return fmt("%s>=%s",x, lo)  
-  elseif lo == -big then return fmt("%s<%s",x, hi)  
-:  else                   return fmt("%s<=%s < %s",lo,x,hi) end end
+  elseif lo == -big then return fmt("%s<%s", x, hi)  
+  else                   return fmt("%s<=%s<%s",lo,x,hi) end end
 
 function Bin:select(t)
   t = t.cells and t.cells or t
@@ -139,9 +139,8 @@ function Sym:add(x,inc)
   return x end
 
 function Sym:mid() return self.mode end
-function Sym:div(  e) 
-  e=0; for _,m in pairs(self.has) do e=e-m/self.n*math.log(m/self.n,2)
-  return e end end
+function Sym:div() return -sum(self.has, 
+                       function(m) return m/self.n*math.log(m/self.n,2) end) end
 
 function Sym:dist(x,y) return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
 
@@ -197,7 +196,7 @@ function Num:bins(left,right,       t,f,xy)
               sd(xy, fu"x")*the.cohen, (#xy)^the.min) end
 
 function bins(txt, at, xy, epsilon, small,        div,b4,out)
-  function div(lo,i,        x,y,b4,cut,lhs,rhs,best,overall)
+  function div(lo,hi,        x,y,cut,lhs,rhs,tmp,best,overall)
     lhs, rhs, overall = Sym(), Sym(), Sym()
     for i=lo,hi do overall:add( rhs:add(xy[i].y) ) end
     best = rhs:div()
@@ -205,11 +204,14 @@ function bins(txt, at, xy, epsilon, small,        div,b4,out)
       x, y = xy[i].x, xy[i].y
       lhs:add(y)
       rhs:sub(y)
+      print("small",small)
       if lhs.n>small and rhs.n>small then
         if x - xy[lo].x > epsilon and xy[hi].x - x > epsilon then
+          print("epsilon",epsilon)
           if x ~= xy[i+1].x then
             tmp = (lhs.n*lhs:div() + rhs.n*rhs:div())  / (lhs.n + rhs.n)
-            if tmp*.95 < best then
+            print("tmp",tmp,best)
+            if tmp < best then
               best,cut = tmp,i end end end end end 
     if   cut 
     then div(lo,    cut) 
@@ -313,6 +315,11 @@ function ok(test,msg)
   if not test then 
     fails= fails+1 
     if  the.dump then assert(test,msg) end end end
+
+function go.div(  s)
+  s=Sym()
+  for _,x in pairs{"a","a","a","a","b","b","c"} do s:add(x) end
+  ok(math.abs(1.376 - s:div()) < 0.01, "ent") end
 
 function go.symbins(  eg,right,left,rows,x)
   eg = Egs():load(the.file) 
