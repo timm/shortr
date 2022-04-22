@@ -1,12 +1,22 @@
 #!/usr/bin/env lua
 -- vim: filetype=lua ts=2 sw=2 et:
+---                                 __                  __      
+---                  __            /\ \                /\ \__   
+---     __  __  __  /\_\     ___   \ \ \/'\       __   \ \ ,_\  
+---    /\ \/\ \/\ \ \/\ \   /'___\  \ \ , <     /'__`\  \ \ \/  
+---    \ \ \_/ \_/ \ \ \ \ /\ \__/   \ \ \\`\  /\  __/   \ \ \_ 
+---     \ \___x___/'  \ \_\\ \____\   \ \_\ \_\\ \____\   \ \__\
+---      \/__//__/     \/_/ \/____/    \/_/\/_/ \/____/    \/__/
+
 -- (c) 2022, Tim Menzies,  opensource.org/licenses/Fair
--- Les œuvres peuvent être réutilisées à condition d'être accompagnées du
--- texte de cette licence, afin que tout utilisateur en soit informé.
--- AVERTISSEMENT : LES ŒUVRES N'ONT AUCUNE GARANTIE.
+-- Usage of the works is permitted provided that this instrument is 
+-- retained with the works, so that any entity that uses the works is 
+-- notified of this instrument.  DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
+
 local b4={}; for k,v in pairs(_ENV) do b4[k]=v end
 local any,bins,coerce,csv,ent,fails,fmt,fu,go,id,lt,many,map,obj,push
 local no,o,oo,ok,per,r,rnd,rnds,same,sd,sort,sum,the,work1,work
+--------------------------------------------------------------------------------
 local the, help={}, [[ 
 wicked: explore the world better,  explore the world for good.
 (c) 2022, Tim Menzies, opensource.org/licenses/Fair
@@ -389,3 +399,15 @@ if the.help then print(help) end
 if the.todo=="all" then work() else work1(the.todo) end
 for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end 
 os.exit(fails)
+
+--                _   _   _
+--               (_) (_) (_)
+--               | | | | | |
+--               |p| | | | |
+--               |k| | | | |
+--               |w| | | | |  
+--               | | | | | |
+--               | | |_| | |
+--               \ | |__\| |
+--                \|_______|
+

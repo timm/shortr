@@ -72,6 +72,7 @@ $D/docs/%.pdf : %.lua
 	@echo "pdf-ing $@ ... "
 	@a2ps -BjR    -q                        \
 		--line-numbers=1                    \
+		--highlight-level=heavy  \
 		--borders=no --pro=color --columns 2 \
 		--right-footer="" --left-footer=""    \
 		--pretty-print=$D/etc/lua.ssh             \
