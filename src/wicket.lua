@@ -49,7 +49,6 @@ function lt(x)   return function(t,u) return t[x] < u[x] end end
 
 function push(t,x)   t[1+#t]=x; return x end
 function map(t,f, u) u={};for _,v in pairs(t) do u[1+#u]=f(v) end;return u end
-function sum(t,f, u) u=0; for _,v in pairs(t) do u=u+f(v)     end;return u end
 function sort(t,f)   table.sort(t,f); return t end
 
 function any(a, i)    i=r()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
@@ -110,10 +109,10 @@ function Bin:new(txt,at,n, lo,hi,ystats)
 
 function Bin:__tostring()
   local x,lo,hi,big = self.txt, self.lo, self.hi, math.huge
-  if     lo ==  hi  then return fmt("%s==%s",x, lo)  
-  elseif hi ==  big then return fmt("%s>=%s",x, lo)  
-  elseif lo == -big then return fmt("%s<%s", x, hi)  
-  else                   return fmt("%s<=%s<%s",lo,x,hi) end end
+  if     lo ==  hi  then return fmt("%s == %s",x, lo)  
+  elseif hi ==  big then return fmt("%s >= %s",x, lo)  
+  elseif lo == -big then return fmt("%s < %s", x, hi)  
+  else                   return fmt("%s <= %s < %s",lo,x,hi) end end
 
 function Bin:select(t)
   t = t.cells and t.cells or t
@@ -139,8 +138,10 @@ function Sym:add(x,inc)
   return x end
 
 function Sym:mid() return self.mode end
-function Sym:div() return -sum(self.has, 
-                       function(m) return m/self.n*math.log(m/self.n,2) end) end
+function Sym:div(   e) 
+  e=0; for _,m in pairs(self.has) do
+         if m>0 then e = e-m/self.n * math.log(m/self.n,2) end end 
+  return e end
 
 function Sym:dist(x,y) return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
 
@@ -204,13 +205,10 @@ function bins(txt, at, xy, epsilon, small,        div,b4,out)
       x, y = xy[i].x, xy[i].y
       lhs:add(y)
       rhs:sub(y)
-      print("small",small)
-      if lhs.n>small and rhs.n>small then
+      if lhs.n > small and rhs.n > small then
         if x - xy[lo].x > epsilon and xy[hi].x - x > epsilon then
-          print("epsilon",epsilon)
           if x ~= xy[i+1].x then
             tmp = (lhs.n*lhs:div() + rhs.n*rhs:div())  / (lhs.n + rhs.n)
-            print("tmp",tmp,best)
             if tmp < best then
               best,cut = tmp,i end end end end end 
     if   cut 
@@ -325,9 +323,10 @@ function go.symbins(  eg,right,left,rows,x)
   eg = Egs():load(the.file) 
   rows =eg:betters()
   left,right = {},{}
-  for i=1,50            do push(left,  rows[i]) end
+  for i=1,50              do push(left,  rows[i]) end
   for i=#rows-50+1, #rows do push(right, rows[i]) end
   for _,col in pairs(eg.cols.x) do
+    print(""); print(col.at)
     for k,v in pairs(col:bins(left,right)) do print(v) end end end
 
 function go.many()
