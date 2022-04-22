@@ -50,6 +50,7 @@ function lt(x)   return function(t,u) return t[x] < u[x] end end
 function push(t,x)   t[1+#t]=x; return x end
 function map(t,f, u) u={};for _,v in pairs(t) do u[1+#u]=f(v) end;return u end
 function sort(t,f)   table.sort(t,f); return t end
+function sum(t,f,n)  n=0; for _,x in pairs(t) do n=n+f(x) end; return n end
 
 function any(a, i)    i=r()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
 function many(a,n, u) u={};for j=1,n do push(u,any(a)) end;return u end
@@ -145,12 +146,12 @@ function Sym:div(   e)
 
 function Sym:dist(x,y) return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
 
-function Sym:bins(left,right,     t,f,x,n,out,has,tmp,inc)
-  t,f,n,out,tmp = true,false,0,{},{}
+function Sym:bins(rows,     x,n,out,has,tmp,inc)
+  n,out,tmp = 0,{},{}
   function inc(x) n=n+1; return n end
   function has(x) tmp[x] = tmp[x] or Bin(self.txt, self.at,inc(x),x,x,Sym()) end
-  for _,r in pairs(left)  do x=r.cells[self.at];has(x); tmp[x].ystats:add(t) end
-  for _,r in pairs(right) do x=r.cells[self.at];has(x); tmp[x].ystats:add(f) end
+  for _,r in pairs(rows) do 
+    x = r.cells[self.at]; has(x); tmp[x].ystats:add(r.klass) end
   for _,x in pairs(tmp) do push(out, x) end
   return out end
 
@@ -306,6 +307,14 @@ function Egs:unsuper(n,     recurse,known,rows,used,rest)
   used, rest = {}, {}
   recurse(self.rows, many(self.rows,n)) end
 
+function Egs:branches(rows1,rows2,    n)
+  n = #left + #right
+  function f(bins) return {
+    bins = bins,
+    w  = sum(bins,function(bin) return bin.ystats.n*bin.ystats:div()/n end)} end
+  bins = sort(map(self.cols.x, function(c) f(c:bins(rows,rows)) end), lt"w")[1].bins
+end
+
 --------------------------------------------------------------------------------
 fails,go,no = 0,{},{}
 function ok(test,msg)
@@ -319,15 +328,14 @@ function go.div(  s)
   for _,x in pairs{"a","a","a","a","b","b","c"} do s:add(x) end
   ok(math.abs(1.376 - s:div()) < 0.01, "ent") end
 
-function go.symbins(  eg,right,left,rows,x)
+function go.symbins(  eg,right,left,rows,x,col)
   eg = Egs():load(the.file) 
-  rows =eg:betters()
-  left,right = {},{}
-  for i=1,50              do push(left,  rows[i]) end
-  for i=#rows-50+1, #rows do push(right, rows[i]) end
-  for _,col in pairs(eg.cols.x) do
-    print(""); print(col.at)
-    for k,v in pairs(col:bins(left,right)) do print(v) end end end
+  rows = eg:betters()
+  for i=1,50              do rows[i].klass=1 end
+  for i=#rows-50+1, #rows do rows[i].klass=0 end
+  -- for _,col in pairs(eg.cols.x) do print(""); print(col.at)
+  col=eg.cols.x[4]
+  for k,v in pairs(col:bins(rows)) do print(v) end end
 
 function go.many()
   oo(many({10,20,30,40,50,60,70,80,90,100},3)) end
