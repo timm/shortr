@@ -5,24 +5,25 @@
 -- texte de cette licence, afin que tout utilisateur en soit informé.
 -- AVERTISSEMENT : LES ŒUVRES N'ONT AUCUNE GARANTIE.
 local b4={}; for k,v in pairs(_ENV) do b4[k]=v end
-local any, coerce, csv, ent, fails, fmt, fu, go, id, lt, many, map, obj, push
-local no, o, oo, ok, per, r, rnd, rnds, same, sd, sort, sum, the, work1, work
+local any,bins,coerce,csv,ent,fails,fmt,fu,go,id,lt,many,map,obj,push
+local no,o,oo,ok,per,r,rnd,rnds,same,sd,sort,sum,the,work1,work
 local the, help={}, [[ 
 wicked: explore the world better,  explore the world for good.
 (c) 2022, Tim Menzies, opensource.org/licenses/Fair
 
-   .-------.  
-   | Ba    | Bad <----.  planning = (better - bad)
-   |    56 |          |  monitor  = (bad - better)
-   .-------.------.   |  
-           | Be   |   v  
-           |    4 | Better  
+   .-------.            (planning = (better - bad))
+   | Ba    |   Bad <----(monitor  = (bad - better))
+   |    56 |            |  
+   .-------.------.     |  
+           | Be   |     v  
+           |    4 |   Better  
            .------.  
 
 USAGE:
   wicket.lua [OPTIONS]
 
 OPTIONS:
+  --cohen   -c  cohen                       = .35
   --K       -K  manage low class counts     = 1
   --M       -M  manage low evidence counts  = 2
   --far     -F  how far to go for far       = .9
@@ -42,19 +43,18 @@ OPTIONS (other):
 --------------------------------------------------------------------------------
 r   = math.random
 fmt = string.format
-function fu(x) return function(t) return t[x] end end
-
-function lt(x) return function(t,u) return t[x] < u[x] end end
-function sort(t,f) table.sort(t,type(f)=="string" and lt(f) or f);return t end
+function same(x) return x end
+function fu(x)   return function(t) return t[x] end end
+function lt(x)   return function(t,u) return t[x] < u[x] end end
 
 function push(t,x)   t[1+#t]=x; return x end
 function map(t,f, u) u={};for _,v in pairs(t) do u[1+#u]=f(v) end;return u end
 function sum(t,f, u) u=0; for _,v in pairs(t) do u=u+f(v)     end;return u end
+function sort(t,f)   table.sort(t,f); return t end
 
 function any(a, i)    i=r()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
 function many(a,n, u) u={};for j=1,n do push(u,any(a)) end;return u end
 
-function same(x) return x end
 function sd(t,f)  f=f or same; return (f(per(t,.9)) - f(per(t,.1)))/2.56 end
 function per(t,p) return t[ ((p or .5)*#t) // 1 ] end 
 
@@ -105,15 +105,15 @@ function obj(name,    t,new,str)
 --------------------------------------------------------------------------------
 local Bin=obj"Bin"
 function Bin:new(txt,at,n, lo,hi,ystats) 
-  self.at, self.txt, self.n = at, txt, n
+  self.at, self.txt, self.n     = at, txt, n
   self.lo, self.hi, self.ystats = lo, hi, ystats end
 
 function Bin:__tostring()
-  local x,lo,hi,big = self.name, self.lo, self.hi, math.huge
+  local x,lo,hi,big = self.txt, self.lo, self.hi, math.huge
   if     lo ==  hi  then return fmt("%s==%s",x, lo)  
   elseif hi ==  big then return fmt("%s>=%s",x, lo)  
   elseif lo == -big then return fmt("%s<%s",x, hi)  
-  else                   return fmt("%s<=%s < %s",lo,x,hi) end end
+:  else                   return fmt("%s<=%s < %s",lo,x,hi) end end
 
 function Bin:select(t)
   t = t.cells and t.cells or t
@@ -140,17 +140,18 @@ function Sym:add(x,inc)
 
 function Sym:mid() return self.mode end
 function Sym:div(  e) 
-  e=0;for _,m in pairs(t) do e=e-m/self.n*math.log(m/self.n,2); return e end end
+  e=0; for _,m in pairs(self.has) do e=e-m/self.n*math.log(m/self.n,2)
+  return e end end
 
 function Sym:dist(x,y) return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
 
-function Sym:bins(left,right,     tmp,out,has,n,inc)
-  n,out,tmp = 0,{},{}
-  function inc() n=n+1; return n end
-  function has(x) tmp[x]=tmp[x] or Bin(self.at,self.txt,inc(),x,x,Sym()) end
-  for _,r in pairs(left) do x=r.cells[self.at]; has(x); tmp[x].ystats:add(1) end
-  for _,r in pairs(right)do x=r.cells[self.at]; has(x); tmp[x].ystats:add(0) end
-  for _,x in pairs(tmp) do  push(out, x) end
+function Sym:bins(left,right,     t,f,x,n,out,has,tmp,inc)
+  t,f,n,out,tmp = true,false,0,{},{}
+  function inc(x) n=n+1; return n end
+  function has(x) tmp[x] = tmp[x] or Bin(self.txt, self.at,inc(x),x,x,Sym()) end
+  for _,r in pairs(left)  do x=r.cells[self.at];has(x); tmp[x].ystats:add(t) end
+  for _,r in pairs(right) do x=r.cells[self.at];has(x); tmp[x].ystats:add(f) end
+  for _,x in pairs(tmp) do push(out, x) end
   return out end
 
 -------------------------------------------------------------------------------
@@ -186,10 +187,19 @@ function Num:dist(x,y)
   else x,y = self:norm(x), self:norm(y) end
   return math.abs(x - y) end
 
-function Num:bins(left,right,       xy,out,recurse,div,xy,epsilon,small)
-  function div(lo,hi,        cut,lhs,rhs,best,b4,x0,x,xmax,y,t,stats)
-    lhs, rhs, ystats = Sym(), Sym(), Sym()
-    for i=lo,hi do ystats:add( rhs:add(xy[i].y) ) end
+function Num:bins(left,right,       t,f,xy)
+  t,f,xy = true,false,{}
+  for _,r in pairs(left)  do 
+    if x ~="?" then push(xy,{x=r.cells[self.at],y=t}) end end
+  for _,r in pairs(right) do 
+    if x ~="?" then push(xy,{x=r.cells[self.at],y=f}) end end
+  return bins(self.txt, self.at, sort(xy, lt"x"), 
+              sd(xy, fu"x")*the.cohen, (#xy)^the.min) end
+
+function bins(txt, at, xy, epsilon, small,        div,b4,out)
+  function div(lo,i,        x,y,b4,cut,lhs,rhs,best,overall)
+    lhs, rhs, overall = Sym(), Sym(), Sym()
+    for i=lo,hi do overall:add( rhs:add(xy[i].y) ) end
     best = rhs:div()
     for i=lo,hi do
       x, y = xy[i].x, xy[i].y
@@ -201,23 +211,13 @@ function Num:bins(left,right,       xy,out,recurse,div,xy,epsilon,small)
             tmp = (lhs.n*lhs:div() + rhs.n*rhs:div())  / (lhs.n + rhs.n)
             if tmp*.95 < best then
               best,cut = tmp,i end end end end end 
-    return cut, ystats 
-  end ----------------
-  function recurse(lo,hi,     cut,systats)
-    cut, ystats = div(lo,hi)
     if   cut 
-    then recurse(lo,    cut)
-         recurse(cut+1, hi) 
-    else b4=push(out,
-                 Bin(self.txt, self.at, 1+#out, b4, xy[hi].x, ystats)).hi end 
-  end ---------------------------- 
-  b4, xy, out = -math.huge, {}, {}
-  for _,r in pairs(left)  do if x ~="?" then push(xy,{x=r.cells[c],y=1}) end end
-  for _,r in pairs(right) do if x ~="?" then push(xy,{x=r.cells[c],y=0}) end end
-  xy      = sort(xy, lt"x")
-  epsilon = sd(xy, fu"x")*the.cohen
-  small   = (#xy)^the.min
-  recurse(1,#xy) 
+    then div(lo,    cut) 
+         div(cut+1, hi) 
+    else b4 = push(out, Bin(txt, at, 1+#out, b4, xy[hi].x, overall)).hi end 
+  end -------------------- 
+  b4, out = -math.huge, {}
+  div(1,#xy) 
   out[#out].hi = math.huge
   return out end
 
@@ -319,8 +319,9 @@ function go.symbins(  eg,right,left,rows,x)
   rows =eg:betters()
   left,right = {},{}
   for i=1,50            do push(left,  rows[i]) end
-  for i=#rows-50, #rows do push(right, rows[i]) end
-  for k,v in pairs(eg.cols.x[4]:bins(left,right)) do print(v) end end
+  for i=#rows-50+1, #rows do push(right, rows[i]) end
+  for _,col in pairs(eg.cols.x) do
+    for k,v in pairs(col:bins(left,right)) do print(v) end end end
 
 function go.many()
   oo(many({10,20,30,40,50,60,70,80,90,100},3)) end

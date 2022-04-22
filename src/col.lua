@@ -25,7 +25,7 @@ function COL:dist(x,y)
 
 function COL:merged(other,    out)
   out = self:merge(other)
-  if out:div()*.95 <= (self.n*self:div() + other.n*other:div())/out.n then
+  if out:div()*.95 <= (self.n*self:div() + other.n*other:div())/out.n then 
     return out end end
 
 return COL
