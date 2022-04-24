@@ -14,8 +14,8 @@
 -- notified of this instrument.  DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
 
 local b4={}; for k,v in pairs(_ENV) do b4[k]=v end
-local any,bins,coerce,csv,ent,fails,fmt,fu,go,id,lt,many,map,obj,push
-local no,o,oo,ok,per,r,rnd,rnds,same,sd,sort,sum,the,work1,work
+local any,bins,coerce,csv,ent,fails,fmt,fu,go,id,lt,main,many,map,obj,push
+local no,o,oo,ok,per,r,rnd,rnds,runDemo,same,sd,settings,sort,sum,the
 --------------------------------------------------------------------------------
 local the, help={}, [[ 
 wicket: explore the world better,  explore the world for good.
@@ -92,15 +92,29 @@ function csv(src)
       row={}; for x in line:gmatch("([^,]+)") do row[1+#row]=coerce(x) end
       return row end end end 
 
-function work1(x,    b4)
+function settings(txt, d)
+  d={}
+  txt:gsub("\n  ([-][-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+  function(long,key,short,x)
+    for n,flag in ipairs(arg) do 
+      if flag==short or flag==long then
+        x = x=="false" and "true" or x=="true" and "false" or arg[n+1] end end 
+    d[key] = coerce(x) end)
+  if d.help then print(txt) end 
+  return d end
+
+function main(todo,   all)
+  all={}; for k,_ in pairs(go) do push(all,k) end
+  all = the.todo=="all" and sort(all) or {todo} 
+  for _,x in pairs(all)  do runDemo(x) end  
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end 
+  os.exit(fails) end
+
+function runDemo(x,    b4)
   b4={}; for k,v in pairs(the) do b4[k]=v end
   math.randomseed(the.seed)
   if go[x] then print(x); go[x]() end 
   for k,v in pairs(b4) do the[k]=v end end
-
-function work(   t)
-  t={}; for k,_ in pairs(go) do push(t,k) end
-  for _,x in pairs(sort(t)) do work1(x) end  end
 
 ------------------------------------------------------------------------------
 local _id=0
@@ -145,7 +159,7 @@ function Sym:add(x,inc)
     inc = inc or 1
     self.n = self.n + inc
     self.has[x] = (self.has[x] or 0) + inc
-    if self.has[x] > self.most then self.most,self.mode = self.has[x],x end end
+    if self.has[x] > self.most then self.most,self.mode = self.has[x], x end end
   return x end
 
 function Sym:mid() return self.mode end
@@ -198,16 +212,13 @@ function Num:dist(x,y)
   else x,y = self:norm(x), self:norm(y) end
   return math.abs(x - y) end
 
-function Num:bins(left,right,       t,f,xy)
-  t,f,xy = true,false,{}
-  for _,r in pairs(left)  do 
-    if x ~="?" then push(xy,{x=r.cells[self.at],y=t}) end end
-  for _,r in pairs(right) do 
-    if x ~="?" then push(xy,{x=r.cells[self.at],y=f}) end end
-  return bins(self.txt, self.at, sort(xy, lt"x"), 
-              sd(xy, fu"x")*the.cohen, (#xy)^the.min) end
+function Num:bins(rows,      xy,f)
+  function f(row, x) 
+    x=row.cells[self.at]; if x~="?" then return {x=x,y=row.klass} end end
+  xy = sort(map(rows,f),lt"x")
+  return bins(self.txt, self.at, xy, sd(xy, fu"x")*the.cohen, (#xy)^the.min) end
 
-function bins(txt, at, xy, epsilon, small,        div,b4,out)
+function bins(txt,at,xy,epsilon,small,      div,b4,out)
   function div(lo,hi,        x,y,cut,lhs,rhs,tmp,best,overall)
     lhs, rhs, overall = Sym(), Sym(), Sym()
     for i=lo,hi do overall:add( rhs:add(xy[i].y) ) end
@@ -234,7 +245,7 @@ function bins(txt, at, xy, epsilon, small,        div,b4,out)
 
 -------------------------------------------------------------------------------
 local Row=obj"Row"
-function Row:new(t) self.cells = t end
+function Row:new(t) self.klass=false; self.cells = t end
 
 --------------------------------------------------------------------------------
 local Cols=obj"Cols"
@@ -317,12 +328,19 @@ function Egs:unsuper(n,     recurse,known,rows,used,rest)
   used, rest = {}, {}
   recurse(self.rows, many(self.rows,n)) end
 
-function Egs:branches(rows1,rows2,    n)
-  n = #left + #right
-  function f(bins) return {
-    bins = bins,
-    w  = sum(bins,function(bin) return bin.ystats.n*bin.ystats:div()/n end)} end
-  bins = sort(map(self.cols.x, function(c) f(c:bins(rows,rows)) end), lt"w")[1].bins
+function Egs:branches(rows,    best,worth,binsWorth)
+  print(the.file)
+  function worth(bin)     return bin.ystats.n/#rows * bin.ystats:div() end
+  function binsWorth(bins) return { bins=bins, worth=sum(bins,worth)} end
+  for _,two in pairs(sort(map(self.cols.x, 
+                              function(col) return binsWorth(col:bins(rows))end
+                             ),
+                          lt"worth")) do
+      print("")
+      print(#rows)
+      for i,bin in pairs(two.bins) do
+         print(i,bin.at, o(bin.ystats.has)) end
+      end
 end
 
 --------------------------------------------------------------------------------
@@ -330,22 +348,34 @@ fails,go,no = 0,{},{}
 function ok(test,msg)
   print("", test and "PASS "or "FAIL ", msg or "") 
   if not test then 
-    fails= fails+1 
+    fails = fails+1 
     if  the.dump then assert(test,msg) end end end
+
+function go.list(    t) 
+  t={}; for txt,_ in pairs(go) do if txt~="list" then push(t,txt) end end
+  for _,txt in pairs(sort(t)) do print(fmt("lua wicket.lua -t %s",txt)) end end
 
 function go.div(  s)
   s=Sym()
   for _,x in pairs{"a","a","a","a","b","b","c"} do s:add(x) end
   ok(math.abs(1.376 - s:div()) < 0.01, "ent") end
 
-function go.symbins(  eg,right,left,rows,x,col)
-  eg = Egs():load(the.file) 
+function go.symbins(  eg,rows)
+  eg   = Egs():load(the.file) 
   rows = eg:betters()
-  for i=1,50              do rows[i].klass=1 end
-  for i=#rows-50+1, #rows do rows[i].klass=0 end
-  -- for _,col in pairs(eg.cols.x) do print(""); print(col.at)
-  col=eg.cols.x[4]
-  for k,v in pairs(col:bins(rows)) do print(v) end end
+  for _,row in pairs(rows) do row.klass=false end
+  for i=1,(#rows)^the.min do rows[i].klass=true end
+  for _,col in pairs(eg.cols.x) do
+    for k,v in pairs(col:bins(rows)) do print(v) end end end
+
+function go.branches(  eg,rows,s)
+  eg   = Egs():load(the.file) 
+  rows = eg:betters()
+  for i=1,(#rows)*.2 do rows[i].klass=true end
+  s=Sym()
+  for _,row in pairs(rows) do s:add(row.klass) end
+  eg:branches(eg.rows)
+  end
 
 function go.many()
   oo(many({10,20,30,40,50,60,70,80,90,100},3)) end
@@ -388,17 +418,8 @@ function go.mids( eg,hi,lo,out)
   print("hi",o(hi:mid())) end
 
 --------------------------------------------------------------------------------
-help:gsub("\n  ([-][-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
-  function(long,key,short,x)
-    for n,flag in ipairs(arg) do 
-      if flag==short or flag==long then
-        x = x=="false" and "true" or x=="true" and "false" or arg[n+1] end end 
-    the[key] = coerce(x) end)
-
-if the.help then print(help) end
-if the.todo=="all" then work() else work1(the.todo) end
-for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end 
-os.exit(fails)
+the = settings(help)
+main(the.todo)
 
 --                _   _   _
 --               (_) (_) (_)
