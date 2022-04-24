@@ -329,7 +329,6 @@ function Egs:unsuper(n,     recurse,known,rows,used,rest)
   recurse(self.rows, many(self.rows,n)) end
 
 function Egs:branches(rows,    best,worth,binsWorth)
-  print(the.file)
   function worth(bin)     return bin.ystats.n/#rows * bin.ystats:div() end
   function binsWorth(bins) return { bins=bins, worth=sum(bins,worth)} end
   for _,two in pairs(sort(map(self.cols.x, 
