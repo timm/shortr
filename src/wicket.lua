@@ -14,8 +14,8 @@
 -- notified of this instrument.  DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
 
 local b4={}; for k,v in pairs(_ENV) do b4[k]=v end
-local any,bins,coerce,csv,ent,fails,fmt,fu,go,id,lt,main,many,map,obj,push
-local no,o,oo,ok,per,r,rnd,rnds,runDemo,same,sd,settings,sort,sum,the
+local any,coerce,csv,ent,fails,fmt,fu,go,id,lt,main,many,map,obj,push
+local no,o,oo,ok,per,r,rnd,rnds,runDemo,same,sd,settings,shuffle,sort,sum
 --------------------------------------------------------------------------------
 local the, help={}, [[ 
 wicket: explore the world better,  explore the world for good.
@@ -42,6 +42,7 @@ OPTIONS:
   --some    -s  sample size for distances   = 512
   --stop    -T  how far to go for far       = 20
   --min     -m  size of min space           = .5
+  --best    -B  best percent                = .05
 
 OPTIONS (other):
   --dump    -d  dump stack+exit on error    = false
@@ -50,9 +51,17 @@ OPTIONS (other):
   --rnd     -r  rounding numbers            = %5.3f
   --todo    -t  start up action             = nothing ]]
 
---------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+---    _    _ ___  
+---    |    | |__] 
+---    |___ | |__] 
+
 r   = math.random
 fmt = string.format
+
+---     _|_   _.  |_   |   _    _ 
+---      |_  (_|  |_)  |  (/_  _> 
+
 function same(x) return x end
 function fu(x)   return function(t) return t[x] end end
 function lt(x)   return function(t,u) return t[x] < u[x] end end
@@ -60,18 +69,23 @@ function lt(x)   return function(t,u) return t[x] < u[x] end end
 function push(t,x)   t[1+#t]=x; return x end
 function map(t,f, u) u={};for _,v in pairs(t) do u[1+#u]=f(v) end;return u end
 function sort(t,f)   table.sort(t,f); return t end
-function sum(t,f,n)  n=0; for _,x in pairs(t) do n=n+f(x) end; return n end
+function sum(t,f,n) 
+  n=0; for _,x in pairs(t) do n=n+(f or same)(x) end; return n end
+
+function shuffle(t,   j)
+  for i=#t,2,-1 do j=math.random(i); t[i],t[j]=t[j],t[i] end; return t end
 
 function any(a, i)    i=r()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
-function many(a,n, u) u={};for j=1,n do push(u,any(a)) end;return u end
+function many(a,n, u) 
+  if n>=#a then return shuffle(a) end
+  u={};for j=1,n do push(u,any(a)) end;return u end
 
 function sd(t,f)  f=f or same; return (f(per(t,.9)) - f(per(t,.1)))/2.56 end
 function per(t,p) return t[ ((p or .5)*#t) // 1 ] end 
 
-function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
-function rnd(x,f) 
-  return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or"%s",x) end
-
+---     _|_  |_   o  ._    _    _    _|_   _      _  _|_  ._  o  ._    _    _ 
+---      |_  | |  |  | |  (_|  _>     |_  (_)    _>   |_  |   |  | |  (_|  _> 
+---                        _|                                          _|     
 function oo(t) print(o(t)) end
 function o(t,    u,one,sorted)
   sorted = #t>0 -- true when array's indexes are 1,2...#t
@@ -79,6 +93,13 @@ function o(t,    u,one,sorted)
   u={}; for k,v in pairs(t) do u[1+#u] = one(k,v) end
   return (t.is or "").."{"..table.concat(sorted and u or sort(u)," ").."}" end
 
+function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
+function rnd(x,f) 
+  return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or"%s",x) end
+
+---      _  _|_  ._  o  ._    _    _    _|_   _     _|_  |_   o  ._    _    _ 
+---     _>   |_  |   |  | |  (_|  _>     |_  (_)     |_  | |  |  | |  (_|  _> 
+---                           _|                                       _|     
 function coerce(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
@@ -91,17 +112,8 @@ function csv(src)
     if not line then io.close(src) else
       row={}; for x in line:gmatch("([^,]+)") do row[1+#row]=coerce(x) end
       return row end end end 
-
-function settings(txt, d)
-  d={}
-  txt:gsub("\n  ([-][-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
-  function(long,key,short,x)
-    for n,flag in ipairs(arg) do 
-      if flag==short or flag==long then
-        x = x=="false" and "true" or x=="true" and "false" or arg[n+1] end end 
-    d[key] = coerce(x) end)
-  if d.help then print(txt) end 
-  return d end
+---     ._ _    _.  o  ._  
+---     | | |  (_|  |  | | 
 
 function main(todo,   all)
   all={}; for k,_ in pairs(go) do push(all,k) end
@@ -116,21 +128,35 @@ function runDemo(x,    b4)
   if go[x] then print(x); go[x]() end 
   for k,v in pairs(b4) do the[k]=v end end
 
-------------------------------------------------------------------------------
-local _id=0
-function id() _id = _id+1; return _id end
+function settings(txt, d)
+  d={}
+  txt:gsub("\n  ([-][-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
+  function(long,key,short,x)
+    for n,flag in ipairs(arg) do 
+      if flag==short or flag==long then
+        x = x=="false" and "true" or x=="true" and "false" or arg[n+1] end end 
+    d[key] = coerce(x) end)
+  if d.help then print(txt) end 
+  return d end
+
+-------------------------------------------------------------------------------
+---    ____ ___   _ ____ ____ ___ ____ 
+---    |  | |__]  | |___ |     |  [__  
+---    |__| |__] _| |___ |___  |  ___] 
 
 function obj(name,    t,new,str)
   function new(kl,...) 
-    local x=setmetatable({id=id()},kl); kl.new(x,...); return x end 
+    local x=setmetatable({},kl); kl.new(x,...); return x end 
   t = {__tostring=o, is=name or ""}; t.__index=t
   return setmetatable(t, {__call=new}) end
 
---------------------------------------------------------------------------------
+---     |_   o  ._    _ 
+---     |_)  |  | |  _> 
+
 local Bin=obj"Bin"
-function Bin:new(txt,at,n, lo,hi,ystats) 
-  self.at, self.txt, self.n     = at, txt, n
-  self.lo, self.hi, self.ystats = lo, hi, ystats end
+function Bin:new(t) 
+  self.pos, self.txt, self.n, self.has = t.pos, t.txt, t.n, {}
+  self.lo, self.hi, self.ystats = t.lo, t.hi, t.stats end
 
 function Bin:__tostring()
   local x,lo,hi,big = self.txt, self.lo, self.hi, math.huge
@@ -141,13 +167,14 @@ function Bin:__tostring()
 
 function Bin:select(t)
   t = t.cells and t.cells or t
-  local x, lo, hi = t[self.at], self.lo, self.hi
-  return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
-
---------------------------------------------------------------------------------
+  local x, lo, hi = t[self.pos], self.lo, self.hi
+  return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
+---      _      ._ _  
+---     _>  \/  | | | 
+---         /         
 local Sym=obj"Sym"
-function Sym:new(at,txt) 
-   self.at  = at or 0
+function Sym:new(pos,txt) 
+   self.pos  = pos or 0
    self.txt = txt or ""
    self.n   = 0
    self.has, self.mode, self.most = {},nil,0 end
@@ -173,16 +200,19 @@ function Sym:dist(x,y) return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
 function Sym:bins(rows,     x,n,out,has,tmp,inc)
   n,out,tmp = 0,{},{}
   function inc(x) n=n+1; return n end
-  function has(x) tmp[x] = tmp[x] or Bin(self.txt, self.at,inc(x),x,x,Sym()) end
+  function has(x) tmp[x]=tmp[x] or Bin({txt=self.txt,  pos=self.pos, n=inc(x),
+                                        lo=x ,hi=x, stats=Sym()}) end
   for _,r in pairs(rows) do 
-    x = r.cells[self.at]; has(x); tmp[x].ystats:add(r.klass) end
+    x = r.cells[self.pos]; has(x); tmp[x].ystats:add(r.klass) end
   for _,x in pairs(tmp) do push(out, x) end
   return out end
 
--------------------------------------------------------------------------------
+---     ._        ._ _  
+---     | |  |_|  | | | 
+
 local Num=obj"Num"
-function Num:new(at,txt) 
-   self.at  = at or 0
+function Num:new(pos,txt) 
+   self.pos  = pos or 0
    self.txt = txt or ""
    self.n, self.mu, self.m2 = 0,0,0
    self.w   = self.txt:find"-$" and -1 or 1
@@ -212,57 +242,64 @@ function Num:dist(x,y)
   else x,y = self:norm(x), self:norm(y) end
   return math.abs(x - y) end
 
+local _bins
 function Num:bins(rows,      xy,f)
   function f(row, x) 
-    x=row.cells[self.at]; if x~="?" then return {x=x,y=row.klass} end end
+    x=row.cells[self.pos]; if x~="?" then return {x=x,y=row.klass} end end
   xy = sort(map(rows,f),lt"x")
-  return bins(self.txt, self.at, xy, sd(xy, fu"x")*the.cohen, (#xy)^the.min) end
+  return _bins(self.txt,self.pos,xy,sd(xy, fu"x")*the.cohen,(#xy)^the.min) end
 
-function bins(txt,at,xy,epsilon,small,      div,b4,out)
+function _bins(txt,pos,xy,epsilon,small,      div,b4,out)
   function div(lo,hi,        x,y,cut,lhs,rhs,tmp,best,overall)
     lhs, rhs, overall = Sym(), Sym(), Sym()
     for i=lo,hi do overall:add( rhs:add(xy[i].y) ) end
     best = rhs:div()
     for i=lo,hi do
       x, y = xy[i].x, xy[i].y
-      lhs:add(y)
-      rhs:sub(y)
+      lhs:add( rhs:sub( y) )
       if lhs.n > small and rhs.n > small then
-        if x - xy[lo].x > epsilon and xy[hi].x - x > epsilon then
-          if x ~= xy[i+1].x then
+        if x ~= xy[i+1].x then
+          if x - xy[lo].x > epsilon and xy[hi].x - x > epsilon then
             tmp = (lhs.n*lhs:div() + rhs.n*rhs:div())  / (lhs.n + rhs.n)
             if tmp < best then
-              best,cut = tmp,i end end end end end 
+              best,cut = tmp,i end end end end end
     if   cut 
     then div(lo,    cut) 
          div(cut+1, hi) 
-    else b4 = push(out, Bin(txt, at, 1+#out, b4, xy[hi].x, overall)).hi end 
+    else b4 = push(out, Bin({txt=txt, pos=pos, n=1+#out,lo=b4, 
+                             hi=xy[hi].x, stats=overall})).hi end 
   end -------------------- 
   b4, out = -math.huge, {}
   div(1,#xy) 
   out[#out].hi = math.huge
-  return out end
+  return out end
+---     ._   _        
+---     |   (_)  \/\/ 
 
--------------------------------------------------------------------------------
 local Row=obj"Row"
-function Row:new(t) self.klass=false; self.cells = t end
+function Row:new(t) 
+  self.evalauted, self.klass, self.cells = false,false,t end
 
---------------------------------------------------------------------------------
+---      _   _   |   _ 
+---     (_  (_)  |  _> 
+
 local Cols=obj"Cols"
 function Cols:new(names,    col)
   self.names, self.all, self.x, self.y, self.klass = names, {}, {}, {}, nil
-  for at,txt in pairs(names) do
-    col = push(self.all, (txt:find"^[A-Z]" and Num or Sym)(at,txt))
+  for pos,txt in pairs(names) do
+    col = push(self.all, (txt:find"^[A-Z]" and Num or Sym)(pos,txt))
     if not txt:find":$"  then
       if txt:find"!$" then self.klass=col end 
       col.indep = not txt:find"[-+!]$"
       push(col.indep and self.x or self.y, col) end end  end
 
 function Cols:add(row)
-  for _,col in pairs(self.all) do col:add(row[col.at]) end
-  return row end
+  for _,col in pairs(self.all) do col:add(row[col.pos]) end end
 
---------------------------------------------------------------------------------
+---      _    _    _ 
+---     (/_  (_|  _> 
+---           _|     
+
 local Egs=obj"Egs"
 function Egs:new() self.rows,self.cols = {}, nil end
 
@@ -274,18 +311,19 @@ function Egs:clone(rows,   out)
 function Egs:load(file) 
   for row in csv(file) do self:add(row) end; return self end
 
-function Egs:add(t)
-  t = t.cells and t.cells or t
+function Egs:add(t,  row)
   if   self.cols 
-  then push(self.rows, Row(self.cols:add(t))) 
+  then row = t.cells and t or Row(t)
+       self.cols:add(row.cells)
+       push(self.rows, row)
   else self.cols=Cols(t) end
   return self end
 
 function Egs:better(row1,row2)
   local s1, s2, n, e = 0, 0, #self.cols.y, math.exp(1)
   for _,col in pairs(self.cols.y) do
-    local a = col:norm(row1.cells[col.at])
-    local b = col:norm(row2.cells[col.at])
+    local a = col:norm(row1.cells[col.pos])
+    local b = col:norm(row2.cells[col.pos])
     s1      = s1 - e^(col.w * (a - b) / n)
     s2      = s2 - e^(col.w * (b - a) / n) end
   return s1 / n < s2 / n  end
@@ -298,7 +336,7 @@ function Egs:mid(cols)
 
 function Egs:dist(row1,row2,   d,n)
   d = sum(self.cols.x, function(col) 
-              return col:dist(row1.cells[col.at], row2.cells[col.at])^the.p end)
+            return col:dist(row1.cells[col.pos], row2.cells[col.pos])^the.p end)
   return (d / (#self.cols.x)) ^ (1/the.p) end
 
 function Egs:around(row1, rows,    around)
@@ -308,47 +346,64 @@ function Egs:around(row1, rows,    around)
 function Egs:far(row, rows) 
   return per(self:around(row, rows or many(self.rows,the.some)),the.far).row end
 
-function Egs:unsuper(n,     recurse,known,rows,used,rest)
-  function known(row) used[row.id]=true; return row end
-  function recurse(rows,some,x,      y,best,a,b,c)
-    if #rows <= 20 then
-      oo(self:clone(rows):mid())
-    else
-      x = known( x or self:far(any(some),some))
-      y = known(      self:far(x,some))
-      if self:better(y, x) then io.write("/"); x,y = y,x else io.write(".") end
-      c = self:dist(x,y)
-      best = {}
-      for _,r in pairs(rows) do
-        a,b= self:dist(r,x), self:dist(r,y); r.x = (a^2+ c^2-b^2) / (2*c) end 
-      for i,row in pairs(sort(rows, lt"x")) do
-         push(i < #rows//2 and best or rest,row) end
-      recurse(best, many(best,n), x)  end 
-  end ---------------
-  used, rest = {}, {}
-  recurse(self.rows, many(self.rows,n)) end
+function Egs:sway(rows,stop, x,rest,   some,y,best,a,b,c)
+  rows = rows or self.rows
+  rest = rest or {}
+  stop = stop or 2*the.best*#self.rows
+  if #rows <= stop then return rows,rest end
+  some = many(rows,the.some)
+  x    = x or self:far(any(some), some)
+  y    =      self:far(x,         some)
+  if self:better(y, x) then x,y = y,x end
+  x.evaluated = true
+  y.evaluated = true
+  c = self:dist(x,y)
+  for _,row in pairs(rows) do
+    a,b = self:dist(row,x), self:dist(row,y)
+    row.x = (a^2+c^2-b^2)/(2*c) end 
+  best = {}
+  for i,row in pairs(sort(rows, lt"x")) do 
+    push(i<#rows//2 and best or rest, row) end
+  return self:sway(best, stop, x,rest)  end 
 
-function Egs:branches(rows,    best,worth,binsWorth)
-  function worth(bin)     return bin.ystats.n/#rows * bin.ystats:div() end
-  function binsWorth(bins) return { bins=bins, worth=sum(bins,worth)} end
-  for _,two in pairs(sort(map(self.cols.x, 
-                              function(col) return binsWorth(col:bins(rows))end
-                             ),
-                          lt"worth")) do
-      print("")
-      print(#rows)
-      for i,bin in pairs(two.bins) do
-         print(i,bin.at, o(bin.ystats.has)) end
-      end
-end
+function Egs:leaves(rows,stop,leaves,   best,w,bw)
+  leaves= leaves or {}
+  rows  = rows or self.rows
+  stop  = stop or 2*(#self.rows)^the.min
+  print(1)
+  function w(bin)   return bin.ystats.n/#rows * bin.ystats:div() end
+  function bw(bins) return {bins=bins, worth=sum(bins,w)} end
+  print(3)
+  if #rows < stop then
+    return push(leaves,self:clone(rows)) end
+  print(3.1)
+  tmp=map(self.cols.x,function(c) return bw(c:bins(rows))end)
+  oo(tmp[1].bins[1].ystats.has)
+  os.exit()
+  best=sort(map(self.cols.x,function(c) return bw(c:bins(rows))end),lt"worth")[1]
+  print(4)
+  for _,row in pairs(rows) do
+    for _,bin in pairs(best.bins) do
+      if bin:select(row) then push(bin.has, row); break; end end end 
+  for _,bin in pairs(best.bins) do 
+      if #bin.has < #rows then bin.has= self:leaves(bin.has,stop,leaves)  end end 
+  return leaves end
 
---------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+---    ___  ____ _  _ ____ ____ 
+---    |  \ |___ |\/| |  | [__  
+---    |__/ |___ |  | |__| ___] 
+
 fails,go,no = 0,{},{}
 function ok(test,msg)
-  print("", test and "PASS "or "FAIL ", msg or "") 
-  if not test then 
-    fails = fails+1 
-    if  the.dump then assert(test,msg) end end end
+  print("", test and "PASS"or "FAIL", msg or "") 
+  if not test then
+    fails = fails+1
+    if the.dump then assert(test,msg) end end end
+
+function go.sum(    t) 
+  print(sum({1,2,3},same)) end
 
 function go.list(    t) 
   t={}; for txt,_ in pairs(go) do if txt~="list" then push(t,txt) end end
@@ -367,41 +422,64 @@ function go.symbins(  eg,rows)
   for _,col in pairs(eg.cols.x) do
     for k,v in pairs(col:bins(rows)) do print(v) end end end
 
-function go.branches(  eg,rows,s)
+function go.leaves(  eg,rows,s,tree)
   eg   = Egs():load(the.file) 
   rows = eg:betters()
   for i=1,(#rows)*.2 do rows[i].klass=true end
   s=Sym()
   for _,row in pairs(rows) do s:add(row.klass) end
-  eg:branches(eg.rows)
+  for _,eg1 in pairs(eg:leaves(eg.rows,10)) do
+     oo(eg1:mid()) end
   end
-
+--
 function go.many()
-  oo(many({10,20,30,40,50,60,70,80,90,100},3)) end
+  oo(many({10,20,30,40,50,60,70,80,90,100},100)) end
 
-function go.unsuper(   eg,best)
+function go.sway(   eg,best,guesses,rest)
+  local  used = function(row) if row.evaluated then return true end end
   eg = Egs():load(the.file) 
+  print(eg:leaves())
   oo(map(eg.cols.y, function(col) return col.txt end))
-  oo(map(eg.cols.y, function(col) return col.w end))
-  oo(eg:mid())
-  print("---")
-  for i=1,20 do eg:unsuper(128) end 
-  eg:betters()
-  best = eg:clone()
-  for i=1,20 do best:add(eg.rows[i]) end
-  print("---")
-  oo(best:mid()) end
+  oo(map(eg.cols.y, function(col) return col.w   end))
+  print("before",o(eg:mid()))
+  best,rest = eg:sway()
+  print("sway", o(eg:clone(best):mid()))
+  print("evals",#map(eg.rows, used), #best, #rest)
+  take2 ={}
+  for _,row in pairs(best)               do row.klass=true;  push(take2,row) end
+  for _,row in pairs(many(rest,3*#best)) do row.klass=false; push(take2,row) end
+  oo(take2)
+  eg:leaves(take2,5)
+  -- for _,row in pairs(rest) do row.klass=false end
+  -- for _,row in pairs(best) do row.klass=true end
+  -- for _,row in pairs(many(rest,3*#best)) do push(best,row) end
+  -- for _,eg1 in pairs(eg:leaves(best)) do
+  --   print(
+  -- for _,row in pairs(many(rest, 3*#guesses)) do push(
+  -- best= eg:clone()
+  -- for i,row in pairs(eg:betters()) do if i< the.best*#eg.rows then best:add(row) else break end end
+  -- print("best",o(best:mid()))
+  end
 
 function go.eg1(   eg)
   eg = Egs():load(the.file)
   print(#eg.rows, eg.cols.y[1]) end
+
+function go.far(  eg)
+  eg = Egs():load(the.file)
+  print(eg:far(eg.rows[1],eg.rows)) end
+
+function go.around(  eg)
+  eg = Egs():load(the.file)
+  print(eg:around(eg.rows[1])) end
 
 function go.dist(  eg,row2,t)
   eg = Egs():load(the.file)
   t={}; for i=1,20 do 
     row2= any(eg.rows)
     push(t, {dist=eg:dist(eg.rows[1],row2), row = row2}) end 
-  oo(eg.rows[1])
+  oo(eg.rows[1].cells)
+  print("---")
   for _,two in pairs(sort(t,lt"dist")) do oo(two.row.cells) end end
 
 function go.mids( eg,hi,lo,out)
@@ -417,6 +495,10 @@ function go.mids( eg,hi,lo,out)
   print("hi",o(hi:mid())) end
 
 --------------------------------------------------------------------------------
+---    ____ ___ ____ ____ ___ 
+---    [__   |  |__| |__/  |  
+---    ___]  |  |  | |  \  |  
+
 the = settings(help)
 main(the.todo)
 

@@ -33,9 +33,9 @@ help:
 	| awk 'BEGIN {print(FS = ":.*?## "}; {printf "\033[36m%10s :\033[0m %s\n", $$1, $$2}'
 
 h1:; @figlet -W -flarry3d     $t | $(COMMENT)
-h4:; @figlet -W -fmini $${t%%.*}  | $(COMMENT)
-h3:; @figlet -W -fsmall  $${t%%.*}  | $(COMMENT)
 h2:; @figlet -W -fcybermedium $t | $(COMMENT)
+h3:; @figlet -W -fsmall  $${t%%.*}  | $(COMMENT)
+h4:; @figlet -W -fmini $${t%%.*}  | $(COMMENT)
 
 doc: $(PDF) $(HTML) $D/docs/index.html ## generate pdfs
 
@@ -70,10 +70,11 @@ $D/docs/%.html: %.lua ../etc/dhead Makefile
 
 $D/docs/%.pdf : %.lua  
 	@echo "pdf-ing $@ ... "
-	@a2ps -BjR    -q                        \
+	@a2ps -Bjr    -q                        \
+		-L 120 \
 		--line-numbers=1                    \
-		--highlight-level=heavy  \
-		--borders=no --pro=color --columns 2 \
+		--highlight-level=normal  \
+		--borders=no --pro=color --columns 3 \
 		--right-footer="" --left-footer=""    \
 		--pretty-print=$D/etc/lua.ssh             \
 		--footer="page %p."                     \
