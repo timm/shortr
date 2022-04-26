@@ -13,6 +13,9 @@
 -- retained with the works, so that any entity that uses the works is 
 -- notified of this instrument.  DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
 
+-- xxxx  kill cloning
+-- add back here the shorter doc string and maom amd go.rogue
+
 local b4={}; for k,v in pairs(_ENV) do b4[k]=v end
 local any,coerce,csv,ent,fails,fmt,fu,go,id,lt,main,many,map,obj,push
 local no,o,oo,ok,per,r,rnd,rnds,runDemo,same,sd,settings,shuffle,sort,sum

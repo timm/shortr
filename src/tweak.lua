@@ -114,6 +114,9 @@ function obj(name,    t,new,str)
 ---      _.        _   ._     
 ---     (_|  |_|  (/_  |   \/ 
 ---       |                /  
+-- make all this function selected from 
+-- num and sym and add can keep summary internal. 
+-- bin ==> sym:add()
 function inc(t,x,n) t[x] = (t[x] or 0) + (n or 1); return t[x] end
 function dec(t,x)   return inc(t,x,(n or -1)) end
 
