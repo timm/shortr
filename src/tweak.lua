@@ -114,39 +114,54 @@ function obj(name,    t,new,str)
 ---      _.        _   ._     
 ---     (_|  |_|  (/_  |   \/ 
 ---       |                /  
--- make all this function selected from 
--- num and sym and add can keep summary internal. 
--- bin ==> sym:add()
-function inc(t,x,n) t[x] = (t[x] or 0) + (n or 1); return t[x] end
-function dec(t,x)   return inc(t,x,(n or -1)) end
 
-function nonparametric(t,  n,e,p,u) 
-  n,u=0,{}
-  for _,m in pairs(t) do 
-    n=n+m 
-    u[x] = 1+ (u[x] or 0)
-      if u[x] > most then most,mode = u[x], x end end
-  e=0; for _,m in pairs(t) do p=m/n; e = e -  p*math.log(p,2) end
-  return mode,e end
-
-XXXX is a mess. make this all select from num,sym
-function cells(i,rows,    x,t)
-  t={}; for _,r in pairs(rows) do x=r.cells[i]; if x~="?" then t[1+#t]=x end end
-  return t end
-
-function div(t,   t)
-  u={}; for _,x in pairs(t) do inc(u,x) end; return distribution(u) end
-
-function mid(t) t=sort(t); return per(t,.5), (per(t,.9)-per(t,.1))/2.56 end
-
-function stats(cols,t,lo,hi,    m,d,ms,ds)
-  lo,hi = lo or 1, hi or #t
-  ms,ds={},{};for _,c in pairs(cols) do m,d=c:mid(t); push(ms,m); push(ds,d) end
-  return ms,ds end
+function cells(i,rows,here,there,    n,x)
+  n ,here, there = 0, here+1, there or #rows
+  return function(   x)
+    while true do
+      if here > there then break end
+      x = rows[here].cells[i]
+      if x~= "?" then n=n+1; return n,x end 
+      here = here+1 end end end
 
 ---    ____ ___   _ ____ ____ ___ ____ 
 ---    |  | |__]  | |___ |     |  [__  
 ---    |__| |__] _| |___ |___  |  ___] 
+
+---      _      ._ _  
+---     _>  \/  | | | 
+---         /         
+
+local Sym=obj"Sym"
+function Sym:new(pos,s) 
+  self.pos, self.txt= pos or 0,s or "" 
+  self.n, self.has, self.most, self.mode = 0,{},0,nil end
+
+function Sym:add(x)    return x end   
+  if x ~= "?" then
+    inc = inc or 1
+    self.n = self.n + inc
+    self.has[x] = (self.has[x] or 0) + inc
+    if self.has[x] > self.most then self.most,self.mode = self.has[x], x end 
+  return x end
+
+function Sym:mid() return self.mode end
+function Sym:div(   e) 
+  e=0; for _,m in pairs(self.has) do
+         if m>0 then e = e-m/self.n * math.log(m/self.n,2) end end 
+  return e end
+
+function Sym:dist(x,y) return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
+
+function Sym:bins(rows,     x,n,out,has,tmp,inc)
+  n,out,tmp = 0,{},{}
+  function inc(x) n=n+1; return n end
+  function has(x) tmp[x]=tmp[x] or Bin({txt=self.txt,  pos=self.pos, n=inc(x),
+                                        lo=x ,hi=x, seen={}}) end
+  for _,r in pairs(rows) do 
+    x = r.cells[self.pos]; has(x); push(tmp[x].seen,r.klass) end
+  for _,x in pairs(tmp) do push(out, x) end
+  return out end
 
 ---     |_   o  ._  
 ---     |_)  |  | | 
@@ -154,7 +169,7 @@ function stats(cols,t,lo,hi,    m,d,ms,ds)
 local Bin=obj"Bin"
 function Bin:new(t) 
   self.pos, self.txt, self.n, self.has = t.pos, t.txt, t.n, {}
-  self.lo, self.hi, self.seen = t.lo, t.hi, t.seen or {} end
+  self.lo, self.hi, self.seen = t.lo, t.hi, t.seen or Sym() end
 
 function Bin:__tostring()
   local x,lo,hi,big = self.txt, self.lo, self.hi, math.huge
@@ -169,41 +184,27 @@ function Bin:select(t)
   return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
 
 
----      _      ._ _  
----     _>  \/  | | | 
----         /         
-
-local Sym=obj"Sym"
-function Sym:new(pos,s) 
-  self.pos, self.txt= pos or 0,s or "" 
-  self.has, self.most, self.mode = {},0, nil end
-
-function Sym:add(x)    return x end   
-function Sym:dist(x,y) return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
-function Sym:mid(rows) return mode(cells(self.pos,rows)) end
-
-function Sym:bins(rows,     x,n,out,has,tmp,inc)
-  n,out,tmp = 0,{},{}
-  function inc(x) n=n+1; return n end
-  function has(x) tmp[x]=tmp[x] or Bin({txt=self.txt,  pos=self.pos, n=inc(x),
-                                        lo=x ,hi=x, seen={}}) end
-  for _,r in pairs(rows) do 
-    x = r.cells[self.pos]; has(x); push(tmp[x].seen,r.klass) end
-  for _,x in pairs(tmp) do push(out, x) end
-  return out end
-
 ---     ._        ._ _  
 ---     | |  |_|  | | | 
 
 local Num=obj"Num"
 function Num:new(pos,s) 
   self.pos, self.txt, self.lo, self.hi = pos or 0,s or "",1E32, -1E32
+  self.n, self.mu, self.m2 = 0,0,0
   self.w = self.txt:find"-$" and -1 or 1  end
 
 function Num:add(x) 
-  if x=="?" then return x end
-  self.lo = math.min(x,self.lo)
-  self.hi = math.max(x,self.hi) end
+  if x ~="?" then
+    self.n  = self.n + 1
+    self.lo = math.min(x, self.lo)
+    self.hi = math.max(x, self.hi) 
+    d       = x - self.mu
+    self.mu = self.mu + d/self.n
+    self.m2 = self.m2 + d*(x - self.mu) end
+  return x end
+
+function Num:mid() return self.mu end
+function Num:div() return (self.m2/(self.n - 1))^0.5 end
 
 function Num:norm(x,   lo,hi)
   lo,hi= self.lo, self.hi
@@ -216,8 +217,6 @@ function Num:dist(x,y)
   else x,y = self:norm(x), self:norm(y) end
   return math.abs(x - y) end
 
-function Num:mid(rows) return median(cells(self.pos,rows)) end
- 
 ---      _   _   |   _ 
 ---     (_  (_)  |  _> 
 
