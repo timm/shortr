@@ -111,7 +111,8 @@ function map2(t,f, u) u={};for k,v in pairs(t)do u[k] = f(k,v) end;return u end
 
 function copy(t,   u)
   if type(t) ~= "table" then return t end
-  u={};for k,v in pairs(t) do u[copy(k)]=copy(v) end; return u end
+  u={};for k,v in pairs(t) do u[copy(k)]=copy(v) end
+  return setmetatable(u,getmetatable(t)) end
 
 function slots(t,     u,public)
   function public(k) return tostring(k):sub(1,1) ~= "_" end

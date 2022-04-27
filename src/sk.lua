@@ -53,24 +53,22 @@ function bootstrap(y0,z0,        x,y,z,b4,yhat,zhat,bigger,obs,adds)
     then bigger = bigger + 1/the.boot end end
   return bigger >= the.conf end
 
-function scottKnot(nums,      all,cohen)
-  local mid = function (z) return z.some:mid()
-  end --------------------------------
-  local function summary(i,j,    out)
-    out = copy( nums[i] )
+-- r ==> rx
+function scottKnot(nums,      all,cohen,summary,div)
+  function summary(i,j,    out)
+    out = copy(nums[i])
     for k = i+1, j do out = out:merge(nums[k]) end
     return out
   end ---------------------------
-  local function div(lo,hi,rank,b4,       cut,best,l,l1,r,r1,now)
+  function div(lo,hi,rank,b4,       cut,best,l,l1,r,r1,now)
     best = 0
     for j = lo,hi do
       if j < hi  then
         l   = summary(lo,  j)
         r   = summary(j+1, hi)
-        now = (l.n*(mid(l) - mid(b4))^2 + r.n*(mid(r) - mid(b4))^2
-              ) / (l.n + r.n)
+        now = (l.n*((l.mu - b4.mu)^2 + r.n*(r.mu - b4.mu))^2)/(l.n+r.n)
         if now > best then
-          if math.abs(mid(l) - mid(r)) >= cohen then
+          if math.abs(l.mu - r.mu) >= cohen then
             cut, best, l1, r1 = j, now, copy(l), copy(r)
     end end end end
     if cut and not l1:same(r1,the) then
