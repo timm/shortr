@@ -214,7 +214,7 @@ function SYM:bins(rows,     out,known,x)
 ---     | |  |_|  | | | 
 function NUM:new(pos,s) 
   self.pos, self.txt, self.lo, self.hi = pos or 0,s or "",1E32, -1E32
-  self.n, self.mu, self.m2 = 0,0,0
+  self.n, self.mu, self.m2, self.sd = 0,0,0,0
   self.w = self.txt:find"-$" and -1 or 1  end
 
 function NUM:add(x,   _,d) 
@@ -224,11 +224,13 @@ function NUM:add(x,   _,d)
     self.hi = math.max(x, self.hi) 
     d       = x - self.mu
     self.mu = self.mu + d/self.n
-    self.m2 = self.m2 + d*(x - self.mu) end
+    self.m2 = self.m2 + d*(x - self.mu) 
+    self.sd = (self.n<2 or self.m2<0) and 0 or (self.m2/(self.n-1))^.5 
+  end
   return x end
 
 function NUM:mid() return self.mu end
-function NUM:div() return (self.m2/(self.n - 1))^0.5 end
+function NUM:div() return self.sd end
 
 function NUM:norm(x,   lo,hi)
   lo,hi= self.lo, self.hi
@@ -471,6 +473,12 @@ function go.classify(  egs,best,rest)
 ---    [__   |  |__| |__/  |  
 ---    ___]  |  |  | |  \  |  
 
-if the.help then print(help) else main() end
-go.rogue()
-os.exit(fails) 
+if   pcall(debug.getlocal, 4, 1) 
+then return {the=the,any=any,any=csv,fmt=fmt,many=many,map=map,
+             oo=oo,o=o,obj=obj,per=per,push=push,R=R,
+             rnd=rnd,rnds=rnds,sort=sort,slice=slice,
+             string2thing=string2thing,
+             NUM=NUM, SYM=SYM}
+else if the.help then print(help) else main() end
+     go.rogue()
+     os.exit(fails)  end
