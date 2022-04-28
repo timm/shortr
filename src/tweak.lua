@@ -106,8 +106,8 @@ REFERENCES:
 ---    |  |  |  | |    [__  
 ---    |__|  |  | |___ ___] 
 
-local the,any,cells,copy,csv,fmt,fu,lt,many,map = {}
-local oo,o,obj,per,push,R,rnd,rnds,sort,slice,string2thing
+local the,any,cells,copy,csv,fmt,fu,lt,many,map,normal = {}
+local o,obj,ok,oo,per,push,R,rnd,rnds,sort,slice,stats,string2thing
 ---                                     _                               
 ---      _  _|_  ._  o  ._    _    _     )    _|_  |_   o  ._    _    _ 
 ---     _>   |_  |   |  | |  (_|  _>    /_     |_  | |  |  | |  (_|  _> 
@@ -133,8 +133,10 @@ function csv(src)
 ---     ._ _   o   _   _ 
 ---     | | |  |  _>  (_ 
 R = math.random
-function fu(x) return function(a)   return a[x] end end
-function lt(x) return function(a,b) return a[x] < b[x] end end
+function fu(x)   return function(a)   return a[x] end end
+function lt(x)   return function(a,b) return a[x] < b[x] end end
+function normal(mu,sd) 
+  return mu + sd*math.sqrt(-2*math.log(R()))*math.cos(2*math.pi*R()) end
 
 ---     |  o   _  _|_   _ 
 ---     |  |  _>   |_  _> 
@@ -252,7 +254,11 @@ function NUM:add(x,   _,d)
   return x end
 
 function NUM:mid() return per(self.some:has(),.5)  end
-function NUM:div() a=self.some:has(); return (per(a,.9) - per(a,.1))/2.56 end
+function NUM:div(  a, sd)
+  function sd(t,  n,d,m,m2)
+    n,m,m2=0,0,0;for _,x in pairs(t) do n=n+1; d=x-m; m=m+d/n; m2=m2+d*(x-m) end
+    return (m2/n-1)^0.5 end
+  a = self.some:has(); return #a<=10 and sd(a) or (per(a,.9)-per(a,.1))/2.56 end
 
 function NUM:merge(other,    out)
   out = NUM(self.pos,self.txt)
@@ -301,39 +307,6 @@ function NUM:bins(rows,      xy,div,xys,epsilon,small,b4,out)
   out[#out].hi = math.huge
   return out end
 
-local _smallfx, _bootstrap
-function NUM:same(other)
-  return (_smallfx(  self.some.kept, other.some.kept) and
-          _bootstrap(self.some.kept, other.some.kept)) end
-
-function _smallfx(xs,ys,     x,y,lt,gt,n)
-  lt,gt,n = 0,0,0
-  if #ys > #xs then xs,ys=ys,xs end
-  for _,x in pairs(xs) do
-    for j=1, math.min(64,#ys) do
-      y = any(ys)
-      if y<x then lt=lt+1 end
-      if y>x then gt=gt+1 end
-      n = n+1 end end
-  return math.abs(gt - lt) / n <= the.cliffs end
-
-function _bootstrap(y0,z0,        x,y,z,b4,yhat,zhat,bigger,obs,adds)
-  function obs(a,b,    c)
-    c = math.abs(a.mu - b.mu)
-    return (a:div()+b:div())==0 and c or c/((x:div()^2/x.n+y:div()^2/y.n)^.5) end
-  function adds(t,     num)
-    num = NUM(); map(t, function(x) num:add(x) end); return num end
-  y,z    = adds(y0), adds(z0)
-  x      = adds(y0, adds(z0))
-  b4     = obs(y,z)
-  yhat   = map(y._all, function(y1) return y1 - y.mu + x.mu end)
-  zhat   = map(z._all, function(z1) return z1 - z.mu + x.mu end)
-  bigger = 0
-  for j=1,the.boot do
-    if obs( adds(many(yhat,#yhat)),  adds(many(zhat,#zhat))) > b4
-    then bigger = bigger + 1/the.boot end end
-  return bigger >= the.conf end
-
 ---      _   _   |   _ 
 ---     (_  (_)  |  _> 
 
@@ -362,6 +335,8 @@ function BIN:select(t)
   t = t.cells and t.cells or t
   local x, lo, hi = t[self.pos], self.lo, self.hi
   return x=="?" or lo == hi and lo == x or lo <= x and x < hi end
+
+function BIN:of(x) return self.ys.has[x] or 0 end
 
 ---     ._   _        
 ---     |   (_)  \/\/ 
@@ -427,28 +402,74 @@ function EGS:sway(rows,stop,rest,x,           some,y,c,best,mid)
   mid  = #rows//2
   for i,rx in pairs(sort(rows,lt"x")) do push(i<=mid and best or rest, rx.r) end
   return self:sway(best,stop,rest,x)  end
+
+function EGS:rbins(rows,B,R,   v,bins,best,bests)
+  function v(bin,  b,r)
+    b = bin:of(true)  / (B+0.0001)
+    r = bin:of(false) / (R+0.0001)
+    return b^2/(b+r) end
+  bins = {}
+  for _,col in pairs(self.cols.x) do
+    for _,bin in pairs(col:bins(rows)) do push(bins,bin) end end
+  best = sort(bins,function(a,b) return v(a) > v(b) end)[1]
+  bests= map(rows,function(row) if best:select(row) then return row end end) 
+  return #bests < #rows and self:rbins(bests,B,R) or rows
+end
+
+--------------------------------------------------------------------------------
+stats={}
+function stats.same(i,j)
+  return (stats.smallfx(  i.some.kept, j.some.kept) and
+          stats.bootstrap(i.some.kept, j.some.kept)) end
+
+function stats.smallfx(xs,ys,     x,y,lt,gt,n)
+  lt,gt,n = 0,0,0
+  if #ys > #xs then xs,ys=ys,xs end
+  for _,x in pairs(xs) do
+    for j=1, math.min(64,#ys) do
+      y = any(ys)
+      if y<x then lt=lt+1 end
+      if y>x then gt=gt+1 end
+      n = n+1 end end
+  return math.abs(gt - lt) / n <= the.cliffs end
+
+function stats.bootstrap(y0,z0,        x,y,z,b4,yhat,zhat,bigger,obs,adds)
+  function obs(a,b,    c)
+    c = math.abs(a.mu - b.mu)
+    return (a:div()+b:div())==0 and c or c/((x:div()^2/x.n+y:div()^2/y.n)^.5) end
+  function adds(t,     num)
+    num = NUM(); map(t, function(x) num:add(x) end); return num end
+  y,z    = adds(y0), adds(z0)
+  x      = adds(y0, adds(z0))
+  b4     = obs(y,z)
+  yhat   = map(y._all, function(y1) return y1 - y.mu + x.mu end)
+  zhat   = map(z._all, function(z1) return z1 - z.mu + x.mu end)
+  bigger = 0
+  for j=1,the.boot do
+    if obs( adds(many(yhat,#yhat)),  adds(many(zhat,#zhat))) > b4
+    then bigger = bigger + 1/the.boot end end
+  return bigger >= the.conf end
 ---    ___  ____ _  _ ____ ____ 
 ---    |  \ |___ |\/| |  | [__  
 ---    |__/ |___ |  | |__| ___] 
 
-local function ok(test,msg)
+function ok(test,msg)
   print("", test and "PASS "or "FAIL ", msg or "")
-    if not test then
-      GO.fails= GO.fails+1
-      if the.dump then assert(test,msg) end end end
+  if not test then
+    GO.fails= GO.fails+1
+    if the.dump then assert(test,msg) end end end
 
-GO.fails = 0
-function GO:new(todo,    t,b4)
-  t={}; for k,_ in pairs(go) do 
-        if k~="new" and type(go[k])=="function" then push(t,k) end end
-  todo = todo=="all" and t or {todo}
-  for _,x in pairs(todo) do
-    b4={}; for k,v in pairs(the) do b4[k]=v end
+function GO:new(todo,    b4,go)
+  b4={}; for k,v in pairs(the) do b4[k]=v end
+  go={}; for k,_ in pairs(GO) do
+           if k~="new" and type(GO[k])=="function" then go[1+#go]=k end end
+  GO.fails = 0
+  for _,x in pairs(todo=="all" and sort(go) or {todo}) do
+    for k,v in pairs(b4) do the[k]=v end 
     math.randomseed(the.seed)
-    if GO[x] then print(x); GO[x]() end 
-    for k,v in pairs(b4) do the[k]=v end end end
+    if GO[x] then print(x); GO[x]() end end end
 
-function GO:rogue( t)
+function GO.rogue( t)
   t={}; for _,k in pairs{ "_G", "_VERSION", "arg", "assert", "collectgarbage",
   "coroutine", "debug", "dofile", "error", "getmetatable", "io", "ipairs",
   "load", "loadfile", "math", "next", "os", "package", "pairs", "pcall",
@@ -457,13 +478,28 @@ function GO:rogue( t)
   "warn", "xpcall"} do t[k]=true end
   for k,v in pairs(_ENV) do if not t[k] then print("?",k, type(v)) end end end
 
-function GO.the()  oo(the) end
+function GO.the() oo(the) end
 function GO.eg( n,out)   
   out =true
   n=0; for row in csv(the.file) do 
          n=n+1; out=out and #row==8
                 if n>1 then out=out and type(row[1])=="number" end end
   ok(out and n==399); end
+
+function GO.some( s)
+  s=SOME(); for i=1,10^6 do s:add(R(100)) end
+  oo(s:has()) end
+
+function GO.num(  n,s,t)
+  local function sd(t,  n,d,m,m2)
+    n,m,m2=0,0,0;for _,x in pairs(t) do n=n+1; d=x-m; m=m+d/n; m2=m2+d*(x-m) end
+    return (m2/n)^0.5 end
+  for i=1,5 do; print("")
+    s=2; for r=1,6 do
+      s=s*4
+      t={}
+      n=NUM(); for i=1,s do push(t, n:add(normal(10,2))) end
+      print(fmt("%7.0f %6.2f %6.2f %6.2f",s,n:mid(),n:div(),sd(t))) end end end
 
 function GO.rows( egs) 
   egs=EGS():load(the.file) 
@@ -506,23 +542,38 @@ function GO.symbins( egs)
   for i,row in pairs(sort(egs.rows)) do row.klass = i<=#egs.rows//2 end
   map(egs.cols.x[4]:bins(egs.rows),oo) end
 
-function GO.numbins( egs)
+function GO.bins( egs)
   egs = EGS():load(the.file)
   for i,row in pairs(sort(egs.rows)) do row.klass = i<=.05*#egs.rows end
   for _,col in pairs(egs.cols.x) do
     print(fmt("\n%s",col.txt))
-    map(col:bins(egs.rows),oo) end end
+    map(col:bins(egs.rows),print) end end
 
-function GO.classify(  egs,best,rest)
-  egs = EGS():load(the.file)
-  oo(egs.cols.x[4])
-  best,rest = egs:sway() 
-  for _,row in pairs(egs.rows) do if row.evaluated then oo(row.cells) end end
-  print("all",  o(rnds(egs:mid())))
-  print("best1", o(rnds(egs:clone(best):mid())))
-  print("rest1", o(rnds(egs:clone(rest):mid()))) 
-  for _,row in pairs(best) do row.klass=true end end
-  --for _,row in pairs(many(rest, 3*#best)) do 
+function GO.rbins()
+  local best, rest = {},{}
+  local egs = EGS():load(the.file)
+  local best1,rest1 = egs:sway()
+  for _,row in pairs(best1) do row.klass=true  end
+  for _,row in pairs(rest1) do row.klass=false end
+  local B     = #best1
+  local R     = 3*B
+  local rows2 = {}
+  for _,row in pairs(best1)          do push(rows2, row) end
+  for _,row in pairs(many(rest1, R)) do push(rows2, row) end
+  local best2       = egs:rbins(rows2,B,R) 
+  local best3,rest3 = egs:sway(best2,10)
+  print("what", o(map(egs.cols.y,function(c) return c.txt end)))
+  print("all",o(egs:clone(egs.rows):mid()))
+  print("sway1",o(egs:clone(best1):mid()))
+  print("rbins",o(egs:clone(best2):mid()))
+  print("sway2",o(egs:clone(best3):mid()))
+  o(egs:clone(best3):mid())
+  for _,row in pairs(egs.rows) do
+    if row.evaluated then print(row) end end
+  sort(egs.rows)
+  local n = .05*#egs.rows//1
+  print("best", o(rnds(egs:clone(slice(egs.rows, 1, n)):mid())))
+end
 
  -------------------------------------------------------------------------------
 ---    ____ ___ ____ ____ ___ 
@@ -535,6 +586,6 @@ then return {the=the,any=any,any=csv,fmt=fmt,many=many,map=map,
              rnd=rnd,rnds=rnds,sort=sort,slice=slice,
              string2thing=string2thing,
              NUM=NUM, SYM=SYM}
-else if the.help then print(help) else GO(the.todo) end
-     GO():rogue()
+else if the.help then print(help) else GO(the.go) end
+     GO.rogue()
      os.exit(fails)  end
