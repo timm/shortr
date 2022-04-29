@@ -10,6 +10,7 @@
 --      \ \ \_ \ \ \_/ \_/ \/\  __/ /\ \L\.\_  \ \ \\`\  
 --       \ \__\ \ \___x___/'\ \____\\ \__/.\_\  \ \_\ \_\
 --        \/__/  \/__//__/   \/____/ \/__/\/_/   \/_/\/_/
+
 local help= [[
 tweak: tries three weak learners for multi-objective optimization
 (c) 2022, Tim Menzies,  timm@ieee.org, opensource.org/licenses/Fair
@@ -29,7 +30,7 @@ OPTIONS:
   --cliffs  -l  cliff's delta               = 0.147
   --K       -K  manage low class counts     = 1
   --M       -M  manage low evidence counts  = 2
-  --far     -F  how far to go for far       = .9
+  --far     -F  how far to go for far       = .95
   --p       -p  coefficient on distance     = 2
   --seed    -S  seed                        = 10019
   --some    -s  sample size for distances   = 512
@@ -174,8 +175,12 @@ function rnd(x,f)
 ---     ._    _   |      ._ _    _   ._  ._   |_   o   _  ._ _  
 ---     |_)  (_)  |  \/  | | |  (_)  |   |_)  | |  |  _>  | | | 
 ---     |            /                   |                      
+local _id=0
+local function id() _id=_id+1; return _id end
+
 function obj(name,    t,new)
-  function new(kl,...) local x=setmetatable({},kl); kl.new(x,...); return x end 
+  function new(kl,...) 
+   local x=setmetatable({id=id()},kl); kl.new(x,...); return x end 
   t = {__tostring=o, is=name or ""}; t.__index=t
   return setmetatable(t, {__call=new}) end
 ---    ____ ___   _ ____ ____ ___ ____ 
@@ -242,6 +247,7 @@ function SOME:has()
 function NUM:new(pos,s) 
   self.pos, self.txt, self.lo, self.hi = pos or 0,s or "",1E32, -1E32
   self.n, self.some = 0,SOME()
+  self.mu, self.m2, self.sd = 0,0,0
   self.w = self.txt:find"-$" and -1 or 1  end
 
 function NUM:add(x,   _,d) 
@@ -250,15 +256,15 @@ function NUM:add(x,   _,d)
     self.n  = self.n + 1
     self.lo = math.min(x, self.lo)
     self.hi = math.max(x, self.hi) 
-  end
+    d       = x - self.mu
+    self.mu = self.mu + d/self.n
+    self.m2 = self.m2 + d*(x - self.mu)
+    self.sd = (self.n<2 or self.m2<0) and 0 or (self.m2/(self.n-1))^0.5 end 
   return x end
 
 function NUM:mid() return per(self.some:has(),.5)  end
-function NUM:div(  a, sd)
-  function sd(t,  n,d,m,m2)
-    n,m,m2=0,0,0;for _,x in pairs(t) do n=n+1; d=x-m; m=m+d/n; m2=m2+d*(x-m) end
-    return (m2/n-1)^0.5 end
-  a = self.some:has(); return #a<=10 and sd(a) or (per(a,.9)-per(a,.1))/2.56 end
+function NUM:div(  a)
+  a=self.some:has(); return #a<=10 and self.sd or (per(a,.9)-per(a,.1))/2.56 end
 
 function NUM:merge(other,    out)
   out = NUM(self.pos,self.txt)
@@ -369,6 +375,10 @@ function EGS:mid(t) return map(t or self.cols.y,function(c)return c:mid()end)end
 function EGS:div(t) return map(t or self.cols.y,function(c)return c:div()end)end
 function EGS:far(r1,rows) return per(self:around(r1,rows),the.far).row end
 
+function EGS:evaluated(rows,  n)
+  n=0;for _,row in pairs(rows or self.rows) do n=n+(row.evaluated and 1 or 0)end
+  return n end
+
 function EGS:around(r1,rows,   t)
   t={}; for _,r2 in pairs(rows or self.rows) do push(t,{row=r2, d= r1 - r2}) end
   return sort(t,lt"d") end
@@ -385,23 +395,34 @@ function EGS:clone(rows, out)
   for _,row in pairs(rows or {}) do out:add(row) end
   return out end
 
-function EGS:sway(rows,stop,rest,x,           some,y,c,best,mid)
+function EGS:sway(rows,stop,seen,rest,x,           some,y,c,best,mid)
   rows = rows or self.rows
   stop = stop or 2*the.best*#rows
   rest = rest or {}
-  if #rows <= stop then return rows,rest end
+  seen = seen or {}
+  if #rows <= stop then return rows,rest,seen end
   some = many(rows,the.some)
   x    = x or self:far(any(some), some)
   y    =      self:far(x,         some)
-  if y < x then x,y = y,x end -- "x" is now better than "y"
+  c    = x - y
+  seen[x.id]  = x
+  seen[y.id]  = y
   x.evaluated = true
   y.evaluated = true
-  c    = x - y
   rows = map(rows,function(r) return {r=r, x=((r-x)^2+c^2-(r-y)^2)/(2*c)} end) 
-  best = {}
-  mid  = #rows//2
-  for i,rx in pairs(sort(rows,lt"x")) do push(i<=mid and best or rest, rx.r) end
-  return self:sway(best,stop,rest,x)  end
+  lefts,rights = {},{} -- things cloest to x or y, respectively
+  for i,rx in pairs(sort(rows,lt"x")) do 
+    push(i<=#rows/2 and lefts or rights, rx.r).rank=nil end
+  if better(seen, lefts, rights) then lefts,rights = rights,lefts end
+  for _,row in pairs(rights) do push(rest,row) end
+  return self:sway(lefts,stop,seen,rest,x)  end
+
+function better(seen,lefts,rights,      rows,ranks,m,n)
+  mr,nr = 0,0
+  for i,row in pairs(sort(map(seen,function(r) return r end))) do row.rank=i end
+  for _,row in pairs(lefts)  do if seen[row.id]  then mr = mr + row.rank end end
+  for _,row in pairs(rights) do if seen[row.id]  then nr = nr + row.rank end end
+  return nr/#lefts < mr/#rights end
 
 function EGS:rbins(rows,B,R,   v,bins,best,bests)
   function v(bin,  b,r)
@@ -552,7 +573,14 @@ function GO.bins( egs)
 function GO.rbins()
   local best, rest = {},{}
   local egs = EGS():load(the.file)
+  print("what", o(map(egs.cols.y,function(c) return c.txt end)))
+  print("all",  o(egs:clone(egs.rows):mid()))
+  sort(egs.rows)
+  local n = .05*#egs.rows//1
+  print("best", o(rnds(egs:clone(slice(egs.rows, 1, n)):mid())))
+
   local best1,rest1 = egs:sway()
+  local eval1 = egs:evaluated()
   for _,row in pairs(best1) do row.klass=true  end
   for _,row in pairs(rest1) do row.klass=false end
   local B     = #best1
@@ -561,18 +589,12 @@ function GO.rbins()
   for _,row in pairs(best1)          do push(rows2, row) end
   for _,row in pairs(many(rest1, R)) do push(rows2, row) end
   local best2       = egs:rbins(rows2,B,R) 
-  local best3,rest3 = egs:sway(best2,10)
-  print("what", o(map(egs.cols.y,function(c) return c.txt end)))
-  print("all",o(egs:clone(egs.rows):mid()))
-  print("sway1",o(egs:clone(best1):mid()))
-  print("rbins",o(egs:clone(best2):mid()))
-  print("sway2",o(egs:clone(best3):mid()))
-  o(egs:clone(best3):mid())
-  for _,row in pairs(egs.rows) do
-    if row.evaluated then print(row) end end
-  sort(egs.rows)
-  local n = .05*#egs.rows//1
-  print("best", o(rnds(egs:clone(slice(egs.rows, 1, n)):mid())))
+  local best3,rest3 = egs:sway(best2,5)
+  print("sway1",o(egs:clone(best1):mid()), "evalated=",eval1)
+  print("rbins",o(egs:clone(best2):mid()), "evaluated=",eval1)
+  print("sway2",o(egs:clone(best3):mid()), "evaluated=",egs:evaluated())
+  for i,row in pairs(sort(best3)) do 
+    print(fmt("\tbest3,%s#%s",i,row.id),o(row.cells)) end
 end
 
  -------------------------------------------------------------------------------
