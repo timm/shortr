@@ -262,10 +262,19 @@ function NUM:add(x,   _,d)
     self.sd = (self.n<2 or self.m2<0) and 0 or (self.m2/(self.n-1))^0.5 end 
   return x end
 
+-- does the has() sort
 function NUM:mid() return per(self.some:has(),.5)  end
 function NUM:div(  a)
-  a=self.some:has(); return #a<=10 and self.sd or (per(a,.9)-per(a,.1))/2.56 end
+  a=self.some:has()
+  print("\t",.9, per(a, .9))
+  print("\t",.1, per(a, .1))
+  print("\t::",(per(a,.9) - per(a,.1))/2.56)
+  return #a<=10 and self.sd or (per(a,.9)-per(a,.1))/2.56 end
 
+function NUM:same(x,y) 
+  print(math.abs(x-y), self:div()*the.cohen)
+  return math.abs(x-y) < self:div()*the.cohen end
+  
 function NUM:merge(other,    out)
   out = NUM(self.pos,self.txt)
   for _,x in pairs(self.some.kept)  do out:add(x) end
@@ -347,7 +356,7 @@ function BIN:of(x) return self.ys.has[x] or 0 end
 ---     ._   _        
 ---     |   (_)  \/\/ 
 function ROW:new(data,t)
-  self._data,self.cells, self.evaluated = data,t, false end
+  self._data,self.cells, self.evaluated,self.rank = data,t,false,0 end
 
 function ROW:__sub(other,    cols,d,inc)
   d, cols = 0, self._data.cols.x
@@ -366,22 +375,35 @@ function ROW:__lt(other,   s1,s2,e,y,a,b)
      s2= s2 - e^(col.w * (b - a) / #y) end
   return s1/#y < s2/#y  end
 
+function ROW:around(rows,   rowGap)
+  function rowGap(row) return {row=row, gap=self - row} end
+  return sort(map(rows or self.data.rows, rowGap), lt"gap") end
+
+function ROW:far(rows) return per(self:around(rows), the.far).row end
+
 ---      _    _    _ 
 ---     (/_  (_|  _> 
 ---           _|     
-function EGS:new()      self.rows,self.cols = {},nil end
-function EGS:load(file) for t in csv(file) do self:add(t) end; return self end
-function EGS:mid(t) return map(t or self.cols.y,function(c)return c:mid()end)end
-function EGS:div(t) return map(t or self.cols.y,function(c)return c:div()end)end
-function EGS:far(r1,rows) return per(self:around(r1,rows),the.far).row end
+
+function EGS:new()   self.rows,self.cols = {},nil end
+function EGS:load(f) for t in csv(f) do self:add(t) end; return self end
+function EGS:mid(t)  return map(t or self.cols.y,function(c)return c:mid()end)end
+function EGS:div(t)  return map(t or self.cols.y,function(c)return c:div()end)end
+
+function EGS:ranks(      any, all,first,now,n)
+  self.rows = sort(self.rows)
+  for i,row in pairs(self.rows) do 
+     n=0
+     print""
+     for _,col in pairs(self.cols.y) do
+       first, now = self.rows[1].cells[col.pos], row.cells[col.pos]
+       n = n + (col:same(first,now) and 1 or 0) end
+     row.rank = n
+     if i <= .05*#self.rows then row.rank = row.rank + 4 end end end
 
 function EGS:evaluated(rows,  n)
   n=0;for _,row in pairs(rows or self.rows) do n=n+(row.evaluated and 1 or 0)end
   return n end
-
-function EGS:around(r1,rows,   t)
-  t={}; for _,r2 in pairs(rows or self.rows) do push(t,{row=r2, d= r1 - r2}) end
-  return sort(t,lt"d") end
 
 function EGS:add(t)
   if   self.cols 
@@ -395,34 +417,23 @@ function EGS:clone(rows, out)
   for _,row in pairs(rows or {}) do out:add(row) end
   return out end
 
-function EGS:sway(rows,stop,seen,rest,x,           some,y,c,best,mid)
+function EGS:sway(rows,stop,rest,x,           some,y,c,best,mid)
   rows = rows or self.rows
   stop = stop or 2*the.best*#rows
   rest = rest or {}
-  seen = seen or {}
   if #rows <= stop then return rows,rest,seen end
   some = many(rows,the.some)
-  x    = x or self:far(any(some), some)
-  y    =      self:far(x,         some)
+  x    = x or any(some):far(some)
+  y    =      x:far(some)
+  if y < x then x,y = y,x end
   c    = x - y
-  seen[x.id]  = x
-  seen[y.id]  = y
   x.evaluated = true
   y.evaluated = true
-  rows = map(rows,function(r) return {r=r, x=((r-x)^2+c^2-(r-y)^2)/(2*c)} end) 
-  lefts,rights = {},{} -- things cloest to x or y, respectively
-  for i,rx in pairs(sort(rows,lt"x")) do 
-    push(i<=#rows/2 and lefts or rights, rx.r).rank=nil end
-  if better(seen, lefts, rights) then lefts,rights = rights,lefts end
-  for _,row in pairs(rights) do push(rest,row) end
-  return self:sway(lefts,stop,seen,rest,x)  end
-
-function better(seen,lefts,rights,      rows,ranks,m,n)
-  mr,nr = 0,0
-  for i,row in pairs(sort(map(seen,function(r) return r end))) do row.rank=i end
-  for _,row in pairs(lefts)  do if seen[row.id]  then mr = mr + row.rank end end
-  for _,row in pairs(rights) do if seen[row.id]  then nr = nr + row.rank end end
-  return nr/#lefts < mr/#rights end
+  rxs = map(rows,function(r) return {r=r, x=((r-x)^2+c^2-(r-y)^2)/(2*c)} end) 
+  best= {} -- things cloest to x or y, respectively
+  for i,rx in pairs(sort(rxs, lt"x")) do 
+    push(i<=#rows/2 and best or rest, rx.r) end
+  return self:sway(lefts,stop,rest,x)  end
 
 function EGS:rbins(rows,B,R,   v,bins,best,bests)
   function v(bin,  b,r)
@@ -597,7 +608,12 @@ function GO.rbins()
     print(fmt("\tbest3,%s#%s",i,row.id),o(row.cells)) end
 end
 
- -------------------------------------------------------------------------------
+function GO.ranks( egs)
+  egs = EGS():load(the.file)
+  egs:ranks() 
+  for _,row in pairs(egs.rows) do if row.rank>0 then print(row.rank,o(row.cells)) end end end
+
+-------------------------------------------------------------------------------
 ---    ____ ___ ____ ____ ___ 
 ---    [__   |  |__| |__/  |  
 ---    ___]  |  |  | |  \  |  
