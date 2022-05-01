@@ -108,7 +108,7 @@ REFERENCES:
 ---    |__|  |  | |___ ___] 
 
 local the,any,cells,copy,csv,fmt,fu,lt,many,map,normal = {}
-local o,obj,ok,oo,per,push,R,rnd,rnds,sort,slice,stats,string2thing
+local o,obj,ok,oo,per,push,R,rnd,rnds,shuffle,sort,slice,stats,string2thing
 ---                                     _                               
 ---      _  _|_  ._  o  ._    _    _     )    _|_  |_   o  ._    _    _ 
 ---     _>   |_  |   |  | |  (_|  _>    /_     |_  | |  |  | |  (_|  _> 
@@ -130,6 +130,11 @@ function csv(src)
     if not line then io.close(src) else
       row={}; for x in line:gmatch("([^,]+)") do row[1+#row]=string2thing(x) end
       return row end end end 
+
+function shuffle(t,    j)
+  for i = #t, 2, -1 do
+    j=math.random(i); t[i], t[j] = t[j], t[i]; end;
+  return t end
 
 ---     ._ _   o   _   _ 
 ---     | | |  |  _>  (_ 
@@ -266,9 +271,6 @@ function NUM:add(x,   _,d)
 function NUM:mid() return per(self.some:has(),.5)  end
 function NUM:div(  a)
   a=self.some:has()
-  print("\t",.9, per(a, .9))
-  print("\t",.1, per(a, .1))
-  print("\t::",(per(a,.9) - per(a,.1))/2.56)
   return #a<=10 and self.sd or (per(a,.9)-per(a,.1))/2.56 end
 
 function NUM:same(x,y) 
@@ -356,7 +358,7 @@ function BIN:of(x) return self.ys.has[x] or 0 end
 ---     ._   _        
 ---     |   (_)  \/\/ 
 function ROW:new(data,t)
-  self._data,self.cells, self.evaluated,self.rank = data,t,false,0 end
+  self._data,self.cells, self.evaluated,self.rank,self.klass = data,t,false,0, false end
 
 function ROW:__sub(other,    cols,d,inc)
   d, cols = 0, self._data.cols.x
@@ -427,17 +429,21 @@ function EGS:sway(rows,x,stop,rest,           rxs,some,y,c,best,mid)
     push(i<=#rows*.5 and best or rest, rx.r) end
   return self:sway(best,x,stop,rest)  end
 
-function EGS:rbins(rows,B,R,   v,bins,best,bests)
+function EGS:rbins(rows,B,R,how,   v,bins,best,bests)
   function v(bin,  b,r)
     b = bin:of(true)  / (B+0.0001)
     r = bin:of(false) / (R+0.0001)
     return b^2/(b+r) end
+  how = how or {}
   bins = {}
   for _,col in pairs(self.cols.x) do
     for _,bin in pairs(col:bins(rows)) do push(bins,bin) end end
   best = sort(bins,function(a,b) return v(a) > v(b) end)[1]
   bests= map(rows,function(row) if best:select(row) then return row end end) 
-  return #bests < #rows and self:rbins(bests,B,R) or rows
+  if  #bests < #rows 
+  then push(how,best)
+       return self:rbins(bests,B,R,how ) 
+  else return  rows,how end
 end
 
 --------------------------------------------------------------------------------
@@ -575,38 +581,79 @@ function GO.bins( egs)
     print(fmt("\n%s",col.txt))
     map(col:bins(egs.rows),print) end end
 
+function GO.shuffle(   t)
+  t= {10,20,30,40,50,60,70,80,90}
+  for i=1,20 do oo(shuffle(t)) end end
+
 function GO.per()
   print(per({10,20,30,40},0.00)) end
 
-function GO.rbins()
-  randoms={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
-  sways1={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
-  sways2={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
-  sways3={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
-  for i=1,20 do 
-    local best, rest = {},{}
+function GO.rbins1() GO.rbins(1) end
+function GO.rbins( max)
+  max = max or 20
+ 
+  local randoms1={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
+  local randoms2={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
+  local sways1={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
+  local sways2={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
+  local guesses={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
+  local nguesses=NUM()
+  local depths=NUM()
+  local nsways1=NUM()
+  local nsways2=NUM()
+  local nbests1=NUM()
+  local nbests2=NUM()
+  for i=1,max do 
+    print("\n===========================")
     local egs = EGS():load(the.file)
+    print("what", o(map(egs.cols.y,function(c) return c.txt end)))
+    print("mid", o(egs:mid()))
+    egs.rows = shuffle(egs.rows) --- <==== important!!!!
     local best1,rest1,top = egs:sway()
-    local best2,rest2,top = egs:sway(best1,nil,10)
-    local best3,rest3,top = egs:sway(best1,top,10)
+    print("best1s", o(egs:clone(best1):mid()))
+    nsways1:add(egs:evaluated())
+    nbests1:add(#best1)
+    local best2,rest2,top = egs:sway(best1,top,10)
+    print("best2s", o(egs:clone(best2):mid()))
+    nsways2:add(egs:evaluated())
+    nbests2:add(#best2)
+    local anys1=many(egs.rows,1*#best2)
+    local anys2=many(egs.rows,2*#best2)
+    local klasses={}
+    for _,row in pairs(best2)                            do push(klasses,row).klass=true end
+    for _,row in pairs(slice(shuffle(rest1),1,4*#best2)) do push(klasses,row).klass=false end
+    shuffle(klasses)
+    local guess,how = egs:rbins(shuffle(klasses),#best2,4*#best2)
+    print("guesses", o(egs:clone(guess):mid()))
+    nguesses:add(#guess)
+    depths:add(#how)
+    print(""); map(how,print)
     egs:ranks()
-    local anys=many(egs.rows,10)
-    anys  = sort(map(anys,function(row) return row.rank end))
-    best1 = sort(map(best1,function(row) return row.rank end))
-    best2 = sort(map(best2,function(row) return row.rank end))
-    best3 = sort(map(best3,function(row) return row.rank end))
-    for i,num in pairs(randoms)  do num:add(per(anys,i))  end
+    local anys1  = sort(map(anys1,function(row) return row.rank end))
+    local anys2  = sort(map(anys2,function(row) return row.rank end))
+    local best1 = sort(map(best1,function(row) return row.rank end))
+    local best2 = sort(map(best2,function(row) return row.rank end))
+    local guess = sort(map(guess,function(row) return row.rank end))
+    for i,num in pairs(randoms1)  do num:add(per(anys1,i))  end
+    for i,num in pairs(randoms2)  do num:add(per(anys2,i))  end
     for i,num in pairs(sways1)  do num:add(per(best1,i))  end
     for i,num in pairs(sways2)  do num:add(per(best2,i))  end
-    for i,num in pairs(sways3)  do num:add(per(best3,i))  end
-    end 
+    for i,num in pairs(guesses)  do num:add(per(guess,i))  end
+  end 
   for _,p in pairs{0, .25, .5, .75} do
     print("")
-    print("rans",  p, randoms[p]:mid(), randoms[p].n) 
+    print("rands1",  p, randoms1[p]:mid(), randoms1[p].n) 
+    print("rands2",  p, randoms2[p]:mid(), randoms2[p].n) 
     print("sway1", p, sways1[p]:mid(), sways1[p].n)
     print("sway2", p, sways2[p]:mid(), sways2[p].n) 
-    print("sway3", p, sways3[p]:mid(), sways3[p].n) 
-    end
+    print("guess", p, guesses[p]:mid(), guesses[p].n) 
+  end 
+  print("\nnsways1",nsways1:mid(), nsways1:div())
+  print("nsways2",nsways2:mid(),nsways2:div())
+  print("nbests1",nbests1:mid(),nbests1:div())
+  print("nsways2",nbests2:mid(),nbests2:div())
+  print("nguesses",nguesses:mid(),nguesses:div())
+  print("depths",depths:mid(),depths:div())
   end
 
   -- print(top)
