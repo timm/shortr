@@ -144,7 +144,7 @@ function normal(mu,sd)
 function any(a, i)    i=R()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
 function many(a,n, u) u={}; for j=1,n do        u[1+#u]= any(a) end;return u end
 function map(t,f, u)  u={}; for _,v in pairs(t) do u[1+#u]=f(v) end;return u end
-function per(t,p)     return t[ ((p or .5)*#t) // 1 ] end 
+function per(t,p, i)  i=(p or.5)*#t//1; return t[math.max(1,math.min(#t,i))] end
 function push(t,x)    t[1+#t]=x; return x end
 function sort(t,f)    table.sort(t,f) return t end
 function slice(t,i,j,   u) 
@@ -391,15 +391,7 @@ function EGS:mid(t)  return map(t or self.cols.y,function(c)return c:mid()end)en
 function EGS:div(t)  return map(t or self.cols.y,function(c)return c:div()end)end
 
 function EGS:ranks(      any, all,first,now,n)
-  self.rows = sort(self.rows)
-  for i,row in pairs(self.rows) do 
-     n=0
-     print""
-     for _,col in pairs(self.cols.y) do
-       first, now = self.rows[1].cells[col.pos], row.cells[col.pos]
-       n = n + (col:same(first,now) and 1 or 0) end
-     row.rank = n
-     if i <= .05*#self.rows then row.rank = row.rank + 4 end end end
+  for i,row in pairs(sort(self.rows)) do row.rank = (100*i/#self.rows)//1 end end
 
 function EGS:evaluated(rows,  n)
   n=0;for _,row in pairs(rows or self.rows) do n=n+(row.evaluated and 1 or 0)end
@@ -417,11 +409,11 @@ function EGS:clone(rows, out)
   for _,row in pairs(rows or {}) do out:add(row) end
   return out end
 
-function EGS:sway(rows,stop,rest,x,           some,y,c,best,mid)
+function EGS:sway(rows,x,stop,rest,           rxs,some,y,c,best,mid)
   rows = rows or self.rows
   stop = stop or 2*the.best*#rows
   rest = rest or {}
-  if #rows <= stop then return rows,rest,seen end
+  if #rows <= stop then return rows,rest,x end
   some = many(rows,the.some)
   x    = x or any(some):far(some)
   y    =      x:far(some)
@@ -432,8 +424,8 @@ function EGS:sway(rows,stop,rest,x,           some,y,c,best,mid)
   rxs = map(rows,function(r) return {r=r, x=((r-x)^2+c^2-(r-y)^2)/(2*c)} end) 
   best= {} -- things cloest to x or y, respectively
   for i,rx in pairs(sort(rxs, lt"x")) do 
-    push(i<=#rows/2 and best or rest, rx.r) end
-  return self:sway(lefts,stop,rest,x)  end
+    push(i<=#rows*.5 and best or rest, rx.r) end
+  return self:sway(best,x,stop,rest)  end
 
 function EGS:rbins(rows,B,R,   v,bins,best,bests)
   function v(bin,  b,r)
@@ -564,10 +556,12 @@ function GO.far(  egs,row2)
 function GO.sway(  egs,best,rest)
   egs = EGS():load(the.file)
   best,rest = egs:sway() 
+  egs:ranks()
   for _,row in pairs(egs.rows) do if row.evaluated then oo(row.cells) end end
   print("all",  o(rnds(egs:mid())))
+  print("rest", o(rnds(egs:clone(rest):mid()))) 
   print("best", o(rnds(egs:clone(best):mid())))
-  print("rest", o(rnds(egs:clone(rest):mid()))) end
+  oo(sort(map(best,function(row) return row.rank end))) end
 
 function GO.symbins( egs)
   egs = EGS():load(the.file)
@@ -581,32 +575,54 @@ function GO.bins( egs)
     print(fmt("\n%s",col.txt))
     map(col:bins(egs.rows),print) end end
 
-function GO.rbins()
-  local best, rest = {},{}
-  local egs = EGS():load(the.file)
-  print("what", o(map(egs.cols.y,function(c) return c.txt end)))
-  print("all",  o(egs:clone(egs.rows):mid()))
-  sort(egs.rows)
-  local n = .05*#egs.rows//1
-  print("best", o(rnds(egs:clone(slice(egs.rows, 1, n)):mid())))
+function GO.per()
+  print(per({10,20,30,40},0.00)) end
 
-  local best1,rest1 = egs:sway()
-  local eval1 = egs:evaluated()
-  for _,row in pairs(best1) do row.klass=true  end
-  for _,row in pairs(rest1) do row.klass=false end
-  local B     = #best1
-  local R     = 3*B
-  local rows2 = {}
-  for _,row in pairs(best1)          do push(rows2, row) end
-  for _,row in pairs(many(rest1, R)) do push(rows2, row) end
-  local best2       = egs:rbins(rows2,B,R) 
-  local best3,rest3 = egs:sway(best2,5)
-  print("sway1",o(egs:clone(best1):mid()), "evalated=",eval1)
-  print("rbins",o(egs:clone(best2):mid()), "evaluated=",eval1)
-  print("sway2",o(egs:clone(best3):mid()), "evaluated=",egs:evaluated())
-  for i,row in pairs(sort(best3)) do 
-    print(fmt("\tbest3,%s#%s",i,row.id),o(row.cells)) end
-end
+function GO.rbins()
+  randoms={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
+  sways1={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
+  sways2={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
+  sways3={[0]=NUM(), [.25]=NUM(), [.50]=NUM(), [.75]=NUM()}
+  for i=1,20 do 
+    local best, rest = {},{}
+    local egs = EGS():load(the.file)
+    local best1,rest1,top = egs:sway()
+    local best2,rest2,top = egs:sway(best1,nil,10)
+    local best3,rest3,top = egs:sway(best1,top,10)
+    egs:ranks()
+    local anys=many(egs.rows,10)
+    anys  = sort(map(anys,function(row) return row.rank end))
+    best1 = sort(map(best1,function(row) return row.rank end))
+    best2 = sort(map(best2,function(row) return row.rank end))
+    best3 = sort(map(best3,function(row) return row.rank end))
+    for i,num in pairs(randoms)  do num:add(per(anys,i))  end
+    for i,num in pairs(sways1)  do num:add(per(best1,i))  end
+    for i,num in pairs(sways2)  do num:add(per(best2,i))  end
+    for i,num in pairs(sways3)  do num:add(per(best3,i))  end
+    end 
+  for _,p in pairs{0, .25, .5, .75} do
+    print("")
+    print("rans",  p, randoms[p]:mid(), randoms[p].n) 
+    print("sway1", p, sways1[p]:mid(), sways1[p].n)
+    print("sway2", p, sways2[p]:mid(), sways2[p].n) 
+    print("sway3", p, sways3[p]:mid(), sways3[p].n) 
+    end
+  end
+
+  -- print(top)
+  -- local eval1 = egs:evaluated()
+  -- for _,row in pairs(best1) do row.klass=true  end
+  -- for _,row in pairs(rest1) do row.klass=false end
+  -- local B     = #best1
+  -- local R     = 3*B
+  -- local rows2 = {}
+  -- for _,row in pairs(best1)          do push(rows2, row) end
+  -- for _,row in pairs(many(rest1, R)) do push(rows2, row) end
+  -- local best2       = egs:rbins(rows2,B,R) 
+  -- local best3,rest3 = egs:sway(best2,top,5)
+  -- print("sway1",o(sort(map(best1,function(row) return row.rank end))))
+  -- print("best2",o(sort(map(best2,function(row) return row.rank end))))
+  -- print("best3",o(sort(map(best3,function(row) return row.rank end))))
 
 function GO.ranks( egs)
   egs = EGS():load(the.file)
