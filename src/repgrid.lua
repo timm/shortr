@@ -19,8 +19,12 @@ local rows, aotm = {}
 R=math.random
 Big=math.huge
 
-function map(t,f, u)  u={}; for _,v in pairs(t) do u[1+#u]=f(v) end;return u end
+function map(t,f, u)  u={}; for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
 function push(t,x)    t[1+#t]=x; return x end
+
+function with(i,mew,defaults)
+  for k,v in pairs(defaults) do i[k] = v end
+  for k,v in pairs(new) do assert(i[k]~=nil,"missing key "..k); i[k] = v end end
 
 function thing(x)
   x = x:match"^%s*(.-)%s*$"
@@ -52,17 +56,19 @@ function obj(name,    t,new)
   return setmetatable(t, {__call=new}) end
 --------------------------------------------------------------------------------
 SYM=obj"SYM"
-function _.new(i,at,txt) i.at, i.txt, i.has,i.bins = at,txt,{},{} end
-function _.add(i,x)      if x~="?" then i.has[x] = 1+(i.has[x] or 0) end end
-function _.addxy(i,x,y)    if x~="?" then i.bins[x]=y+(i.bins[x] or 0) end end
+function _.new(i,t)     with(i,t,{at=0,txt=""}) end
+function _.add(i,x)     if x~="?" then i.has[x] = 1+(i.has[x] or 0) end end
+function _.addxy(i,x,y) if x~="?" then i.bins[x]=y+(i.bins[x] or 0) end end
 
 _.mid=function(i,   m,x)
   m=0; for y,n in pairs(i.has) do if n>m then m,x=y,n end end; return x end
 
 _.div=function(i,   n,e)
-  n=0; for _,m in pairs(i.has) do n = n + m end 
-  e=0; for _,m in pairs(i.has) do e = e - m/n*math.log(m/n,2) end 
+  n=0; for k,m in pairs(i.has) do n = n + m end 
+  e=0; for k,m in pairs(i.has) do e = e - m/n*math.log(m/n,2) end 
   return e end
+
+--init with fields
 --------------------------------------------------------------------------------
 function BIN.new(i,t) i.pos,i.txt,i.lo,i.hi,i.y = t.pos,t.txt,t,lo,t.hi,t.ys end
 function BIN.of(i,x)  return i.ys.has[x] or 0 end
@@ -98,8 +104,8 @@ function ROW.new(i,egs,t) i.cells,i.data = t,egs end
 local COLS=obj"COLS"
 function COLS:new(names,     col)
   self.all,self.x,self.y,self.names={},{},{},names
-  for i,txt in pairs(names) do
-    col = push(self.all, txt.find"^[A-Z]+" and Num or Sym)(i,txt))
+  for at,txt in pairs(names) do
+    col = push((self.all, txt.find"^[A-Z]+" and Num or Sym)(at,txt))
     if not txt:find":$" then
       push(txt.find"[-+!]$" and self.y or self.x,col) end end end 
 
@@ -108,7 +114,7 @@ function EGS:new() self.rows,self.cols= {},nil end
 function EGS:add(t)
   if   self.cols 
   then t = push(self.rows, t.cells and t or ROW(self,t)).cells
-       for _,col in pairs(self.cols.all) do col:add(t[col.pos]) end
+       for k,col in pairs(self.cols.all) do col:add(t[col.pos]) end
   else self.cols = COLS(t) end end
 
 function EGS:file(f) for row in csv(f) do self.add(row) end end
