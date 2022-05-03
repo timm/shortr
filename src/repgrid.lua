@@ -17,6 +17,7 @@ OPTIONS (other):
 
 local rows, aotm = {}
 R=math.random
+Big=math.huge
 
 function map(t,f, u)  u={}; for _,v in pairs(t) do u[1+#u]=f(v) end;return u end
 function push(t,x)    t[1+#t]=x; return x end
@@ -47,17 +48,18 @@ function obj(name,    t,new)
   function new(kl,...) 
     local x=setmetatable({id=id()},kl); kl.new(x,...); return x end 
   t = {__tostring=o, is=name or ""}; t.__index=t
+  _ = t
   return setmetatable(t, {__call=new}) end
 --------------------------------------------------------------------------------
-local SYM=obj"SYM"
-function SYM.new(i,at,txt) i.at, i.txt, i.has,i.bins = at,txt,{},{} end
-function SYM.add(i,x)      if x~="?" then i.has[x] = 1+(i.has[x] or 0) end end
-function SYM.addxy(i,x,y)  if x~="?" then i.bins[x] = y+(i.bins[x] or 0) end end
+SYM=obj"SYM"
+function _.new(i,at,txt) i.at, i.txt, i.has,i.bins = at,txt,{},{} end
+function _.add(i,x)      if x~="?" then i.has[x] = 1+(i.has[x] or 0) end end
+function _.addxy(i,x,y)    if x~="?" then i.bins[x]=y+(i.bins[x] or 0) end end
 
-function SYM.mid(i,   m,x)
+_.mid=function(i,   m,x)
   m=0; for y,n in pairs(i.has) do if n>m then m,x=y,n end end; return x end
 
-function SYM.div(i,   n,e)
+_.div=function(i,   n,e)
   n=0; for _,m in pairs(i.has) do n = n + m end 
   e=0; for _,m in pairs(i.has) do e = e - m/n*math.log(m/n,2) end 
   return e end
@@ -71,32 +73,27 @@ function BIN.select(i,t,     x)
   return x=="?" or i.lo == i.hi and i.lo == x or i.lo <= x and x < i.hi end
 
 function BIN.__tostring(i)
-  local x,lo,hi,big = i.txt, i.lo, i.hi, math.huge
+  local x,lo,hi,big = i.txt, i.lo, i.hi, Big
   if     lo ==  hi  then return fmt("%s == %s",x, lo)  
   elseif hi ==  big then return fmt("%s >= %s",x, lo)  
   elseif lo == -big then return fmt("%s < %s", x, hi)  
   else                   return fmt("%s <= %s < %s",lo,x,hi) end end
 --------------------------------------------------------------------------------
 local NUM=obj"NUM"
-function NUM:new(i,txt) 
-  self.i,self.txt, self.lo,self.hi,self.bins = i,txt,math.huge,-math.huge,{} end
+function NUM.new(i,n,s) i.at,i.txt, i.lo,i.hi,i.bins=n,s,Big,-Big,{} end
+function NUM.norm(i,x)  return x=="?" and x or (x-i.lo)/(i.hi - i.lo) end
 
-function NUM:addx(x)
-  if x~="?" then
-    self.lo = math.min(x, self.lo)
-    self.hi = math.max(x, self.hi) end end
+function NUM.addx(i,x)
+  if x~="?" then return x end
+  if x >i.hi then i.hi=x elseif x<i.lo then i.lo=x end end
 
-function NUM:norm(x)
-  return x=="?" and x or (x-self.lo)/(self.hi - self.lo) end
-
-function NUM:addxy(x,y)
+function NUM.addxy(i,x,y)
   if x=="?" then return x end
-  x = math.max(1, math.min(the.bins, the.bins*self:norm(x) // 1))
-  self.bins[x] = self.bins[x] or Sym()
-  self.bins[x]:add(y) end
+  x = math.max(1, math.min(the.bins, the.bins*i:norm(x) // 1))
+  i.bins[x] = i.bins[x] or Sym()
+  i.bins[x]:add(y) end
 
-function ROW:new(egs,t) 
-  self.cells,self.data = t,egs end
+function ROW.new(i,egs,t) i.cells,i.data = t,egs end
 
 local COLS=obj"COLS"
 function COLS:new(names,     col)
