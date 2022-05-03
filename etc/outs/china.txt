@@ -1,13 +1,204 @@
+rbins
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{300}
+best2s	{225}
+guesses	{300}
+
+PDR_AFP < 4.4
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{729}
+best2s	{170}
+guesses	{450}
+
+Input < 40
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{494}
+best2s	{486}
+guesses	{399}
+
+NPDU_UFP < 6.8
+AFP < 194
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{494}
+best2s	{525}
+guesses	{547}
+
+5.2 <= NPDR_AFP < 7.4
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{704}
+best2s	{743}
+guesses	{1429}
+
+6.8 <= NPDU_UFP < 13.1
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{631}
+best2s	{145}
+guesses	{140}
+
+NPDU_UFP < 4.6
+AFP < 180
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{525}
+best2s	{547}
+guesses	{606}
+
+6.4 <= NPDR_AFP < 10.4
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{659}
+best2s	{145}
+guesses	{140}
+
+Duration < 5
+NPDU_UFP < 4.6
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{631}
+best2s	{631}
+guesses	{597}
+
+NPDU_UFP < 4.5
+Enquiry < 74
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{1362}
+best2s	{1119}
+guesses	{1327}
+
+8.5 <= NPDU_UFP < 14.1
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{631}
+best2s	{631}
+guesses	{893}
+
+PDR_UFP < 4.5
+File < 100
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{631}
+best2s	{145}
+guesses	{241}
+
+File < 24
+NPDR_AFP < 12.2
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{396}
+best2s	{107}
+guesses	{164}
+
+PDR_UFP < 2.8
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{631}
+best2s	{380}
+guesses	{380}
+
+Resource >= 2
+Duration < 11
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{1238}
+best2s	{893}
+guesses	{281}
+
+Changed < 45
+NPDU_UFP < 4
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{344}
+best2s	{296}
+guesses	{450}
+
+Duration < 3
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{300}
+best2s	{190}
+guesses	{190}
+
+PDR_AFP < 3.7
+Duration < 5
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{547}
+best2s	{304}
+guesses	{440}
+
+3.8 <= PDR_AFP < 5.6
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{304}
+best2s	{293}
+guesses	{440}
+
+NPDR_AFP < 5.6
+Output < 56
+
+===========================
+what	{N_effort-}
+mid	{2082}
+best1s	{1788}
+best2s	{296}
+guesses	{512}
+
+Resource >= 2
 ;
-;,../etc/data/china.csv,rands1,5.0,5.0,34.0,65.0
-;,../etc/data/china.csv,rands2,3.0,19.0,48.0,64.0
-;,../etc/data/china.csv,sway1,0.0,6.0,18.0,32.0
-;,../etc/data/china.csv,sway2,2.0,2.0,6.0,17.0
-;,../etc/data/china.csv,guess,2.0,6.0,11.0,18.0
+;,	../etc/data/china.csv	,	rands1	,  5.0,  5.0, 34.0, 65.0
+;,	../etc/data/china.csv	,	rands2	,  3.0, 19.0, 48.0, 64.0
+;,	../etc/data/china.csv	,	sway1	,  0.0,  6.0, 18.0, 32.0
+;,	../etc/data/china.csv	,	sway2	,  2.0,  2.0,  6.0, 17.0
+;,	../etc/data/china.csv	,	guess	,  2.0,  6.0, 11.0, 18.0
 ;
-;,../etc/data/china.csv,nsways1,5
-;,../etc/data/china.csv,nsways2,7
-;,../etc/data/china.csv,nbests1,31
-;,../etc/data/china.csv,nbests2,7
-;,../etc/data/china.csv,nguesses,7,1.953125
-;,../etc/data/china.csv,depths,1,0.390625
+;,	../etc/data/china.csv	,nsways1,	5
+;,	../etc/data/china.csv	,nsways2,	7
+;,	../etc/data/china.csv	,nbests1,	31
+;,	../etc/data/china.csv	,nbests2,	7
+;,	../etc/data/china.csv	,nguesses,	7	,	1.953125
+;,	../etc/data/china.csv	,depths,	1	,	0.390625

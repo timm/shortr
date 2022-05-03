@@ -1,13 +1,219 @@
+rbins
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.25 -12.22 0}
+best1s	{100.53 -0.52 0}
+best2s	{0 0 83.33333333}
+guesses	{0 0 83.33333333}
+
+3.25 <= Min_impurity_decrease < 5
+Min_sample_leaves >= 10
+criterion == absolute_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.56 -12.29 0}
+best1s	{0 0 83.33333333}
+best2s	{0 0 83.33333333}
+guesses	{0 0 83.33333333}
+
+Min_sample_leaves >= 17
+Max_depth < 6
+criterion == absolute_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.33 -12.24 0}
+best1s	{119.5 -12.31 0}
+best2s	{0 0 83.33333333}
+guesses	{0 0 83.33333333}
+
+Min_sample_leaves < 4
+Max_depth >= 12
+criterion == absolute_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.33 -12.16 0}
+best1s	{0 0 83.33333333}
+best2s	{0 0 83.33333333}
+guesses	{0 0 83.33333333}
+
+8 <= Max_depth < 12
+Min_impurity_decrease < 2.5
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{118.94 -12.24 0}
+best1s	{0 0 83.33333333}
+best2s	{0 -1.59 0}
+guesses	{0 0 83.33333333}
+
+Max_depth >= 14
+Min_sample_leaves >= 12
+criterion == absolute_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.29 -12.24 0}
+best1s	{0 0 0}
+best2s	{0 -0.52 0}
+guesses	{0 0 83.33333333}
+
+Max_depth < 4
+criterion == absolute_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.25 -12.24 0}
+best1s	{0 0 83.33333333}
+best2s	{0 0 83.33333333}
+guesses	{0 0 83.33333333}
+
+criterion == absolute_error
+Min_impurity_decrease >= 7.75
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.11 -12.24 0}
+best1s	{0 0 83.33333333}
+best2s	{0 0 83.33333333}
+guesses	{0 0 83.33333333}
+
+4 <= Max_depth < 7
+N_estimators < 80
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.33 -12.29 0}
+best1s	{0 0 83.33333333}
+best2s	{100.91 -6.82 0}
+guesses	{100.91 -6.82 16.66666667}
+
+Max_depth >= 17
+Min_sample_leaves < 3
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.5 -12.24 0}
+best1s	{0 0 83.33333333}
+best2s	{0 0 83.33333333}
+guesses	{0 0 83.33333333}
+
+Min_impurity_decrease >= 8.25
+Min_sample_leaves >= 14
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.21 -12.24 0}
+best1s	{0 0 83.33333333}
+best2s	{0 0 83.33333333}
+guesses	{0 -1.89 0}
+
+Min_impurity_decrease >= 7.75
+Min_sample_leaves < 4
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.17 -12.24 0}
+best1s	{100.5 0 83.33333333}
+best2s	{0 -0.49 0}
+guesses	{0 -0.58 0}
+
+Min_impurity_decrease < 2
+Max_depth < 4
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.33 -12.24 0}
+best1s	{0 0 83.33333333}
+best2s	{0 0 83.33333333}
+guesses	{0 0 83.33333333}
+
+Max_depth >= 14
+Min_sample_leaves < 6
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.07 -12.21 0}
+best1s	{0 0 83.33333333}
+best2s	{0 0 83.33333333}
+guesses	{0 0 83.33333333}
+
+Min_sample_leaves >= 17
+Max_depth < 4
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.45 -12.24 0}
+best1s	{0 0 83.33333333}
+best2s	{0 0 83.33333333}
+guesses	{0 0 83.33333333}
+
+3.5 <= Min_impurity_decrease < 4.75
+N_estimators < 50
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.37 -12.24 0}
+best1s	{0 0 83.33333333}
+best2s	{0 0 83.33333333}
+guesses	{0 -0.49 0}
+
+N_estimators >= 170
+criterion == absolute_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.39 -12.17 0}
+best1s	{0 0 83.33333333}
+best2s	{0 0 83.33333333}
+guesses	{0 0 83.33333333}
+
+Max_depth >= 15
+criterion == absolute_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.33 -12.18 0}
+best1s	{0 0 83.33333333}
+best2s	{0 0 83.33333333}
+guesses	{0 0 83.33333333}
+
+N_estimators < 40
+criterion == absolute_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.33 -12.24 0}
+best1s	{100.5 -0.49 0}
+best2s	{100.5 -0.58 0}
+guesses	{100.5 -0.58 0}
+
+criterion == absolute_error
+Min_sample_leaves < 6
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{119.33 -12.15 0}
+best1s	{0 0 83.33333333}
+best2s	{0 -0.61 0}
+guesses	{0 -0.61 0}
+
+Min_sample_leaves >= 15
+Min_impurity_decrease < 5.5
+criterion == absolute_error
 ;
-;,../etc/data/healthCloseIsses12mths0011-easy.csv,rands1,8.0,24.0,39.0,58.0
-;,../etc/data/healthCloseIsses12mths0011-easy.csv,rands2,3.0,16.0,46.0,65.0
-;,../etc/data/healthCloseIsses12mths0011-easy.csv,sway1,0.0,8.0,16.0,25.0
-;,../etc/data/healthCloseIsses12mths0011-easy.csv,sway2,2.0,6.0,13.0,18.0
-;,../etc/data/healthCloseIsses12mths0011-easy.csv,guess,3.0,3.0,13.0,20.0
+;,	../etc/data/healthCloseIsses12mths0011-easy.csv	,	rands1	,  8.0, 24.0, 39.0, 58.0
+;,	../etc/data/healthCloseIsses12mths0011-easy.csv	,	rands2	,  3.0, 16.0, 46.0, 65.0
+;,	../etc/data/healthCloseIsses12mths0011-easy.csv	,	sway1	,  0.0,  8.0, 16.0, 25.0
+;,	../etc/data/healthCloseIsses12mths0011-easy.csv	,	sway2	,  2.0,  6.0, 13.0, 18.0
+;,	../etc/data/healthCloseIsses12mths0011-easy.csv	,	guess	,  3.0,  3.0, 13.0, 20.0
 ;
-;,../etc/data/healthCloseIsses12mths0011-easy.csv,nsways1,5
-;,../etc/data/healthCloseIsses12mths0011-easy.csv,nsways2,11
-;,../etc/data/healthCloseIsses12mths0011-easy.csv,nbests1,625
-;,../etc/data/healthCloseIsses12mths0011-easy.csv,nbests2,9
-;,../etc/data/healthCloseIsses12mths0011-easy.csv,nguesses,7,2.34375
-;,../etc/data/healthCloseIsses12mths0011-easy.csv,depths,2,0.390625
+;,	../etc/data/healthCloseIsses12mths0011-easy.csv	,nsways1,	5
+;,	../etc/data/healthCloseIsses12mths0011-easy.csv	,nsways2,	11
+;,	../etc/data/healthCloseIsses12mths0011-easy.csv	,nbests1,	625
+;,	../etc/data/healthCloseIsses12mths0011-easy.csv	,nbests2,	9
+;,	../etc/data/healthCloseIsses12mths0011-easy.csv	,nguesses,	7	,	2.34375
+;,	../etc/data/healthCloseIsses12mths0011-easy.csv	,depths,	2	,	0.390625

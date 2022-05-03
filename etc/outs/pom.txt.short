@@ -1,0 +1,13 @@
+;
+;,../etc/data/pom.csv,rands1,10.0,22.0,44.0,57.0
+;,../etc/data/pom.csv,rands2,4.0,20.0,43.0,69.0
+;,../etc/data/pom.csv,sway1,0.0,19.0,40.0,66.0
+;,../etc/data/pom.csv,sway2,2.0,5.0,15.0,41.0
+;,../etc/data/pom.csv,guess,2.0,8.0,23.0,45.0
+;
+;,../etc/data/pom.csv,nsways1,5
+;,../etc/data/pom.csv,nsways2,11
+;,../etc/data/pom.csv,nbests1,625
+;,../etc/data/pom.csv,nbests2,9
+;,../etc/data/pom.csv,nguesses,8,3.515625
+;,../etc/data/pom.csv,depths,2,0.390625

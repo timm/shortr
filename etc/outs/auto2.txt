@@ -1,13 +1,204 @@
+rbins
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{32 37 1965 8.4}
+best2s	{32 37 1965 8.4}
+guesses	{33 37 1965 8.4}
+
+Width < 65
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{25 33 1965 8.4}
+best2s	{25 33 1965 8.4}
+guesses	{33 37 1965 8.4}
+
+Width < 65
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{23 30 2285 10}
+best2s	{23 30 2285 10}
+guesses	{29 33 2270 9.8}
+
+Horsepower < 100
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{29 33 1965 8.4}
+best2s	{29 33 1965 8.4}
+guesses	{29 33 1965 8.4}
+
+Horsepower < 82
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{28 33 2350 10.9}
+best2s	{28 33 2350 10.9}
+guesses	{29 33 2350 10.9}
+
+type == Small
+domestic == 0
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{29 33 1965 8.4}
+best2s	{29 33 1965 8.4}
+guesses	{33 37 2045 8.4}
+
+Horsepower < 92
+Wheelbase < 93
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{28 33 2350 10.9}
+best2s	{28 33 2350 10.9}
+guesses	{25 33 2240 9.1}
+
+U-turn_space < 36
+domestic == 0
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{23 30 2350 10.1}
+best2s	{23 30 2350 10.1}
+guesses	{23 30 2350 10.1}
+
+type == Small
+domestic == 1
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{23 30 2350 10.1}
+best2s	{23 30 2350 10.1}
+guesses	{23 30 2350 10.1}
+
+type == Small
+domestic == 1
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{25 33 1965 8.4}
+best2s	{25 33 1965 8.4}
+guesses	{33 37 1965 8.4}
+
+Horsepower < 90
+domestic == 0
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{31 33 1845 8.4}
+best2s	{31 33 1845 8.4}
+guesses	{31 37 1845 8.3}
+
+Horsepower < 92
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{29 33 2055 9.8}
+best2s	{29 33 2055 9.8}
+guesses	{26 34 2055 9.8}
+
+Rear_seat_room < 26
+domestic == 0
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{22 29 2345 10}
+best2s	{22 29 2345 10}
+guesses	{25 30 2350 10}
+
+U-turn_space < 37
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{29 33 1965 8.4}
+best2s	{29 33 1965 8.4}
+guesses	{29 33 1965 8.4}
+
+U-turn_space < 35
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{25 33 1965 8.4}
+best2s	{25 33 1965 8.4}
+guesses	{32 37 1965 8.4}
+
+Horsepower < 90
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{29 33 1965 8.4}
+best2s	{29 33 1965 8.4}
+guesses	{33 37 1965 8.4}
+
+Luggage_capacity < 11
+type == Small
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{29 33 1965 8.6}
+best2s	{29 33 1965 8.6}
+guesses	{29 33 2055 9.1}
+
+Fuel_tank_capacity < 13.7
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{29 33 2045 8.4}
+best2s	{29 33 2045 8.4}
+guesses	{29 33 2045 8.4}
+
+Length < 170
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{22 29 2345 10}
+best2s	{22 29 2345 10}
+guesses	{21 29 2345 10}
+
+U-turn_space < 37
+domestic == 0
+
+===========================
+what	{CityMPG+ HighwayMPG+ Weight- Class-}
+mid	{21 28 3030 17.5}
+best1s	{29 33 1965 8.6}
+best2s	{29 33 1965 8.6}
+guesses	{29 37 1965 8.4}
+
+Length < 172
+type == Small
 ;
-;,../etc/data/auto2.csv,rands1,13.0,13.0,34.0,52.0
-;,../etc/data/auto2.csv,rands2,5.0,13.0,35.0,53.0
-;,../etc/data/auto2.csv,sway1,1.0,1.0,2.0,5.0
-;,../etc/data/auto2.csv,sway2,1.0,1.0,2.0,5.0
-;,../etc/data/auto2.csv,guess,1.0,1.0,4.0,5.0
+;,	../etc/data/auto2.csv	,	rands1	, 13.0, 13.0, 34.0, 52.0
+;,	../etc/data/auto2.csv	,	rands2	,  5.0, 13.0, 35.0, 53.0
+;,	../etc/data/auto2.csv	,	sway1	,  1.0,  1.0,  2.0,  5.0
+;,	../etc/data/auto2.csv	,	sway2	,  1.0,  1.0,  2.0,  5.0
+;,	../etc/data/auto2.csv	,	guess	,  1.0,  1.0,  4.0,  5.0
 ;
-;,../etc/data/auto2.csv,nsways1,5
-;,../etc/data/auto2.csv,nsways2,5
-;,../etc/data/auto2.csv,nbests1,5
-;,../etc/data/auto2.csv,nbests2,5
-;,../etc/data/auto2.csv,nguesses,5,0.78125
-;,../etc/data/auto2.csv,depths,1,0.390625
+;,	../etc/data/auto2.csv	,nsways1,	5
+;,	../etc/data/auto2.csv	,nsways2,	5
+;,	../etc/data/auto2.csv	,nbests1,	5
+;,	../etc/data/auto2.csv	,nbests2,	5
+;,	../etc/data/auto2.csv	,nguesses,	5	,	0.78125
+;,	../etc/data/auto2.csv	,depths,	1	,	0.390625

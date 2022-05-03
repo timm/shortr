@@ -1,0 +1,13 @@
+;
+;,../etc/data/coc1000.csv,rands1,10.0,10.0,44.0,57.0
+;,../etc/data/coc1000.csv,rands2,5.0,21.0,46.0,69.0
+;,../etc/data/coc1000.csv,sway1,0.0,12.0,32.0,57.0
+;,../etc/data/coc1000.csv,sway2,1.0,1.0,10.0,29.0
+;,../etc/data/coc1000.csv,guess,3.0,3.0,9.0,26.0
+;
+;,../etc/data/coc1000.csv,nsways1,5
+;,../etc/data/coc1000.csv,nsways2,8
+;,../etc/data/coc1000.csv,nbests1,62
+;,../etc/data/coc1000.csv,nbests2,7
+;,../etc/data/coc1000.csv,nguesses,5,3.125
+;,../etc/data/coc1000.csv,depths,2,1.171875

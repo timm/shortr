@@ -1,13 +1,218 @@
+rbins
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{42 420 12.5}
+best2s	{42 420 12.5}
+guesses	{60 683 14.8}
+
+rely == n
+plex == n
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{458 420 15.6}
+best2s	{458 420 15.6}
+guesses	{60 683 14.8}
+
+data == n
+apex == n
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{8.4 69 6.6}
+best2s	{8.4 69 6.6}
+guesses	{8.4 69 6.6}
+
+rely == h
+data == l
+Kloc < 7.7
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{8.4 69 6.6}
+best2s	{8.4 69 6.6}
+guesses	{8.4 69 6.6}
+
+sced == l
+Kloc < 7.7
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{12 231 12}
+best2s	{12 231 12}
+guesses	{36 456 12.8}
+
+ltex == l
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{72 813 13.6}
+best2s	{72 813 13.6}
+guesses	{82 813 14.8}
+
+stor == vh
+apex == h
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{107 406 15.6}
+best2s	{107 406 15.6}
+guesses	{430 933 19.2}
+
+tool == h
+pvol == l
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{42 420 12.5}
+best2s	{42 420 12.5}
+guesses	{42 420 12.5}
+
+rely == n
+plex == n
+cplx == h
+pmat == n
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{8.4 69 6.6}
+best2s	{8.4 69 6.6}
+guesses	{8.4 69 6.6}
+
+acap == n
+Kloc < 8
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{8.4 69 6.6}
+best2s	{8.4 69 6.6}
+guesses	{18 172 9.1}
+
+acap == n
+ltex == h
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{8.4 69 6.6}
+best2s	{8.4 69 6.6}
+guesses	{8.4 69 6.6}
+
+acap == n
+sced == l
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{38 406 15.4}
+best2s	{38 406 15.4}
+guesses	{38 406 15.4}
+
+time == vh
+cplx == vh
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{38 290 12}
+best2s	{38 290 12}
+guesses	{38 477 15.4}
+
+plex == l
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{42 420 12.5}
+best2s	{42 420 12.5}
+guesses	{42 420 12.5}
+
+Kloc < 65
+rely == n
+pmat == n
+cplx == h
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{8.4 69 6.6}
+best2s	{8.4 69 6.6}
+guesses	{18 172 9.1}
+
+apex == n
+ltex == h
+rely == h
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{8.4 69 6.6}
+best2s	{8.4 69 6.6}
+guesses	{8.4 69 6.6}
+
+data == l
+Kloc < 7.7
+stor == n
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{8.4 69 6.6}
+best2s	{8.4 69 6.6}
+guesses	{42 290 11.2}
+
+apex == n
+time == n
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{240 1555 16.2}
+best2s	{240 1555 16.2}
+guesses	{240 1555 16.2}
+
+pmat == l
+acap == h
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{8.4 69 6.6}
+best2s	{8.4 69 6.6}
+guesses	{8.4 69 6.6}
+
+data == l
+Kloc < 7.7
+
+===========================
+what	{Effort- Defects- Months-}
+mid	{240 2004 21.3}
+best1s	{82 810 14.8}
+best2s	{82 810 14.8}
+guesses	{82 810 14.8}
+
+acap == vh
 ;
-;,../etc/data/nasa93dem.csv,rands1,12.0,12.0,23.0,36.0
-;,../etc/data/nasa93dem.csv,rands2,4.0,12.0,47.0,63.0
-;,../etc/data/nasa93dem.csv,sway1,1.0,1.0,10.0,16.0
-;,../etc/data/nasa93dem.csv,sway2,1.0,1.0,10.0,16.0
-;,../etc/data/nasa93dem.csv,guess,5.0,5.0,13.0,22.0
+;,	../etc/data/nasa93dem.csv	,	rands1	, 12.0, 12.0, 23.0, 36.0
+;,	../etc/data/nasa93dem.csv	,	rands2	,  4.0, 12.0, 47.0, 63.0
+;,	../etc/data/nasa93dem.csv	,	sway1	,  1.0,  1.0, 10.0, 16.0
+;,	../etc/data/nasa93dem.csv	,	sway2	,  1.0,  1.0, 10.0, 16.0
+;,	../etc/data/nasa93dem.csv	,	guess	,  5.0,  5.0, 13.0, 22.0
 ;
-;,../etc/data/nasa93dem.csv,nsways1,5
-;,../etc/data/nasa93dem.csv,nsways2,5
-;,../etc/data/nasa93dem.csv,nbests1,5
-;,../etc/data/nasa93dem.csv,nbests2,5
-;,../etc/data/nasa93dem.csv,nguesses,5,1.5625
-;,../etc/data/nasa93dem.csv,depths,2,0.78125
+;,	../etc/data/nasa93dem.csv	,nsways1,	5
+;,	../etc/data/nasa93dem.csv	,nsways2,	5
+;,	../etc/data/nasa93dem.csv	,nbests1,	5
+;,	../etc/data/nasa93dem.csv	,nbests2,	5
+;,	../etc/data/nasa93dem.csv	,nguesses,	5	,	1.5625
+;,	../etc/data/nasa93dem.csv	,depths,	2	,	0.78125

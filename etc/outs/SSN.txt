@@ -1,13 +1,206 @@
+rbins
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.822 1299.198718}
+best1s	{45.778 4186.547561}
+best2s	{44.475 6578.537313}
+guesses	{44.475 6578.537313}
+
+Qp >= 34
+Bframes < 6
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.932 1235.296}
+best1s	{45.979 4328.021825}
+best2s	{45.557 2637.77229}
+guesses	{33.382 1573.98267}
+
+Ref >= 6
+Qp < 23
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.939 1270.72}
+best1s	{45.816 3771.171556}
+best2s	{45.793 2055.841701}
+guesses	{42.753 1904.032432}
+
+-13 <= B_bias < 28
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.913 1303.333333}
+best1s	{43.896 1309.583333}
+best2s	{31.946 966.6742281}
+guesses	{28.852 536.5905682}
+
+Seek < 209
+Qcomp < 0.4
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.933 1277.467949}
+best1s	{42.484 3579.687143}
+best2s	{36.079 1979.622962}
+guesses	{33.373 1979.622962}
+
+B_bias < -70
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.913 1243.557692}
+best1s	{44.406 1389.953571}
+best2s	{35.377 707.117746}
+guesses	{38.847 707.117746}
+
+Rc_lookahead >= 187
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.585 1212.770833}
+best1s	{45.998 1388.65679}
+best2s	{46.996 2118.463001}
+guesses	{39.055 1908.454054}
+
+Scenecut >= 76
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.815 1260.416}
+best1s	{45.723 1248.48}
+best2s	{38.633 1413.128571}
+guesses	{29.583 416.7111111}
+
+Ref >= 3
+Ipratio < 0.7
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.907 1261.152}
+best1s	{46.637 680.2095238}
+best2s	{41.474 546.5722222}
+guesses	{31.565 243.7437778}
+
+Qp < 17
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.934 1306.549145}
+best1s	{45.814 662.8452381}
+best2s	{40.647 404.9777778}
+guesses	{40.647 458.4}
+
+B_bias >= 0
+Qp >= 23
+Seek >= 418
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.924 1227.552}
+best1s	{46.306 681.6952381}
+best2s	{31.193 267.4555556}
+guesses	{48.088 840.6780392}
+
+Seek < 233
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.917 1237.621333}
+best1s	{45.908 2029.0725}
+best2s	{34.563 1133.301372}
+guesses	{33.33 692.5690476}
+
+Rc_lookahead >= 167
+Keyint < 333
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.944 1350.812346}
+best1s	{41.935 1103.37971}
+best2s	{38.62 1132.617391}
+guesses	{35.832 537.1738114}
+
+Scenecut < 34
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.917 1337.106173}
+best1s	{47.364 1097.536364}
+best2s	{43.402 758.4989712}
+guesses	{43.402 758.4989712}
+
+Seek < 201
+Ipratio < 1.2
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.529 1211.8125}
+best1s	{45.527 688.1943386}
+best2s	{31.636 677.5166667}
+guesses	{30.322 727.1288889}
+
+Scenecut < 32
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.949 1218.105556}
+best1s	{45.55 1567.107527}
+best2s	{38.394 281.3445238}
+guesses	{29.982 281.3445238}
+
+Threads < 23
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.841 1284.367901}
+best1s	{47.24 710.4916071}
+best2s	{43.718 419.2592593}
+guesses	{42.428 153.9}
+
+Scenecut < 34
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.737 1251.904}
+best1s	{44.474 3259.569231}
+best2s	{41.091 1758.949043}
+guesses	{39.17 1347.441429}
+
+B_bias >= 42
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.819 1225.824}
+best1s	{46.739 1576.505376}
+best2s	{30.405 378.9949074}
+guesses	{30.405 344.7075397}
+
+Rc_lookahead >= 167
+Qp >= 34
+Bframes < 13
+Keyint >= 667
+
+===========================
+what	{PSNR- Energy-}
+mid	{45.921 1230.784}
+best1s	{45.928 586.8757123}
+best2s	{37.498 1425.143678}
+guesses	{39.084 1425.143678}
+
+Scenecut >= 51
+Bframes >= 13
 ;
-;,../etc/data/SSN.csv,rands1,9.0,9.0,43.0,57.0
-;,../etc/data/SSN.csv,rands2,5.0,21.0,50.0,68.0
-;,../etc/data/SSN.csv,sway1,0.0,29.0,48.0,75.0
-;,../etc/data/SSN.csv,sway2,0.0,0.0,23.0,42.0
-;,../etc/data/SSN.csv,guess,0.0,0.0,4.0,41.0
+;,	../etc/data/SSN.csv	,	rands1	,  9.0,  9.0, 43.0, 57.0
+;,	../etc/data/SSN.csv	,	rands2	,  5.0, 21.0, 50.0, 68.0
+;,	../etc/data/SSN.csv	,	sway1	,  0.0, 29.0, 48.0, 75.0
+;,	../etc/data/SSN.csv	,	sway2	,  0.0,  0.0, 21.0, 41.0
+;,	../etc/data/SSN.csv	,	guess	,  0.0,  0.0,  4.0, 41.0
 ;
-;,../etc/data/SSN.csv,nsways1,5
-;,../etc/data/SSN.csv,nsways2,14
-;,../etc/data/SSN.csv,nbests1,3353
-;,../etc/data/SSN.csv,nbests2,6
-;,../etc/data/SSN.csv,nguesses,5,2.34375
-;,../etc/data/SSN.csv,depths,1,0.390625
+;,	../etc/data/SSN.csv	,nsways1,	5
+;,	../etc/data/SSN.csv	,nsways2,	14
+;,	../etc/data/SSN.csv	,nbests1,	3353
+;,	../etc/data/SSN.csv	,nbests2,	6
+;,	../etc/data/SSN.csv	,nguesses,	5	,	2.34375
+;,	../etc/data/SSN.csv	,depths,	1	,	0.390625

@@ -1,0 +1,13 @@
+;
+;,../etc/data/nasa93dem.csv,rands1,12.0,12.0,23.0,36.0
+;,../etc/data/nasa93dem.csv,rands2,4.0,12.0,47.0,63.0
+;,../etc/data/nasa93dem.csv,sway1,1.0,1.0,10.0,16.0
+;,../etc/data/nasa93dem.csv,sway2,1.0,1.0,10.0,16.0
+;,../etc/data/nasa93dem.csv,guess,5.0,5.0,13.0,22.0
+;
+;,../etc/data/nasa93dem.csv,nsways1,5
+;,../etc/data/nasa93dem.csv,nsways2,5
+;,../etc/data/nasa93dem.csv,nbests1,5
+;,../etc/data/nasa93dem.csv,nbests2,5
+;,../etc/data/nasa93dem.csv,nguesses,5,1.5625
+;,../etc/data/nasa93dem.csv,depths,2,0.78125

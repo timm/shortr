@@ -1,0 +1,13 @@
+;
+;,../etc/data/healthCloseIsses12mths0001-hard.csv,rands1,5.0,16.0,35.0,49.0
+;,../etc/data/healthCloseIsses12mths0001-hard.csv,rands2,2.0,16.0,48.0,68.0
+;,../etc/data/healthCloseIsses12mths0001-hard.csv,sway1,0.0,15.0,33.0,76.0
+;,../etc/data/healthCloseIsses12mths0001-hard.csv,sway2,1.0,4.0,15.0,38.0
+;,../etc/data/healthCloseIsses12mths0001-hard.csv,guess,1.0,3.0,17.0,36.0
+;
+;,../etc/data/healthCloseIsses12mths0001-hard.csv,nsways1,5
+;,../etc/data/healthCloseIsses12mths0001-hard.csv,nsways2,11
+;,../etc/data/healthCloseIsses12mths0001-hard.csv,nbests1,625
+;,../etc/data/healthCloseIsses12mths0001-hard.csv,nbests2,9
+;,../etc/data/healthCloseIsses12mths0001-hard.csv,nguesses,8,1.5625
+;,../etc/data/healthCloseIsses12mths0001-hard.csv,depths,2,0.390625

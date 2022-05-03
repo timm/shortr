@@ -1,0 +1,13 @@
+;
+;,../etc/data/SSN.csv,rands1,9.0,9.0,43.0,57.0
+;,../etc/data/SSN.csv,rands2,5.0,21.0,50.0,68.0
+;,../etc/data/SSN.csv,sway1,0.0,29.0,48.0,75.0
+;,../etc/data/SSN.csv,sway2,0.0,0.0,21.0,41.0
+;,../etc/data/SSN.csv,guess,0.0,0.0,4.0,41.0
+;
+;,../etc/data/SSN.csv,nsways1,5
+;,../etc/data/SSN.csv,nsways2,14
+;,../etc/data/SSN.csv,nbests1,3353
+;,../etc/data/SSN.csv,nbests2,6
+;,../etc/data/SSN.csv,nguesses,5,2.34375
+;,../etc/data/SSN.csv,depths,1,0.390625

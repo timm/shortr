@@ -1,13 +1,219 @@
+rbins
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{74.8 7.14 25}
+best1s	{73.54 7.59 25}
+best2s	{72.37 6.74 0}
+guesses	{72.37 6.74 0}
+
+Min_impurity_decrease >= 6.5
+criterion == squared_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{74.84 7.17 25}
+best1s	{73.77 7.53 25}
+best2s	{73.11 7.61 25}
+guesses	{73.33 7.61 25}
+
+Max_depth >= 15
+criterion == poisson
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75 7.11 25}
+best1s	{75.77 6.94 25}
+best2s	{70.29 7.21 25}
+guesses	{71.49 7.95 25}
+
+Min_impurity_decrease >= 8.5
+criterion == poisson
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{74.84 7.01 25}
+best1s	{73.87 7.48 25}
+best2s	{72.91 7.73 25}
+guesses	{72.91 7.73 25}
+
+Max_depth < 4
+criterion == poisson
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75.67 7.2 25}
+best1s	{73.73 7.52 25}
+best2s	{72.48 6.34 0}
+guesses	{73.68 6.34 0}
+
+Min_impurity_decrease < 2.25
+Min_sample_leaves >= 12
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75 7.19 25}
+best1s	{73.84 7.51 25}
+best2s	{72.33 7.43 25}
+guesses	{72.59 6.15 0}
+
+6 <= Min_sample_leaves < 8
+N_estimators < 50
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75.62 7.22 25}
+best1s	{73.7 7.56 25}
+best2s	{72.35 7.5 25}
+guesses	{73.63 7.5 25}
+
+criterion == poisson
+Min_sample_leaves < 3
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75.34 7.14 25}
+best1s	{73.63 7.54 25}
+best2s	{72.1 7.64 25}
+guesses	{72.1 7.64 25}
+
+N_estimators >= 170
+criterion == poisson
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75.12 7.21 25}
+best1s	{73.67 7.64 25}
+best2s	{72.35 7.61 25}
+guesses	{72.35 7.61 25}
+
+Max_depth < 5
+criterion == poisson
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{74.87 7.16 25}
+best1s	{74.1 7.42 25}
+best2s	{73.72 7.53 25}
+guesses	{73.72 7.54 25}
+
+N_estimators >= 150
+criterion == squared_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75.2 7.19 25}
+best1s	{73.93 7.68 25}
+best2s	{73.66 7.22 25}
+guesses	{73.61 7.94 25}
+
+6 <= Max_depth < 11
+Min_sample_leaves < 5
+criterion == squared_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75.05 7.04 25}
+best1s	{73.82 7.5 25}
+best2s	{69.52 8.43 25}
+guesses	{69.52 8.81 25}
+
+Max_depth >= 15
+N_estimators < 60
+criterion == poisson
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{74.97 7.03 25}
+best1s	{73.68 7.56 25}
+best2s	{71.82 7.14 25}
+guesses	{71.82 7.8 25}
+
+10 <= Min_sample_leaves < 15
+Min_impurity_decrease >= 5.5
+criterion == squared_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75.01 7.08 25}
+best1s	{73.75 7.51 25}
+best2s	{74.01 7.38 25}
+guesses	{74.01 7.38 25}
+
+N_estimators < 40
+criterion == squared_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75 7.23 25}
+best1s	{73.58 7.67 25}
+best2s	{73.67 7.84 12.5}
+guesses	{74.21 7.95 12.5}
+
+Min_sample_leaves < 4
+criterion == poisson
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75.03 7.25 25}
+best1s	{73.78 7.55 25}
+best2s	{74.34 7.06 0}
+guesses	{74.34 7.06 0}
+
+12 <= Min_sample_leaves < 17
+N_estimators < 60
+criterion == poisson
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75.25 7.01 25}
+best1s	{73.56 7.61 25}
+best2s	{72.15 7.14 25}
+guesses	{72.15 7.8 25}
+
+10 <= Max_depth < 15
+criterion == squared_error
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75.12 7.1 25}
+best1s	{73.63 7.58 25}
+best2s	{72.59 6.61 0}
+guesses	{69.96 7.21 25}
+
+6 <= Min_sample_leaves < 11
+N_estimators < 50
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{74.68 7.21 25}
+best1s	{74.12 7.69 25}
+best2s	{71.27 9.64 25}
+guesses	{71.71 10.55 25}
+
+Min_impurity_decrease < 1.5
+Min_sample_leaves < 4
+
+===========================
+what	{MRE- ACC+ PRED40+}
+mid	{75.32 7.08 25}
+best1s	{73.71 7.55 25}
+best2s	{72.26 7.41 25}
+guesses	{72.88 7.41 25}
+
+Max_depth < 5
+Min_sample_leaves >= 16
+criterion == squared_error
 ;
-;,../etc/data/healthCloseIsses12mths0001-hard.csv,rands1,5.0,16.0,35.0,49.0
-;,../etc/data/healthCloseIsses12mths0001-hard.csv,rands2,2.0,16.0,48.0,68.0
-;,../etc/data/healthCloseIsses12mths0001-hard.csv,sway1,0.0,15.0,33.0,76.0
-;,../etc/data/healthCloseIsses12mths0001-hard.csv,sway2,1.0,4.0,15.0,38.0
-;,../etc/data/healthCloseIsses12mths0001-hard.csv,guess,1.0,3.0,17.0,36.0
+;,	../etc/data/healthCloseIsses12mths0001-hard.csv	,	rands1	,  5.0, 16.0, 35.0, 49.0
+;,	../etc/data/healthCloseIsses12mths0001-hard.csv	,	rands2	,  2.0, 16.0, 48.0, 68.0
+;,	../etc/data/healthCloseIsses12mths0001-hard.csv	,	sway1	,  0.0, 15.0, 33.0, 76.0
+;,	../etc/data/healthCloseIsses12mths0001-hard.csv	,	sway2	,  1.0,  4.0, 15.0, 38.0
+;,	../etc/data/healthCloseIsses12mths0001-hard.csv	,	guess	,  1.0,  3.0, 17.0, 36.0
 ;
-;,../etc/data/healthCloseIsses12mths0001-hard.csv,nsways1,5
-;,../etc/data/healthCloseIsses12mths0001-hard.csv,nsways2,11
-;,../etc/data/healthCloseIsses12mths0001-hard.csv,nbests1,625
-;,../etc/data/healthCloseIsses12mths0001-hard.csv,nbests2,9
-;,../etc/data/healthCloseIsses12mths0001-hard.csv,nguesses,8,1.5625
-;,../etc/data/healthCloseIsses12mths0001-hard.csv,depths,2,0.390625
+;,	../etc/data/healthCloseIsses12mths0001-hard.csv	,nsways1,	5
+;,	../etc/data/healthCloseIsses12mths0001-hard.csv	,nsways2,	11
+;,	../etc/data/healthCloseIsses12mths0001-hard.csv	,nbests1,	625
+;,	../etc/data/healthCloseIsses12mths0001-hard.csv	,nbests2,	9
+;,	../etc/data/healthCloseIsses12mths0001-hard.csv	,nguesses,	8	,	1.5625
+;,	../etc/data/healthCloseIsses12mths0001-hard.csv	,depths,	2	,	0.390625

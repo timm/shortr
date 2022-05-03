@@ -1,13 +1,221 @@
+rbins
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 18711}
+best1s	{1 10796}
+best2s	{0 3820}
+guesses	{0 2106}
+
+PREC >= 4
+DATA < 3
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 17734}
+best1s	{3 12444}
+best2s	{2 16077}
+guesses	{0 18577}
+
+SCED >= 2
+ARCH < 2
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 18435}
+best1s	{2 15606}
+best2s	{0 9423}
+guesses	{0 11259}
+
+PLEX >= 2
+AEXP >= 2
+PCAP >= 2
+LTEX >= 3
+PMAT >= 2
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 19782}
+best1s	{6 18116}
+best2s	{4 18245}
+guesses	{3 17933}
+
+PCON >= 4
+TOOL >= 3
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 19764}
+best1s	{2 12434}
+best2s	{0 3609}
+guesses	{0 3609}
+
+DOCU < 2
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 19762}
+best1s	{2 8341}
+best2s	{1 496}
+guesses	{1 496}
+
+ACAP >= 4
+LOC < 897
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 18387}
+best1s	{4 18218}
+best2s	{2 6006}
+guesses	{2 5178}
+
+RELY >= 3
+PVOL < 3
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 20508}
+best1s	{1 18577}
+best2s	{0 6470}
+guesses	{0 4219}
+
+RUSE < 3
+SITE >= 2
+LTEX < 3
+
+===========================
+what	{RISK- EFFORT-}
+mid	{6 19664}
+best1s	{2 17406}
+best2s	{0 6320}
+guesses	{0 5679}
+
+RELY < 2
+SCED >= 2
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 19782}
+best1s	{2 5682}
+best2s	{0 3699}
+guesses	{0 3820}
+
+AEXP >= 2
+TOOL >= 2
+STOR < 4
+PVOL < 3
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 19643}
+best1s	{3 11766}
+best2s	{3 5209}
+guesses	{10 12369}
+
+TIME >= 4
+CPLX < 2
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 19548}
+best1s	{4 10414}
+best2s	{0 3820}
+guesses	{1 2244}
+
+DOCU < 2
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 18104}
+best1s	{2 9925}
+best2s	{0 4255}
+guesses	{0 1646}
+
+SCED >= 2
+2 <= PREC < 4
+CPLX < 3
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 20370}
+best1s	{2 26094}
+best2s	{0 13911}
+guesses	{0 13911}
+
+PVOL >= 3
+RUSE < 4
+TIME < 4
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 19782}
+best1s	{6 9736}
+best2s	{1 3989}
+guesses	{1 15332}
+
+PVOL < 3
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 19132}
+best1s	{6 10652}
+best2s	{6 11259}
+guesses	{6 9095}
+
+CPLX >= 4
+PCON >= 2
+DATA >= 3
+2 <= PMAT < 4
+RUSE < 4
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 20155}
+best1s	{3 7373}
+best2s	{0 4924}
+guesses	{0 4924}
+
+ACAP >= 3
+ARCH >= 3
+SITE < 2
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 20378}
+best1s	{4 13523}
+best2s	{3 12147}
+guesses	{1 12147}
+
+TOOL < 2
+
+===========================
+what	{RISK- EFFORT-}
+mid	{4 20907}
+best1s	{2 12570}
+best2s	{0 8558}
+guesses	{0 10796}
+
+PCON < 2
+AEXP >= 3
+
+===========================
+what	{RISK- EFFORT-}
+mid	{5 19002}
+best1s	{4 16332}
+best2s	{0 2974}
+guesses	{3 5536}
+
+LOC < 545
 ;
-;,../etc/data/coc1000.csv,rands1,10.0,10.0,44.0,57.0
-;,../etc/data/coc1000.csv,rands2,5.0,21.0,46.0,69.0
-;,../etc/data/coc1000.csv,sway1,0.0,12.0,32.0,57.0
-;,../etc/data/coc1000.csv,sway2,1.0,1.0,10.0,29.0
-;,../etc/data/coc1000.csv,guess,3.0,3.0,9.0,26.0
+;,	../etc/data/coc1000.csv	,	rands1	, 10.0, 10.0, 44.0, 57.0
+;,	../etc/data/coc1000.csv	,	rands2	,  5.0, 21.0, 46.0, 69.0
+;,	../etc/data/coc1000.csv	,	sway1	,  0.0, 12.0, 32.0, 57.0
+;,	../etc/data/coc1000.csv	,	sway2	,  1.0,  1.0, 10.0, 29.0
+;,	../etc/data/coc1000.csv	,	guess	,  3.0,  3.0,  9.0, 26.0
 ;
-;,../etc/data/coc1000.csv,nsways1,5
-;,../etc/data/coc1000.csv,nsways2,8
-;,../etc/data/coc1000.csv,nbests1,62
-;,../etc/data/coc1000.csv,nbests2,7
-;,../etc/data/coc1000.csv,nguesses,5,3.125
-;,../etc/data/coc1000.csv,depths,2,1.171875
+;,	../etc/data/coc1000.csv	,nsways1,	5
+;,	../etc/data/coc1000.csv	,nsways2,	8
+;,	../etc/data/coc1000.csv	,nbests1,	62
+;,	../etc/data/coc1000.csv	,nbests2,	7
+;,	../etc/data/coc1000.csv	,nguesses,	5	,	3.125
+;,	../etc/data/coc1000.csv	,depths,	2	,	1.171875
