@@ -1,0 +1,13 @@
+;
+;,../etc/data/china.csv,rands1,5.0,5.0,34.0,65.0
+;,../etc/data/china.csv,rands2,3.0,19.0,48.0,64.0
+;,../etc/data/china.csv,sway1,0.0,6.0,18.0,32.0
+;,../etc/data/china.csv,sway2,2.0,2.0,6.0,17.0
+;,../etc/data/china.csv,guess,2.0,6.0,11.0,18.0
+;
+;,../etc/data/china.csv,nsways1,5
+;,../etc/data/china.csv,nsways2,7
+;,../etc/data/china.csv,nbests1,31
+;,../etc/data/china.csv,nbests2,7
+;,../etc/data/china.csv,nguesses,7,1.953125
+;,../etc/data/china.csv,depths,1,0.390625

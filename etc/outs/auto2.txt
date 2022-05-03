@@ -1,0 +1,13 @@
+;
+;,../etc/data/auto2.csv,rands1,13.0,13.0,34.0,52.0
+;,../etc/data/auto2.csv,rands2,5.0,13.0,35.0,53.0
+;,../etc/data/auto2.csv,sway1,1.0,1.0,2.0,5.0
+;,../etc/data/auto2.csv,sway2,1.0,1.0,2.0,5.0
+;,../etc/data/auto2.csv,guess,1.0,1.0,4.0,5.0
+;
+;,../etc/data/auto2.csv,nsways1,5
+;,../etc/data/auto2.csv,nsways2,5
+;,../etc/data/auto2.csv,nbests1,5
+;,../etc/data/auto2.csv,nbests2,5
+;,../etc/data/auto2.csv,nguesses,5,0.78125
+;,../etc/data/auto2.csv,depths,1,0.390625
