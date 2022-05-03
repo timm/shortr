@@ -55,6 +55,15 @@ $D/docs/index.html: $D/README.md $D/etc/head.html $D/etc/foot.html
    python3 -m markdown -x toc -x extra $< | sed 's/docs\///g' ;\
    cat $D/etc/foot.html) > $@
 
+V=$D/etc/var
+vars: $V/auto2.txt $V/SSN.txt $V/china.txt $V/coc1000.txt \
+     $V/healthCloseIsses12mths0001-hard.txt \
+  	  $V/healthCloseIsses12mths0011-easy.txt $V/nasa93dem.txt $V/pom.txt
+ 
+
+$D/etc/var/%.txt: ../etc/data/%.csv
+	 lua tweak.lua -f $< -g rbins | tr -d '[:blank:]' | fgrep ';' > $@
+
 $D/docs/%.md: %.lua ../README.md  Makefile
 	@echo "md-ing $@..."
 	@gawk 'BEGIN {FS="\n"; RS=""} {print $$0 "\n\n"; exit}' ../README.md > $@

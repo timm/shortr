@@ -177,9 +177,11 @@ function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or"%s",x) end
 
----     ._    _   |      ._ _    _   ._  ._   |_   o   _  ._ _  
----     |_)  (_)  |  \/  | | |  (_)  |   |_)  | |  |  _>  | | | 
----     |            /                   |                      
+--------------------------------------------------------------------------------
+---    ____ ___   _ ____ ____ ___ ____ 
+---    |  | |__]  | |___ |     |  [__  
+---    |__| |__] _| |___ |___  |  ___] 
+
 local _id=0
 local function id() _id=_id+1; return _id end
 
@@ -187,14 +189,22 @@ function obj(name,    t,new)
   function new(kl,...) 
    local x=setmetatable({id=id()},kl); kl.new(x,...); return x end 
   t = {__tostring=o, is=name or ""}; t.__index=t
-  return setmetatable(t, {__call=new}) end
----    ____ ___   _ ____ ____ ___ ____ 
----    |  | |__]  | |___ |     |  [__  
----    |__| |__] _| |___ |___  |  ___] 
+  return setmetatable(t, {__call=new}) end
 
 local SOME,SYM,BIN,NUM,COLS = obj"SOME",obj"SYM",obj"BIN",obj"NUM",obj"COLS"
 local ROW,EGS,GO            = obj"ROW", obj"EGS", obj"GO"
 
+---      _   _   ._ _    _  
+---     _>  (_)  | | |  (/_ 
+function SOME:new() self.kept, self.ok, self.n = {}, false,0 end
+
+function SOME:add(x,     a) 
+  self.n, a = 1 + self.n, self.kept
+  if     #a  < the.some        then self.ok=false; push(a,x)  
+  elseif R() < the.some/self.n then self.ok=false; a[R(#a)]=x end end 
+
+function SOME:has() 
+  if not self.ok then sort(self.kept) end;self.ok=true; return self.kept end
 ---      _      ._ _  
 ---     _>  \/  | | | 
 ---         /         
@@ -234,18 +244,6 @@ function SYM:bins(rows,     out,known,x)
                                                 lo=x ,hi=x, ys=SYM()})) 
       known[x].ys:add(row.klass) end end
   return out end
-
----      _   _   ._ _    _  
----     _>  (_)  | | |  (/_ 
-function SOME:new() self.kept, self.ok, self.n = {}, false,0 end
-
-function SOME:add(x,     a) 
-  self.n, a = 1 + self.n, self.kept
-  if     #a  < the.some        then self.ok=false; push(a,x)  
-  elseif R() < the.some/self.n then self.ok=false; a[R(#a)]=x end end 
-
-function SOME:has() 
-  if not self.ok then sort(self.kept) end;self.ok=true; return self.kept end
 
 ---     ._        ._ _  
 ---     | |  |_|  | | | 
@@ -323,7 +321,6 @@ function NUM:bins(rows,      xy,div,xys,epsilon,small,b4,out)
   div(1, #xys) 
   out[#out].hi = math.huge
   return out end
-
 ---      _   _   |   _ 
 ---     (_  (_)  |  _> 
 
@@ -382,11 +379,9 @@ function ROW:around(rows,   rowGap)
   return sort(map(rows or self.data.rows, rowGap), lt"gap") end
 
 function ROW:far(rows) return per(self:around(rows), the.far).row end
-
 ---      _    _    _ 
 ---     (/_  (_|  _> 
 ---           _|     
-
 function EGS:new()   self.rows,self.cols = {},nil end
 function EGS:load(f) for t in csv(f) do self:add(t) end; return self end
 function EGS:mid(t)  return map(t or self.cols.y,function(c)return c:mid()end)end
@@ -427,7 +422,7 @@ function EGS:sway(rows,x,stop,rest,           rxs,some,y,c,best,mid)
   best= {} -- things cloest to x or y, respectively
   for i,rx in pairs(sort(rxs, lt"x")) do 
     push(i<=#rows*.5 and best or rest, rx.r) end
-  return self:sway(best,x,stop,rest)  end
+  return self:sway(best,x,stop,rest)  end
 
 function EGS:rbins(rows,B,R,how,   v,bins,best,bests)
   function v(bin,  b,r)
@@ -444,41 +439,8 @@ function EGS:rbins(rows,B,R,how,   v,bins,best,bests)
   then push(how,best)
        return self:rbins(bests,B,R,how ) 
   else return  rows,how end
-end
-
+end
 --------------------------------------------------------------------------------
-stats={}
-function stats.same(i,j)
-  return (stats.smallfx(  i.some.kept, j.some.kept) and
-          stats.bootstrap(i.some.kept, j.some.kept)) end
-
-function stats.smallfx(xs,ys,     x,y,lt,gt,n)
-  lt,gt,n = 0,0,0
-  if #ys > #xs then xs,ys=ys,xs end
-  for _,x in pairs(xs) do
-    for j=1, math.min(64,#ys) do
-      y = any(ys)
-      if y<x then lt=lt+1 end
-      if y>x then gt=gt+1 end
-      n = n+1 end end
-  return math.abs(gt - lt) / n <= the.cliffs end
-
-function stats.bootstrap(y0,z0,        x,y,z,b4,yhat,zhat,bigger,obs,adds)
-  function obs(a,b,    c)
-    c = math.abs(a.mu - b.mu)
-    return (a:div()+b:div())==0 and c or c/((x:div()^2/x.n+y:div()^2/y.n)^.5) end
-  function adds(t,     num)
-    num = NUM(); map(t, function(x) num:add(x) end); return num end
-  y,z    = adds(y0), adds(z0)
-  x      = adds(y0, adds(z0))
-  b4     = obs(y,z)
-  yhat   = map(y._all, function(y1) return y1 - y.mu + x.mu end)
-  zhat   = map(z._all, function(z1) return z1 - z.mu + x.mu end)
-  bigger = 0
-  for j=1,the.boot do
-    if obs( adds(many(yhat,#yhat)),  adds(many(zhat,#zhat))) > b4
-    then bigger = bigger + 1/the.boot end end
-  return bigger >= the.conf end
 ---    ___  ____ _  _ ____ ____ 
 ---    |  \ |___ |\/| |  | [__  
 ---    |__/ |___ |  | |__| ___] 
@@ -588,7 +550,7 @@ function GO.shuffle(   t)
 function GO.per()
   print(per({10,20,30,40},0.00)) end
 
-function GO.rbins1() GO.rbins(1) end
+function GO.rbins1() GO.rbins(1) end
 function GO.rbins( max)
   max = max or 20
  
@@ -640,36 +602,20 @@ function GO.rbins( max)
     for i,num in pairs(sways2)  do num:add(per(best2,i))  end
     for i,num in pairs(guesses)  do num:add(per(guess,i))  end
   end 
-  for _,p in pairs{0, .25, .5, .75} do
-    print("")
-    print("rands1",  p, randoms1[p]:mid(), randoms1[p].n) 
-    print("rands2",  p, randoms2[p]:mid(), randoms2[p].n) 
-    print("sway1", p, sways1[p]:mid(), sways1[p].n)
-    print("sway2", p, sways2[p]:mid(), sways2[p].n) 
-    print("guess", p, guesses[p]:mid(), guesses[p].n) 
-  end 
-  print("\nnsways1",nsways1:mid(), nsways1:div())
-  print("nsways2",nsways2:mid(),nsways2:div())
-  print("nbests1",nbests1:mid(),nbests1:div())
-  print("nsways2",nbests2:mid(),nbests2:div())
-  print("nguesses",nguesses:mid(),nguesses:div())
-  print("depths",depths:mid(),depths:div())
-  end
+  print(";")
+  for _,kv in pairs({{rands1=randoms1},{rands2=randoms2},{sway1=sways1},{ sway2=sways2},{guess=guesses}}) do
+    for k,v in pairs(kv) do
+      local t=map({0, .25, .5, .75},function(p) return fmt(",%5.1f",v[p]:mid()) end ) 
+      print(";,",the.file,",",k,table.concat(t)) end  end 
 
-  -- print(top)
-  -- local eval1 = egs:evaluated()
-  -- for _,row in pairs(best1) do row.klass=true  end
-  -- for _,row in pairs(rest1) do row.klass=false end
-  -- local B     = #best1
-  -- local R     = 3*B
-  -- local rows2 = {}
-  -- for _,row in pairs(best1)          do push(rows2, row) end
-  -- for _,row in pairs(many(rest1, R)) do push(rows2, row) end
-  -- local best2       = egs:rbins(rows2,B,R) 
-  -- local best3,rest3 = egs:sway(best2,top,5)
-  -- print("sway1",o(sort(map(best1,function(row) return row.rank end))))
-  -- print("best2",o(sort(map(best2,function(row) return row.rank end))))
-  -- print("best3",o(sort(map(best3,function(row) return row.rank end))))
+  print(";")
+  print(";,",the.file,",nsways1,",nsways1:mid())
+  print(";,",the.file,",nsways2,",nsways2:mid())
+  print(";,",the.file,",nbests1,",nbests1:mid())
+  print(";,",the.file,",nbests2,",nbests2:mid())
+  print(";,",the.file,",nguesses,",nguesses:mid(),",",nguesses:div())
+  print(";,",the.file,",depths,",depths:mid(),",",depths:div())
+  end
 
 function GO.ranks( egs)
   egs = EGS():load(the.file)
