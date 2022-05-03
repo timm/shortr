@@ -7,8 +7,7 @@ USAGE:
   twk [OPTIONS]
 
 OPTIONS:
-  --boot    -b  size of bootstrap           = 512
-  --cohen   -c  cohen                       = .35
+  --bins    -b  max bins                    = 16
 
 OPTIONS (other):
   --file    -f  where to find data          = ../etc/data/auto2.csv
@@ -39,7 +38,7 @@ function csv(f)
 
 function map(t,f, u)  u={}; for _,v in pairs(t) do u[1+#u]=f(v) end;return u end
 function push(t,x)    t[1+#t]=x; return x end
-f
+
 function o(t,    u)
   u={}; for k,v in pairs(t) do u[1+#u] = string.format(":%s %s",k,v) end
   return (t.is or "").."{"..table.concat(sort(u)," ").."}" end
@@ -51,6 +50,24 @@ function obj(name,    t,new)
   return setmetatable(t, {__call=new}) end
 
 --------------------------------------------------------------------------------
+local SYM=obj"SYM"
+function SYM:new(i,txt) 
+  self.i, self.txt, self.has,self.bins = i,txt,{},{} end
+
+function SYM:add(x) 
+  if x~="?" then self.has[x] = 1+(self.has[x] or 0) end end
+
+function SYM:addxy(x,y) 
+  if x~="?" then self.bins[x] = y + (self.bins[x] or 0) end end
+
+function SYM:mid(   m,x)
+  m=0; for y,n in pairs(self.has) do if n>m then m,x=y,n end end; return m end
+
+function SYM:div(   n,e)
+  n=0; for _,m in pairs(self.has) do n = n + m end 
+  e=0; for _,m in pairs(self.has) do e = e - m/n*math.log(m/n,2) end 
+  return e end
+
 local NUM=obj"NUM"
 function NUM:new(i,txt) 
   self.i,self.txt, self.lo,self.hi,self.bins = i,txt,math.huge,-math.huge,{} end
@@ -65,27 +82,9 @@ function NUM:norm(x)
 
 function NUM:addxy(x,y)
   if x=="?" then return x end
-  x = math.max(1, math.min(16, 16*self:norm(x) // 1))
-  --- bins recurisive
-  self.bins[x] = y + (self.bins[x] or 0) end
-
-local SYM=obj"SYM"
-function SYM:new(i,txt) 
-  self.i, self.txt, self.has,self.bins = i,txt,{},{} end
-
-function SYM:addx(x) 
-  if x~="?" then self.has[x] = 1+(self.has[x] or 0) end end
-
-function SYM:addxy(x,y) 
-  if x~="?" then self.bins[x] = y + (self.bins[x] or 0) end end
-
-function SYM:mid(   m,x)
-  m=0; for y,n in pairs(self.has) do if n>m then m,x=y,n end end; return m end
-
-function SYM:div(   n,e)
-  n=0; for _,m in pairs(self.has) do n = n + m end 
-  e=0; for _,m in pairs(self.has) do e = e - m/n*math.log(m/n,2) end 
-  return e end
+  x = math.max(1, math.min(the.bins, the.bins*self:norm(x) // 1))
+  self.bins[x] = self.bins[x] or Sym()
+  self.bins[x]:add(y) end
 
 function ROW:new(egs,t) 
   self.cells,self.data = t,egs end
