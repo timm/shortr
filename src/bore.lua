@@ -1,7 +1,9 @@
 local help = [[
 
-BORE: best or rest. u show me a good loser and i'll show u a loser.
-(c) 2022, Tim Menzies <timm@ieee.org> opensource.org/licenses/Fair
+BORE: best or rest multi-objective optimization.
+(c)2022 Tim Menzies, timm@ieee.org, opensource.org/licenses/Fair
+"I think the highest and lowest points are the important ones. 
+ Anything else is just...in between." Jim Morrison
 
 USAGE:
   alias bore="lua bore.lua "
@@ -9,6 +11,7 @@ USAGE:
 
 OPTIONS:
   -b  --bins  max bins                 = 16
+  -S  --some  number of nums to keep   = 256
 
 OPTIONS (other):
   -s  --seed  random number seed       = 10019
@@ -30,7 +33,7 @@ help:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",function(f1,f2,
   the[k] = thing(x) end) 
 --------------------------------------------------------------------------------
 local as,atom,csv,has,map,merge,o,oo,obj,ok,patch,per,push,rows,slice,sort
-local _,GO,BIN,SOME,NUM,SYM,COLS,ROW,EGS
+local _,GO,RANGE,SOME,NUM,SYM,COLS,ROW,EGS
 local R,big,fmt
 
 big = math.huge
@@ -83,15 +86,16 @@ function obj(name,    t,new)
     local x=setmetatable({},kl); kl.new(x,...); return x end 
   t = {__tostring=o, is=name or ""}; t.__index=t
   _ = t
-  return setmetatable(t, {__call=new}) end
+  return setmetatable(t, {__call=new}) end
 --------------------------------------------------------------------------------
-BIN=obj"BIN"
-function _.new(i,t)  has(i,{at=0, txt="", lo=big, hi= -big, ys={}},t) end
+RANGE=obj"RANGE"
+function _.new(i,t)  has(i,{at=0, txt="", lo=big, hi= -big, ys=SYM()},t) end
 function _.of(i,x)   return i.ys.all[x] or 0 end
 function _.__lt(i,j) return i.lo < j.lo end
 function _.add(i,x,y)
   if x=="?" then return x end
-  if x >i.hi then i.hi=x elseif x<i.lo then i.lo=x end 
+  if x>i.hi then i.hi=x end
+  if x<i.lo then i.lo=x end 
   i.ys:add(y) end
 
 function _.select(i,t,     x)
@@ -110,7 +114,7 @@ function _.merged(i,j,    k)
   if i.at == j.at then
     k = i.ys:merged(j.ys)
     if k then 
-      return BIN{at=i.at, txt=i.txt, lo=i.lo, hi=j.hi, ys=k} end end end
+      return RANGE{at=i.at, txt=i.txt, lo=i.lo, hi=j.hi, ys=k} end end end
 --------------------------------------------------------------------------------
 SOME=obj"SOME"
 function _.new(i) i.all, i.ok, i.n = {}, false,0 end
@@ -145,10 +149,10 @@ function _.merged(i,j,    k,div1,n1,div2,n2,n)
   n        = n1+n2
   if k:div() < (div1*n1/n + div2*n2/n) then return k end end
 
-function _.bin(i,x,y,bins)
+function _.range(i,x,y,ranges)
   if x=="?" then return x end
-  bins[x] = bins[x] or BIN{at=i.at, txt=i.txt, lo=x, hi=x, ys=SYM()} 
-  bins[x]:add(x,y) end
+  ranges[x] = ranges[x] or RANGE{at=i.at, txt=i.txt} 
+  ranges[x]:add(x,y) end
 --------------------------------------------------------------------------------
 NUM=obj"NUM"
 function _.new(i,t) 
@@ -161,15 +165,16 @@ function _.norm(i,x) return x=="?" and x or (x-i.lo)/(i.hi - i.lo) end
 
 function _.add(i,x)
   if x=="?" then return x end
-  i.all:add(x)
-  if x >i.hi then i.hi=x elseif x<i.lo then i.lo=x end end
+  if x>i.hi then i.hi=x end
+  if x<i.lo then i.lo=x end 
+  i.all:add(x) end
 
-function _.bin(i,x,y,bins,   gap)
+function _.range(i,x,y,ranges,   gap,r)
   if x=="?" then return x end
   gap = (i.hi - i.lo)/the.bins
-  x   = (x - i.lo)//gap * gap
-  bins[x] = bins[x] or BIN{at=i.at, txt=i.txt, lo=x, hi=x+gap, ys=SYM()} 
-  bins[x]:add(x,y) end
+  r   = (x - i.lo)//gap * gap
+  ranges[r] = ranges[r] or RANGE{at=i.at, txt=i.txt}
+  ranges[r]:add(x,y) end
 --------------------------------------------------------------------------------
 ROW=obj"ROW"
 function _.new(i,t) has(i,{cells={},data={}},t) end
@@ -203,13 +208,12 @@ function _.add(i,row)
   return i end
 
 function _.mid(i,cs) return map(cs or i.cols.y,function(c)return c:mid() end)end
-function _.div(i,cs) return map(cs or i.cols.y,function(c)return c:div() end)end
+function _.div(i,cs) return map(cs or i.cols.y,function(c)return c:div() end)end
 
-function _.clone(i,rows,   out)
+function _.copy(i,rows,   out)
   out=EGS():add(i.cols.names)
   for _,row in pairs(rows or {}) do out:add(row) end
-  return out end
-
+  return out end
 --------------------------------------------------------------------------------
 GO=obj"GO"
 function ok(test,msg)
@@ -247,8 +251,8 @@ function GO.egs(  egs,a,t)
   sort(egs.rows)
   sort(a)
   print("all", o(egs:mid()))
-  print("best",o(egs:clone(slice(egs.rows,1,50)):mid()))
-  print("rest",o(egs:clone(slice(egs.rows,#egs.rows-50)):mid()))
+  print("best",o(egs:copy(slice(egs.rows,1,50)):mid()))
+  print("rest",o(egs:copy(slice(egs.rows,#egs.rows-50)):mid()))
   end
 
 function GO.egs1(  egs,a)
@@ -265,4 +269,3 @@ if   the.help
 then print(help:gsub("%u%u+", "\27[33m%1\27[0m")
                :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[32m%2\27[0m%3"),"")
 else GO(the.go) end
-
