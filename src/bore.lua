@@ -29,8 +29,8 @@ help:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",function(f1,f2,
     x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
   the[k] = thing(x) end) 
 --------------------------------------------------------------------------------
-local as,atom,csv,map,merge,o,oo,obj,ok,patch,per,push,rows,sort
-local _,GO,BIN,NUM,SYM,COLS,ROW,EGS
+local as,atom,csv,has,map,merge,o,oo,obj,ok,patch,per,push,rows,slice,sort
+local _,GO,BIN,SOME,NUM,SYM,COLS,ROW,EGS
 local R,big,fmt
 
 big = math.huge
@@ -40,9 +40,10 @@ fmt = string.format
 function push(t,x)    t[1+#t]=x;       return x end
 function sort(t,f)    table.sort(t,f); return t end
 function map(t,f, u)  u={}; for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
-function per(t,p, i)  i=(p or.5)*#t//1; return t[math.max(1,math.min(#t,i))] end
+function slice(t,i,j,   u) 
+  u={}; for k=(i or 1), (j or #t) do u[1+#u] = t[k] end return u end
 
-function new(i, defaults, also)
+function has(i, defaults, also)
   for k,v in pairs(defaults) do i[k] = v end
   for k,v in pairs(also or {}) do assert(i[k]~=nil,"unknown:"..k);i[k]=v end end
 
@@ -85,15 +86,18 @@ function obj(name,    t,new)
   return setmetatable(t, {__call=new}) end
 --------------------------------------------------------------------------------
 BIN=obj"BIN"
-function _.new(i,t) new(i,{at=0, txt="", lo=big, hi= -big, ys={}},t) end
-function _.of(i,x)  return i.ys.has[x] or 0 end
+function _.new(i,t)  has(i,{at=0, txt="", lo=big, hi= -big, ys={}},t) end
+function _.of(i,x)   return i.ys.all[x] or 0 end
+function _.__lt(i,j) return i.lo < j.lo end
+function _.add(i,x,y)
+  if x=="?" then return x end
+  if x >i.hi then i.hi=x elseif x<i.lo then i.lo=x end 
+  i.ys:add(y) end
 
 function _.select(i,t,     x)
   t = t.cells and t.cells or t
   x = t[i.pos]
   return x=="?" or i.lo == i.hi and i.lo == x or i.lo <= x and x < i.hi end
-
-function _.__lt(i,j) return i.lo < j.lo end
 
 function _.__tostring(i)
   local x, lo, hi = i.txt, i.lo, i.hi
@@ -108,26 +112,34 @@ function _.merged(i,j,    k)
     if k then 
       return BIN{at=i.at, txt=i.txt, lo=i.lo, hi=j.hi, ys=k} end end end
 --------------------------------------------------------------------------------
+SOME=obj"SOME"
+function _.new(i) i.all, i.ok, i.n = {}, false,0 end
+
+function _.add(i,x,     a) 
+  i.n, a = 1 + i.n, i.all
+  if     #a  < the.some     then i.ok=false; push(a,x)  
+  elseif R() < the.some/i.n then i.ok=false; a[R(#a)]=x end end 
+
+function _.nums(i) i.all=i.ok and i.all or sort(i.all);i.ok=true;return i.all end
+function _.per(i,p) 
+  p,a=(p or .5),i:nums(); return a[math.max(1,math.min(#a, p*#a//1))] end
+--------------------------------------------------------------------------------
 SYM=obj"SYM"
-function _.new(i,t)    new(i,{at=0, txt="", has={}, bins={}},t) end
-function _.add(i,x,n)  if x~="?" then i.has[x]=(n or 1)+(i.has[x] or 0) end end
-function _.addy(i,x,y) 
-  if x~="?" then 
-    i.bins[x] = i.bins[x] or BIN{at=i.at, txt=i.txt, lo=x, hi=x, ys=SYM()} 
-    i.bins[x].ys:add(y) end end
+function _.new(i,t)    has(i,{at=0, txt="", all={}},t) end
+function _.add(i,x,n)  if x~="?" then i.all[x]=(n or 1)+(i.all[x] or 0) end end
 
 function _.mid(i,   m,x)
-  m=0; for y,n in pairs(i.has) do if n>m then m,x=n,y end end; return x end
+  m=0; for y,n in pairs(i.all) do if n>m then m,x=n,y end end; return x end
 
 function _.div(i,   n,e)
-  n=0; for k,m in pairs(i.has) do n = n + m end 
-  e=0; for k,m in pairs(i.has) do e = e - m/n*math.log(m/n,2) end 
+  n=0; for k,m in pairs(i.all) do n = n + m end 
+  e=0; for k,m in pairs(i.all) do e = e - m/n*math.log(m/n,2) end 
   return e,n end
 
 function _.merged(i,j,    k,div1,n1,div2,n2,n)
   k = SYM{at=i.at, txt=i.txt}
-  for x,n in pairs(i.has) do k:add(x,n) end
-  for x,n in pairs(j.has) do k:add(x,n) end
+  for x,n in pairs(i.all) do k:add(x,n) end
+  for x,n in pairs(j.all) do k:add(x,n) end
   div1, n1 = i:div()
   div2, n2 = j:div()
   n        = n1+n2
@@ -136,19 +148,20 @@ function _.merged(i,j,    k,div1,n1,div2,n2,n)
 function _.bin(i,x,y,bins)
   if x=="?" then return x end
   bins[x] = bins[x] or BIN{at=i.at, txt=i.txt, lo=x, hi=x, ys=SYM()} 
-  bins[x].ys:add(y) end
+  bins[x]:add(x,y) end
 --------------------------------------------------------------------------------
 NUM=obj"NUM"
 function _.new(i,t) 
-  new(i,{at=0,txt="",lo= big,hi= -big, all={}, bins={}},t) 
+  has(i,{at=0,txt="",lo= big,hi= -big, all=SOME()},t) 
   i.w = i.txt:find"-$" and -1 or 1 end
 
+function _.mid(i)    return  i.all:per(.5) end
+function _.div(i)    return (i.all:per(.9) - i.all:per(.1)) / 2.56 end
 function _.norm(i,x) return x=="?" and x or (x-i.lo)/(i.hi - i.lo) end
 
 function _.add(i,x)
   if x=="?" then return x end
-  i.ok = nil
-  push(i.all,x)
+  i.all:add(x)
   if x >i.hi then i.hi=x elseif x<i.lo then i.lo=x end end
 
 function _.bin(i,x,y,bins,   gap)
@@ -156,16 +169,10 @@ function _.bin(i,x,y,bins,   gap)
   gap = (i.hi - i.lo)/the.bins
   x   = (x - i.lo)//gap * gap
   bins[x] = bins[x] or BIN{at=i.at, txt=i.txt, lo=x, hi=x+gap, ys=SYM()} 
-  bins[x].ys:add(y) end
-
-function _.has(i) i.all=i.ok and i.all or sort(i.all);i.ok=true;return i.all end
-
-function _.mid(i) return  per(i:has(), .5) end
-function _.div(i) return (per(i:has(), .9) - per(i.has(), .1)) / 2.56 end
-
+  bins[x]:add(x,y) end
 --------------------------------------------------------------------------------
 ROW=obj"ROW"
-function _.new(i,t) new(i,{cells={},data={}},t) end
+function _.new(i,t) has(i,{cells={},data={}},t) end
 
 function _.__lt(i,j,     s1,s2,e,y,a,b)
   y = i.data.cols.y
@@ -179,7 +186,7 @@ function _.__lt(i,j,     s1,s2,e,y,a,b)
 --------------------------------------------------------------------------------
 COLS=obj"COLS"
 function _.new(i,t,     col)
-  new(i, {all={}, x={}, y={}, names={}},t)
+  has(i, {all={}, x={}, y={}, names={}},t)
   for at,txt in pairs(i.names) do
     col = push(i.all, (txt:find"^[A-Z]" and NUM or SYM){at=at, txt=txt})
     if not txt:find":$" then
@@ -212,7 +219,7 @@ function ok(test,msg)
     if the.dump then assert(test,msg) end end end
 
 function _.new(todo,    defaults,go)
-  b4={}; for k,v in pairs(the) do defaults[k]=v end
+  defaults={}; for k,v in pairs(the) do defaults[k]=v end
   go={}; for k,_ in pairs(GO) do
            if k~="new" and type(GO[k])=="function" then go[1+#go]=k end end
   GO.fails = 0
@@ -237,11 +244,11 @@ function GO.cols()
 
 function GO.egs(  egs,a,t)
   egs = EGS():file(the.file)
-  a=egs.rows
-  oo(egs:mid())
+  sort(egs.rows)
   sort(a)
-  t={}; for j=1,50     do push(t,a[j]) end; print("first",o(egs:clone(t):mid()))
-  t={}; for j=#a-50,#a do push(t,a[j]) end; print("first",o(egs:clone(t):mid()))
+  print("all", o(egs:mid()))
+  print("best",o(egs:clone(slice(egs.rows,1,50)):mid()))
+  print("rest",o(egs:clone(slice(egs.rows,#egs.rows-50)):mid()))
   end
 
 function GO.egs1(  egs,a)
