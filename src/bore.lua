@@ -157,8 +157,7 @@ function patch(t)
   for j=2,#t do  t[j].lo = t[j-1].hi end
   t[1].lo  = -big
   t[#t].hi =  big
-  return t end
-  
+  return t end
 --------------------------------------------------------------------------------
 ROW=obj"ROW"
 function _.new(i,t) on(i,{cells={},data={}},t) end
@@ -188,10 +187,10 @@ function _.add(i,row)
   if   i.cols 
   then row = push(i.rows, row.cells and row or ROW{data=i, cells=row}).cells
        for k,col in pairs(i.cols.all) do col:add(row[col.at]) end
-  else i.cols = COLS{names=row} end end
+  else i.cols = COLS{names=row} end end
 
 function _.mid(cs) return map(cs or i.cols.y,function(c) return c:mid() end) end
-function _.div(cs) return map(cs or i.cols.y,function(c) return c:div() end) end
+function _.div(cs) return map(cs or i.cols.y,function(c) return c:div() end) end
 --------------------------------------------------------------------------------
 GO=obj"GO"
 function ok(test,msg)
