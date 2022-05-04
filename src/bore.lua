@@ -54,6 +54,22 @@ function csv(src)
       row={}; for x in line:gmatch("([^,]+)") do row[1+#row]=thing(x) end
       return row end end end 
 
+function merge(b4,        a,b,c,j,n,tmp,fillInTheGaps)
+  function expand(t)
+    for j=2,#t do  t[j].lo = t[j-1].hi end
+    t[1].lo,  t[#t].hi  = -big, big
+    return t 
+  end ------------------
+  j, n, tmp = 1, #b4, {}
+  while j<=n do
+    a, b = b4[j], b4[j+1]
+    if b then c = a:merged(b)
+              if c then a, j = c, j+1 end 
+    end
+    tmp[#tmp+1] = a
+    j = j+1 end
+  return #tmp==#b4 and expand(tmp) or merge(tmp) end
+
 function oo(t) print(o(t)) end
 function o(t,    u)
   if #t>0 then return "{"..table.concat(map(t,tostring)," ").."}" else
@@ -140,21 +156,6 @@ function _.has(i) i.all=i.ok and i.all or sort(i.all);i.ok=true;return i.all end
 function _.mid(i) return  per(i:has(), .5) end
 function _.div(i) return (per(i:has(), .9) - per(i.has(), .1)) / 2.56 end
 
-function merge(b4,        a,b,c,j,n,tmp)
-  j, n, tmp = 1, #b4, {}
-  while j<=n do
-    a, b = b4[j], b4[j+1]
-    if b then c = a:merged(b)
-              if c then a, j = c, j+1 end end
-    tmp[#tmp+1] = a
-    j = j+1 end
-  return #tmp==#b4 and tmp or merge(tmp) end
-
-function patch(t)
-  for j=2,#t do  t[j].lo = t[j-1].hi end
-  t[1].lo  = -big
-  t[#t].hi =  big
-  return t end
 --------------------------------------------------------------------------------
 ROW=obj"ROW"
 function _.new(i,t) as(i,{cells={},data={}},t) end
