@@ -29,7 +29,7 @@ help:gsub("\n  ([-][-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",function(f1,k,f2,
     x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
   the[k] = thing(x) end) 
 --------------------------------------------------------------------------------
-local atom,csv,map,merge,o,oo,obj,ok,on,patch,per,push,rows,sort
+local as,atom,csv,map,merge,o,oo,obj,ok,patch,per,push,rows,sort
 local _,GO,BIN,NUM,SYM,COLS,ROW,EGS
 local R,big,fmt
 
@@ -42,7 +42,7 @@ function sort(t,f)    table.sort(t,f); return t end
 function map(t,f, u)  u={}; for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
 function per(t,p, i)  i=(p or.5)*#t//1; return t[math.max(1,math.min(#t,i))] end
 
-function on(i,defaults,new)
+function as(i,defaults,new)
   for k,v in pairs(defaults) do i[k] = v end
   for k,v in pairs(new or{}) do assert(i[k]~=nil,"bad slot:"..k); i[k]=v end end
 
@@ -68,7 +68,7 @@ function obj(name,    t,new)
   return setmetatable(t, {__call=new}) end
 --------------------------------------------------------------------------------
 BIN=obj"BIN"
-function _.new(i,t) on(i,{at=0, txt="", lo=big, hi= -big, ys={}},t) end
+function _.new(i,t) as(i,{at=0, txt="", lo=big, hi= -big, ys={}},t) end
 function _.of(i,x)  return i.ys.has[x] or 0 end
 
 function _.select(i,t,     x)
@@ -88,7 +88,7 @@ function _.merged(i,j,    k)
   if k then return BIN{at=i.at, txt=i.txt, lo=i.lo, hi=j.hi, ys=k} end end
 --------------------------------------------------------------------------------
 SYM=obj"SYM"
-function _.new(i,t)    on(i,{at=0, txt="", has={}, bins={}},t) end
+function _.new(i,t)    as(i,{at=0, txt="", has={}, bins={}},t) end
 function _.add(i,x,n)  if x~="?" then i.has[x]=(n or 1)+(i.has[x] or 0) end end
 function _.addy(i,x,y) 
   if x~="?" then 
@@ -117,7 +117,7 @@ function _.merged(i,j,  k)
 --------------------------------------------------------------------------------
 NUM=obj"NUM"
 function _.new(i,t) 
-  on(i,{at=0,txt="",lo= big,hi= -big, all={}, bins={}},t) 
+  as(i,{at=0,txt="",lo= big,hi= -big, all={}, bins={}},t) 
   i.w = i.txt:find"-$" and -1 or 1 end
 
 function _.norm(i,x) return x=="?" and x or (x-i.lo)/(i.hi - i.lo) end
@@ -135,13 +135,10 @@ function _.addy(i,x,y,   gap)
   i.bins[x] = i.bins[x] or BIN{at=i.at, txt=i.txt, lo=x, hi=x+gap, ys=SYM()} 
   i.bins[x].ys:add(y) end
 
-function _.mid(i) 
-  i.all = i.ok and i.all or sort(i.all); i.ok=true
-  return per(i.all, .5) end
+function _.has(i) i.all=i.ok and i.all or sort(i.all);i.ok=true;return i.all end
 
-function _.div(i) 
-  i.all = i.ok and i.all or sort(i.all); i.ok=true
-  return (per(i.all, .9) - per(i.all, .1)) / 2.56 end
+function _.mid(i) return  per(i:has(), .5) end
+function _.div(i) return (per(i:has(), .9) - per(i.has(), .1)) / 2.56 end
 
 function merge(b4,        a,b,c,j,n,tmp)
   j, n, tmp = 1, #b4, {}
@@ -160,7 +157,7 @@ function patch(t)
   return t end
 --------------------------------------------------------------------------------
 ROW=obj"ROW"
-function _.new(i,t) on(i,{cells={},data={}},t) end
+function _.new(i,t) as(i,{cells={},data={}},t) end
 
 function _.__lt(i,j,     s1,s2,e,y,a,b)
   y = i.data.cols.y
@@ -174,7 +171,7 @@ function _.__lt(i,j,     s1,s2,e,y,a,b)
 --------------------------------------------------------------------------------
 COLS=obj"COLS"
 function _.new(i,t,     col)
-  on(i, {all={}, x={}, y={}, names={}},t)
+  as(i, {all={}, x={}, y={}, names={}},t)
   for at,txt in pairs(i.names) do
     col = push(i.all, (txt:find"^[A-Z]" and NUM or SYM){at=at, txt=txt})
     if not txt:find":$" then
@@ -187,10 +184,17 @@ function _.add(i,row)
   if   i.cols 
   then row = push(i.rows, row.cells and row or ROW{data=i, cells=row}).cells
        for k,col in pairs(i.cols.all) do col:add(row[col.at]) end
-  else i.cols = COLS{names=row} end end
+  else i.cols = COLS{names=row} end 
+  return i end
 
-function _.mid(cs) return map(cs or i.cols.y,function(c) return c:mid() end) end
-function _.div(cs) return map(cs or i.cols.y,function(c) return c:div() end) end
+function _.mid(i,cs) return map(cs or i.cols.y,function(c)return c:mid() end)end
+function _.div(i,cs) return map(cs or i.cols.y,function(c)return c:div() end)end
+
+function _.clone(i,rows,   out)
+  out=EGS():add(i.cols.names)
+  for _,row in pairs(rows or {}) do out:add(row) end
+  return out end
+
 --------------------------------------------------------------------------------
 GO=obj"GO"
 function ok(test,msg)
@@ -223,7 +227,16 @@ function GO.rogue( t)
 function GO.cols()
   oo(COLS{names={"Cyldrs", "Acc+"}}) end
 
-function GO.egs(  egs,a)
+function GO.egs(  egs,a,t)
+  egs = EGS():file(the.file)
+  a=egs.rows
+  oo(egs:mid())
+  sort(a)
+  t={}; for j=1,50     do push(t,a[j]) end; print("first",o(egs:clone(t):mid()))
+  t={}; for j=#a-50,#a do push(t,a[j]) end; print("first",o(egs:clone(t):mid()))
+  end
+
+function GO.egs1(  egs,a)
   egs = EGS():file(the.file)
   a=egs.rows
   sort(a)
@@ -232,9 +245,9 @@ function GO.egs(  egs,a)
   for j=#a-5,#a do 
     for _,col in pairs(egs.cols.x) do col:addy(a[j].cells[col.at],false) end end
   end
-
 --------------------------------------------------------------------------------
 if   the.help 
-then help=help:gsub("%u%u+","\27[34m%1\27[0m"); print(help)
+then print(help:gsub("%u%u+",                    "\27[33m%1\27[0m")
+               :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[34m%2\27[0m%3"),"")
 else GO(the.go) end
 
