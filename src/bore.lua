@@ -136,7 +136,7 @@ function _.per(i,p)
   return i.all[math.max(1,math.min(#i.all, (p or .5)*#i.all//1))] end
 -------------------------------------------------------------------------------
 SYM=obj"SYM"
-function _.new(i,t)    has(i,{at=0, txt="", i.n=0, all={}},t) end
+function _.new(i,t)    has(i,{at=0, txt="", n=0, all={}},t) end
 function _.add(i,x,n)  
   if x~="?" then i.n=i.n+1; i.all[x]=(n or 1)+(i.all[x] or 0) end end
 
