@@ -33,7 +33,7 @@ help:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",function(f1,f2,
   the[k] = thing(x) end) 
 --------------------------------------------------------------------------------
 local any,atom,csv,has,many,map,merge,o,oo,obj,ok
-local part,patch,per,push,rows,slice,sort
+local part,patch,per,push,rows,same,slice,sort
 local _,GO,RANGE,SOME,NUM,SYM,COLS,ROW,EGS
 local R,big,fmt
 
@@ -41,6 +41,7 @@ big = math.huge
 R   = math.random
 fmt = string.format
 
+function same(x)      return x end
 function push(t,x)    t[1+#t]=x;       return x end
 function sort(t,f)    table.sort(t,f); return t end
 function map(t,f, u)  u={}; for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
@@ -96,7 +97,7 @@ function obj(name,    t,new)
 RANGE=obj"RANGE"
 function _.new(i,t)  has(i,{at=0, txt="", lo=big, hi= -big, ys=SYM()},t) end
 function _.of(i,x)   return i.ys.all[x] or 0 end
-function _.__lt(i,j) return i.lo < j.lo end
+function _.__lt(i,j)   return i.lo < j.lo end
 function _.add(i,x,y)
   if x=="?" then return x end
   if x>i.hi then i.hi=x end
@@ -157,7 +158,7 @@ function _.merged(i,j,n0,    k,div1,n1,div2,n2,n)
 
 function _.range(i,x,y,ranges)
   if x=="?" then return x end
-  ranges[x] = ranges[x] or RANGE{at=i.at, txt=i.txt, lo=x, hi=x} 
+  ranges[x] = ranges[x] or RANGE{at=i.at, txt=i.txt}
   ranges[x]:add(x,y) end
 --------------------------------------------------------------------------------
 NUM=obj"NUM"
@@ -175,11 +176,9 @@ function _.add(i,x)
   if x<i.lo then i.lo=x end 
   i.all:add(x) end
 
-function _.range(i,x,y,ranges,   gap,r)
+function _.range(i,x,y,ranges,   r)
   if x=="?" then return x end
-  gap = (i.hi - i.lo)/the.bins
-  r   = i.lo + (x - i.lo)//gap * gap 
-  print(i.txt,x,r,gap,i.lo,i.hi)
+  r = i:norm(x)*the.bins //1
   ranges[r] = ranges[r] or RANGE{at=i.at, txt=i.txt}
   ranges[r]:add(x,y) end
 --------------------------------------------------------------------------------
@@ -267,12 +266,16 @@ function GO.egs1(  egs,best,rest,n)
   n = (#egs.rows)^.5 // 1
   best = slice(egs.rows,1,n)
   rest = part(slice(egs.rows,n+1), 3*#best)
+  print("all", o(egs:mid()))
+  print("best",o(egs:copy(best):mid()))
+  print("rest",o(egs:copy(rest):mid())) 
   print(#best, #rest)
   for k,col in pairs(egs.cols.x) do
     print""
     local ranges={}
-    for _,row in pairs(best) do col:range(row.cells[col.at],true,ranges) end 
-    map(sort(ranges),print) end
+    for _,row in pairs(best) do col:range(row.cells[col.at],true, ranges) end 
+    for _,row in pairs(rest) do col:range(row.cells[col.at],false,ranges) end 
+    map(sort(map(ranges,same)),print) end
   end
 --------------------------------------------------------------------------------
 if   the.help 
