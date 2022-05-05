@@ -31,8 +31,9 @@ help:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",function(f1,f2,
   for n,flag in ipairs(arg) do if flag==f1 or flag==f2 then
     x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
   the[k] = thing(x) end) 
----------------------------------------
-local as,atom,csv,has,map,merge,o,oo,obj,ok,patch,per,push,rows,slice,sort
+--------------------------------------------------------------------------------
+local any,atom,csv,has,many,map,merge,o,oo,obj,ok
+local part,patch,per,push,rows,slice,sort
 local _,GO,RANGE,SOME,NUM,SYM,COLS,ROW,EGS
 local R,big,fmt
 
@@ -43,8 +44,12 @@ fmt = string.format
 function push(t,x)    t[1+#t]=x;       return x end
 function sort(t,f)    table.sort(t,f); return t end
 function map(t,f, u)  u={}; for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
-function slice(t,i,j,   u) 
+function slice(t,i,j, u) 
   u={}; for k=(i or 1), (j or #t) do u[1+#u] = t[k] end return u end
+
+function part(t,n,lo,hi,  u) 
+  lo, hi = 1, hi or #t
+  u={};for j = lo, hi, (hi-lo)//n do push(u,t[j]) end; return u  end
 
 function has(i, defaults, also)
   for k,v in pairs(defaults) do i[k] = v end
@@ -173,7 +178,8 @@ function _.add(i,x)
 function _.range(i,x,y,ranges,   gap,r)
   if x=="?" then return x end
   gap = (i.hi - i.lo)/the.bins
-  r   = (x - i.lo)//gap * gap
+  r   = i.lo + (x - i.lo)//gap * gap 
+  print(i.txt,x,r,gap,i.lo,i.hi)
   ranges[r] = ranges[r] or RANGE{at=i.at, txt=i.txt}
   ranges[r]:add(x,y) end
 --------------------------------------------------------------------------------
@@ -250,19 +256,23 @@ function GO.cols()
 function GO.egs(  egs,n)
   egs = EGS():file(the.file)
   sort(egs.rows)
-  n = (#egs.rows)^.5 // 1
   print("all", o(egs:mid()))
+  n = (#egs.rows)^.5 // 1
   print("best",o(egs:copy(slice(egs.rows,1,n)):mid()))
-  print("rest",o(egs:copy(slice(egs.rows,n+1)):mid()))
-  end
+  print("rest",o(egs:copy(slice(egs.rows,n+1)):mid())) end
 
-function GO.egs1(  egs,a)
+function GO.egs1(  egs,best,rest,n)
   egs = EGS():file(the.file)
   sort(egs.rows)
-  for j=1,5 do 
-    for _,col in pairs(egs.cols.x) do col:addy(a[j].cells[col.at],true)  end end
-  for j=#a-5,#a do 
-    for _,col in pairs(egs.cols.x) do col:addy(a[j].cells[col.at],false) end end
+  n = (#egs.rows)^.5 // 1
+  best = slice(egs.rows,1,n)
+  rest = part(slice(egs.rows,n+1), 3*#best)
+  print(#best, #rest)
+  for k,col in pairs(egs.cols.x) do
+    print""
+    local ranges={}
+    for _,row in pairs(best) do col:range(row.cells[col.at],true,ranges) end 
+    map(sort(ranges),print) end
   end
 --------------------------------------------------------------------------------
 if   the.help 
