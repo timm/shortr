@@ -137,8 +137,8 @@ function _.per(i,p)
 -------------------------------------------------------------------------------
 SYM=obj"SYM"
 function _.new(i,t)    has(i,{at=0, txt="", n=0, all={}},t) end
-function _.add(i,x,n)  
-  if x~="?" then i.n=i.n+1; i.all[x]=(n or 1)+(i.all[x] or 0) end end
+function _.add(i,x,inc)  
+  if x~="?" then inc=inc or 1; i.n=i.n+inc; i.all[x]=inc+(i.all[x] or 0) end end 
 
 function _.mid(i,   m,x)
   m=0; for y,n in pairs(i.all) do if n>m then m,x=n,y end end; return x end
