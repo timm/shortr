@@ -151,7 +151,7 @@ function _.merged(i,j,    k,div1,n1,div2,n2,n)
 
 function _.range(i,x,y,ranges)
   if x=="?" then return x end
-  ranges[x] = ranges[x] or RANGE{at=i.at, txt=i.txt} 
+  ranges[x] = ranges[x] or RANGE{at=i.at, txt=i.txt, lo=x, hi=x} 
   ranges[x]:add(x,y) end
 --------------------------------------------------------------------------------
 NUM=obj"NUM"
