@@ -31,7 +31,7 @@ help:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",function(f1,f2,
   for n,flag in ipairs(arg) do if flag==f1 or flag==f2 then
     x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
   the[k] = thing(x) end) 
---------------------------------------------------------------------------------
+---------------------------------------
 local as,atom,csv,has,map,merge,o,oo,obj,ok,patch,per,push,rows,slice,sort
 local _,GO,RANGE,SOME,NUM,SYM,COLS,ROW,EGS
 local R,big,fmt
@@ -246,18 +246,18 @@ function GO.rogue( t)
 function GO.cols()
   oo(COLS{names={"Cyldrs", "Acc+"}}) end
 
-function GO.egs(  egs)
+function GO.egs(  egs,n)
   egs = EGS():file(the.file)
   sort(egs.rows)
+  n = (#egs.rows)^.5 // 1
   print("all", o(egs:mid()))
-  print("best",o(egs:copy(slice(egs.rows,1,50)):mid()))
-  print("rest",o(egs:copy(slice(egs.rows,#egs.rows-50)):mid()))
+  print("best",o(egs:copy(slice(egs.rows,1,n)):mid()))
+  print("rest",o(egs:copy(slice(egs.rows,n+1)):mid()))
   end
 
 function GO.egs1(  egs,a)
   egs = EGS():file(the.file)
-  a=egs.rows
-  sort(a)
+  sort(egs.rows)
   for j=1,5 do 
     for _,col in pairs(egs.cols.x) do col:addy(a[j].cells[col.at],true)  end end
   for j=#a-5,#a do 
@@ -266,5 +266,5 @@ function GO.egs1(  egs,a)
 --------------------------------------------------------------------------------
 if   the.help 
 then print(help:gsub("%u%u+", "\27[33m%1\27[0m")
-               :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[32m%2\27[0m%3"),"")
+               :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[31m%2\27[0m%3"),"")
 else GO(the.go) end

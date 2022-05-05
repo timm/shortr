@@ -32,8 +32,10 @@
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> help = <span class="hljs-string">[[
 
-BORE: best or rest. u show me a good loser and i&#x27;ll show u a loser.
-(c) 2022, Tim Menzies &lt;timm@ieee.org&gt; opensource.org/licenses/Fair
+BORE: best or rest multi-objective optimization.
+(c)2022 Tim Menzies, timm@ieee.org, opensource.org/licenses/Fair
+&quot;I think the highest and lowest points are the important ones. 
+ Anything else is just...in between.&quot; Jim Morrison
 
 USAGE:
   alias bore=&quot;lua bore.lua &quot;
@@ -41,6 +43,7 @@ USAGE:
 
 OPTIONS:
   -b  --bins  max bins                 = 16
+  -S  --some  number of nums to keep   = 256
 
 OPTIONS (other):
   -s  --seed  random number seed       = 10019
@@ -56,7 +59,7 @@ OPTIONS (other):
   <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.tointeger(x) <span class="hljs-keyword">or</span> <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x <span class="hljs-keyword">end</span>
 
 <span class="hljs-keyword">local</span> the={}
-help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  [-]([^%s]+)[%s]+(([-][-]([^%s]+))[^\n]*%s([^%s]+)&quot;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(f1,f2,k,x)</span></span>
+help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)&quot;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(f1,f2,k,x)</span></span>
   <span class="hljs-keyword">for</span> n,flag <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">arg</span>) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> flag==f1 <span class="hljs-keyword">or</span> flag==f2 <span class="hljs-keyword">then</span>
     x = x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">and</span><span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">or</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">and</span><span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">arg</span>[n+<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
   the[k] = thing(x) <span class="hljs-keyword">end</span>)</pre></div></div>
@@ -86,8 +89,8 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n 
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> as,atom,csv,map,merge,o,oo,obj,ok,patch,per,push,rows,<span class="hljs-built_in">sort</span>
-<span class="hljs-keyword">local</span> _,GO,BIN,NUM,SYM,COLS,ROW,EGS
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> as,atom,csv,has,map,merge,o,oo,obj,ok,patch,per,push,rows,slice,<span class="hljs-built_in">sort</span>
+<span class="hljs-keyword">local</span> _,GO,RANGE,SOME,NUM,SYM,COLS,ROW,EGS
 <span class="hljs-keyword">local</span> R,big,fmt
 
 big = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
@@ -97,11 +100,12 @@ fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">form
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">push</span><span class="hljs-params">(t,x)</span></span>    t[<span class="hljs-number">1</span>+#t]=x;       <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sort</span><span class="hljs-params">(t,f)</span></span>    <span class="hljs-built_in">table</span>.<span class="hljs-built_in">sort</span>(t,f); <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">map</span><span class="hljs-params">(t,f, u)</span></span>  u={}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> u[<span class="hljs-number">1</span>+#u]=f(v) <span class="hljs-keyword">end</span>;<span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">per</span><span class="hljs-params">(t,p, i)</span></span>  i=(p <span class="hljs-keyword">or</span><span class="hljs-number">.5</span>)*#t//<span class="hljs-number">1</span>; <span class="hljs-keyword">return</span> t[<span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(<span class="hljs-number">1</span>,<span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(#t,i))] <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">slice</span><span class="hljs-params">(t,i,j,   u)</span></span> 
+  u={}; <span class="hljs-keyword">for</span> k=(i <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>), (j <span class="hljs-keyword">or</span> #t) <span class="hljs-keyword">do</span> u[<span class="hljs-number">1</span>+#u] = t[k] <span class="hljs-keyword">end</span> <span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">as</span><span class="hljs-params">(i,defaults,new)</span></span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">has</span><span class="hljs-params">(i, defaults, also)</span></span>
   <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(defaults) <span class="hljs-keyword">do</span> i[k] = v <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(new <span class="hljs-keyword">or</span>{}) <span class="hljs-keyword">do</span> <span class="hljs-built_in">assert</span>(i[k]~=<span class="hljs-literal">nil</span>,<span class="hljs-string">&quot;bad slot:&quot;</span>..k); i[k]=v <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(also <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> <span class="hljs-built_in">assert</span>(i[k]~=<span class="hljs-literal">nil</span>,<span class="hljs-string">&quot;unknown:&quot;</span>..k);i[k]=v <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">csv</span><span class="hljs-params">(src)</span></span>
   src = <span class="hljs-built_in">io</span>.<span class="hljs-built_in">input</span>(src)
@@ -166,16 +170,20 @@ fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">form
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>BIN=obj<span class="hljs-string">&quot;BIN&quot;</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,t)</span></span> as(i,{at=<span class="hljs-number">0</span>, txt=<span class="hljs-string">&quot;&quot;</span>, lo=big, hi= -big, ys={}},t) <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.of</span><span class="hljs-params">(i,x)</span></span>  <span class="hljs-keyword">return</span> i.ys.has[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre>RANGE=obj<span class="hljs-string">&quot;RANGE&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,t)</span></span>  has(i,{at=<span class="hljs-number">0</span>, txt=<span class="hljs-string">&quot;&quot;</span>, lo=big, hi= -big, ys=SYM()},t) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.of</span><span class="hljs-params">(i,x)</span></span>   <span class="hljs-keyword">return</span> i.ys.all[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.__lt</span><span class="hljs-params">(i,j)</span></span> <span class="hljs-keyword">return</span> i.lo &lt; j.lo <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.add</span><span class="hljs-params">(i,x,y)</span></span>
+  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> x&gt;i.hi <span class="hljs-keyword">then</span> i.hi=x <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> x&lt;i.lo <span class="hljs-keyword">then</span> i.lo=x <span class="hljs-keyword">end</span> 
+  i.ys:add(y) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.select</span><span class="hljs-params">(i,t,     x)</span></span>
   t = t.cells <span class="hljs-keyword">and</span> t.cells <span class="hljs-keyword">or</span> t
   x = t[i.pos]
   <span class="hljs-keyword">return</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">or</span> i.lo == i.hi <span class="hljs-keyword">and</span> i.lo == x <span class="hljs-keyword">or</span> i.lo &lt;= x <span class="hljs-keyword">and</span> x &lt; i.hi <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.__lt</span><span class="hljs-params">(i,j)</span></span> <span class="hljs-keyword">return</span> i.lo &lt; j.lo <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.__tostring</span><span class="hljs-params">(i)</span></span>
   <span class="hljs-keyword">local</span> x, lo, hi = i.txt, i.lo, i.hi
@@ -188,7 +196,7 @@ fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">form
   <span class="hljs-keyword">if</span> i.at == j.at <span class="hljs-keyword">then</span>
     k = i.ys:merged(j.ys)
     <span class="hljs-keyword">if</span> k <span class="hljs-keyword">then</span> 
-      <span class="hljs-keyword">return</span> BIN{at=i.at, txt=i.txt, lo=i.lo, hi=j.hi, ys=k} <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+      <span class="hljs-keyword">return</span> RANGE{at=i.at, txt=i.txt, lo=i.lo, hi=j.hi, ys=k} <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -215,35 +223,17 @@ fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">form
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>SYM=obj<span class="hljs-string">&quot;SYM&quot;</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,t)</span></span>    as(i,{at=<span class="hljs-number">0</span>, txt=<span class="hljs-string">&quot;&quot;</span>, has={}, bins={}},t) <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.add</span><span class="hljs-params">(i,x,n)</span></span>  <span class="hljs-keyword">if</span> x~=<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> i.has[x]=(n <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)+(i.has[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.addy</span><span class="hljs-params">(i,x,y)</span></span> 
-  <span class="hljs-keyword">if</span> x~=<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> 
-    i.bins[x] = i.bins[x] <span class="hljs-keyword">or</span> BIN{at=i.at, txt=i.txt, lo=x, hi=x, ys=SYM()} 
-    i.bins[x].ys:add(y) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre>SOME=obj<span class="hljs-string">&quot;SOME&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i)</span></span> i.all, i.ok, i.n = {}, <span class="hljs-literal">false</span>,<span class="hljs-number">0</span> <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.mid</span><span class="hljs-params">(i,   m,x)</span></span>
-  m=<span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> y,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.has) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n&gt;m <span class="hljs-keyword">then</span> m,x=n,y <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.add</span><span class="hljs-params">(i,x,     a)</span></span> 
+  i.n, a = <span class="hljs-number">1</span> + i.n, i.all
+  <span class="hljs-keyword">if</span>     #a  &lt; the.some     <span class="hljs-keyword">then</span> i.ok=<span class="hljs-literal">false</span>; push(a,x)  
+  <span class="hljs-keyword">elseif</span> R() &lt; the.some/i.n <span class="hljs-keyword">then</span> i.ok=<span class="hljs-literal">false</span>; a[R(#a)]=x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.div</span><span class="hljs-params">(i,   n,e)</span></span>
-  n=<span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> k,m <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.has) <span class="hljs-keyword">do</span> n = n + m <span class="hljs-keyword">end</span> 
-  e=<span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> k,m <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.has) <span class="hljs-keyword">do</span> e = e - m/n*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(m/n,<span class="hljs-number">2</span>) <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">return</span> e,n <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.merged</span><span class="hljs-params">(i,j,    k,div1,n1,div2,n2,n)</span></span>
-  k = SYM{at=i.at, txt=i.txt}
-  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.has) <span class="hljs-keyword">do</span> k:add(x,n) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.has) <span class="hljs-keyword">do</span> k:add(x,n) <span class="hljs-keyword">end</span>
-  div1, n1 = i:div()
-  div2, n2 = j:div()
-  n        = n1+n2
-  <span class="hljs-keyword">if</span> k:div() &lt; (div1*n1/n + div2*n2/n) <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.bin</span><span class="hljs-params">(i,x,y,bins)</span></span>
-  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
-  bins[x] = bins[x] <span class="hljs-keyword">or</span> BIN{at=i.at, txt=i.txt, lo=x, hi=x, ys=SYM()} 
-  bins[x].ys:add(y) <span class="hljs-keyword">end</span></pre></div></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.nums</span><span class="hljs-params">(i)</span></span> i.all=i.ok <span class="hljs-keyword">and</span> i.all <span class="hljs-keyword">or</span> <span class="hljs-built_in">sort</span>(i.all);i.ok=<span class="hljs-literal">true</span>;<span class="hljs-keyword">return</span> i.all <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.per</span><span class="hljs-params">(i,p,   a)</span></span> 
+  p,a=(p <span class="hljs-keyword">or</span> <span class="hljs-number">.5</span>),i:nums(); <span class="hljs-keyword">return</span> a[<span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(<span class="hljs-number">1</span>,<span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(#a, p*#a//<span class="hljs-number">1</span>))] <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -270,30 +260,31 @@ fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">form
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>NUM=obj<span class="hljs-string">&quot;NUM&quot;</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,t)</span></span> 
-  as(i,{at=<span class="hljs-number">0</span>,txt=<span class="hljs-string">&quot;&quot;</span>,lo= big,hi= -big, all={}, bins={}},t) 
-  i.w = i.txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre>SYM=obj<span class="hljs-string">&quot;SYM&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,t)</span></span>    has(i,{at=<span class="hljs-number">0</span>, txt=<span class="hljs-string">&quot;&quot;</span>, all={}},t) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.add</span><span class="hljs-params">(i,x,n)</span></span>  <span class="hljs-keyword">if</span> x~=<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> i.all[x]=(n <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)+(i.all[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.norm</span><span class="hljs-params">(i,x)</span></span> <span class="hljs-keyword">return</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> x <span class="hljs-keyword">or</span> (x-i.lo)/(i.hi - i.lo) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.mid</span><span class="hljs-params">(i,   m,x)</span></span>
+  m=<span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> y,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n&gt;m <span class="hljs-keyword">then</span> m,x=n,y <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.add</span><span class="hljs-params">(i,x)</span></span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.div</span><span class="hljs-params">(i,   n,e)</span></span>
+  n=<span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> k,m <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> n = n + m <span class="hljs-keyword">end</span> 
+  e=<span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> k,m <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> e = e - m/n*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(m/n,<span class="hljs-number">2</span>) <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> e,n <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.merged</span><span class="hljs-params">(i,j,    k,div1,n1,div2,n2,n)</span></span>
+  k = SYM{at=i.at, txt=i.txt}
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> k:add(x,n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.all) <span class="hljs-keyword">do</span> k:add(x,n) <span class="hljs-keyword">end</span>
+  div1, n1 = i:div()
+  div2, n2 = j:div()
+  n        = n1+n2
+  <span class="hljs-keyword">if</span> k:div() &lt; (div1*n1/n + div2*n2/n) <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.range</span><span class="hljs-params">(i,x,y,ranges)</span></span>
   <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
-  i.ok = <span class="hljs-literal">nil</span>
-  push(i.all,x)
-  <span class="hljs-keyword">if</span> x &gt;i.hi <span class="hljs-keyword">then</span> i.hi=x <span class="hljs-keyword">elseif</span> x&lt;i.lo <span class="hljs-keyword">then</span> i.lo=x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.bin</span><span class="hljs-params">(i,x,y,bins,   gap)</span></span>
-  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
-  gap = (i.hi - i.lo)/the.bins
-  x   = (x - i.lo)//gap * gap
-  bins[x] = bins[x] <span class="hljs-keyword">or</span> BIN{at=i.at, txt=i.txt, lo=x, hi=x+gap, ys=SYM()} 
-  bins[x].ys:add(y) <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.has</span><span class="hljs-params">(i)</span></span> i.all=i.ok <span class="hljs-keyword">and</span> i.all <span class="hljs-keyword">or</span> <span class="hljs-built_in">sort</span>(i.all);i.ok=<span class="hljs-literal">true</span>;<span class="hljs-keyword">return</span> i.all <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.mid</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span>  per(i:has(), <span class="hljs-number">.5</span>) <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.div</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> (per(i:has(), <span class="hljs-number">.9</span>) - per(i.has(), <span class="hljs-number">.1</span>)) / <span class="hljs-number">2.56</span> <span class="hljs-keyword">end</span></pre></div></div>
+  ranges[x] = ranges[x] <span class="hljs-keyword">or</span> RANGE{at=i.at, txt=i.txt, lo=x, hi=x} 
+  ranges[x]:add(x,y) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -320,18 +311,27 @@ fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">form
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>ROW=obj<span class="hljs-string">&quot;ROW&quot;</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,t)</span></span> as(i,{cells={},data={}},t) <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre>NUM=obj<span class="hljs-string">&quot;NUM&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,t)</span></span> 
+  has(i,{at=<span class="hljs-number">0</span>,txt=<span class="hljs-string">&quot;&quot;</span>,lo= big,hi= -big, all=SOME()},t) 
+  i.w = i.txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.__lt</span><span class="hljs-params">(i,j,     s1,s2,e,y,a,b)</span></span>
-  y = i.data.cols.y
-  s1, s2, e = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,  <span class="hljs-built_in">math</span>.<span class="hljs-built_in">exp</span>(<span class="hljs-number">1</span>)
-  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(y) <span class="hljs-keyword">do</span>
-     a = col:norm(i.cells[col.at])
-     b = col:norm(j.cells[col.at])
-     s1= s1 - e^(col.w * (a - b) / #y)
-     s2= s2 - e^(col.w * (b - a) / #y) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> s1/#y &lt; s2/#y  <span class="hljs-keyword">end</span></pre></div></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.mid</span><span class="hljs-params">(i)</span></span>    <span class="hljs-keyword">return</span>  i.all:per(<span class="hljs-number">.5</span>) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.div</span><span class="hljs-params">(i)</span></span>    <span class="hljs-keyword">return</span> (i.all:per(<span class="hljs-number">.9</span>) - i.all:per(<span class="hljs-number">.1</span>)) / <span class="hljs-number">2.56</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.norm</span><span class="hljs-params">(i,x)</span></span> <span class="hljs-keyword">return</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> x <span class="hljs-keyword">or</span> (x-i.lo)/(i.hi - i.lo) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.add</span><span class="hljs-params">(i,x)</span></span>
+  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> x&gt;i.hi <span class="hljs-keyword">then</span> i.hi=x <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> x&lt;i.lo <span class="hljs-keyword">then</span> i.lo=x <span class="hljs-keyword">end</span> 
+  i.all:add(x) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.range</span><span class="hljs-params">(i,x,y,ranges,   gap,r)</span></span>
+  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+  gap = (i.hi - i.lo)/the.bins
+  r   = (x - i.lo)//gap * gap
+  ranges[r] = ranges[r] <span class="hljs-keyword">or</span> RANGE{at=i.at, txt=i.txt}
+  ranges[r]:add(x,y) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -358,13 +358,18 @@ fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">form
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>COLS=obj<span class="hljs-string">&quot;COLS&quot;</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,t,     col)</span></span>
-  as(i, {all={}, x={}, y={}, names={}},t)
-  <span class="hljs-keyword">for</span> at,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.names) <span class="hljs-keyword">do</span>
-    col = push(i.all, (txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">and</span> NUM <span class="hljs-keyword">or</span> SYM){at=at, txt=txt})
-    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">then</span>
-      push(txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;[-+!]$&quot;</span> <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x, col) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>ROW=obj<span class="hljs-string">&quot;ROW&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,t)</span></span> has(i,{cells={},data={}},t) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.__lt</span><span class="hljs-params">(i,j,     s1,s2,e,y,a,b)</span></span>
+  y = i.data.cols.y
+  s1, s2, e = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,  <span class="hljs-built_in">math</span>.<span class="hljs-built_in">exp</span>(<span class="hljs-number">1</span>)
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(y) <span class="hljs-keyword">do</span>
+     a = col:norm(i.cells[col.at])
+     b = col:norm(j.cells[col.at])
+     s1= s1 - e^(col.w * (a - b) / #y)
+     s2= s2 - e^(col.w * (b - a) / #y) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> s1/#y &lt; s2/#y  <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -391,23 +396,13 @@ fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">form
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>EGS=obj<span class="hljs-string">&quot;EGS&quot;</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i)</span></span>       i.rows,i.cols= {},<span class="hljs-literal">nil</span> <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.file</span><span class="hljs-params">(i,file)</span></span> <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> csv(file) <span class="hljs-keyword">do</span>  i:add(row) <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.add</span><span class="hljs-params">(i,row)</span></span>
-  <span class="hljs-keyword">if</span>   i.cols 
-  <span class="hljs-keyword">then</span> row = push(i.rows, row.cells <span class="hljs-keyword">and</span> row <span class="hljs-keyword">or</span> ROW{data=i, cells=row}).cells
-       <span class="hljs-keyword">for</span> k,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.all) <span class="hljs-keyword">do</span> col:add(row[col.at]) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">else</span> i.cols = COLS{names=row} <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.mid</span><span class="hljs-params">(i,cs)</span></span> <span class="hljs-keyword">return</span> map(cs <span class="hljs-keyword">or</span> i.cols.y,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(c)</span></span><span class="hljs-keyword">return</span> c:mid() <span class="hljs-keyword">end</span>)<span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.div</span><span class="hljs-params">(i,cs)</span></span> <span class="hljs-keyword">return</span> map(cs <span class="hljs-keyword">or</span> i.cols.y,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(c)</span></span><span class="hljs-keyword">return</span> c:div() <span class="hljs-keyword">end</span>)<span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.clone</span><span class="hljs-params">(i,rows,   out)</span></span>
-  out=EGS():add(i.cols.names)
-  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> out:add(row) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>COLS=obj<span class="hljs-string">&quot;COLS&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,t,     col)</span></span>
+  has(i, {all={}, x={}, y={}, names={}},t)
+  <span class="hljs-keyword">for</span> at,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.names) <span class="hljs-keyword">do</span>
+    col = push(i.all, (txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">and</span> NUM <span class="hljs-keyword">or</span> SYM){at=at, txt=txt})
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">then</span>
+      push(txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;[-+!]$&quot;</span> <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x, col) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -434,55 +429,23 @@ fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">form
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>GO=obj<span class="hljs-string">&quot;GO&quot;</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ok</span><span class="hljs-params">(test,msg)</span></span>
-  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&quot;</span>, test <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;PASS &quot;</span><span class="hljs-keyword">or</span> <span class="hljs-string">&quot;FAIL &quot;</span>, msg <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>)
-  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> test <span class="hljs-keyword">then</span>
-    GO.fails= GO.fails+<span class="hljs-number">1</span>
-    <span class="hljs-keyword">if</span> the.<span class="hljs-built_in">dump</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">assert</span>(test,msg) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre>EGS=obj<span class="hljs-string">&quot;EGS&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i)</span></span>       i.rows,i.cols= {},<span class="hljs-literal">nil</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.file</span><span class="hljs-params">(i,file)</span></span> <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> csv(file) <span class="hljs-keyword">do</span>  i:add(row) <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.add</span><span class="hljs-params">(i,row)</span></span>
+  <span class="hljs-keyword">if</span>   i.cols 
+  <span class="hljs-keyword">then</span> row = push(i.rows, row.cells <span class="hljs-keyword">and</span> row <span class="hljs-keyword">or</span> ROW{data=i, cells=row}).cells
+       <span class="hljs-keyword">for</span> k,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.all) <span class="hljs-keyword">do</span> col:add(row[col.at]) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">else</span> i.cols = COLS{names=row} <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,todo,    b4,go)</span></span>
-  b4={}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(the) <span class="hljs-keyword">do</span> b4[k]=v <span class="hljs-keyword">end</span>
-  go={}; <span class="hljs-keyword">for</span> k,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(GO) <span class="hljs-keyword">do</span>
-           <span class="hljs-keyword">if</span> k~=<span class="hljs-string">&quot;new&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">type</span>(GO[k])==<span class="hljs-string">&quot;function&quot;</span> <span class="hljs-keyword">then</span> go[<span class="hljs-number">1</span>+#go]=k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  GO.fails = <span class="hljs-number">0</span>
-  <span class="hljs-keyword">for</span> _,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(todo==<span class="hljs-string">&quot;all&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">sort</span>(go) <span class="hljs-keyword">or</span> {todo}) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(b4) <span class="hljs-keyword">do</span> the[k]=v <span class="hljs-keyword">end</span> 
-    <span class="hljs-built_in">math</span>.<span class="hljs-built_in">randomseed</span>(the.seed)
-    <span class="hljs-keyword">if</span> GO[x] <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(x); GO[x]() <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-  GO.rogue()
-  <span class="hljs-built_in">os</span>.<span class="hljs-built_in">exit</span>(fails) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.mid</span><span class="hljs-params">(i,cs)</span></span> <span class="hljs-keyword">return</span> map(cs <span class="hljs-keyword">or</span> i.cols.y,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(c)</span></span><span class="hljs-keyword">return</span> c:mid() <span class="hljs-keyword">end</span>)<span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.div</span><span class="hljs-params">(i,cs)</span></span> <span class="hljs-keyword">return</span> map(cs <span class="hljs-keyword">or</span> i.cols.y,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(c)</span></span><span class="hljs-keyword">return</span> c:div() <span class="hljs-keyword">end</span>)<span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.rogue</span><span class="hljs-params">( t)</span></span>
-  t={}; <span class="hljs-keyword">for</span> _,k <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{ <span class="hljs-string">&quot;_G&quot;</span>, <span class="hljs-string">&quot;_VERSION&quot;</span>, <span class="hljs-string">&quot;arg&quot;</span>, <span class="hljs-string">&quot;assert&quot;</span>, <span class="hljs-string">&quot;collectgarbage&quot;</span>,
-  <span class="hljs-string">&quot;coroutine&quot;</span>, <span class="hljs-string">&quot;debug&quot;</span>, <span class="hljs-string">&quot;dofile&quot;</span>, <span class="hljs-string">&quot;error&quot;</span>, <span class="hljs-string">&quot;getmetatable&quot;</span>, <span class="hljs-string">&quot;io&quot;</span>, <span class="hljs-string">&quot;ipairs&quot;</span>,
-  <span class="hljs-string">&quot;load&quot;</span>, <span class="hljs-string">&quot;loadfile&quot;</span>, <span class="hljs-string">&quot;math&quot;</span>, <span class="hljs-string">&quot;next&quot;</span>, <span class="hljs-string">&quot;os&quot;</span>, <span class="hljs-string">&quot;package&quot;</span>, <span class="hljs-string">&quot;pairs&quot;</span>, <span class="hljs-string">&quot;pcall&quot;</span>,
-  <span class="hljs-string">&quot;print&quot;</span>, <span class="hljs-string">&quot;rawequal&quot;</span>, <span class="hljs-string">&quot;rawget&quot;</span>, <span class="hljs-string">&quot;rawlen&quot;</span>, <span class="hljs-string">&quot;rawset&quot;</span>, <span class="hljs-string">&quot;require&quot;</span>, <span class="hljs-string">&quot;select&quot;</span>,
-  <span class="hljs-string">&quot;setmetatable&quot;</span>, <span class="hljs-string">&quot;string&quot;</span>, <span class="hljs-string">&quot;table&quot;</span>, <span class="hljs-string">&quot;tonumber&quot;</span>, <span class="hljs-string">&quot;tostring&quot;</span>, <span class="hljs-string">&quot;type&quot;</span>, <span class="hljs-string">&quot;utf8&quot;</span>,
-  <span class="hljs-string">&quot;warn&quot;</span>, <span class="hljs-string">&quot;xpcall&quot;</span>} <span class="hljs-keyword">do</span> t[k]=k <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> t[k] <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;?&quot;</span>,k, <span class="hljs-built_in">type</span>(v)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.cols</span><span class="hljs-params">()</span></span>
-  oo(COLS{names={<span class="hljs-string">&quot;Cyldrs&quot;</span>, <span class="hljs-string">&quot;Acc+&quot;</span>}}) <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.egs</span><span class="hljs-params">(  egs,a,t)</span></span>
-  egs = EGS():file(the.file)
-  a=egs.rows
-  oo(egs:mid())
-  <span class="hljs-built_in">sort</span>(a)
-  t={}; <span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,<span class="hljs-number">50</span>     <span class="hljs-keyword">do</span> push(t,a[j]) <span class="hljs-keyword">end</span>; <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;first&quot;</span>,o(egs:clone(t):mid()))
-  t={}; <span class="hljs-keyword">for</span> j=#a<span class="hljs-number">-50</span>,#a <span class="hljs-keyword">do</span> push(t,a[j]) <span class="hljs-keyword">end</span>; <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;first&quot;</span>,o(egs:clone(t):mid()))
-  <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.egs1</span><span class="hljs-params">(  egs,a)</span></span>
-  egs = EGS():file(the.file)
-  a=egs.rows
-  <span class="hljs-built_in">sort</span>(a)
-  <span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,<span class="hljs-number">5</span> <span class="hljs-keyword">do</span> 
-    <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(egs.cols.x) <span class="hljs-keyword">do</span> col:addy(a[j].cells[col.at],<span class="hljs-literal">true</span>)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> j=#a<span class="hljs-number">-5</span>,#a <span class="hljs-keyword">do</span> 
-    <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(egs.cols.x) <span class="hljs-keyword">do</span> col:addy(a[j].cells[col.at],<span class="hljs-literal">false</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">end</span></pre></div></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.copy</span><span class="hljs-params">(i,rows,   out)</span></span>
+  out=EGS():add(i.cols.names)
+  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> out:add(row) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -509,9 +472,83 @@ fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">form
               
             </div>
             
+            <div class="content"><div class='highlight'><pre>GO=obj<span class="hljs-string">&quot;GO&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ok</span><span class="hljs-params">(test,msg)</span></span>
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&quot;</span>, test <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;PASS &quot;</span><span class="hljs-keyword">or</span> <span class="hljs-string">&quot;FAIL &quot;</span>, msg <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>)
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> test <span class="hljs-keyword">then</span>
+    GO.fails= GO.fails+<span class="hljs-number">1</span>
+    <span class="hljs-keyword">if</span> the.<span class="hljs-built_in">dump</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">assert</span>(test,msg) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,todo,    defaults,go)</span></span>
+  defaults={}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(the) <span class="hljs-keyword">do</span> defaults[k]=v <span class="hljs-keyword">end</span>
+  go={}; <span class="hljs-keyword">for</span> k,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(GO) <span class="hljs-keyword">do</span>
+           <span class="hljs-keyword">if</span> k~=<span class="hljs-string">&quot;new&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">type</span>(GO[k])==<span class="hljs-string">&quot;function&quot;</span> <span class="hljs-keyword">then</span> go[<span class="hljs-number">1</span>+#go]=k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  GO.fails = <span class="hljs-number">0</span>
+  <span class="hljs-keyword">for</span> _,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(todo==<span class="hljs-string">&quot;all&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">sort</span>(go) <span class="hljs-keyword">or</span> {todo}) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(defaults) <span class="hljs-keyword">do</span> the[k]=v <span class="hljs-keyword">end</span> 
+    <span class="hljs-built_in">math</span>.<span class="hljs-built_in">randomseed</span>(the.seed)
+    <span class="hljs-keyword">if</span> GO[x] <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(x); GO[x]() <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  GO.rogue()
+  <span class="hljs-built_in">os</span>.<span class="hljs-built_in">exit</span>(GO.fails) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.rogue</span><span class="hljs-params">( t)</span></span>
+  t={}; <span class="hljs-keyword">for</span> _,k <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{ <span class="hljs-string">&quot;_G&quot;</span>, <span class="hljs-string">&quot;_VERSION&quot;</span>, <span class="hljs-string">&quot;arg&quot;</span>, <span class="hljs-string">&quot;assert&quot;</span>, <span class="hljs-string">&quot;collectgarbage&quot;</span>,
+  <span class="hljs-string">&quot;coroutine&quot;</span>, <span class="hljs-string">&quot;debug&quot;</span>, <span class="hljs-string">&quot;dofile&quot;</span>, <span class="hljs-string">&quot;error&quot;</span>, <span class="hljs-string">&quot;getmetatable&quot;</span>, <span class="hljs-string">&quot;io&quot;</span>, <span class="hljs-string">&quot;ipairs&quot;</span>,
+  <span class="hljs-string">&quot;load&quot;</span>, <span class="hljs-string">&quot;loadfile&quot;</span>, <span class="hljs-string">&quot;math&quot;</span>, <span class="hljs-string">&quot;next&quot;</span>, <span class="hljs-string">&quot;os&quot;</span>, <span class="hljs-string">&quot;package&quot;</span>, <span class="hljs-string">&quot;pairs&quot;</span>, <span class="hljs-string">&quot;pcall&quot;</span>,
+  <span class="hljs-string">&quot;print&quot;</span>, <span class="hljs-string">&quot;rawequal&quot;</span>, <span class="hljs-string">&quot;rawget&quot;</span>, <span class="hljs-string">&quot;rawlen&quot;</span>, <span class="hljs-string">&quot;rawset&quot;</span>, <span class="hljs-string">&quot;require&quot;</span>, <span class="hljs-string">&quot;select&quot;</span>,
+  <span class="hljs-string">&quot;setmetatable&quot;</span>, <span class="hljs-string">&quot;string&quot;</span>, <span class="hljs-string">&quot;table&quot;</span>, <span class="hljs-string">&quot;tonumber&quot;</span>, <span class="hljs-string">&quot;tostring&quot;</span>, <span class="hljs-string">&quot;type&quot;</span>, <span class="hljs-string">&quot;utf8&quot;</span>,
+  <span class="hljs-string">&quot;warn&quot;</span>, <span class="hljs-string">&quot;xpcall&quot;</span>} <span class="hljs-keyword">do</span> t[k]=k <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> t[k] <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;?&quot;</span>,k, <span class="hljs-built_in">type</span>(v)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.cols</span><span class="hljs-params">()</span></span>
+  oo(COLS{names={<span class="hljs-string">&quot;Cyldrs&quot;</span>, <span class="hljs-string">&quot;Acc+&quot;</span>}}) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.egs</span><span class="hljs-params">(  egs)</span></span>
+  egs = EGS():file(the.file)
+  <span class="hljs-built_in">sort</span>(egs.rows)
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;all&quot;</span>, o(egs:mid()))
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;best&quot;</span>,o(egs:copy(slice(egs.rows,<span class="hljs-number">1</span>,<span class="hljs-number">50</span>)):mid()))
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;rest&quot;</span>,o(egs:copy(slice(egs.rows,#egs.rows<span class="hljs-number">-50</span>)):mid()))
+  <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GO.egs1</span><span class="hljs-params">(  egs,a)</span></span>
+  egs = EGS():file(the.file)
+  a=egs.rows
+  <span class="hljs-built_in">sort</span>(a)
+  <span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,<span class="hljs-number">5</span> <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(egs.cols.x) <span class="hljs-keyword">do</span> col:addy(a[j].cells[col.at],<span class="hljs-literal">true</span>)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> j=#a<span class="hljs-number">-5</span>,#a <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(egs.cols.x) <span class="hljs-keyword">do</span> col:addy(a[j].cells[col.at],<span class="hljs-literal">false</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-20">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-21">&#x00a7;</a>
+              </div>
+              
+            </div>
+            
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span>   the.help 
 <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;%u%u+&quot;</span>, <span class="hljs-string">&quot;\27[33m%1\27[0m&quot;</span>)
-               :<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;(%s)([-][-]?[^%s]+)(%s)&quot;</span>,<span class="hljs-string">&quot;%1\27[34m%2\27[0m%3&quot;</span>),<span class="hljs-string">&quot;&quot;</span>)
+               :<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;(%s)([-][-]?[^%s]+)(%s)&quot;</span>,<span class="hljs-string">&quot;%1\27[32m%2\27[0m%3&quot;</span>),<span class="hljs-string">&quot;&quot;</span>)
 <span class="hljs-keyword">else</span> GO(the.go) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
