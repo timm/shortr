@@ -125,7 +125,7 @@ function _.add(i,x,     a)
   elseif R() < the.some/i.n then i.ok=false; a[R(#a)]=x end end 
 
 function _.nums(i) i.all=i.ok and i.all or sort(i.all);i.ok=true;return i.all end
-function _.per(i,p) 
+function _.per(i,p,   a) 
   p,a=(p or .5),i:nums(); return a[math.max(1,math.min(#a, p*#a//1))] end
 --------------------------------------------------------------------------------
 SYM=obj"SYM"
@@ -222,7 +222,7 @@ function ok(test,msg)
     GO.fails= GO.fails+1
     if the.dump then assert(test,msg) end end end
 
-function _.new(todo,    defaults,go)
+function _.new(i,todo,    defaults,go)
   defaults={}; for k,v in pairs(the) do defaults[k]=v end
   go={}; for k,_ in pairs(GO) do
            if k~="new" and type(GO[k])=="function" then go[1+#go]=k end end
@@ -246,10 +246,9 @@ function GO.rogue( t)
 function GO.cols()
   oo(COLS{names={"Cyldrs", "Acc+"}}) end
 
-function GO.egs(  egs,a,t)
+function GO.egs(  egs)
   egs = EGS():file(the.file)
   sort(egs.rows)
-  sort(a)
   print("all", o(egs:mid()))
   print("best",o(egs:copy(slice(egs.rows,1,50)):mid()))
   print("rest",o(egs:copy(slice(egs.rows,#egs.rows-50)):mid()))
