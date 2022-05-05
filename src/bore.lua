@@ -59,9 +59,9 @@ function csv(src)
       return row end end end 
 
 function merge(b4,        a,b,c,j,n,tmp,fillInTheGaps)
-  function expand(t)
+  function expand(t) 
     for j=2,#t do  t[j].lo = t[j-1].hi end
-    t[1].lo,  t[#t].hi  = -big, big
+    t[1].lo, t[#t].hi = -big, big
     return t 
   end ------------------
   j, n, tmp = 1, #b4, {}
@@ -110,9 +110,9 @@ function _.__tostring(i)
   elseif lo == -big then return fmt("%s < %s", x, hi)  
   else                   return fmt("%s <= %s < %s",lo,x,hi) end end
 
-function _.merged(i,j,    k)
+function _.merged(i,j,n0,    k)
   if i.at == j.at then
-    k = i.ys:merged(j.ys)
+    k = i.ys:merged(j.ys,n0)
     if k then 
       return RANGE{at=i.at, txt=i.txt, lo=i.lo, hi=j.hi, ys=k} end end end
 --------------------------------------------------------------------------------
@@ -140,14 +140,15 @@ function _.div(i,   n,e)
   e=0; for k,m in pairs(i.all) do e = e - m/n*math.log(m/n,2) end 
   return e,n end
 
-function _.merged(i,j,    k,div1,n1,div2,n2,n)
+function _.merged(i,j,n0,    k,div1,n1,div2,n2,n)
   k = SYM{at=i.at, txt=i.txt}
   for x,n in pairs(i.all) do k:add(x,n) end
   for x,n in pairs(j.all) do k:add(x,n) end
   div1, n1 = i:div()
   div2, n2 = j:div()
-  n        = n1+n2
-  if k:div() < (div1*n1/n + div2*n2/n) then return k end end
+  n  = n1+n2
+  n0 = n0 or 0
+  if n1<n0 or n2<n0 or k:div() < (div1*n1/n + div2*n2/n) then return k end end
 
 function _.range(i,x,y,ranges)
   if x=="?" then return x end
