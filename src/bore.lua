@@ -125,36 +125,34 @@ function _.merged(i,j,n0,    k)
 SOME=obj"SOME"
 function _.new(i) i.all, i.ok, i.n = {}, false,0 end
 
-function _.add(i,x,     a) 
-  i.n, a = 1 + i.n, i.all
-  if     #a  < the.some     then i.ok=false; push(a,x)  
-  elseif R() < the.some/i.n then i.ok=false; a[R(#a)]=x end end 
+function _.add(i,x)
+  if x=="?" then return x end
+  i.n = 1 + i.n
+  if     #i.all  < the.some  then i.ok=false; push(i.all,x) 
+  elseif R() < the.some/i.n  then i.ok=false; i.all[R(#i.all)]=x end end 
 
-function _.nums(i) i.all=i.ok and i.all or sort(i.all);i.ok=true;return i.all end
-function _.per(i,p,   a) 
-  p,a=(p or .5),i:nums(); return a[math.max(1,math.min(#a, p*#a//1))] end
---------------------------------------------------------------------------------
+function _.per(i,p) 
+  i.all = i.ok and i.all or sort(i.all); i.ok=true
+  return i.all[math.max(1,math.min(#i.all, (p or .5)*#i.all//1))] end
+-------------------------------------------------------------------------------
 SYM=obj"SYM"
-function _.new(i,t)    has(i,{at=0, txt="", all={}},t) end
-function _.add(i,x,n)  if x~="?" then i.all[x]=(n or 1)+(i.all[x] or 0) end end
+function _.new(i,t)    has(i,{at=0, txt="", i.n=0, all={}},t) end
+function _.add(i,x,n)  
+  if x~="?" then i.n=i.n+1; i.all[x]=(n or 1)+(i.all[x] or 0) end end
 
 function _.mid(i,   m,x)
   m=0; for y,n in pairs(i.all) do if n>m then m,x=n,y end end; return x end
 
 function _.div(i,   n,e)
-  n=0; for k,m in pairs(i.all) do n = n + m end 
-  e=0; for k,m in pairs(i.all) do e = e - m/n*math.log(m/n,2) end 
-  return e,n end
+  e=0; for k,n in pairs(i.all) do e=e-n/i.n*math.log(n/i.n,2) end ;return e end
 
-function _.merged(i,j,n0,    k,div1,n1,div2,n2,n)
+function _.merged(i,j,n0,    k)
   k = SYM{at=i.at, txt=i.txt}
   for x,n in pairs(i.all) do k:add(x,n) end
   for x,n in pairs(j.all) do k:add(x,n) end
-  div1, n1 = i:div()
-  div2, n2 = j:div()
-  n  = n1+n2
   n0 = n0 or 0
-  if n1<n0 or n2<n0 or k:div() < (div1*n1/n + div2*n2/n) then return k end end
+  if n1<n0 or n2<n0 then return k end
+  if k:div()<(i:div()*i.n/k.n+j:div()*j.n/k.n) then return k end end
 
 function _.range(i,x,y,ranges)
   if x=="?" then return x end

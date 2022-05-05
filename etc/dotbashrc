@@ -74,11 +74,11 @@ mytmux() {
     sleep 1
     tmux new-session -d -s $session  
     tmux selectp -t 0
-    tmux send-keys C-m  "etc/h"  C-m
+    tmux send-keys C-m  "$here/etc/h"  C-m
 
     tmux splitw -h -p 30
     tmux selectp -t 1
-    tmux send-keys C-m  "etc/h"  C-m
+    tmux send-keys C-m  "$here/etc/h"  C-m
 
     tmux splitw -v  -p 20
     tmux selectp -t 2
