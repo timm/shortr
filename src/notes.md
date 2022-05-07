@@ -1,3 +1,9 @@
+----
+static code analysis
+formatting conventions
+---
+
+
 less is more
 - stop writing classes
 
