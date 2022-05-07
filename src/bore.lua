@@ -1,25 +1,25 @@
-local help = [[
-
+local help = [[  
 BORE: best or rest multi-objective optimization.
-(c)2022 Tim Menzies, timm@ieee.org, opensource.org/licenses/Fair
+(c) 2022 Tim Menzies, timm@ieee.org
 "I think the highest and lowest points are the important ones. 
- Anything else is just...in between." Jim Morrison
+ Anything else is just...in between." ~ Jim Morrison
 
-USAGE:
-  alias bore="lua bore.lua "
-  bore [OPTIONS]
+USAGE: lua bore.lua [OPTIONS]
 
 OPTIONS:
   -b  --bins  max bins                 = 16
+  -s  --seed  random number seed       = 10019
   -S  --some  number of nums to keep   = 256
 
 OPTIONS (other):
-  -s  --seed  random number seed       = 10019
   -f  --file  where to find data       = ../etc/data/auto93.csv
   -d  --dump  dump stack+exit on error = false
   -h  --help  show help                = false
   -g  --go    start up action          = nothing
-]] 
+
+Usage of the works is permitted provided that this instrument is
+retained with the works, so that any entity that uses the works is
+notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]] 
 
 local function thing(x)
   x = x:match"^%s*(.-)%s*$"
@@ -45,12 +45,8 @@ function same(x)      return x end
 function push(t,x)    t[1+#t]=x;       return x end
 function sort(t,f)    table.sort(t,f); return t end
 function map(t,f, u)  u={}; for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
-function slice(t,i,j, u) 
-  u={}; for k=(i or 1), (j or #t) do u[1+#u] = t[k] end return u end
-
-function part(t,n,lo,hi,  u) 
-  lo, hi = 1, hi or #t
-  u={};for j = lo, hi, (hi-lo)//n do push(u,t[j]) end; return u  end
+function slice(t,i,j,k,     u) 
+  u={}; for n=(i or 1), (j or #t),(k or 1) do u[1+#u] = t[n] end return u end
 
 function has(i, defaults, also)
   for k,v in pairs(defaults) do i[k] = v end
@@ -121,24 +117,11 @@ function _.merged(i,j,n0,    k)
     k = i.ys:merged(j.ys,n0)
     if k then 
       return RANGE{at=i.at, txt=i.txt, lo=i.lo, hi=j.hi, ys=k} end end end
---------------------------------------------------------------------------------
-SOME=obj"SOME"
-function _.new(i) i.all, i.ok, i.n = {}, false,0 end
-
-function _.add(i,x)
-  if x=="?" then return x end
-  i.n = 1 + i.n
-  if     #i.all  < the.some  then i.ok=false; push(i.all,x) 
-  elseif R() < the.some/i.n  then i.ok=false; i.all[R(#i.all)]=x end end 
-
-function _.per(i,p) 
-  i.all = i.ok and i.all or sort(i.all); i.ok=true
-  return i.all[math.max(1,math.min(#i.all, (p or .5)*#i.all//1))] end
 -------------------------------------------------------------------------------
 SYM=obj"SYM"
 function _.new(i,t)    has(i,{at=0, txt="", n=0, all={}},t) end
-function _.add(i,x,inc)  
-  if x~="?" then inc=inc or 1; i.n=i.n+inc; i.all[x]=inc+(i.all[x] or 0) end end 
+function _.add(i,x,n)  
+  if x~="?" then n=n or 1; i.n=i.n+n; i.all[x]=n+(i.all[x] or 0) end end 
 
 function _.mid(i,   m,x)
   m=0; for y,n in pairs(i.all) do if n>m then m,x=n,y end end; return x end
@@ -146,18 +129,37 @@ function _.mid(i,   m,x)
 function _.div(i,   n,e)
   e=0; for k,n in pairs(i.all) do e=e-n/i.n*math.log(n/i.n,2) end ;return e end
 
-function _.merged(i,j,n0,    k)
+function _.merge(i,j,n0,    k)
   k = SYM{at=i.at, txt=i.txt}
   for x,n in pairs(i.all) do k:add(x,n) end
   for x,n in pairs(j.all) do k:add(x,n) end
-  n0 = n0 or 0
-  if n1<n0 or n2<n0 then return k end
-  if k:div()<(i:div()*i.n/k.n+j:div()*j.n/k.n) then return k end end
+  return f end
+
+ function _.merged(i,j,n0,    k)
+  n0, k = (n0 or 0), i:merge(j)
+  if i.n<n0 or j.n<n0 or 
+     k:div() < (i:div()*i.n+j:div()*j.n)/k.n then return k end end 
+
+function _.discretize(i,x,bins) return x end
 
 function _.range(i,x,y,ranges)
   if x=="?" then return x end
-  ranges[x] = ranges[x] or RANGE{at=i.at, txt=i.txt}
+  ranges[x] = ranges[x] or RANGE{at=i.at, txt=i.txt,lo=x,hi=x}
   ranges[x]:add(x,y) end
+--------------------------------------------------------------------------------
+SOME=obj"SOME"
+function _.new(i) i.all, i.ok, i.n = {}, false,0 end
+function _.nums() i.all=i.ok and i.all or sort(i.all);i.ok=true; return i.all end
+
+function _.add(i,x)
+  if x=="?" then return x end
+  i.n = 1 + i.n
+  if     #i.all  < the.some  then i.ok=false; push(i.all,x) 
+  elseif R() < the.some/i.n  then i.ok=false; i.all[R(#i.all)]=x end end 
+
+function _.per(i,p, a)
+  as = i:nums()
+  return a[math.max(1, math.min(#a, (p or .5)*#a//1))] end
 --------------------------------------------------------------------------------
 NUM=obj"NUM"
 function _.new(i,t) 
@@ -174,10 +176,14 @@ function _.add(i,x)
   if x<i.lo then i.lo=x end 
   i.all:add(x) end
 
-function _.range(i,x,y,ranges,   r)
+function _.discretize(i,x,bins,   base) 
+  base = (i.hi - i.lo)/bins; return math.floor(x/base + 0.5)*base end
+
+function _.range(i,x,y,ranges,   r,base)
   if x=="?" then return x end
-  r = i:norm(x)*the.bins //1
-  ranges[r] = ranges[r] or RANGE{at=i.at, txt=i.txt}
+  base = (i.hi -i.lo)/the.bins
+  r = math.floor(x/base+.5)*base
+  ranges[r] = ranges[r] or RANGE{at=i.at, txt=i.txt,lo=x,hi=x}
   ranges[r]:add(x,y) end
 --------------------------------------------------------------------------------
 ROW=obj"ROW"
@@ -276,7 +282,24 @@ function GO.egs1(  egs,best,rest,n)
     map(sort(map(ranges,same)),print) end
   end
 --------------------------------------------------------------------------------
+--xxx replace part with a slice wit one extra art
+function part(t,n,lo,hi,  u) 
+  lo, hi = 1, hi or #t
+  u={};for j = lo, hi, (hi-lo)//n do push(u,t[j]) end; return u  end
+
+
 if   the.help 
 then print(help:gsub("%u%u+", "\27[33m%1\27[0m")
                :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[31m%2\27[0m%3"),"")
 else GO(the.go) end
+
+--             |         |
+--           -= _________ =-
+--              ___   ___
+--             |   )=(   |
+--              ---   --- 
+--                 ###
+--               #  =  #            "This ain't chemistry. 
+--               #######             This is art."
+
+
