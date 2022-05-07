@@ -21,7 +21,7 @@ Usage of the works is permitted provided that this instrument is
 retained with the works, so that any entity that uses the works is
 notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]] 
 
-local function thing(x)
+local function string2thing(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
   return math.tointeger(x) or tonumber(x) or x end
@@ -30,7 +30,7 @@ local the={}
 help:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",function(f1,f2,k,x)
   for n,flag in ipairs(arg) do if flag==f1 or flag==f2 then
     x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
-  the[k] = thing(x) end) 
+  the[k] = string2thing(x) end) 
 --------------------------------------------------------------------------------
 local any,atom,csv,has,many,map,merge,o,oo,obj,ok
 local part,patch,per,push,rows,same,slice,sort
@@ -57,7 +57,7 @@ function csv(src)
   return function(line, row) 
     line=io.read()
     if not line then io.close(src) else
-      row={}; for x in line:gmatch("([^,]+)") do row[1+#row]=thing(x) end
+      row={}; for x in line:gmatch("([^,]+)") do row[1+#row]=string2thing(x) end
       return row end end end 
 
 function merge(b4,        a,b,c,j,n,tmp,fillInTheGaps)
@@ -138,14 +138,9 @@ function _.merge(i,j,n0,    k)
  function _.merged(i,j,n0,    k)
   n0, k = (n0 or 0), i:merge(j)
   if i.n<n0 or j.n<n0 or 
-     k:div() < (i:div()*i.n+j:div()*j.n)/k.n then return k end end 
+    (i:div()*i.n+j:div()*j.n)/k.n > k:div() then return k end end 
 
 function _.discretize(i,x,bins) return x end
-
-function _.range(i,x,y,ranges)
-  if x=="?" then return x end
-  ranges[x] = ranges[x] or RANGE{at=i.at, txt=i.txt,lo=x,hi=x}
-  ranges[x]:add(x,y) end
 --------------------------------------------------------------------------------
 SOME=obj"SOME"
 function _.new(i) i.all, i.ok, i.n = {}, false,0 end
@@ -178,19 +173,12 @@ function _.add(i,x)
 
 function _.discretize(i,x,bins,   base) 
   base = (i.hi - i.lo)/bins; return math.floor(x/base + 0.5)*base end
-
-function _.range(i,x,y,ranges,   r,base)
-  if x=="?" then return x end
-  base = (i.hi -i.lo)/the.bins
-  r = math.floor(x/base+.5)*base
-  ranges[r] = ranges[r] or RANGE{at=i.at, txt=i.txt,lo=x,hi=x}
-  ranges[r]:add(x,y) end
 --------------------------------------------------------------------------------
 ROW=obj"ROW"
-function _.new(i,t) has(i,{cells={},data={}},t) end
+function _.new(i,t) has(i,{cells={},ruler={}},t) end
 
 function _.__lt(i,j,     s1,s2,e,y,a,b)
-  y = i.data.cols.y
+  y = i.ruler.cols.y
   s1, s2, e = 0, 0,  math.exp(1)
   for _,col in pairs(y) do
      a = col:norm(i.cells[col.at])
@@ -212,7 +200,7 @@ function _.new(i)       i.rows,i.cols= {},nil end
 function _.file(i,file) for row in csv(file) do  i:add(row) end; return i end
 function _.add(i,row)
   if   i.cols 
-  then row = push(i.rows, row.cells and row or ROW{data=i, cells=row}).cells
+  then row = push(i.rows, row.cells and row or ROW{ruler=i, cells=row}).cells
        for k,col in pairs(i.cols.all) do col:add(row[col.at]) end
   else i.cols = COLS{names=row} end 
   return i end
@@ -224,6 +212,19 @@ function _.copy(i,rows,   out)
   out=EGS():add(i.cols.names)
   for _,row in pairs(rows or {}) do out:add(row) end
   return out end
+
+function _.ranges(i,best,rest,   d)
+  for _,col in pairs(i.cols.x) do
+    col.ranges = {}
+    for _,what in pairs{{rows=best, klass=true}, 
+                        {rows=rest, klass=false}} do
+      for _,row in pairs(what.rows) do 
+        x = row.cells[col.at] 
+        if x~="?" then
+          d = col:discretize(x,the.bins)
+          col.ranges[d] = col.ranges[d] or RANGE{at=col.at,txt=col.txt,lo=x,hi=x}
+          col.ranges[d]:add(x, what.klass) end end end 
+    col.ranges = merge(sort(map(col.ranges,same))) end end
 --------------------------------------------------------------------------------
 GO=obj"GO"
 function ok(test,msg)
@@ -293,6 +294,7 @@ then print(help:gsub("%u%u+", "\27[33m%1\27[0m")
                :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[31m%2\27[0m%3"),"")
 else GO(the.go) end
 
+
 --             |         |
 --           -= _________ =-
 --              ___   ___
@@ -301,5 +303,3 @@ else GO(the.go) end
 --                 ###
 --               #  =  #            "This ain't chemistry. 
 --               #######             This is art."
-
-
