@@ -50,6 +50,7 @@ linux kernel best pracrices
   - link to TDD
 - zero internal boundaries
   - everyone uses same tools, config files for those tools in repo
+  - e.g. static code tools
 
 --
 variance, entropy
