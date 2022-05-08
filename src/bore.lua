@@ -1,10 +1,10 @@
 local help = [[  
-BORE: best or rest multi-objective optimization.
+SAW2: best or rest multi-objective optimization.
 (c) 2022 Tim Menzies, timm@ieee.org
 "I think the highest and lowest points are the important ones. 
  Anything else is just...in between." ~ Jim Morrison
 
-USAGE: lua bore.lua [OPTIONS]
+USAGE: lua saw2.lua [OPTIONS]
 
 OPTIONS:
   -b  --bins  max bins                 = 16
