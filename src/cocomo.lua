@@ -15,15 +15,22 @@ function obj(name,    t,new)
   t = {__tostring=o, is=name or ""}; t.__index=t
   _ = t
   return setmetatable(t, {__call=new}) end
-
-function from(lo,hi) return lo+(hi-lo)*math.random() end
-function within(t)   return t[math.random(#t)] end
-COCOMO=obj"COCOMO"
-function _.new() return true end
-
-function _.defaults()
-  local _,ne,nw,nw4,sw,sw4,ne46,w26,sw46
+  
+function  _cocomo()
   local p,n,s="+","-","*"
+  return { loc = {"1",2,200},
+    acap= {n,1,5}, cplx={p,1,6}, prec={s,1,6},
+    aexp= {n,1,5}, data={p,2,5}, flex={s,1,6},
+    ltex= {n,1,5}, docu={p,1,5}, arch={s,1,6},
+    pcap= {n,1,5}, pvol={p,2,5}, team={s,1,6},
+    pcon= {n,1,5}, rely={p,1,5}, pmat={s,1,6},
+    plex= {n,1,5}, ruse={p,2,6},
+    sced= {n,1,5}, stor={p,3,6},
+    site= {n,1,5}, time={p,3,6},
+    tool= {n,1,5} } end
+
+function _risk()
+  local _,ne,nw,nw4,sw,sw4,ne46,w26,sw46
   o = 0
   ne={{o,o,o,1,2,o}, -- bad if lohi
       {o,o,o,o,1,o},
@@ -75,17 +82,6 @@ function _.defaults()
         {2,1,o,o,o,o},
         {4,2,1,o,o,o}}
   return {
-    loc = {"1",2,200},
-    acap= {n,1,5}, cplx={p,1,6}, prec={s,1,6},
-  	aexp= {n,1,5}, data={p,2,5}, flex={s,1,6},
-  	ltex= {n,1,5}, docu={p,1,5}, arch={s,1,6},
-  	pcap= {n,1,5}, pvol={p,2,5}, team={s,1,6},
-  	pcon= {n,1,5}, rely={p,1,5}, pmat={s,1,6},
-  	plex= {n,1,5}, ruse={p,2,6},
-  	sced= {n,1,5}, stor={p,3,6},
-  	site= {n,1,5}, time={p,3,6},
-    tool= {n,1,5}
-    }, {
     cplx= {acap=sw46, pcap=sw46, tool=sw46}, --12
     ltex= {pcap=nw4},  -- 4
     pmat= {acap=nw,   pcap=sw46}, -- 6
@@ -99,29 +95,18 @@ function _.defaults()
     time= {acap=sw46, pcap=sw46, tool=sw26}, --10
     tool= {acap=nw,   pcap=nw,  pmat=nw}} end -- 6
 
---- Effort and rist estimation
--- For moldes defined in `risk.lua` and `coc.lua`.
+function from(lo,hi) return lo+(hi-lo)*math.random() end
+function within(t)   return t[math.random(#t)] end
 
---- Define the internal `cocomo` data structure:
--- `x` slots (for business-level decisions) and
--- `y` slots (for things derived from those decisions, 
--- like `self.effort` and `self.risk')
+COCOMO=obj"COCOMO"
+
 function _:NEW(coc,risk) 
-  self.x={}; self.y={};self.coc=coc;self.risk=risk} end
+  self.x={}; self.y={}
 
---- Change the keys `x1,x2...` 
--- in  a model, (and wipe anyting computed from `x`).
--- @tab  self : a `cocomo` table
--- @tab  t : a list of key,value pairs that we will update.
--- @return tab : an updated `cocomo` table
 function _:set(t)
   self.y = {}
   for k,v in pairs(t) do self.x[k] = v end end
 
---- Compute effort
--- @tab  self : what we know about a project
--- @tab  coc : background knowledge about `self`
--- @return number : the effort
 function _:effort()
   local em,sf=1,0
   for k,t in pairs(self.coc) do
@@ -130,10 +115,6 @@ function _:effort()
     elseif t[1] == "*" then sf = sf + self.y[k] end end 
   return self.y.a*self.x.loc^(self.y.b + 0.01*sf) * em end
   
---- Compute risk
--- @tab  self : what we know about a project
--- @tab  coc : background knowledge about `self`
--- @return number : the risk
 function _:risks()
   local n=0
   for a1,t in pairs(self.risk) do
@@ -141,20 +122,13 @@ function _:risks()
       n  = n  + m[self.x[a1]][self.x[a2]] end end
   return n end
 
---- Return a `y` value from `x`
--- @tab  w : type of column (\*,+,-,1)
--- @number  x 
--- @return number 
-function cocomo:y(w,x)
+function _:y(w,x)
   if w=="1" then return x end
   if w=="+" then return (x-3)*from( 0.073,  0.21 ) + 1 end
   if w=="-" then return (x-3)*from(-0.187, -0.078) + 1 end
   return                (x-6)*from(-1.56,  -1.014) end
  
---- Mutatble objects, pairs of `{x,y}`
--- Ensures that `y` is up to date with the `x` variables.
--- self cocomo:new(
-function cocomo:ready(coc,risk)
+function _:ready(coc,risk)
   local y,effort,ready,lo,hi
   coc0, risk0 = cocomo.defaults()
   coc  = coc or coc0
