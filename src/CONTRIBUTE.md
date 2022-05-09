@@ -25,3 +25,8 @@ beware missing values (marked in "?") and avoid them
 learning
 -- where possible, fully incremental
 -- isolate operating system interaction
+
+polymorphism
+- xStr: proble string
+- xMerge: combine to things
+
