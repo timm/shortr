@@ -30,28 +30,21 @@ for k,__ in pairs(_ENV) do b4[k]=k end
 -------------------------------------------------------------------------------
 -- # Coding style
 -- 
--- Code 80 chars wide, or less.  Functions in 1 line, if you can. 
--- Indent with two spaces. Divide code into 120 line (or less) pages.
--- 
--- Minimize use of local (exception: define all functions as local 
--- at top of file).
--- 
--- No inheritance
--- 
--- Use `i` instead of `self`. Use `_` to denote the last 
--- 
--- The `go` functions store tests. tests should be silent unless they
--- fail tests can be disabled by renaming from `go.fun` to `no.fun`.
--- Those tests should return `true` if the test passes or a warning
--- string if otherwise
--- 
--- Set flags in help string top of file. Allow for `-h` on the command line
--- to print help
--- 
--- Beware missing values (marked in "?") and avoid them
--- 
--- Where possible all learning should be  incremental.
--- Isolate operating system interaction.
+-- - Code 80 chars wide, or less.  Functions in 1 line, if you can. 
+--   Indent with two spaces. Divide code into 120 line (or less) pages.
+-- - Minimize use of local (exception: define all functions as local 
+--   at top of file).
+-- - No inheritance
+-- - Use `i` instead of `self`. Use `_` to denote the last 
+-- - The `go` functions store tests. tests should be silent unless they
+--   fail tests can be disabled by renaming from `go.fun` to `no.fun`.
+--   Those tests should return `true` if the test passes or a warning
+--   string if otherwise
+-- - Set flags in help string top of file. Allow for `-h` on the command line
+--   to print help
+-- - Beware missing values (marked in "?") and avoid them
+-- - Where possible all learning should be  incremental.
+-- - Isolate operating system interaction.
 --------------------------------------------------------------------------------
 big=math.huge
 rand=math.random
