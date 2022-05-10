@@ -71,7 +71,7 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">COL:merged</span><span class="hljs-params">(other,    out)</span></span>
   out = <span class="hljs-built_in">self</span>:merge(other)
-  <span class="hljs-keyword">if</span> out:div()*<span class="hljs-number">.95</span> &lt;= (<span class="hljs-built_in">self</span>.n*<span class="hljs-built_in">self</span>:div() + other.n*other:div())/out.n <span class="hljs-keyword">then</span>
+  <span class="hljs-keyword">if</span> out:div()*<span class="hljs-number">.95</span> &lt;= (<span class="hljs-built_in">self</span>.n*<span class="hljs-built_in">self</span>:div() + other.n*other:div())/out.n <span class="hljs-keyword">then</span> 
     <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-keyword">return</span> COL</pre></div></div>

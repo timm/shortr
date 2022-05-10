@@ -45,31 +45,31 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> R = <span class="hljs-built_in">require</span>
-<span class="hljs-keyword">local</span> _,COLS,the                  = R<span class="hljs-string">&quot;lib&quot;</span>, R<span class="hljs-string">&quot;cols&quot;</span>, R<span class="hljs-string">&quot;the&quot;</span>
-<span class="hljs-keyword">local</span> map,<span class="hljs-built_in">sort</span>,up1,items,push,norm= _.map,_.<span class="hljs-built_in">sort</span>,_.up1,_.items,_.push,_.norm
-<span class="hljs-keyword">local</span> items,slice,o,oo,<span class="hljs-built_in">sort</span>,many  = _.items, _.slice, _.o, _.oo, _.<span class="hljs-built_in">sort</span>, _.many
-<span class="hljs-keyword">local</span> class,OBJ                   = _.class, _.OBJ
+<span class="hljs-keyword">local</span> _,the,COLS,BIN               = R<span class="hljs-string">&quot;lib&quot;</span>, R<span class="hljs-string">&quot;the&quot;</span>, R<span class="hljs-string">&quot;COLS&quot;</span>, R<span class="hljs-string">&quot;BIN&quot;</span>
+<span class="hljs-keyword">local</span> map,<span class="hljs-built_in">sort</span>,up1,items,push,norm = _.map,_.<span class="hljs-built_in">sort</span>,_.up1,_.items,_.push,_.norm
+<span class="hljs-keyword">local</span> items,slice,o,oo,<span class="hljs-built_in">sort</span>,many   = _.items,_.slice,_.o,_.oo,_.<span class="hljs-built_in">sort</span>,_.many
+<span class="hljs-keyword">local</span> class,OBJ                    = _.class, _.OBJ
                 
 <span class="hljs-keyword">local</span> EGS = class(<span class="hljs-string">&quot;EGS&quot;</span>,OBJ)
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:new</span><span class="hljs-params">()</span></span> 
-  <span class="hljs-built_in">self</span>.rows, <span class="hljs-built_in">self</span>.cols = {}, <span class="hljs-literal">nil</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:new</span><span class="hljs-params">()</span></span> <span class="hljs-built_in">self</span>.rows, <span class="hljs-built_in">self</span>.cols = {}, <span class="hljs-literal">nil</span> <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:adds</span><span class="hljs-params">(data)</span></span>
-  <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> items(data) <span class="hljs-keyword">do</span> <span class="hljs-built_in">self</span>:add(row) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> <span class="hljs-built_in">self</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:adds</span><span class="hljs-params">(y)</span></span> <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> items(y) <span class="hljs-keyword">do</span> <span class="hljs-built_in">self</span>:add(x) <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> <span class="hljs-built_in">self</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:add</span><span class="hljs-params">(row)</span></span>
   <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">self</span>.cols <span class="hljs-keyword">then</span> <span class="hljs-built_in">self</span>.cols = COLS(row)
                    <span class="hljs-keyword">else</span> push(<span class="hljs-built_in">self</span>.rows, <span class="hljs-built_in">self</span>.cols:add(row)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.mid</span><span class="hljs-params">(i,cols)</span></span>
-   <span class="hljs-keyword">return</span> map(cols <span class="hljs-keyword">or</span> i.cols.y, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(col)</span></span> <span class="hljs-keyword">return</span> col:mid() <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:mid</span><span class="hljs-params">(cols)</span></span>
+   <span class="hljs-keyword">local</span> mid=<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(col)</span></span> <span class="hljs-keyword">return</span> #<span class="hljs-built_in">self</span>.rows==<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> col:mid() <span class="hljs-keyword">end</span> 
+   <span class="hljs-keyword">return</span> map(cols <span class="hljs-keyword">or</span> <span class="hljs-built_in">self</span>.cols.y, mid) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:div</span><span class="hljs-params">(cols)</span></span>
-   <span class="hljs-keyword">return</span> map(cols <span class="hljs-keyword">or</span> i.cols.y, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(col)</span></span> <span class="hljs-keyword">return</span> col:div() <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
+   <span class="hljs-keyword">local</span> div=<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(col)</span></span> <span class="hljs-keyword">return</span> #<span class="hljs-built_in">self</span>.rows==<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> col:div() <span class="hljs-keyword">end</span> 
+   <span class="hljs-keyword">return</span> map(cols <span class="hljs-keyword">or</span> <span class="hljs-built_in">self</span>.cols.y, div) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:clone</span><span class="hljs-params">(rows)</span></span>
-  <span class="hljs-keyword">local</span> out = EGS(<span class="hljs-built_in">self</span>.cols.name)
+  <span class="hljs-keyword">local</span> out = EGS()
+  out:add(<span class="hljs-built_in">self</span>.cols.names)
   <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> out:add(row) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span>
 
@@ -91,9 +91,11 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:bins</span><span class="hljs-params">(other)</span></span>
   <span class="hljs-keyword">local</span> out = {}
-  <span class="hljs-keyword">for</span> n,col1 <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">self</span>.cols.x) <span class="hljs-keyword">do</span>
-    tmp=col1:bins(other.cols.x[n],BIN)
-    <span class="hljs-keyword">if</span> #tmp &gt; <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span> _,bin <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(tmp) <span class="hljs-keyword">do</span> push(out,bin) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> n,left <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">self</span>.cols.x) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">local</span> right = other.cols.x[n]
+    <span class="hljs-keyword">local</span> tmp   = left:bins(right,BIN)
+    <span class="hljs-keyword">if</span> #tmp &gt; <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span> _,bin <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(tmp) <span class="hljs-keyword">do</span> push(out,bin) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS:bestRest</span><span class="hljs-params">()</span></span>
   <span class="hljs-built_in">self</span>.rows = <span class="hljs-built_in">sort</span>(<span class="hljs-built_in">self</span>.rows, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">self</span>:better(a,b) <span class="hljs-keyword">end</span>) 

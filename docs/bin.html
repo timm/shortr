@@ -54,12 +54,12 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
   <span class="hljs-built_in">self</span>.at, <span class="hljs-built_in">self</span>.name        = at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, name <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
   <span class="hljs-built_in">self</span>.lo, <span class="hljs-built_in">self</span>.hi, <span class="hljs-built_in">self</span>.ys = lo, hi <span class="hljs-keyword">or</span> lo, ys <span class="hljs-keyword">or</span> SYM() <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN:_tostring</span><span class="hljs-params">()</span></span>
-  <span class="hljs-keyword">local</span> x,lo,hi,big = <span class="hljs-built_in">self</span>.name, <span class="hljs-built_in">self</span>.lo, <span class="hljs-built_in">self</span>.hi. <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
-  <span class="hljs-keyword">if</span>     lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x, lo)  
-  <span class="hljs-keyword">elseif</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x, lo)  
-  <span class="hljs-keyword">elseif</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;  %s&quot;</span>,x, hi)  
-  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s &lt; %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN:__tostring</span><span class="hljs-params">()</span></span>
+  <span class="hljs-keyword">local</span> x,lo,hi,big = <span class="hljs-built_in">self</span>.name, <span class="hljs-built_in">self</span>.lo, <span class="hljs-built_in">self</span>.hi, <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
+  <span class="hljs-keyword">if</span>     lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s==%s&quot;</span>,x, lo)  
+  <span class="hljs-keyword">elseif</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s&gt;=%s&quot;</span>,x, lo)  
+  <span class="hljs-keyword">elseif</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s&lt;%s&quot;</span>,x, hi)  
+  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s&lt;=%s &lt; %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN:select</span><span class="hljs-params">(row)</span></span>
   <span class="hljs-keyword">local</span> x, lo, hi = row[<span class="hljs-built_in">self</span>.at], <span class="hljs-built_in">self</span>.lo, <span class="hljs-built_in">self</span>.hi
@@ -70,29 +70,17 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
   <span class="hljs-keyword">if</span> x&gt;<span class="hljs-built_in">self</span>.hi <span class="hljs-keyword">then</span> <span class="hljs-built_in">self</span>.hi = x <span class="hljs-keyword">end</span> 
   <span class="hljs-built_in">self</span>.ys:add(y) <span class="hljs-keyword">end</span>
 
+  
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN.mergeSameDivs</span><span class="hljs-params">(b4,after)</span></span>
   <span class="hljs-keyword">local</span> merged = b4.ys:merged(after.ys)
   <span class="hljs-keyword">if</span> merged <span class="hljs-keyword">then</span>
    <span class="hljs-keyword">return</span> BIN(b4.at, b4.name, b4.lo, after.hi, merged) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN.mergeNext</span><span class="hljs-params">(b4,after)</span></span>
-  <span class="hljs-keyword">if</span> b4.hi == after.lo <span class="hljs-keyword">then</span>
+  <span class="hljs-keyword">if</span> b4.hi == after.lo <span class="hljs-keyword">and</span>  b4.lo ~= b4.hi <span class="hljs-keyword">then</span>
    <span class="hljs-keyword">return</span> BIN(b4.at, b4.name, b4.lo, after.hi, b4.ys:merge(after.ys)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-keyword">return</span> BIN</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-2">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-2">&#x00a7;</a>
-              </div>
-              <p>23 45  {:left 100 :right 45} n=145</p>
-
-            </div>
             
         </li>
         

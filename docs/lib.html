@@ -51,7 +51,7 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
   mu, sd = (mu <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>), (sd <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)
   <span class="hljs-keyword">return</span> mu + sd*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">sqrt</span>(<span class="hljs-number">-2</span>*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(r()))*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">cos</span>(<span class="hljs-number">6.2831853</span>*r()) <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.per</span><span class="hljs-params">(t,p)</span></span> <span class="hljs-keyword">return</span> t[ ((p <span class="hljs-keyword">or</span> <span class="hljs-number">.5</span>)*#t) // <span class="hljs-number">1</span> ] <span class="hljs-keyword">end</span> 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.per</span><span class="hljs-params">(t,p)</span></span>  <span class="hljs-keyword">return</span> t[ ((p <span class="hljs-keyword">or</span> <span class="hljs-number">.5</span>)*#t) // <span class="hljs-number">1</span> ] <span class="hljs-keyword">end</span> 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.norm</span><span class="hljs-params">(lo,hi,x)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">abs</span>(hi-lo)&lt;<span class="hljs-number">1E-9</span> <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> (x-lo)/(hi-lo) <span class="hljs-keyword">end</span>
 
@@ -61,9 +61,12 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
   <span class="hljs-keyword">return</span> e,n <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.sd</span><span class="hljs-params">(sorted, f)</span></span>
+  <span class="hljs-keyword">if</span> #sorted &lt;= <span class="hljs-number">10</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>
   f=f <span class="hljs-keyword">or</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">local</span> denom = <span class="hljs-number">2.564</span> <span class="hljs-comment">-- 2*(1.2 + 0.1*(0.9-0.88493)/(0.9032-0.88493))</span>
-  <span class="hljs-keyword">return</span> (f(per(sorted, <span class="hljs-number">.9</span>)) - f(per(sorted,<span class="hljs-number">.1</span>)))/denom <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">local</span> x= f(lib.per(sorted, <span class="hljs-number">.9</span>)) 
+  <span class="hljs-keyword">local</span> y= f(lib.per(sorted, <span class="hljs-number">.1</span>))
+  <span class="hljs-keyword">return</span> (x - y) /denom <span class="hljs-keyword">end</span>
  
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.cosine</span><span class="hljs-params">(a,b,c)</span></span> 
   <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>,<span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(<span class="hljs-number">1</span>, (a^<span class="hljs-number">2</span>+c^<span class="hljs-number">2</span>-b^<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*c+<span class="hljs-number">1E-32</span>))) <span class="hljs-keyword">end</span>
@@ -159,6 +162,7 @@ i.e.    (long (key)) (short)                   (x)</p>
   <span class="hljs-keyword">return</span> d <span class="hljs-keyword">end</span>
 
 lib.go = {_fails=<span class="hljs-number">0</span>}
+lib.no = {}
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.ok</span><span class="hljs-params">(test,msg)</span></span>
   <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&quot;</span>, test <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;PASS &quot;</span><span class="hljs-keyword">or</span> <span class="hljs-string">&quot;FAIL &quot;</span>,msg <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>) 
   <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> test <span class="hljs-keyword">then</span> 
@@ -166,7 +170,7 @@ lib.go = {_fails=<span class="hljs-number">0</span>}
     <span class="hljs-keyword">if</span> the <span class="hljs-keyword">and</span> the.<span class="hljs-built_in">dump</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">assert</span>(test,msg) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.main</span><span class="hljs-params">(the,go,b4,           resets,todos)</span></span>
-  todos = the.todo == <span class="hljs-string">&quot;all&quot;</span> <span class="hljs-keyword">and</span> slots(go) <span class="hljs-keyword">or</span> {the.todo}
+  todos = the.todo == <span class="hljs-string">&quot;all&quot;</span> <span class="hljs-keyword">and</span> lib.slots(go) <span class="hljs-keyword">or</span> {the.todo}
   resets={}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(the) <span class="hljs-keyword">do</span> resets[k]=v <span class="hljs-keyword">end</span>
   go._fails = <span class="hljs-number">0</span>
   <span class="hljs-keyword">for</span> _,todo <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(todos) <span class="hljs-keyword">do</span>
@@ -185,7 +189,9 @@ lib.go = {_fails=<span class="hljs-number">0</span>}
   u={}; <span class="hljs-keyword">for</span> j=<span class="hljs-number">1</span>,n <span class="hljs-keyword">do</span> lib.push(u, lib.any(a,lo,hi)) <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.slice</span><span class="hljs-params">(a,lo,hi,    u)</span></span>
-  u,lo,hi = {},lo <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>,hi <span class="hljs-keyword">or</span> #a; <span class="hljs-keyword">for</span> j=lo,hi <span class="hljs-keyword">do</span> u[<span class="hljs-number">1</span>+#u]=a[j] <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span>
+  u, lo, hi = {}, lo <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>, hi <span class="hljs-keyword">or</span> #a 
+  hi = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(hi,#a)
+  <span class="hljs-keyword">for</span> j=lo,hi <span class="hljs-keyword">do</span> u[<span class="hljs-number">1</span>+#u]=a[j] <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span>
 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.words</span><span class="hljs-params">(s,sep,   t)</span></span>

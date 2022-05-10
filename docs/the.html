@@ -57,19 +57,22 @@ USAGE:
   ./bnb [OPTIONS]
 
 OPTIONS:
-  -bins  -b   max. number of bins        = 16
-  -best  -B   best set                   = .5
-  -cohen -c   cohen                      = .35
-  -far   -F   how far to go for far      = .9
-  -goal  -g   goal                       = recurrence-events
-  -K     -K   manage low class counts    = 1
-  -leaves -l  number of items in leaves  = .5
-  -M     -M   manage low evidence counts = 2
-  -p     -p   coefficient on distance    = 2
-  -rest  -R   rest is -R*best            = 4
-  -some  -s   sample size for distances  = 512
-  -seed  -S   seed                       = 10019
-  -wait  -w   wait                       = 10
+  -bins   -b  max. number of bins            = 16
+  -best   -B  best set                       = .5
+  -cohen  -c  cohen                          = .35
+  -far    -F  how far to go for far          = .9
+  -goal   -g  goal                           = recurrence-events
+  -K      -K  manage low class counts        = 1
+  -leaves -l  number of items in leaves      = .5
+  -M      -M  manage low evidence counts     = 2
+  -p      -p  coefficient on distance        = 2
+  -rule   -r  rule for assessing bins;       = optimize
+              one of: (optimize,monitor,tabu)
+  -rest   -R  rest is -R*best                = 3
+  -some   -s  sample size for distances      = 512
+  -seed   -S  seed                           = 10019
+  -beam   -T  how many things to call top    = 10
+  -wait   -w  wait                           = 10
 
 OPTIONS (other):
   -dump  -d   dump stack on error then quit = false

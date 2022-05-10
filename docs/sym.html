@@ -45,7 +45,7 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _,ako,COL = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;ako&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;COL&quot;</span>
-<span class="hljs-keyword">local</span> class,ent = _.class,  _.ent
+<span class="hljs-keyword">local</span> map,slots,class,ent = _.map,_.slots,_.class,  _.ent
 
 <span class="hljs-keyword">local</span> SYM = class(<span class="hljs-string">&quot;SYM&quot;</span>,COL)
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM:new</span><span class="hljs-params">(at,name)</span></span>   
@@ -57,13 +57,10 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">self</span>.has[x] &gt; <span class="hljs-built_in">self</span>.most <span class="hljs-keyword">then</span> 
     <span class="hljs-built_in">self</span>.mode, <span class="hljs-built_in">self</span>.most = x, <span class="hljs-built_in">self</span>.has[x] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
 
-
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM:mid</span><span class="hljs-params">()</span></span>      <span class="hljs-keyword">return</span> <span class="hljs-built_in">self</span>.mode <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM:div</span><span class="hljs-params">()</span></span>      <span class="hljs-keyword">return</span> ent(<span class="hljs-built_in">self</span>.has, <span class="hljs-built_in">self</span>.n) <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM:same</span><span class="hljs-params">(x,y)</span></span>  <span class="hljs-keyword">return</span> x==y <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM:dist1</span><span class="hljs-params">(x,y)</span></span> 
-  <span class="hljs-keyword">return</span> <span class="hljs-built_in">self</span>:same(x,y)  <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM:dist1</span><span class="hljs-params">(x,y)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">self</span>:same(x,y)  <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM:like1</span><span class="hljs-params">(x,prior)</span></span>
   <span class="hljs-keyword">return</span> ((i.has[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) + the.M*prior)/(<span class="hljs-built_in">self</span>.n + the.M) <span class="hljs-keyword">end</span>
