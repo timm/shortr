@@ -1,27 +1,29 @@
 --- vim: ts=2 sw=2 et:
 -- ## Coding Conventions
 -- 
--- - Code 80 chars wide, or less.  Functions in 1 line, if you can. 
---   Indent with two spaces. Divide code into 120 line (or less) pages.
--- - Minimize use of local (exception: define all functions as local 
---   at top of file).
--- - Use polymorphic but not inheritance (simpler debugging).
+-- - _Separate policy from mechanism:_ 
+--   All "magic parameters" that control code behavior should
+--   be part of that help text. Allow for `-h` on the command line
+--   to print help.  Parse that string to set the options.
+-- - _Encapsulation:_ Use polymorphic but not inheritance (simpler debugging).
 --   Use UPPERCASE for class names. All classes need a `new` constructor.
--- - Use `i` instead of `self`. Use `_` to denote the last created class/
---   Use `__` for anonymous variable.s
--- - Set flags in help string top of file. Allow for `-h` on the command line
---   to print help
 -- - _Dialogue independence_: Isolate and separate operating system interaction.
 -- - _Test-driven development_: The `go` functions store tests. 
 --   Tests should be silent unless they --   fail. ~tests can be disabled by 
 --   renaming from `go.fun` to `no.fun`. Tests should return `true` if the 
 --   test passes.  On exit, return number of failed tests.
+-- - Less is more:_ Code 80 chars wide, or less.  Functions in 1 line, 
+--   if you can. Indent with two spaces. Divide code into 120 line (or less) pages.
+--   Use `i` instead of `self`. Use `_` to denote the last created class/
+--   Use `__` for anonymous variable.s
+--   Minimize use of local (exception: define all functions as local 
+--   at top of file).
 --
 -- ## About the Learning
 -- 
 -- - Beware missing values (marked in "?") and avoid them
 -- - Where possible all learning should be  incremental.
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 local b4,help = {},[[ 
 SAW2: best or rest multi-objective optimization.
 (c) 2022 Tim Menzies, timm@ieee.org
@@ -34,6 +36,8 @@ OPTIONS:
   -b  --bins  max bins                 = 16
   -s  --seed  random number seed       = 10019
   -S  --some  number of nums to keep   = 256
+  -p  --p     distance coeffecient     = 2
+
 
 OPTIONS (other):
   -f  --file  where to find data       = ../etc/data/auto93.csv
@@ -54,34 +58,40 @@ local NUM,SYM,RANGE,EGS,COLS,ROW
 for k,__ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
 --------------------------------------------------------------------------------
 -- ## Utils
+-- Misc
 big=math.huge
 rand=math.random
 fmt=string.format
+same = function(x) return x end
 
-function same(x)      return x end
-function push(t,x)    t[1+#t]=x; return x end
+-- Sorting
 function sort(t,f)    table.sort(#t>0 and t or map(t,same), f); return t end
-function map(t,f, u)  u={};for k,v in pairs(t) do u[1+#u]=f(v) end; return u end
 function lt(x)        return function(a,b) return a[x] < b[x] end end
+
+-- Query and update
+function map(t,f, u)  u={};for k,v in pairs(t) do u[1+#u]=f(v) end; return u end
+function push(t,x)    t[1+#t]=x; return x end
 function slice(t,i,j,k,     u) 
   i,j = i or 1,j or #t
   k   = (k or 1)
   k   = (j - i)/n
   u={}; for n=i,j,k do u[1+#u] = t[n] end return u end
 
+-- "Strings 2 things" coercion. 
 function string2thing(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
   return math.tointeger(x) or tonumber(x) or x  end
 
-function csv(src)
-  src = io.input(src)
+function csv(csvfile) 
+  file = io.input(csvfile)
   return function(line, row) 
     line=io.read()
-    if not line then io.close(src) else
+    if not line then io.close(csvfile) else
       row={}; for x in line:gmatch("([^,]+)") do push(row,string2thing(x)) end
       return row end end end 
 
+-- "Things 2 strings" coercion.
 function oo(t) print(o(t)) end
 function o(t,    u)
   if #t>0 then return "{"..table.concat(map(t,tostring)," ").."}" else
@@ -92,6 +102,7 @@ function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or"%s",x) end
 
+-- Polymorphic objects.
 function obj(name,    t,new)
   function new(kl,...) 
     local x=setmetatable({},kl); kl.new(x,...); return x end 
@@ -99,6 +110,12 @@ function obj(name,    t,new)
   _ = t
   return setmetatable(t, {__call=new}) end
 ---------------------------------------------------------------------------------
+-- ## Objects
+
+-- ### NUM
+-- - For a stream of `add`itions, incrementally maintain `mu,sd`. 
+-- - `Norm`alize data for distance and discretization calcs (see `dist` and `bin`).
+-- - Comment on `like`lihood that something belongs to this distribution.
 NUM=obj"NUM"
 function _.new(i,at,txt) 
   i.at=at or 0; i.txt=txt or ""; i.lo,i.hi=big, -big
@@ -130,6 +147,11 @@ function _.like(i,x,__,       e)
   return (x < i.mu - 4*i.sd and 0 or x > i.mu + 4*i.sd and 0 or
     2.7183^(-(x - i.mu)^2 / (z + 2*i.sd^2))/(z + (math.pi*2*i.sd^2)^.5)) end
 ---------------------------------------------------------------------------------
+-- ### SYM
+-- - For a stream of `add`itions, incrementally maintain count of `all` symbols.
+-- - Using that info, report `dist`, mode (`mid`) symbol, and entropy
+--   (`div`) of this distribution.  
+-- - Comment on `like`lihood that something belongs to this distribution.
 SYM=obj"SYM"
 function _.new(i,at,txt) i.at=at or 0; i.txt=txt or ""; i.n,i.all = 0,{} end
 function _.add(i,x,n) 
@@ -146,6 +168,13 @@ function _.div(i,   n,e)
 
 function _.like(i,x,prior) return ((c.all[x] or 0) + the.m*prior)/(c.n+the.m) end
 --------------------------------------------------------------------------------
+-- ### RANGE
+-- - For a stream of `add`itions, incrementally maintain counts of `x` and `y`.
+-- - Summarize `x` as the `lo,hi` seen so far and summarize `y` in `SYM` counts 
+--   in `y.all` (and get counts there using `of`).
+-- - Support range sorting (`__lt`) and printing (`__tostring`).
+-- - Check if this range's `x` values `select`s for a particular row.
+-- - `Merge` adjacent ranges if the entropy of the whole is less than the parts.
 RANGE=obj"RANGE"
 function _.new(i,col,lo,hi,y) 
   i.cols, i.x, i.y = col, ({lo=lo or big, hi=hi or -big}), (y or  SYM()) end
@@ -171,7 +200,7 @@ function _.__tostring(i)
   elseif lo == -big then return fmt("%s < %s", x, hi)  
   else                   return fmt("%s <= %s < %s",lo,x,hi) end end
 
-function _.merged(i,j,n0,    k)
+function _.merge(i,j,n0,    k)
   if i.at == j.at then
     k = SYM(i.y.at, i.y.txt)
     i,j = i.y, j.y
@@ -180,6 +209,9 @@ function _.merged(i,j,n0,    k)
     if i.y.n<(n0 or 0) or j.y.n<(n0 or 0) or (ent(i)*i.n+ent(j)*j.n)/k.n > ent(k) 
     then return RANGE(i.col, i.lo, j.hi, k) end end end
 ---------------------------------------------------------------------------------
+-- ### ROW
+-- - Using knowledge of the `base` geometry of the data, support distance calcs
+-- i  (`__sub` and `around`) as well as multi-objective ranking (`__lt`).
 ROW=obj"ROW"
 function _.new(i,eg, cells) i.base,i.cells = eg,cells end
 function _.__lt(i,j,     s1,s2,e,y,a,b)
@@ -202,7 +234,11 @@ function _.__sub(i,j)
 function _.around(i,rows)
   return sort(map(rows or i.base.rows, function(j) return {dist=i-j,row=j} end), 
               lt"dist") end
---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+-- ### COLS
+-- - Factory for converting column `names` to `NUM`s ad `SYM`s. 
+-- - Store all columns in -- `all`, and for all columns we are not skipping, 
+--   store the independent and dependent columns distributions in `x` and `y`.
 COLS=obj"COLS"
 function _.new(i,names,     head,row,col)
   i.names=names; i.all={}; i.y={}; i.x={}
@@ -213,6 +249,15 @@ function _.new(i,names,     head,row,col)
       if txt:find"!$" then i.klass=col end
       push(col.goalp and i.y or i.x, col) end end end 
 -------------------------------------------------------------------------------
+-- ### EGS
+-- - For a stream of `add`itions, incrementally store rows, summarized in `cols`.
+-- - When `add`ing, build new rows for new data. Otherwise reuse rows across 
+--   multiple sets of examples.
+-- - Supporting `copy`ing of this structure, without or without rows of data.
+-- - Report how much this set of examples `like` a new row.   
+-- - Discretize columns as `ranges` that distinguish two sets of rows 
+--   (merging irrelevant distinctions).
+-- - Summarize the `mid`point of these examples.
 EGS=obj"EGS"
 function _.new(i,names) i.rows,i.cols = {}, COLS(names) end
 function _.load(f,   i)
@@ -263,13 +308,17 @@ function _merge(b4,        a,b,c,j,n,tmp)
 function _xpand(t) 
   for j=2,#t do t[j].lo=t[j-1].hi end; t[1].lo, t[#t].hi= -big,big; return t end 
 -------------------------------------------------------------------------------
+-- ## DEMOS
 local go,no={},{}
 
+-- Convert help string to a table. Check command line for any updates.
 function these(f1,f2,k,x)
   for n,flag in ipairs(arg) do if flag==f1 or flag==f2 then
     x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
   the[k] = string2thing(x) end 
 
+-- Run the demos, resetting settings and random number see before each.
+-- Return number of failures.
 function demos(    fails,names,defaults,status)
   fails=0     -- this code will return number of failures
   names, defaults = {},{}
@@ -286,25 +335,29 @@ function demos(    fails,names,defaults,status)
       fails = fails + 1 end end                  -- update fails
   return fails end                               -- return total failure count
 
+-- Simple stuff
 function go.the()     return type(the.bins)=="number" end
 function go.sort(  t) return 0==sort({100,3,4,2,10,0})[1] end
-
 function go.num(     n,mu,sd) 
   n, mu, sd = NUM(), 10, 1
   for i=1,10^4 do
     n:add(mu+sd*math.sqrt(-2*math.log(rand()))*math.cos(2*math.pi*rand())) end
   return math.abs(n.mu - mu) < 0.05 and math.abs(n.sd - sd) < 0.5 end 
 
+-- Can we read rows off the disk?
 function go.rows( n,m)
   m,n=0,0; for row in csv(the.file) do m=m+1; n=n+#row; end; return n/m==8 end
 
+-- Can we turn a list of names into columns?
 function go.cols(  i)
   i=COLS{"name","Age","ShoeSize-"}
   return i.y[1].w == -1 end
 
+-- Can we read data, summazized as columns?
 function go.egs(  it)
   it = EGS.load(the.file); return math.abs(2970 - it.cols.y[1].mu) < 1 end
 
+-- Can we discretize
 function go.ranges(  it,n,a,b)
   it = EGS.load(the.file)
   print(oo(rnds(it:mid())))
@@ -316,25 +369,25 @@ function go.ranges(  it,n,a,b)
   --oo(b:mid())
   return math.abs(2970 - it.cols.y[1].mu) < 1 end
 --------------------------------------------------------------------------------
-help:gsub(  -- parse help text for flags and defaults, check CLI for updates
-         "\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",these)
+-- ## Main
+-- Parse help text for flags and defaults, check CLI for updates. Maybe print
+-- the help (with some pretty colors). Run the demos. Check for rogue vars.
+-- Exit, reporting number of failures.
+help:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",these)
 if the.help then
   print(help:gsub("%u%u+", "\27[31m%1\27[0m")
             :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[33m%2\27[0m%3"),"")
 else 
-  local status = demos()
+  local fails = demos()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end  end
-  os.exit(status) end
---------------------------------------------------------------------------------
--- function SOME() return {all={}, ok=false, n=0} end
--- function some(i,x)
---   if x=="?" then return x end
---   i.n = 1 + i.n
---   if     #i.all < the.some     then i.ok=false; push(i.all, x) 
---   elseif rand() < the.some/i.n then i.ok=false; i.all[rand(#i.all)]=x end end 
---
--- function per(i,p)
---   i.all = i.ok and i.all or sort(i.all); i.ok=true 
---   return i.all[math.max(1, math.min(#i.all, (p or .5)*#i.all//1))] end
-
-
+  os.exit(fails) end
+--- function SOME() return {all={}, ok=false, n=0} end
+--- function some(i,x)
+---   if x=="?" then return x end
+---   i.n = 1 + i.n
+---   if     #i.all < the.some     then i.ok=false; push(i.all, x) 
+---   elseif rand() < the.some/i.n then i.ok=false; i.all[rand(#i.all)]=x end end 
+---
+--- function per(i,p)
+---   i.all = i.ok and i.all or sort(i.all); i.ok=true 
+---   return i.all[math.max(1, math.min(#i.all, (p or .5)*#i.all//1))] end
