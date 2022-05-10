@@ -22,8 +22,8 @@ retained with the works, so that any entity that uses the works is
 notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]] 
 
 local the={}
-local big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,like
-local map,merged,mid,mode,mu,norm,num,o,oo,pdf,per,push
+local _,big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,like,lt
+local map,merged,mid,mode,mu,norm,num,o,obj,oo,pdf,per,push
 local rand,range,rangeB4,rowB4, sort,some,same,sd,string2thing,sym,thes
 local NUM,SYM,RANGE,EGS,COLS,ROW
 for k,__ in pairs(_ENV) do b4[k]=k end
@@ -54,11 +54,14 @@ function same(x)      return x end
 function push(t,x)    t[1+#t]=x; return x end
 function sort(t,f)    table.sort(#t>0 and t or map(t,same), f); return t end
 function map(t,f, u)  u={};for k,v in pairs(t) do u[1+#u]=f(v) end; return u end
+function lt(x)        return function(a,b) return a[x] < b[x] end end
+function slice(t,i,j,k,     u) 
+  u={}; for n=(i or 1), (j or #t),(k or 1) do u[1+#u] = t[n] end return u end
 
 function string2thing(x)
-    x = x:match"^%s*(.-)%s*$"
-    if x=="true" then return true elseif x=="false" then return false end
-    return math.tointeger(x) or tonumber(x) or x  end
+  x = x:match"^%s*(.-)%s*$"
+  if x=="true" then return true elseif x=="false" then return false end
+  return math.tointeger(x) or tonumber(x) or x  end
 
 function csv(src)
   src = io.input(src)
@@ -97,17 +100,18 @@ function _.add(i,x,   d)
   i.hi = math.max(i.hi,x) end
 
 function _.bin(i,x,n,  b) b=(i.hi-i.lo)/n; return math.floor(x/b+0.5)*b end
-function _.norm(i,x) 
-  return i.hi-i.lo < 1E-10 and 0 or (x-i.lo)/(i.hi-i.lo+1/big) end
+function _.mid(i) return i.mu end
+
+function _.norm(i,x) return i.hi-i.lo<1E-9 and 0 or (x-i.lo)/(i.hi-i.lo+1/big)end
 
 function _.dist(i, x,y)
   if     x=="?" and y=="?" then return 1 end
-  if     x=="?"            then y = norm(i,y); x = y<.5 and 1 or 0 
-  elseif y=="?"            then x = norm(i,x); y = x<.5 and 1 or 0
-  else x,y = norm(i,x), norm(i,y) end
+  if     x=="?"            then y = i:norm(y); x = y<.5 and 1 or 0 
+  elseif y=="?"            then x = i:norm(x); y = x<.5 and 1 or 0
+  else x,y = i:norm(x), i:norm(y) end
   return math.abs(x - y) end
 
-function _.like(i,x,       e)
+function _.like(i,x,__,       e)
   return (x < i.mu - 4*i.sd and 0 or x > i.mu + 4*i.sd and 0 or
     2.7183^(-(x - i.mu)^2 / (z + 2*i.sd^2))/(z + (math.pi*2*i.sd^2)^.5)) end
 ---------------------------------------------------------------------------------
@@ -117,15 +121,19 @@ function _.add(i,x,n)
   if x=="?" then return x end
   i.n=i.n+1; i.all[x] = (n or 1) + (i.all[x] or 0) end
 
+function _.dist(i,x,y) return (a==b and 0 or 1) end
+
 function _.mid(i)
   m=0; for y,n in pairs(i.all) do if n>m then m,x=n,y end end; return x end
 
 function _.div(i,   n,e)
   e=0; for k,n in pairs(i.all) do e=e-n/i.n*math.log(n/i.n,2) end ;return e end
+
+function _.like(i,x,prior) return ((c.all[x] or 0) + the.m*prior)/(c.n+the.m) end
 --------------------------------------------------------------------------------
 RANGE=obj"RANGE"
 function _.new(i,col,lo,hi,y) 
-  i.cols, i.x, i.y = col, ({lo=lo or big, hi=hi or -bing}), (y or  SYM()) end
+  i.cols, i.x, i.y = col, ({lo=lo or big, hi=hi or -big}), (y or  SYM()) end
 
 function _.add(i,x,y)
   if x=="?" then return x end
@@ -158,13 +166,13 @@ function _.merged(i,j,n0,    k)
     then return RANGE(i.col, i.lo, j.hi, k) end end end
 ---------------------------------------------------------------------------------
 ROW=obj"ROW"
-function _.new(i,eg, cells) i.bast,i.eg = eg,cells end
+function _.new(i,eg, cells) i.base,i.cells = eg,cells end
 function _.__lt(i,j,     s1,s2,e,y,a,b)
   y = i.base.cols.y
   s1, s2, e = 0, 0,  math.exp(1)
   for __,col in pairs(y) do
-     a  = norm(col, i.cells[col.at])
-     b  = norm(col, j.cells[col.at])
+     a  = col:norm(i.cells[col.at])
+     b  = col:norm(j.cells[col.at])
      s1 = s1 - e^(col.w * (a - b) / #y)
      s2 = s2 - e^(col.w * (b - a) / #y) end
   return s1/#y < s2/#y end
@@ -172,33 +180,39 @@ function _.__lt(i,j,     s1,s2,e,y,a,b)
 function _.__sub(i,j)
   for __,col in pairs(i.base.cols.x) do
     a,b = i.cells[col.at], j.cells[col.at]
-    inc = a=="?" and b=="?" and 1 or c.nump and gap(c,a,b) or (a==b and 0 or 1)
+    inc = a=="?" and b=="?" and 1 or col:dist(a,b) 
     d   = d + inc^the.p end
   return (d / (#i.base.cols.x)) ^ (1/the.p) end
+
+function _.around(i,rows)
+  return sort(map(rows or i.base.rows, function(j) return {dist=i-j,row=j} end), 
+              lt"dist") end
 --------------------------------------------------------------------------------
 COLS=obj"COLS"
-function _.new(i,names,     head,row,i,col)
-  i={names=names, all={}, y={}, x={}}
+function _.new(i,names,     head,row,col)
+  i.names=names; i.all={}; i.y={}; i.x={}
   for at,txt in pairs(names) do
     col       = push(i.all, (txt:find"^[A-Z]" and NUM or SYM)(at, txt))
     col.goalp = txt:find"[!+-]$" and true or false
     if not txt:find":$" then 
       if txt:find"!$" then i.klass=col end
-      push(col.goalp and i.y or i.x, col) end end  
-  return i end 
+      push(col.goalp and i.y or i.x, col) end end end 
 -------------------------------------------------------------------------------
 EGS=obj"EGS"
 function _.new(i,names) i.rows,i.cols = {}, COLS(names) end
-function _.add(i,row,    t) 
-  t = push(i.rows, row.cells and row or ROW(i,row)).cells
-  for n,col in pairs(i.cols.all) do (col.nump and num or sym)(col, t[n]) end end
+function _.load(f,   i)
+  for row in csv(the.file) do if i then i:add(row) else i=EGS(row) end end
+  return i end
+ 
+function _.add(i,row,    cells) 
+  cells = push(i.rows, row.cells and row or ROW(i,row)).cells
+  for n,col in pairs(i.cols.all) do col:add(cells[n]) end end
 
 function _.mid(i,cols) 
-  cols = cols or i.cols.y
-  return map(cols,function(col) return col.nump and col.mu or mode(col) end) end
+  return map(cols or i.cols.y, function(c) return c:mid() end) end
 
 function _.copy(i,rows,  j)
-  j=EGS(i.cols.names);for __,row in pairs({} or rows) do eg(j,row)end;return j end
+  j=EGS(i.cols.names); for __,r in pairs({} or rows) do j:add(r) end;return j end
 
 function _.like(i,t,overall, nHypotheses,      c)
   prior = (#i.rows + the.k) / (overall + the.k * nHypotheses)
@@ -206,9 +220,33 @@ function _.like(i,t,overall, nHypotheses,      c)
   for at,x in pairs(t) do
     c=i.cols.all.at[at]
     if x~="?" and not c.goalp then
-      inc=c.nump and pdf(c,x) or (((c.all[x] or 0) + the.m*prior) / (c.n+the.m)) 
-      like = like + math.log(inc) end end 
+      like = math.log(col:like(x)) + like end end
   return like end
+
+local _merge, _xpand, _ranges
+function _.ranges(i,one,two,   t)
+  t={}; for _,c in pairs(i.cols.x) do t[c.at]=_ranges(c,one,two) end;return t end
+
+function _ranges(col,yes,no,    out,x,d)
+  out = {}
+  for _,what in pairs{{rows=yes, klass=true}, {rows=no, klass=false}} do
+    for _,row in pairs(what.rows) do x = row.cells[col.at]; if x~="?" then
+      d = col:discretize(x,the.bins)
+      out[d] = out[d] or RANGE{col,x,x}
+      out[d]:add(x, what.klass) end end end 
+  return _xpand(_merge(sort(out)))  end 
+
+function _merge(b4,        a,b,c,j,n,tmp)
+  j,n,tmp = 1,#b4,{}
+  while j<=n do 
+    a, b = b4[j], b4[j+1]
+    if b then c = a:merged(b); if c then a,j = c,j+1 end end
+    tmp[#tmp+1] = a
+    j = j+1 end
+  return #tmp==#b4 and tmp or _merge(tmp) end
+
+function _xpand(t) 
+  for j=2,#t do t[j].lo=t[j-1].hi end; t[1].lo, t[#t].hi= -big,big; return t end 
 -------------------------------------------------------------------------------
 local go,no={},{}
 
@@ -217,13 +255,13 @@ function thes(f1,f2,k,x)
     x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
   the[k] = string2thing(x) end 
 
-function demos(    fails,tmp,defaults)
+function demos(    fails,names,defaults,status)
   fails=0     -- this code will return number of failures
-  tmp, defaults = {},{}
-  for k,f in pairs(go) do if type(f)=="function" then push(tmp,k) end end 
+  names, defaults = {},{}
+  for k,f in pairs(go) do if type(f)=="function" then push(names,k) end end 
   for k,v in pairs(the) do defaults[k]=v end
-  if go[the.todo] then tmp={the.todo} end
-  for __,one in pairs(sort(tmp))  do              -- for all we want to do
+  if go[the.go] then names={the.go} end
+  for __,one in pairs(sort(names))  do           -- for all we want to do
     for k,v in pairs(defaults) do the[k]=v end   -- set settings to defaults
     math.randomseed(the.seed or 10019)           -- reset random number seed
     io.stderr:write(".")
@@ -239,18 +277,26 @@ function go.sort(  t) return 0==sort({100,3,4,2,10,0})[1] end
 function go.num(     n,mu,sd) 
   n, mu, sd = NUM(), 10, 1
   for i=1,10^4 do
-    num(n,(mu+sd*math.sqrt(-2*math.log(rand()))*math.cos(2*math.pi*rand()))) end
+    n:add(mu+sd*math.sqrt(-2*math.log(rand()))*math.cos(2*math.pi*rand())) end
   return math.abs(n.mu - mu) < 0.05 and math.abs(n.sd - sd) < 0.5 end 
 
 function go.rows( n,m)
-  m,n=0,0; for row in csv(the.file) do m=m+1; n=n+#row end; return n/m==8 end
+  m,n=0,0; for row in csv(the.file) do m=m+1; n=n+#row; end; return n/m==8 end
 
 function go.cols(  i)
   i=COLS{"name","Age","ShoeSize-"}
-  return i.y[1].goalp end
+  return i.y[1].w == -1 end
 
 function go.egs(  it)
-  for row in csv(the.file) do if it then eg(it,row) else it=EGS(row) end end 
+  it = EGS.load(the.file); return math.abs(2970 - it.cols.y[1].mu) < 1 end
+
+function go.ranges(  it,n)
+  it = EGS.load(the.file)
+  it.rows = sort(it.rows)
+  n = (#it.rows)^.5
+  a,b = it:copy(slice(it.rows,1,n)), it:copy(slice(it.rows(n+1,#it.rows)))
+  oo(a:mid())
+  oo(b:mid())
   return math.abs(2970 - it.cols.y[1].mu) < 1 end
 --------------------------------------------------------------------------------
 help:gsub(  -- parse help text for flags and defaults, check CLI for updates
@@ -273,3 +319,5 @@ else
 -- function per(i,p)
 --   i.all = i.ok and i.all or sort(i.all); i.ok=true 
 --   return i.all[math.max(1, math.min(#i.all, (p or .5)*#i.all//1))] end
+
+
