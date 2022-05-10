@@ -11,21 +11,33 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
 &copy;2022, <a href="mailto:timm@ieee.org">Tim Menzies</a>
 <br clear=all>
 <ul>
-<li>After <em>N</em> samples, we can find an event of probability <em>P</em> with confidence<br><em>C=1-(1-P) <sup>N</sup></em>. Rearranged, this means that  <em>N=log(1-C)/log(1-P)</em>.
-<li>
-Now suppose some order predict can sort examples into a linear list, with  <em>p</em> best examples.
-Then with confidence  <em>C</em>, after  <em>N=log2(log(1-C)/log(1-P))</em> random probes,
-we can find the best  <em>P</em> percent of those examples.
-<li>
-Statisticians tell us that it is hard to distinguish items that are less that .2*&sigma;</em> apart. 
-Therefore,  for items across &pm;4&sigma;</em> has a top region of size  <em>P=.35/8=4.%</em> that is indistinguishable from the top item.
-<li> This
-means that
-at confidence  <em>C=0.99</em>, <em>N=7</em>  random samples should be enough to find that best region.
-<li>
-Is that true? Well, lets find out. Let load some items, sort them using the Zitzler predicate, and label the top 4.4% as "best!"
-(this is our ground truth).  Then lets pick 3 items at random, sort them (using Zitzler), and analyze all items
-by their likelihood of being "best?" (nearest the top item) or "rest?" (i.e. not "best?"). After that, then loop over
-evaluated the most likely item, sort all the evaluated, and re-analyze all items as likely to be "best?" or "rest?".
+
+<li>After <em>N</em> samples, we can find an event of probability
+<em>P</em> with confidence<br><em>C=1-(1-P) <sup>N</sup></em>.
+Rearranged, this means that  <em>N=log(1-C)/log(1-P)</em>.
+
+<li> Now suppose some order predict can sort examples into a linear
+list, with  <em>p</em> best examples.  Then with confidence
+<em>C</em>, after  <em>N=log2(log(1-C)/log(1-P))</em> random probes,
+we can find those best  <em>P</em>.
+
+<li> Statisticians tell us that it is hard to distinguish items
+that are less that .2*&sigma;</em> apart.  Therefore,  for items
+across &pm;4&sigma;</em> has a top region of size  <em>P=.35/8=4.%</em>
+that is indistinguishable from the top item.
+
+<li> This means that at confidence  <em>C=0.99</em>, <em>N=7</em>
+random samples should be enough to find that best region.
+
+<li> Is that true? Well, lets find out. Let load some items, sort
+them using the Zitzler predicate, and label the top 4.4% as "best!"
+(this is our ground truth).  Then lets pick 3 items at random, sort
+them (using Zitzler), and analyze all items by their likelihood of
+being "best?" (nearest the top item) or "rest?" (i.e. not "best?").
+After that, then loop over evaluated the most likely item, sort all
+the evaluated, and re-analyze all items as likely to be "best?" or
+"rest?".
+
 <li> How long before we have rules that can identify the "best!"?
+
 </ul>

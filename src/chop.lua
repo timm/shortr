@@ -1,11 +1,11 @@
 --- vim: ts=2 sw=2 et:
 local b4,help = {},[[ 
-SAW2: best or rest multi-objective optimization.
+CHOP: best or rest multi-objective optimization.
 (c) 2022 Tim Menzies, timm@ieee.org
 "I think the highest and lowest points are the important ones. 
  Anything else is just...in between." ~ Jim Morrison
 
-USAGE: lua saw2.lua [OPTIONS]
+USAGE: lua chop.lua [OPTIONS]
  
 OPTIONS:
   -b  --bins  max bins                 = 16
@@ -24,14 +24,11 @@ Usage of the works is permitted provided that this instrument is
 retained with the works, so that any entity that uses the works is
 notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]] 
 -- ## Coding Conventions
--- 
 -- - _Separate policy from mechanism:_
 --   All "magic parameters" that control code behavior should be part
 --   of that help text. Allow for `-h` on the command line to print
 --   help.  Parse that string to set the options.
--- - _Encapsulation:_ Use polymorphism but no inheritance (simpler
---   debugging). Use UPPERCASE for class names. All classes get a `new` constructor.
--- - _Dialogue independence_: Isolate and separate operating system interaction.
+--   _Dialogue independence_: Isolate and separate operating system interaction.
 -- - _Test-driven development_: The `go` functions store tests.
 --   Tests should be silent unless they --   fail. ~tests can be
 --   disabled by renaming from `go.fun` to `no.fun`. Tests should
@@ -43,11 +40,21 @@ notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]]
 --   last created class/ Use `__` for anonymous variable.s Minimize
 --   use of local (exception: define all functions as local at top of
 --   file).
--- 
+-- - _Encapsulation:_ Use polymorphism but no inheritance (simpler
+--   debugging).  All classes get a `new` constructor.
+--   Use UPPERCASE for class names. 
+--    
 -- ## About the Learning
--- 
+-- - Data is stored in ROWS
 -- - Beware missing values (marked in "?") and avoid them
 -- - Where possible all learning should be  incremental.
+-- - Standard deviation and entropy generalized to `div` (diversity);
+-- - Mean and mode generalized to `mid` (middle);
+-- - Rows are created once and shared between different sets of
+--   examples (so we can accumulate statistics on how we are progressing
+--   inside each row). 
+-- - When a row is first created, it is assigned to a `base`; i.e.
+--   a place to store the `lo,hi` values for all numerics.
 -- - XXX tables very sueful
 -- - XXX table have cols. cols are num, syms. ranges 
 
@@ -76,9 +83,8 @@ function map(t,f, u)  u={};for k,v in pairs(t) do u[1+#u]=f(v) end; return u end
 function push(t,x)    t[1+#t]=x; return x end
 function slice(t,i,j,k,     u) 
   i,j = i or 1,j or #t
-  k   = (k or 1)
-  k   = (j - i)/n
-  u={}; for n=i,j,k do u[1+#u] = t[n] end return u end
+  k   = (k and (j-i)/k or 1)
+  u={}; for n=i,j,k//1 do u[1+#u] = t[n] end return u end
 
 -- "Strings 2 things" coercion. 
 function string2thing(x)
@@ -87,7 +93,7 @@ function string2thing(x)
   return math.tointeger(x) or tonumber(x) or x  end
 
 function csv(csvfile) 
-  file = io.input(csvfile)
+  csvfile = io.input(csvfile)
   return function(line, row) 
     line=io.read()
     if not line then io.close(csvfile) else
@@ -341,6 +347,13 @@ function demos(    fails,names,defaults,status)
 -- Simple stuff
 function go.the()     return type(the.bins)=="number" end
 function go.sort(  t) return 0==sort({100,3,4,2,10,0})[1] end
+function go.slice( t,u)
+  t={10,20,30,40,50,60,70,80,90.100,110,120,130,140}
+  u=slice(t,3,#t,3)
+  t=slice(t,3,5)
+  oo(u)
+  return #t==3 end
+
 function go.num(     n,mu,sd) 
   n, mu, sd = NUM(), 10, 1
   for i=1,10^4 do
@@ -366,6 +379,7 @@ function go.ranges(  it,n,a,b)
   print(oo(rnds(it:mid())))
   it.rows = sort(it.rows)
   n = (#it.rows)^.5  
+  print(n)
   a,b = slice(it.rows,1,n), slice(it.rows,n+1,#it.rows,3*n)
   print(o(rnds(it:copy(a):mid())), o(rnds(it:copy(b):mid())))
   --oo(a:mid())
@@ -373,6 +387,7 @@ function go.ranges(  it,n,a,b)
   return math.abs(2970 - it.cols.y[1].mu) < 1 end
 --------------------------------------------------------------------------------
 -- ## Main
+
 -- - Parse help text for flags and defaults, check CLI for updates. 
 -- - Maybe print the help (with some pretty colors). 
 -- - Run the demos. 
