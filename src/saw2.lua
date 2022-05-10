@@ -299,7 +299,7 @@ function go.ranges(  it,n,a,b)
   it = EGS.load(the.file)
   print(oo(rnds(it:mid())))
   it.rows = sort(it.rows)
-  n = (#it.rows)^.5
+  n = (#it.rows)^.5  
   a,b = slice(it.rows,1,n), slice(it.rows,n+1,#it.rows)
   print(o(rnds(it:copy(a):mid())), o(rnds(it:copy(b):mid())))
   --oo(a:mid())
