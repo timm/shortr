@@ -74,7 +74,7 @@ $D/docs/%.html: %.lua ../etc/dhead Makefile
 	@echo "html-ing  $@ ..."
 	@sed '/---/d' $< >> $D/docs/$<
 	@docco -o $D/docs $D/docs/$< > /dev/null
-	@gawk -i inplace '/<h1>/{while(getline line<"../etc/dhead")print line} 1' $@ 
+	@gawk -i inplace '!No && /<div class="sswrap ">/{while(getline line<"../etc/dhead")print line; No=1} 1' $@ 
 	@rm -rf $D/docs/$<
 	@cp $D/etc/docco.css $D/docs/
 

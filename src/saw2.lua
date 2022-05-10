@@ -1,29 +1,4 @@
 --- vim: ts=2 sw=2 et:
--- ## Coding Conventions
--- 
--- - _Separate policy from mechanism:_ 
---   All "magic parameters" that control code behavior should
---   be part of that help text. Allow for `-h` on the command line
---   to print help.  Parse that string to set the options.
--- - _Encapsulation:_ Use polymorphic but not inheritance (simpler debugging).
---   Use UPPERCASE for class names. All classes need a `new` constructor.
--- - _Dialogue independence_: Isolate and separate operating system interaction.
--- - _Test-driven development_: The `go` functions store tests. 
---   Tests should be silent unless they --   fail. ~tests can be disabled by 
---   renaming from `go.fun` to `no.fun`. Tests should return `true` if the 
---   test passes.  On exit, return number of failed tests.
--- - Less is more:_ Code 80 chars wide, or less.  Functions in 1 line, 
---   if you can. Indent with two spaces. Divide code into 120 line (or less) pages.
---   Use `i` instead of `self`. Use `_` to denote the last created class/
---   Use `__` for anonymous variable.s
---   Minimize use of local (exception: define all functions as local 
---   at top of file).
---
--- ## About the Learning
--- 
--- - Beware missing values (marked in "?") and avoid them
--- - Where possible all learning should be  incremental.
--------------------------------------------------------------------------------
 local b4,help = {},[[ 
 SAW2: best or rest multi-objective optimization.
 (c) 2022 Tim Menzies, timm@ieee.org
@@ -48,6 +23,34 @@ OPTIONS (other):
 Usage of the works is permitted provided that this instrument is
 retained with the works, so that any entity that uses the works is
 notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]] 
+-- ## Coding Conventions
+-- 
+-- - _Separate policy from mechanism:_
+--   All "magic parameters" that control code behavior should be part
+--   of that help text. Allow for `-h` on the command line to print
+--   help.  Parse that string to set the options.
+-- - _Encapsulation:_ Use polymorphism but no inheritance (simpler
+--   debugging). Use UPPERCASE for class names. All classes get a `new` constructor.
+-- - _Dialogue independence_: Isolate and separate operating system interaction.
+-- - _Test-driven development_: The `go` functions store tests.
+--   Tests should be silent unless they --   fail. ~tests can be
+--   disabled by renaming from `go.fun` to `no.fun`. Tests should
+--   return `true` if the test passes.  On exit, return number of
+--   failed tests.
+-- - _Less is more:_ Code 80 chars wide, or less.  Functions in 1 line,
+--   if you can. Indent with two spaces. Divide code into 120 line (or
+--   less) pages.  Use `i` instead of `self`. Use `_` to denote the
+--   last created class/ Use `__` for anonymous variable.s Minimize
+--   use of local (exception: define all functions as local at top of
+--   file).
+-- 
+-- ## About the Learning
+-- 
+-- - Beware missing values (marked in "?") and avoid them
+-- - Where possible all learning should be  incremental.
+-- - XXX tables very sueful
+-- - XXX table have cols. cols are num, syms. ranges 
+
 --------------------------------------------------------------------------------
 -- ## Namespace
 local the={}
@@ -55,7 +58,7 @@ local _,big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,like,lt
 local map,merged,mid,mode,mu,norm,num,o,obj,oo,pdf,per,push
 local rand,range,rangeB4,rnd,rnds,rowB4,slice,sort,some,same,sd,string2thing,sym,these
 local NUM,SYM,RANGE,EGS,COLS,ROW
-for k,__ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
+for k,__ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
 --------------------------------------------------------------------------------
 -- ## Utils
 -- Misc
@@ -233,7 +236,7 @@ function _.__sub(i,j)
 
 function _.around(i,rows)
   return sort(map(rows or i.base.rows, function(j) return {dist=i-j,row=j} end), 
-              lt"dist") end
+              lt"dist") end
 ---------------------------------------------------------------------------------
 -- ### COLS
 -- - Factory for converting column `names` to `NUM`s ad `SYM`s. 
@@ -281,7 +284,7 @@ function _.like(i,t,overall, nHypotheses,      c)
     c=i.cols.all.at[at]
     if x~="?" and not c.goalp then
       like = math.log(col:like(x)) + like end end
-  return like end
+  return like end
 
 local _merge, _xpand, _ranges
 function _.ranges(i,one,two,   t)
@@ -306,7 +309,7 @@ function _merge(b4,        a,b,c,j,n,tmp)
   return #tmp==#b4 and tmp or _merge(tmp) end
 
 function _xpand(t) 
-  for j=2,#t do t[j].lo=t[j-1].hi end; t[1].lo, t[#t].hi= -big,big; return t end 
+  for j=2,#t do t[j].lo=t[j-1].hi end; t[1].lo, t[#t].hi= -big,big;return t end
 -------------------------------------------------------------------------------
 -- ## DEMOS
 local go,no={},{}
@@ -367,12 +370,14 @@ function go.ranges(  it,n,a,b)
   print(o(rnds(it:copy(a):mid())), o(rnds(it:copy(b):mid())))
   --oo(a:mid())
   --oo(b:mid())
-  return math.abs(2970 - it.cols.y[1].mu) < 1 end
+  return math.abs(2970 - it.cols.y[1].mu) < 1 end
 --------------------------------------------------------------------------------
 -- ## Main
--- Parse help text for flags and defaults, check CLI for updates. Maybe print
--- the help (with some pretty colors). Run the demos. Check for rogue vars.
--- Exit, reporting number of failures.
+-- - Parse help text for flags and defaults, check CLI for updates. 
+-- - Maybe print the help (with some pretty colors). 
+-- - Run the demos. 
+-- - Check for rogue vars.
+-- - Exit, reporting number of failures.
 help:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",these)
 if the.help then
   print(help:gsub("%u%u+", "\27[31m%1\27[0m")

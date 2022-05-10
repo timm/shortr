@@ -15,20 +15,6 @@
         
           <li id="title">
               <div class="annotation">
-<a href="tricks.html">tricks</a>
-::   <a href="think.html">think</a> 
-:: &copy;2022, <a href="mailto:timm@ieee.org">Tim Menzies</a>
-<hr><img 
-align=right width=250 src=heads2.png>
-<a 
-href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <img 
-src="https://img.shields.io/badge/platform-osx,linux-informational?logo=linux&logoColor=white&color=red"> <img 
-src="https://img.shields.io/badge/purpose-se,ai-informational?logo=hyper&logoColor=white&color=orange"> <img 
-src="https://img.shields.io/badge/language-lua-informational?logo=lua&logoColor=white&color=yellow"> <a
-href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a
-href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://img.shields.io/badge/license-BSD2-informational?logo=adblock&logoColor=white&color=blueviolet"></a>
-<br>
-
                   <h1>saw2.lua</h1>
               </div>
           </li>
@@ -38,35 +24,41 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
         <li id="section-1">
             <div class="annotation">
               
+<img 
+align=right width=250 src=heads2.png>
+<a 
+href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <img 
+src="https://img.shields.io/badge/platform-osx,linux-informational?logo=linux&logoColor=white&color=red"> <img 
+src="https://img.shields.io/badge/purpose-se,ai-informational?logo=hyper&logoColor=white&color=orange"> <img 
+src="https://img.shields.io/badge/language-lua-informational?logo=lua&logoColor=white&color=yellow"> <a
+href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a
+href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://img.shields.io/badge/license-BSD2-informational?logo=adblock&logoColor=white&color=blueviolet"></a>
+<br>
+&copy;2022, <a href="mailto:timm@ieee.org">Tim Menzies</a>
+<br clear=all>
+<ul>
+<li>After <em>N</em> samples, we can find an event of probability <em>P</em> with confidence<br><em>C=1-(1-P) <sup>N</sup></em>. Rearranged, this means that  <em>N=log(1-C)/log(1-P)</em>.
+<li>
+Now suppose some order predict can sort examples into a linear list, with  <em>p</em> best examples.
+Then with confidence  <em>C</em>, after  <em>N=log2(log(1-C)/log(1-P))</em> random probes,
+we can find the best  <em>P</em> percent of those examples.
+<li>
+Statisticians tell us that it is hard to distinguish items that are less that .2*&sigma;</em> apart. 
+Therefore,  for items across &pm;4&sigma;</em> has a top region of size  <em>P=.35/8=4.%</em> that is indistinguishable from the top item.
+<li> This
+means that
+at confidence  <em>C=0.99</em>, <em>N=7</em>  random samples should be enough to find that best region.
+<li>
+Is that true? Well, lets find out. Let load some items, sort them using the Zitzler predicate, and label the top 4.4% as "best!"
+(this is our ground truth).  Then lets pick 3 items at random, sort them (using Zitzler), and analyze all items
+by their likelihood of being "best?" (nearest the top item) or "rest?" (not "best?"). After that, then loop over
+evaluated the most likely item, sort all the evaluated, and re-analyze all items as likely to be "best?" or "rest?".
+<li> How long before we have rules that can identify the "best!"?
+</ul>
               <div class="sswrap ">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              <h2 id="coding-conventions">Coding Conventions</h2>
-<ul>
-<li><em>Separate policy from mechanism:</em> 
-All “magic parameters” that control code behavior should
-be part of that help text. Allow for <code>-h</code> on the command line
-to print help.  Parse that string to set the options.</li>
-<li><em>Encapsulation:</em> Use polymorphic but not inheritance (simpler debugging).
-Use UPPERCASE for class names. All classes need a <code>new</code> constructor.</li>
-<li><em>Dialogue independence</em>: Isolate and separate operating system interaction.</li>
-<li><em>Test-driven development</em>: The <code>go</code> functions store tests. 
-Tests should be silent unless they –   fail. ~tests can be disabled by 
-renaming from <code>go.fun</code> to <code>no.fun</code>. Tests should return <code>true</code> if the 
-test passes.  On exit, return number of failed tests.</li>
-<li>Less is more:_ Code 80 chars wide, or less.  Functions in 1 line, 
-if you can. Indent with two spaces. Divide code into 120 line (or less) pages.
-Use <code>i</code> instead of <code>self</code>. Use <code>_</code> to denote the last created class/
-Use <code>__</code> for anonymous variable.s
-Minimize use of local (exception: define all functions as local 
-at top of file).</li>
-</ul>
-<h2 id="about-the-learning">About the Learning</h2>
-<ul>
-<li>Beware missing values (marked in “?”) and avoid them</li>
-<li>Where possible all learning should be  incremental.</li>
-</ul>
-
+              
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> b4,help = {},<span class="hljs-string">[[ 
@@ -103,16 +95,36 @@ notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]]</span
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
               </div>
-              <h2 id="namespace">Namespace</h2>
+              <h2 id="coding-conventions">Coding Conventions</h2>
+<ul>
+<li><em>Separate policy from mechanism:</em>
+All “magic parameters” that control code behavior should be part
+of that help text. Allow for <code>-h</code> on the command line to print
+help.  Parse that string to set the options.</li>
+<li><em>Encapsulation:</em> Use polymorphism but no inheritance (simpler
+debugging). Use UPPERCASE for class names. All classes get a <code>new</code> constructor.</li>
+<li><em>Dialogue independence</em>: Isolate and separate operating system interaction.</li>
+<li><em>Test-driven development</em>: The <code>go</code> functions store tests.
+Tests should be silent unless they –   fail. ~tests can be
+disabled by renaming from <code>go.fun</code> to <code>no.fun</code>. Tests should
+return <code>true</code> if the test passes.  On exit, return number of
+failed tests.</li>
+<li><em>Less is more:</em> Code 80 chars wide, or less.  Functions in 1 line,
+if you can. Indent with two spaces. Divide code into 120 line (or
+less) pages.  Use <code>i</code> instead of <code>self</code>. Use <code>_</code> to denote the
+last created class/ Use <code>__</code> for anonymous variable.s Minimize
+use of local (exception: define all functions as local at top of
+file).</li>
+</ul>
+<h2 id="about-the-learning">About the Learning</h2>
+<ul>
+<li>Beware missing values (marked in “?”) and avoid them</li>
+<li>Where possible all learning should be  incremental.</li>
+<li>XXX tables very sueful</li>
+<li>XXX table have cols. cols are num, syms. ranges</li>
+</ul>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> the={}
-<span class="hljs-keyword">local</span> _,big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,like,lt
-<span class="hljs-keyword">local</span> map,merged,mid,mode,mu,norm,num,o,obj,oo,pdf,per,push
-<span class="hljs-keyword">local</span> rand,range,rangeB4,rnd,rnds,rowB4,slice,<span class="hljs-built_in">sort</span>,some,same,sd,string2thing,sym,these
-<span class="hljs-keyword">local</span> NUM,SYM,RANGE,EGS,COLS,ROW
-<span class="hljs-keyword">for</span> k,__ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span> <span class="hljs-comment">-- At end, use `b4` to find rogue vars.</span></pre></div></div>
             
         </li>
         
@@ -122,6 +134,26 @@ notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]]</span
               
               <div class="sswrap ">
                 <a class="ss" href="#section-3">&#x00a7;</a>
+              </div>
+              <h2 id="namespace">Namespace</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> the={}
+<span class="hljs-keyword">local</span> _,big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,like,lt
+<span class="hljs-keyword">local</span> map,merged,mid,mode,mu,norm,num,o,obj,oo,pdf,per,push
+<span class="hljs-keyword">local</span> rand,range,rangeB4,rnd,rnds,rowB4,slice,<span class="hljs-built_in">sort</span>,some,same,sd,string2thing,sym,these
+<span class="hljs-keyword">local</span> NUM,SYM,RANGE,EGS,COLS,ROW
+<span class="hljs-keyword">for</span> k,__ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span> <span class="hljs-comment">-- At end, use `b4` to find rogue vars.</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
               <h2 id="utils">Utils</h2>
 <p>Misc</p>
@@ -136,11 +168,11 @@ same = <span class="hljs-function"><span class="hljs-keyword">function</span><sp
         </li>
         
         
-        <li id="section-4">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-4">&#x00a7;</a>
+                <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
               <p>Sorting</p>
 
@@ -152,11 +184,11 @@ same = <span class="hljs-function"><span class="hljs-keyword">function</span><sp
         </li>
         
         
-        <li id="section-5">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-5">&#x00a7;</a>
+                <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
               <p>Query and update</p>
 
@@ -173,11 +205,11 @@ same = <span class="hljs-function"><span class="hljs-keyword">function</span><sp
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-6">&#x00a7;</a>
+                <a class="ss" href="#section-7">&#x00a7;</a>
               </div>
               <p>“Strings 2 things” coercion. </p>
 
@@ -199,11 +231,11 @@ same = <span class="hljs-function"><span class="hljs-keyword">function</span><sp
         </li>
         
         
-        <li id="section-7">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-7">&#x00a7;</a>
+                <a class="ss" href="#section-8">&#x00a7;</a>
               </div>
               <p>“Things 2 strings” coercion.</p>
 
@@ -222,11 +254,11 @@ same = <span class="hljs-function"><span class="hljs-keyword">function</span><sp
         </li>
         
         
-        <li id="section-8">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-8">&#x00a7;</a>
+                <a class="ss" href="#section-9">&#x00a7;</a>
               </div>
               <p>Polymorphic objects.</p>
 
@@ -242,11 +274,11 @@ same = <span class="hljs-function"><span class="hljs-keyword">function</span><sp
         </li>
         
         
-        <li id="section-9">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-9">&#x00a7;</a>
+                <a class="ss" href="#section-10">&#x00a7;</a>
               </div>
               <h2 id="objects">Objects</h2>
 
@@ -255,11 +287,11 @@ same = <span class="hljs-function"><span class="hljs-keyword">function</span><sp
         </li>
         
         
-        <li id="section-10">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-10">&#x00a7;</a>
+                <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
               <h3 id="num">NUM</h3>
 <ul>
@@ -304,11 +336,11 @@ same = <span class="hljs-function"><span class="hljs-keyword">function</span><sp
         </li>
         
         
-        <li id="section-11">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-11">&#x00a7;</a>
+                <a class="ss" href="#section-12">&#x00a7;</a>
               </div>
               <h3 id="sym">SYM</h3>
 <ul>
@@ -339,11 +371,11 @@ same = <span class="hljs-function"><span class="hljs-keyword">function</span><sp
         </li>
         
         
-        <li id="section-12">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-12">&#x00a7;</a>
+                <a class="ss" href="#section-13">&#x00a7;</a>
               </div>
               <h3 id="range">RANGE</h3>
 <ul>
@@ -394,11 +426,11 @@ in <code>y.all</code> (and get counts there using <code>of</code>).</li>
         </li>
         
         
-        <li id="section-13">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-13">&#x00a7;</a>
+                <a class="ss" href="#section-14">&#x00a7;</a>
               </div>
               <h3 id="row">ROW</h3>
 <ul>
@@ -434,11 +466,11 @@ i  (<code>__sub</code> and <code>around</code>) as well as multi-objective ranki
         </li>
         
         
-        <li id="section-14">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-14">&#x00a7;</a>
+                <a class="ss" href="#section-15">&#x00a7;</a>
               </div>
               <h3 id="cols">COLS</h3>
 <ul>
@@ -462,11 +494,11 @@ store the independent and dependent columns distributions in <code>x</code> and 
         </li>
         
         
-        <li id="section-15">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-15">&#x00a7;</a>
+                <a class="ss" href="#section-16">&#x00a7;</a>
               </div>
               <h3 id="egs">EGS</h3>
 <ul>
@@ -505,7 +537,7 @@ multiple sets of examples.</li>
     c=i.cols.all.at[at]
     <span class="hljs-keyword">if</span> x~=<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> c.goalp <span class="hljs-keyword">then</span>
       like = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(col:like(x)) + like <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> like <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> like <span class="hljs-keyword">end</span>
 
 <span class="hljs-keyword">local</span> _merge, _xpand, _ranges
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.ranges</span><span class="hljs-params">(i,one,two,   t)</span></span>
@@ -530,16 +562,16 @@ multiple sets of examples.</li>
   <span class="hljs-keyword">return</span> #tmp==#b4 <span class="hljs-keyword">and</span> tmp <span class="hljs-keyword">or</span> _merge(tmp) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_xpand</span><span class="hljs-params">(t)</span></span> 
-  <span class="hljs-keyword">for</span> j=<span class="hljs-number">2</span>,#t <span class="hljs-keyword">do</span> t[j].lo=t[j<span class="hljs-number">-1</span>].hi <span class="hljs-keyword">end</span>; t[<span class="hljs-number">1</span>].lo, t[#t].hi= -big,big; <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">for</span> j=<span class="hljs-number">2</span>,#t <span class="hljs-keyword">do</span> t[j].lo=t[j<span class="hljs-number">-1</span>].hi <span class="hljs-keyword">end</span>; t[<span class="hljs-number">1</span>].lo, t[#t].hi= -big,big;<span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-16">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-16">&#x00a7;</a>
+                <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
               <h2 id="demos">DEMOS</h2>
 
@@ -550,11 +582,11 @@ multiple sets of examples.</li>
         </li>
         
         
-        <li id="section-17">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-17">&#x00a7;</a>
+                <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
               <p>Convert help string to a table. Check command line for any updates.</p>
 
@@ -568,11 +600,11 @@ multiple sets of examples.</li>
         </li>
         
         
-        <li id="section-18">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-18">&#x00a7;</a>
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
               <p>Run the demos, resetting settings and random number see before each.
 Return number of failures.</p>
@@ -598,11 +630,11 @@ Return number of failures.</p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
               <p>Simple stuff</p>
 
@@ -619,11 +651,11 @@ Return number of failures.</p>
         </li>
         
         
-        <li id="section-20">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
               <p>Can we read rows off the disk?</p>
 
@@ -635,11 +667,11 @@ Return number of failures.</p>
         </li>
         
         
-        <li id="section-21">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-21">&#x00a7;</a>
+                <a class="ss" href="#section-22">&#x00a7;</a>
               </div>
               <p>Can we turn a list of names into columns?</p>
 
@@ -652,11 +684,11 @@ Return number of failures.</p>
         </li>
         
         
-        <li id="section-22">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-22">&#x00a7;</a>
+                <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
               <p>Can we read data, summazized as columns?</p>
 
@@ -668,11 +700,11 @@ Return number of failures.</p>
         </li>
         
         
-        <li id="section-23">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-23">&#x00a7;</a>
+                <a class="ss" href="#section-24">&#x00a7;</a>
               </div>
               <p>Can we discretize</p>
 
@@ -689,11 +721,11 @@ Return number of failures.</p>
         </li>
         
         
-        <li id="section-24">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
+                <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
               <p>oo(a:mid())
 oo(b:mid())</p>
@@ -705,16 +737,20 @@ oo(b:mid())</p>
         </li>
         
         
-        <li id="section-25">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-25">&#x00a7;</a>
+                <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
               <h2 id="main">Main</h2>
-<p>Parse help text for flags and defaults, check CLI for updates. Maybe print
-the help (with some pretty colors). Run the demos. Check for rogue vars.
-Exit, reporting number of failures.</p>
+<ul>
+<li>Parse help text for flags and defaults, check CLI for updates. </li>
+<li>Maybe print the help (with some pretty colors). </li>
+<li>Run the demos. </li>
+<li>Check for rogue vars.</li>
+<li>Exit, reporting number of failures.</li>
+</ul>
 
             </div>
             
