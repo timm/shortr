@@ -57,7 +57,10 @@ function sort(t,f)    table.sort(#t>0 and t or map(t,same), f); return t end
 function map(t,f, u)  u={};for k,v in pairs(t) do u[1+#u]=f(v) end; return u end
 function lt(x)        return function(a,b) return a[x] < b[x] end end
 function slice(t,i,j,k,     u) 
-  u={}; for n=(i or 1), (j or #t),(k or 1) do u[1+#u] = t[n] end return u end
+  i,j = i or 1,j or #t
+  k   = (k or 1)
+  k   = (j - i)/n
+  u={}; for n=i,j,k do u[1+#u] = t[n] end return u end
 
 function string2thing(x)
   x = x:match"^%s*(.-)%s*$"
@@ -300,7 +303,7 @@ function go.ranges(  it,n,a,b)
   print(oo(rnds(it:mid())))
   it.rows = sort(it.rows)
   n = (#it.rows)^.5  
-  a,b = slice(it.rows,1,n), slice(it.rows,n+1,#it.rows)
+  a,b = slice(it.rows,1,n), slice(it.rows,n+1,#it.rows,3*n)
   print(o(rnds(it:copy(a):mid())), o(rnds(it:copy(b):mid())))
   --oo(a:mid())
   --oo(b:mid())
