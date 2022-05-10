@@ -15,6 +15,7 @@ OPTIONS:
 OPTIONS (other):
   -f  --file  where to find data       = ../etc/data/auto93.csv
   -h  --help  show help                = false
+  -r  --rnd   rounding rules           = %5.2f
   -g  --go    start up action          = nothing
 
 Usage of the works is permitted provided that this instrument is
@@ -24,7 +25,7 @@ notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]]
 local the={}
 local _,big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,like,lt
 local map,merged,mid,mode,mu,norm,num,o,obj,oo,pdf,per,push
-local rand,range,rangeB4,rowB4, sort,some,same,sd,string2thing,sym,thes
+local rand,range,rangeB4,rnd,rnds,rowB4,slice,sort,some,same,sd,string2thing,sym,these
 local NUM,SYM,RANGE,EGS,COLS,ROW
 for k,__ in pairs(_ENV) do b4[k]=k end
 -------------------------------------------------------------------------------
@@ -76,6 +77,10 @@ function o(t,    u)
   if #t>0 then return "{"..table.concat(map(t,tostring)," ").."}" else
     u={}; for k,v in pairs(t) do u[1+#u] = fmt(":%s %s",k,v) end
     return (t.is or "").."{"..table.concat(sort(u)," ").."}" end end
+
+function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
+function rnd(x,f) 
+  return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or"%s",x) end
 
 function obj(name,    t,new)
   function new(kl,...) 
@@ -212,7 +217,7 @@ function _.mid(i,cols)
   return map(cols or i.cols.y, function(c) return c:mid() end) end
 
 function _.copy(i,rows,  j)
-  j=EGS(i.cols.names); for __,r in pairs({} or rows) do j:add(r) end;return j end
+  j=EGS(i.cols.names); for __,r in pairs(rows or {}) do j:add(r) end;return j end
 
 function _.like(i,t,overall, nHypotheses,      c)
   prior = (#i.rows + the.k) / (overall + the.k * nHypotheses)
@@ -250,7 +255,7 @@ function _xpand(t)
 -------------------------------------------------------------------------------
 local go,no={},{}
 
-function thes(f1,f2,k,x)
+function these(f1,f2,k,x)
   for n,flag in ipairs(arg) do if flag==f1 or flag==f2 then
     x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
   the[k] = string2thing(x) end 
@@ -290,17 +295,19 @@ function go.cols(  i)
 function go.egs(  it)
   it = EGS.load(the.file); return math.abs(2970 - it.cols.y[1].mu) < 1 end
 
-function go.ranges(  it,n)
+function go.ranges(  it,n,a,b)
   it = EGS.load(the.file)
+  print(oo(rnds(it:mid())))
   it.rows = sort(it.rows)
   n = (#it.rows)^.5
-  a,b = it:copy(slice(it.rows,1,n)), it:copy(slice(it.rows(n+1,#it.rows)))
-  oo(a:mid())
-  oo(b:mid())
+  a,b = slice(it.rows,1,n), slice(it.rows,n+1,#it.rows)
+  print(o(rnds(it:copy(a):mid())), o(rnds(it:copy(b):mid())))
+  --oo(a:mid())
+  --oo(b:mid())
   return math.abs(2970 - it.cols.y[1].mu) < 1 end
 --------------------------------------------------------------------------------
 help:gsub(  -- parse help text for flags and defaults, check CLI for updates
-         "\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",thes)
+         "\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",these)
 if the.help then
   print(help:gsub("%u%u+", "\27[31m%1\27[0m")
             :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[33m%2\27[0m%3"),"")
