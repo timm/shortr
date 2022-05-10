@@ -41,7 +41,30 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
               <div class="sswrap ">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              
+              <h2 id="coding-concentions">Coding concentions</h2>
+<ul>
+<li>Code 80 chars wide, or less.  Functions in 1 line, if you can. 
+Indent with two spaces. Divide code into 120 line (or less) pages.</li>
+<li>Minimize use of local (exception: define all functions as local 
+at top of file).</li>
+<li>Use polymorphic but not inheritance (simpler debugging).
+Use UPPERCASE for class names. All classes new a <code>new</code> constructor.</li>
+<li>Use <code>i</code> instead of <code>self</code>. Use <code>_</code> to denote the last created class/
+Use <code>__</code> for anonymous variable.s</li>
+<li>Set flags in help string top of file. Allow for <code>-h</code> on the command line
+to print help</li>
+<li>The <code>go</code> functions store tests. tests should be silent unless they
+fail tests can be disabled by renaming from <code>go.fun</code> to <code>no.fun</code>.
+Those tests should return <code>true</code> if the test passes.
+On exit, return number of failed tests.</li>
+</ul>
+<h2 id="about-the-learning">About the learning</h2>
+<ul>
+<li>Beware missing values (marked in “?”) and avoid them</li>
+<li>Where possible all learning should be  incremental.</li>
+<li>Isolate operating system interaction.</li>
+</ul>
+
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> b4,help = {},<span class="hljs-string">[[ 
@@ -76,27 +99,7 @@ notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]]</span
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
               </div>
-              <h2 id="coding-concentions">Coding concentions</h2>
-<ul>
-<li>Code 80 chars wide, or less.  Functions in 1 line, if you can. 
-Indent with two spaces. Divide code into 120 line (or less) pages.</li>
-<li>Minimize use of local (exception: define all functions as local 
-at top of file).</li>
-<li>No inheritance</li>
-<li>Use <code>i</code> instead of <code>self</code>. Use <code>_</code> to denote the last </li>
-<li>The <code>go</code> functions store tests. tests should be silent unless they
-fail tests can be disabled by renaming from <code>go.fun</code> to <code>no.fun</code>.
-Those tests should return <code>true</code> if the test passes or a warning
-string if otherwise</li>
-<li>Set flags in help string top of file. Allow for <code>-h</code> on the command line
-to print help</li>
-</ul>
-<h2 id="about-the-learning">About the learning</h2>
-<ul>
-<li>Beware missing values (marked in “?”) and avoid them</li>
-<li>Where possible all learning should be  incremental.</li>
-<li>Isolate operating system interaction.</li>
-</ul>
+              <h2 id="namespace">Namespace</h2>
 
             </div>
             
@@ -105,8 +108,22 @@ to print help</li>
 <span class="hljs-keyword">local</span> map,merged,mid,mode,mu,norm,num,o,obj,oo,pdf,per,push
 <span class="hljs-keyword">local</span> rand,range,rangeB4,rnd,rnds,rowB4,slice,<span class="hljs-built_in">sort</span>,some,same,sd,string2thing,sym,these
 <span class="hljs-keyword">local</span> NUM,SYM,RANGE,EGS,COLS,ROW
-<span class="hljs-keyword">for</span> k,__ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span>
-big=<span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
+<span class="hljs-keyword">for</span> k,__ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span> <span class="hljs-comment">-- At end, use `b4` to find rogue vars.</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-3">&#x00a7;</a>
+              </div>
+              <h2 id="utils">Utils</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>big=<span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
 rand=<span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span>
 fmt=<span class="hljs-built_in">string</span>.<span class="hljs-built_in">format</span>
 
@@ -361,11 +378,11 @@ EGS=obj<span class="hljs-string">&quot;EGS&quot;</span>
         </li>
         
         
-        <li id="section-3">
+        <li id="section-4">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-3">&#x00a7;</a>
+                <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
               <p>oo(a:mid())
 oo(b:mid())</p>
@@ -386,11 +403,11 @@ help:<span class="hljs-built_in">gsub</span>(  <span class="hljs-comment">-- par
         </li>
         
         
-        <li id="section-4">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-4">&#x00a7;</a>
+                <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
               <p>function SOME() return {all={}, ok=false, n=0} end
 function some(i,x)

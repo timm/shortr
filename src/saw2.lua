@@ -1,4 +1,27 @@
 --- vim: ts=2 sw=2 et:
+-- ## Coding Conventions
+-- 
+-- - Code 80 chars wide, or less.  Functions in 1 line, if you can. 
+--   Indent with two spaces. Divide code into 120 line (or less) pages.
+-- - Minimize use of local (exception: define all functions as local 
+--   at top of file).
+-- - Use polymorphic but not inheritance (simpler debugging).
+--   Use UPPERCASE for class names. All classes need a `new` constructor.
+-- - Use `i` instead of `self`. Use `_` to denote the last created class/
+--   Use `__` for anonymous variable.s
+-- - Set flags in help string top of file. Allow for `-h` on the command line
+--   to print help
+-- - _Dialogue independence_: Isolate and separate operating system interaction.
+-- - _Test-driven development_: The `go` functions store tests. 
+--   Tests should be silent unless they --   fail. ~tests can be disabled by 
+--   renaming from `go.fun` to `no.fun`. Tests should return `true` if the 
+--   test passes.  On exit, return number of failed tests.
+--
+-- ## About the Learning
+-- 
+-- - Beware missing values (marked in "?") and avoid them
+-- - Where possible all learning should be  incremental.
+--------------------------------------------------------------------------------
 local b4,help = {},[[ 
 SAW2: best or rest multi-objective optimization.
 (c) 2022 Tim Menzies, timm@ieee.org
@@ -21,34 +44,16 @@ OPTIONS (other):
 Usage of the works is permitted provided that this instrument is
 retained with the works, so that any entity that uses the works is
 notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]] 
--------------------------------------------------------------------------------
--- ## Coding concentions
--- 
--- - Code 80 chars wide, or less.  Functions in 1 line, if you can. 
---   Indent with two spaces. Divide code into 120 line (or less) pages.
--- - Minimize use of local (exception: define all functions as local 
---   at top of file).
--- - No inheritance
--- - Use `i` instead of `self`. Use `_` to denote the last 
--- - The `go` functions store tests. tests should be silent unless they
---   fail tests can be disabled by renaming from `go.fun` to `no.fun`.
---   Those tests should return `true` if the test passes or a warning
---   string if otherwise
--- - Set flags in help string top of file. Allow for `-h` on the command line
---   to print help
---
--- ## About the learning
--- 
--- - Beware missing values (marked in "?") and avoid them
--- - Where possible all learning should be  incremental.
--- - Isolate operating system interaction.
 --------------------------------------------------------------------------------
+-- ## Namespace
 local the={}
 local _,big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,like,lt
 local map,merged,mid,mode,mu,norm,num,o,obj,oo,pdf,per,push
 local rand,range,rangeB4,rnd,rnds,rowB4,slice,sort,some,same,sd,string2thing,sym,these
 local NUM,SYM,RANGE,EGS,COLS,ROW
-for k,__ in pairs(_ENV) do b4[k]=k end
+for k,__ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
+--------------------------------------------------------------------------------
+-- ## Utils
 big=math.huge
 rand=math.random
 fmt=string.format
