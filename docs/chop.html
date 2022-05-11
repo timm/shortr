@@ -82,10 +82,11 @@ CHOP: best or rest multi-objective optimization.
 USAGE: lua chop.lua [OPTIONS]
 
 OPTIONS:
+  -m  --min   exponent of min size     = .5
   -b  --bins  max bins                 = 16
   -s  --seed  random number seed       = 10019
   -S  --some  number of nums to keep   = 256
-  -p  --p     distance coeffecient     = 2
+  -p  --p     exponent of distance     = 2
 
 
 OPTIONS (other):
@@ -112,8 +113,8 @@ notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]]</span
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> the={}
-<span class="hljs-keyword">local</span> _,big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,like,lt
-<span class="hljs-keyword">local</span> map,merge,mid,mode,mu,norm,num,o,obj,oo,pdf,per,push,rand,range
+<span class="hljs-keyword">local</span> _,big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,is,like,lt
+<span class="hljs-keyword">local</span> map,merge,mid,mode,mu,norm,num,o,oo,pdf,per,push,rand,range
 <span class="hljs-keyword">local</span> rnd,rnds,rowB4,slice,<span class="hljs-built_in">sort</span>,some,same,sd,string2thing,sym,these
 <span class="hljs-keyword">local</span> NUM,SYM,RANGE,EGS,COLS,ROW
 <span class="hljs-keyword">for</span> k,__ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span> <span class="hljs-comment">-- At end, use `b4` to find rogue vars.</span></pre></div></div>
@@ -284,7 +285,7 @@ same = <span class="hljs-function"><span class="hljs-keyword">function</span><sp
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">obj</span><span class="hljs-params">(name,    t,new)</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is</span><span class="hljs-params">(name,    t,new)</span></span>
   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">new</span><span class="hljs-params">(kl,...)</span></span> 
     <span class="hljs-keyword">local</span> x=<span class="hljs-built_in">setmetatable</span>({},kl); kl.new(x,...); <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span> 
   t = {<span class="hljs-built_in">__tostring</span>=o, is=name <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>}; t.<span class="hljs-built_in">__index</span>=t
@@ -323,7 +324,7 @@ same = <span class="hljs-function"><span class="hljs-keyword">function</span><sp
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>NUM=obj<span class="hljs-string">&quot;NUM&quot;</span>
+            <div class="content"><div class='highlight'><pre>NUM=is<span class="hljs-string">&quot;NUM&quot;</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,at,txt)</span></span> 
   i.at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>; i.txt=txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>; i.lo,i.hi=big, -big
   i.n,i.mu,i.m2,i.sd = <span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>;  i.w=(txt <span class="hljs-keyword">or</span><span class="hljs-string">&quot;&quot;</span>):<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span> 
@@ -374,7 +375,7 @@ same = <span class="hljs-function"><span class="hljs-keyword">function</span><sp
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>SYM=obj<span class="hljs-string">&quot;SYM&quot;</span>
+            <div class="content"><div class='highlight'><pre>SYM=is<span class="hljs-string">&quot;SYM&quot;</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,at,txt)</span></span> i.at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>; i.txt=txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>; i.n,i.all = <span class="hljs-number">0</span>,{} <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.add</span><span class="hljs-params">(i,x,n)</span></span> 
   <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
@@ -413,7 +414,7 @@ in <code>y.all</code> (and get counts there using <code>of</code>).</li>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>RANGE=obj<span class="hljs-string">&quot;RANGE&quot;</span>
+            <div class="content"><div class='highlight'><pre>RANGE=is<span class="hljs-string">&quot;RANGE&quot;</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,col,lo,hi,y)</span></span> 
   i.col, i.x, i.y = col, {lo=lo <span class="hljs-keyword">or</span> big, hi=hi <span class="hljs-keyword">or</span> -big}, (y <span class="hljs-keyword">or</span>  SYM()) <span class="hljs-keyword">end</span>
 
@@ -457,16 +458,16 @@ in <code>y.all</code> (and get counts there using <code>of</code>).</li>
               </div>
               <h3 id="row">ROW</h3>
 <ul>
-<li>Using knowledge of the <code>base</code> geometry of the data, support distance calcs
+<li>Using knowledge <code>of</code> the geometry of the data, support distance calcs
 i  (<code>__sub</code> and <code>around</code>) as well as multi-objective ranking (<code>__lt</code>).</li>
 </ul>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>ROW=obj<span class="hljs-string">&quot;ROW&quot;</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,eg, cells)</span></span> i.base,i.cells = eg,cells <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre>ROW=is<span class="hljs-string">&quot;ROWS&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,eg, cells)</span></span> i.of,i.cells = eg,cells <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.__lt</span><span class="hljs-params">(i,j,     s1,s2,e,y,a,b)</span></span>
-  y = i.base.cols.y
+  y = i.of.cols.y
   s1, s2, e = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,  <span class="hljs-built_in">math</span>.<span class="hljs-built_in">exp</span>(<span class="hljs-number">1</span>)
   <span class="hljs-keyword">for</span> __,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(y) <span class="hljs-keyword">do</span>
      a  = col:norm(i.cells[col.at])
@@ -476,14 +477,14 @@ i  (<code>__sub</code> and <code>around</code>) as well as multi-objective ranki
   <span class="hljs-keyword">return</span> s1/#y &lt; s2/#y <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.__sub</span><span class="hljs-params">(i,j)</span></span>
-  <span class="hljs-keyword">for</span> __,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.base.cols.x) <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">for</span> __,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.of.cols.x) <span class="hljs-keyword">do</span>
     a,b = i.cells[col.at], j.cells[col.at]
     inc = a==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> b==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> col:dist(a,b) 
     d   = d + inc^the.p <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> (d / (#i.base.cols.x)) ^ (<span class="hljs-number">1</span>/the.p) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> (d / (#i.of.cols.x)) ^ (<span class="hljs-number">1</span>/the.p) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.around</span><span class="hljs-params">(i,rows)</span></span>
-  <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(map(rows <span class="hljs-keyword">or</span> i.base.rows, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(j)</span></span> <span class="hljs-keyword">return</span> {dist=i-j,row=j} <span class="hljs-keyword">end</span>), 
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(map(rows <span class="hljs-keyword">or</span> i.of.rows, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(j)</span></span> <span class="hljs-keyword">return</span> {dist=i-j,row=j} <span class="hljs-keyword">end</span>), 
               lt<span class="hljs-string">&quot;dist&quot;</span>) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
@@ -504,7 +505,7 @@ store the independent and dependent columns distributions in <code>x</code> and 
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>COLS=obj<span class="hljs-string">&quot;COLS&quot;</span>
+            <div class="content"><div class='highlight'><pre>COLS=is<span class="hljs-string">&quot;COLS&quot;</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,names,     head,row,col)</span></span>
   i.names=names; i.all={}; i.y={}; i.x={}
   <span class="hljs-keyword">for</span> at,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(names) <span class="hljs-keyword">do</span>
@@ -537,7 +538,7 @@ multiple sets of examples.</li>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>EGS=obj<span class="hljs-string">&quot;EGS&quot;</span>
+            <div class="content"><div class='highlight'><pre>EGS=is<span class="hljs-string">&quot;EGS&quot;</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.new</span><span class="hljs-params">(i,names)</span></span> i.rows,i.cols = {}, COLS(names) <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.load</span><span class="hljs-params">(f,   i)</span></span>
   <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> csv(the.file) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> i <span class="hljs-keyword">then</span> i:add(row) <span class="hljs-keyword">else</span> i=EGS(row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
@@ -566,29 +567,16 @@ multiple sets of examples.</li>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_.ranges</span><span class="hljs-params">(i,one,two,   t)</span></span>
   t={}; <span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.x) <span class="hljs-keyword">do</span> t[c.at]=_ranges(c,one,two) <span class="hljs-keyword">end</span>;<span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_ranges</span><span class="hljs-params">(col,yes,no,    out,x,d)</span></span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_ranges</span><span class="hljs-params">(col,yes,no,    out,x,bin)</span></span>
   out = {}
   <span class="hljs-keyword">for</span> _,what <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{{rows=yes, klass=<span class="hljs-literal">true</span>}, {rows=no, klass=<span class="hljs-literal">false</span>}} <span class="hljs-keyword">do</span>
     <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(what.rows) <span class="hljs-keyword">do</span> x = row.cells[col.at]; <span class="hljs-keyword">if</span> x~=<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
-      d = col:range(x,the.bins)
-      out[d] = out[d] <span class="hljs-keyword">or</span> RANGE(col,x,x)
-      out[d]:add(x, what.klass) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">return</span> _xpand(_merge(<span class="hljs-built_in">sort</span>(map(out,same)),(#yes+#no)^<span class="hljs-number">.5</span>))  <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-17">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-17">&#x00a7;</a>
-              </div>
-              <p>return _xpand(_merge(sort(out)))  end </p>
+      bin      = col:range(x,the.bins)
+      out[bin] = out[bin] <span class="hljs-keyword">or</span> RANGE(col,x,x)
+      out[bin]:add(x, what.klass) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> _xpand(_merge(<span class="hljs-built_in">sort</span>(map(out,same)),
+                      <span class="hljs-number">.9</span>*(#yes+#no)^the.<span class="hljs-built_in">min</span>)) <span class="hljs-keyword">end</span> 
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_merge</span><span class="hljs-params">(b4,min,        a,b,c,j,n,tmp)</span></span>
   j,n,tmp = <span class="hljs-number">1</span>,#b4,{}
   <span class="hljs-keyword">while</span> j&lt;=n <span class="hljs-keyword">do</span> 
@@ -601,16 +589,115 @@ multiple sets of examples.</li>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_xpand</span><span class="hljs-params">(t)</span></span> 
   <span class="hljs-keyword">for</span> j=<span class="hljs-number">2</span>,#t <span class="hljs-keyword">do</span> t[j].lo=t[j<span class="hljs-number">-1</span>].hi <span class="hljs-keyword">end</span>
   t[<span class="hljs-number">1</span>].x.lo, t[#t].x.hi= -big,big
-  <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nasa93dem</span><span class="hljs-params">()</span></span> 
+  <span class="hljs-keyword">local</span> vl,l,n,h,vl,xh=<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>; <span class="hljs-keyword">return</span> {
+  {<span class="hljs-string">&quot;id:&quot;</span>,<span class="hljs-string">&quot;center:&quot;</span>,<span class="hljs-string">&quot;Year&quot;</span>,<span class="hljs-string">&quot;prec&quot;</span>,<span class="hljs-string">&quot;flex&quot;</span>,<span class="hljs-string">&quot;resl&quot;</span>,<span class="hljs-string">&quot;team&quot;</span>,<span class="hljs-string">&quot;pmat&quot;</span>,<span class="hljs-string">&quot;rely&quot;</span>,<span class="hljs-string">&quot;data&quot;</span>,<span class="hljs-string">&quot;cplx&quot;</span>,
+                          <span class="hljs-string">&quot;ruse&quot;</span>,<span class="hljs-string">&quot;docu&quot;</span>,<span class="hljs-string">&quot;time&quot;</span>,<span class="hljs-string">&quot;stor&quot;</span>,<span class="hljs-string">&quot;pvol&quot;</span>,<span class="hljs-string">&quot;acap&quot;</span>,<span class="hljs-string">&quot;pcap&quot;</span>,<span class="hljs-string">&quot;pcon&quot;</span>,
+                          <span class="hljs-string">&quot;apex&quot;</span>,<span class="hljs-string">&quot;plex&quot;</span>,<span class="hljs-string">&quot;ltex&quot;</span>,<span class="hljs-string">&quot;tool&quot;</span>,<span class="hljs-string">&quot;site&quot;</span>,<span class="hljs-string">&quot;sced&quot;</span>,<span class="hljs-string">&quot;Kloc&quot;</span>,
+                          <span class="hljs-string">&quot;Effort-&quot;</span>,<span class="hljs-string">&quot;Defects-&quot;</span>,<span class="hljs-string">&quot;Months-&quot;</span>},
+  {<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">25.9</span>,<span class="hljs-number">117.6</span>,<span class="hljs-number">808</span>,<span class="hljs-number">15.3</span>},
+  {<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">24.6</span>,<span class="hljs-number">117.6</span>,<span class="hljs-number">767</span>,<span class="hljs-number">15</span>},
+  {<span class="hljs-number">3</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">7.7</span>,<span class="hljs-number">31.2</span>,<span class="hljs-number">240</span>,<span class="hljs-number">10.1</span>},
+  {<span class="hljs-number">4</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">8.2</span>,<span class="hljs-number">36</span>,<span class="hljs-number">256</span>,<span class="hljs-number">10.4</span>},
+  {<span class="hljs-number">5</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">9.7</span>,<span class="hljs-number">25.2</span>,<span class="hljs-number">302</span>,<span class="hljs-number">11</span>},
+  {<span class="hljs-number">6</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">2.2</span>,<span class="hljs-number">8.4</span>,<span class="hljs-number">69</span>,<span class="hljs-number">6.6</span>},
+  {<span class="hljs-number">7</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">3.5</span>,<span class="hljs-number">10.8</span>,<span class="hljs-number">109</span>,<span class="hljs-number">7.8</span>},
+  {<span class="hljs-number">8</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">66.6</span>,<span class="hljs-number">352.8</span>,<span class="hljs-number">2077</span>,<span class="hljs-number">21</span>},
+  {<span class="hljs-number">9</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1980</span>,h,h,h,vh,h,h,l,h,n,n,xh,xh,l,h,h,n,h,n,h,h,n,n,<span class="hljs-number">7.5</span>,<span class="hljs-number">72</span>,<span class="hljs-number">226</span>,<span class="hljs-number">13.6</span>},
+  {<span class="hljs-number">10</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1980</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,vh,n,vh,n,h,n,n,n,<span class="hljs-number">20</span>,<span class="hljs-number">72</span>,<span class="hljs-number">566</span>,<span class="hljs-number">14.4</span>},
+  {<span class="hljs-number">11</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1984</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,h,n,vh,n,h,n,n,n,<span class="hljs-number">6</span>,<span class="hljs-number">24</span>,<span class="hljs-number">188</span>,<span class="hljs-number">9.9</span>},
+  {<span class="hljs-number">12</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1980</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,vh,n,vh,n,h,n,n,n,<span class="hljs-number">100</span>,<span class="hljs-number">360</span>,<span class="hljs-number">2832</span>,<span class="hljs-number">25.2</span>},
+  {<span class="hljs-number">13</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1985</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,n,n,vh,n,l,n,n,n,<span class="hljs-number">11.3</span>,<span class="hljs-number">36</span>,<span class="hljs-number">456</span>,<span class="hljs-number">12.8</span>},
+  {<span class="hljs-number">14</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1980</span>,h,h,h,vh,n,n,l,h,n,n,n,n,h,h,h,n,h,l,vl,n,n,n,<span class="hljs-number">100</span>,<span class="hljs-number">215</span>,<span class="hljs-number">5434</span>,<span class="hljs-number">30.1</span>},
+  {<span class="hljs-number">15</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1983</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,h,n,vh,n,h,n,n,n,<span class="hljs-number">20</span>,<span class="hljs-number">48</span>,<span class="hljs-number">626</span>,<span class="hljs-number">15.1</span>},
+  {<span class="hljs-number">16</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1982</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,n,n,n,n,vl,n,n,n,<span class="hljs-number">100</span>,<span class="hljs-number">360</span>,<span class="hljs-number">4342</span>,<span class="hljs-number">28</span>},
+  {<span class="hljs-number">17</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1980</span>,h,h,h,vh,n,n,l,h,n,n,n,xh,l,h,vh,n,vh,n,h,n,n,n,<span class="hljs-number">150</span>,<span class="hljs-number">324</span>,<span class="hljs-number">4868</span>,<span class="hljs-number">32.5</span>},
+  {<span class="hljs-number">18</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1984</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,h,n,h,n,h,n,n,n,<span class="hljs-number">31.5</span>,<span class="hljs-number">60</span>,<span class="hljs-number">986</span>,<span class="hljs-number">17.6</span>},
+  {<span class="hljs-number">19</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1983</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,h,n,vh,n,h,n,n,n,<span class="hljs-number">15</span>,<span class="hljs-number">48</span>,<span class="hljs-number">470</span>,<span class="hljs-number">13.6</span>},
+  {<span class="hljs-number">20</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1984</span>,h,h,h,vh,n,n,l,h,n,n,n,xh,l,h,n,n,h,n,h,n,n,n,<span class="hljs-number">32.5</span>,<span class="hljs-number">60</span>,<span class="hljs-number">1276</span>,<span class="hljs-number">20.8</span>},
+  {<span class="hljs-number">21</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1985</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">19.7</span>,<span class="hljs-number">60</span>,<span class="hljs-number">614</span>,<span class="hljs-number">13.9</span>},
+  {<span class="hljs-number">22</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1985</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">66.6</span>,<span class="hljs-number">300</span>,<span class="hljs-number">2077</span>,<span class="hljs-number">21</span>},
+  {<span class="hljs-number">23</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1985</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">29.5</span>,<span class="hljs-number">120</span>,<span class="hljs-number">920</span>,<span class="hljs-number">16</span>},
+  {<span class="hljs-number">24</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,h,n,n,n,n,h,n,n,n,h,n,h,n,n,n,n,n,<span class="hljs-number">15</span>,<span class="hljs-number">90</span>,<span class="hljs-number">575</span>,<span class="hljs-number">15.2</span>},
+  {<span class="hljs-number">25</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,h,n,h,n,n,n,n,n,n,h,n,h,n,n,n,n,n,<span class="hljs-number">38</span>,<span class="hljs-number">210</span>,<span class="hljs-number">1553</span>,<span class="hljs-number">21.3</span>},
+  {<span class="hljs-number">26</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,n,n,n,n,n,n,n,n,n,h,n,h,n,n,n,n,n,<span class="hljs-number">10</span>,<span class="hljs-number">48</span>,<span class="hljs-number">427</span>,<span class="hljs-number">12.4</span>},
+  {<span class="hljs-number">27</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,vh,h,n,n,vh,vh,l,vh,n,n,h,l,h,n,n,l,<span class="hljs-number">15.4</span>,<span class="hljs-number">70</span>,<span class="hljs-number">765</span>,<span class="hljs-number">14.5</span>},
+  {<span class="hljs-number">28</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,vh,h,n,n,vh,vh,l,vh,n,n,h,l,h,n,n,l,<span class="hljs-number">48.5</span>,<span class="hljs-number">239</span>,<span class="hljs-number">2409</span>,<span class="hljs-number">21.4</span>},
+  {<span class="hljs-number">29</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,vh,h,n,n,vh,vh,l,vh,n,n,h,l,h,n,n,l,<span class="hljs-number">16.3</span>,<span class="hljs-number">82</span>,<span class="hljs-number">810</span>,<span class="hljs-number">14.8</span>},
+  {<span class="hljs-number">29</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,vh,h,n,n,vh,vh,l,vh,n,n,h,l,h,n,n,l,<span class="hljs-number">12.8</span>,<span class="hljs-number">62</span>,<span class="hljs-number">636</span>,<span class="hljs-number">13.6</span>},
+  {<span class="hljs-number">31</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,vh,h,n,n,vh,vh,l,vh,n,n,h,l,h,n,n,l,<span class="hljs-number">32.6</span>,<span class="hljs-number">170</span>,<span class="hljs-number">1619</span>,<span class="hljs-number">18.7</span>},
+  {<span class="hljs-number">32</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,vh,h,n,n,vh,vh,l,vh,n,n,h,l,h,n,n,l,<span class="hljs-number">35.5</span>,<span class="hljs-number">192</span>,<span class="hljs-number">1763</span>,<span class="hljs-number">19.3</span>},
+  {<span class="hljs-number">33</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1985</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">5.5</span>,<span class="hljs-number">18</span>,<span class="hljs-number">172</span>,<span class="hljs-number">9.1</span>},
+  {<span class="hljs-number">34</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1987</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">10.4</span>,<span class="hljs-number">50</span>,<span class="hljs-number">324</span>,<span class="hljs-number">11.2</span>},
+  {<span class="hljs-number">35</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1987</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">14</span>,<span class="hljs-number">60</span>,<span class="hljs-number">437</span>,<span class="hljs-number">12.4</span>},
+  {<span class="hljs-number">36</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,h,n,h,n,n,n,n,n,n,n,n,n,n,n,n,n,n,<span class="hljs-number">6.5</span>,<span class="hljs-number">42</span>,<span class="hljs-number">290</span>,<span class="hljs-number">12</span>},
+  {<span class="hljs-number">37</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,n,n,h,n,n,n,n,n,n,n,n,n,n,n,n,n,n,<span class="hljs-number">13</span>,<span class="hljs-number">60</span>,<span class="hljs-number">683</span>,<span class="hljs-number">14.8</span>},
+  {<span class="hljs-number">38</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,h,n,n,h,n,n,n,n,n,n,h,n,n,n,h,h,n,n,<span class="hljs-number">90</span>,<span class="hljs-number">444</span>,<span class="hljs-number">3343</span>,<span class="hljs-number">26.7</span>},
+  {<span class="hljs-number">39</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,n,n,h,n,n,n,n,n,n,n,n,n,n,n,n,n,n,<span class="hljs-number">8</span>,<span class="hljs-number">42</span>,<span class="hljs-number">420</span>,<span class="hljs-number">12.5</span>},
+  {<span class="hljs-number">40</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,n,n,h,n,n,h,n,n,n,n,n,n,n,n,n,n,n,<span class="hljs-number">16</span>,<span class="hljs-number">114</span>,<span class="hljs-number">887</span>,<span class="hljs-number">16.4</span>},
+  {<span class="hljs-number">41</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1980</span>,h,h,h,vh,h,n,h,h,n,n,vh,h,l,h,h,n,n,l,h,n,n,l,<span class="hljs-number">177.9</span>,<span class="hljs-number">1248</span>,<span class="hljs-number">7998</span>,<span class="hljs-number">31.5</span>},
+  {<span class="hljs-number">42</span>,<span class="hljs-number">6</span>,<span class="hljs-number">1975</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,h,n,n,n,n,n,n,n,<span class="hljs-number">302</span>,<span class="hljs-number">2400</span>,<span class="hljs-number">8543</span>,<span class="hljs-number">38.4</span>},
+  {<span class="hljs-number">43</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,h,l,n,n,n,n,h,h,n,n,h,n,n,h,n,n,<span class="hljs-number">282.1</span>,<span class="hljs-number">1368</span>,<span class="hljs-number">9820</span>,<span class="hljs-number">37.3</span>},
+  {<span class="hljs-number">44</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,h,h,l,n,n,n,n,n,h,n,n,h,n,n,n,n,n,<span class="hljs-number">284.7</span>,<span class="hljs-number">973</span>,<span class="hljs-number">8518</span>,<span class="hljs-number">38.1</span>},
+  {<span class="hljs-number">45</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1982</span>,h,h,h,vh,n,h,h,n,n,n,n,n,l,n,h,n,h,n,h,n,n,n,<span class="hljs-number">79</span>,<span class="hljs-number">400</span>,<span class="hljs-number">2327</span>,<span class="hljs-number">26.9</span>},
+  {<span class="hljs-number">46</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,l,l,n,n,n,n,n,n,l,h,vh,n,h,n,h,n,n,n,<span class="hljs-number">423</span>,<span class="hljs-number">2400</span>,<span class="hljs-number">18447</span>,<span class="hljs-number">41.9</span>},
+  {<span class="hljs-number">47</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,n,n,n,n,n,n,n,l,h,vh,n,vh,l,h,n,n,n,<span class="hljs-number">190</span>,<span class="hljs-number">420</span>,<span class="hljs-number">5092</span>,<span class="hljs-number">30.3</span>},
+  {<span class="hljs-number">48</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1984</span>,h,h,h,vh,h,n,n,h,n,n,n,h,n,h,n,n,h,n,h,n,n,n,<span class="hljs-number">47.5</span>,<span class="hljs-number">252</span>,<span class="hljs-number">2007</span>,<span class="hljs-number">22.3</span>},
+  {<span class="hljs-number">49</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1980</span>,h,h,h,vh,l,vh,n,xh,n,n,h,h,l,n,n,n,h,n,n,h,n,n,<span class="hljs-number">21</span>,<span class="hljs-number">107</span>,<span class="hljs-number">1058</span>,<span class="hljs-number">21.3</span>},
+  {<span class="hljs-number">50</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1983</span>,h,h,h,vh,l,n,h,h,n,n,vh,n,n,h,h,n,h,n,h,n,n,n,<span class="hljs-number">78</span>,<span class="hljs-number">571.4</span>,<span class="hljs-number">4815</span>,<span class="hljs-number">30.5</span>},
+  {<span class="hljs-number">51</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1984</span>,h,h,h,vh,l,n,h,h,n,n,vh,n,n,h,h,n,h,n,h,n,n,n,<span class="hljs-number">11.4</span>,<span class="hljs-number">98.8</span>,<span class="hljs-number">704</span>,<span class="hljs-number">15.5</span>},
+  {<span class="hljs-number">52</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1985</span>,h,h,h,vh,l,n,h,h,n,n,vh,n,n,h,h,n,h,n,h,n,n,n,<span class="hljs-number">19.3</span>,<span class="hljs-number">155</span>,<span class="hljs-number">1191</span>,<span class="hljs-number">18.6</span>},
+  {<span class="hljs-number">53</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,h,n,vh,n,n,h,h,l,h,n,n,n,h,h,n,n,n,<span class="hljs-number">101</span>,<span class="hljs-number">750</span>,<span class="hljs-number">4840</span>,<span class="hljs-number">32.4</span>},
+  {<span class="hljs-number">54</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,h,n,h,n,n,h,h,l,n,n,n,h,n,n,n,n,n,<span class="hljs-number">219</span>,<span class="hljs-number">2120</span>,<span class="hljs-number">11761</span>,<span class="hljs-number">42.8</span>},
+  {<span class="hljs-number">55</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,h,n,h,n,n,h,h,l,n,n,n,h,n,n,n,n,n,<span class="hljs-number">50</span>,<span class="hljs-number">370</span>,<span class="hljs-number">2685</span>,<span class="hljs-number">25.4</span>},
+  {<span class="hljs-number">56</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,vh,h,h,n,n,vh,vh,n,vh,vh,n,vh,n,h,h,n,l,<span class="hljs-number">227</span>,<span class="hljs-number">1181</span>,<span class="hljs-number">6293</span>,<span class="hljs-number">33.8</span>},
+  {<span class="hljs-number">57</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,n,h,vh,n,n,n,n,l,h,vh,n,n,l,n,n,n,l,<span class="hljs-number">70</span>,<span class="hljs-number">278</span>,<span class="hljs-number">2950</span>,<span class="hljs-number">20.2</span>},
+  {<span class="hljs-number">58</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">0.9</span>,<span class="hljs-number">8.4</span>,<span class="hljs-number">28</span>,<span class="hljs-number">4.9</span>},
+  {<span class="hljs-number">59</span>,<span class="hljs-number">6</span>,<span class="hljs-number">1974</span>,h,h,h,vh,l,vh,l,xh,n,n,xh,vh,l,h,h,n,vh,vl,h,n,n,n,<span class="hljs-number">980</span>,<span class="hljs-number">4560</span>,<span class="hljs-number">50961</span>,<span class="hljs-number">96.4</span>},
+  {<span class="hljs-number">60</span>,<span class="hljs-number">6</span>,<span class="hljs-number">1975</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,vh,vh,n,n,h,h,n,n,n,<span class="hljs-number">350</span>,<span class="hljs-number">720</span>,<span class="hljs-number">8547</span>,<span class="hljs-number">35.7</span>},
+  {<span class="hljs-number">61</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1976</span>,h,h,h,vh,h,h,n,xh,n,n,h,h,l,h,n,n,n,h,h,h,n,n,<span class="hljs-number">70</span>,<span class="hljs-number">458</span>,<span class="hljs-number">2404</span>,<span class="hljs-number">27.5</span>},
+  {<span class="hljs-number">62</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,n,xh,n,n,h,h,l,h,n,n,n,h,h,h,n,n,<span class="hljs-number">271</span>,<span class="hljs-number">2460</span>,<span class="hljs-number">9308</span>,<span class="hljs-number">43.4</span>},
+  {<span class="hljs-number">63</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1971</span>,h,h,h,vh,n,n,n,n,n,n,n,n,l,h,h,n,h,n,h,n,n,n,<span class="hljs-number">90</span>,<span class="hljs-number">162</span>,<span class="hljs-number">2743</span>,<span class="hljs-number">25</span>},
+  {<span class="hljs-number">64</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1980</span>,h,h,h,vh,n,n,n,n,n,n,n,n,l,h,h,n,h,n,h,n,n,n,<span class="hljs-number">40</span>,<span class="hljs-number">150</span>,<span class="hljs-number">1219</span>,<span class="hljs-number">18.9</span>},
+  {<span class="hljs-number">65</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,n,h,n,h,n,n,h,n,l,h,h,n,h,n,h,n,n,n,<span class="hljs-number">137</span>,<span class="hljs-number">636</span>,<span class="hljs-number">4210</span>,<span class="hljs-number">32.2</span>},
+  {<span class="hljs-number">66</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,n,h,n,h,n,n,h,n,h,h,h,n,h,n,h,n,n,n,<span class="hljs-number">150</span>,<span class="hljs-number">882</span>,<span class="hljs-number">5848</span>,<span class="hljs-number">36.2</span>},
+  {<span class="hljs-number">67</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1976</span>,h,h,h,vh,n,vh,n,h,n,n,h,n,l,h,h,n,h,n,h,n,n,n,<span class="hljs-number">339</span>,<span class="hljs-number">444</span>,<span class="hljs-number">8477</span>,<span class="hljs-number">45.9</span>},
+  {<span class="hljs-number">68</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1983</span>,h,h,h,vh,n,l,h,l,n,n,n,n,h,h,h,n,h,n,h,n,n,n,<span class="hljs-number">240</span>,<span class="hljs-number">192</span>,<span class="hljs-number">10313</span>,<span class="hljs-number">37.1</span>},
+  {<span class="hljs-number">69</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1978</span>,h,h,h,vh,l,h,n,h,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">144</span>,<span class="hljs-number">576</span>,<span class="hljs-number">6129</span>,<span class="hljs-number">28.8</span>},
+  {<span class="hljs-number">70</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,n,l,n,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">151</span>,<span class="hljs-number">432</span>,<span class="hljs-number">6136</span>,<span class="hljs-number">26.2</span>},
+  {<span class="hljs-number">71</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,n,l,h,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">34</span>,<span class="hljs-number">72</span>,<span class="hljs-number">1555</span>,<span class="hljs-number">16.2</span>},
+  {<span class="hljs-number">72</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,n,n,h,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">98</span>,<span class="hljs-number">300</span>,<span class="hljs-number">4907</span>,<span class="hljs-number">24.4</span>},
+  {<span class="hljs-number">73</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,n,n,h,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">85</span>,<span class="hljs-number">300</span>,<span class="hljs-number">4256</span>,<span class="hljs-number">23.2</span>},
+  {<span class="hljs-number">74</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1982</span>,h,h,h,vh,l,n,l,n,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">20</span>,<span class="hljs-number">240</span>,<span class="hljs-number">813</span>,<span class="hljs-number">12.8</span>},
+  {<span class="hljs-number">75</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1978</span>,h,h,h,vh,l,n,l,n,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">111</span>,<span class="hljs-number">600</span>,<span class="hljs-number">4511</span>,<span class="hljs-number">23.5</span>},
+  {<span class="hljs-number">76</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1978</span>,h,h,h,vh,l,h,vh,h,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">162</span>,<span class="hljs-number">756</span>,<span class="hljs-number">7553</span>,<span class="hljs-number">32.4</span>},
+  {<span class="hljs-number">77</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1978</span>,h,h,h,vh,l,h,h,vh,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">352</span>,<span class="hljs-number">1200</span>,<span class="hljs-number">17597</span>,<span class="hljs-number">42.9</span>},
+  {<span class="hljs-number">78</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,h,n,vh,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">165</span>,<span class="hljs-number">97</span>,<span class="hljs-number">7867</span>,<span class="hljs-number">31.5</span>},
+  {<span class="hljs-number">79</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1984</span>,h,h,h,vh,h,h,n,vh,n,n,h,h,l,h,n,n,n,h,h,n,n,n,<span class="hljs-number">60</span>,<span class="hljs-number">409</span>,<span class="hljs-number">2004</span>,<span class="hljs-number">24.9</span>},
+  {<span class="hljs-number">80</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1984</span>,h,h,h,vh,h,h,n,vh,n,n,h,h,l,h,n,n,n,h,h,n,n,n,<span class="hljs-number">100</span>,<span class="hljs-number">703</span>,<span class="hljs-number">3340</span>,<span class="hljs-number">29.6</span>},
+  {<span class="hljs-number">81</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1980</span>,h,h,h,vh,n,h,vh,vh,n,n,xh,xh,h,n,n,n,n,l,l,n,n,n,<span class="hljs-number">32</span>,<span class="hljs-number">1350</span>,<span class="hljs-number">2984</span>,<span class="hljs-number">33.6</span>},
+  {<span class="hljs-number">82</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1980</span>,h,h,h,vh,h,h,h,h,n,n,vh,xh,h,h,h,n,h,h,h,n,n,n,<span class="hljs-number">53</span>,<span class="hljs-number">480</span>,<span class="hljs-number">2227</span>,<span class="hljs-number">28.8</span>},
+  {<span class="hljs-number">83</span>,<span class="hljs-number">3</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,h,l,vh,n,n,vh,xh,l,vh,vh,n,vh,vl,vl,h,n,n,<span class="hljs-number">41</span>,<span class="hljs-number">599</span>,<span class="hljs-number">1594</span>,<span class="hljs-number">23</span>},
+  {<span class="hljs-number">84</span>,<span class="hljs-number">3</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,h,l,vh,n,n,vh,xh,l,vh,vh,n,vh,vl,vl,h,n,n,<span class="hljs-number">24</span>,<span class="hljs-number">430</span>,<span class="hljs-number">933</span>,<span class="hljs-number">19.2</span>},
+  {<span class="hljs-number">85</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,vh,h,vh,n,n,xh,xh,n,h,h,n,h,h,h,n,n,n,<span class="hljs-number">165</span>,<span class="hljs-number">4178.2</span>,<span class="hljs-number">6266</span>,<span class="hljs-number">47.3</span>},
+  {<span class="hljs-number">86</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,vh,h,vh,n,n,xh,xh,n,h,h,n,h,h,h,n,n,n,<span class="hljs-number">65</span>,<span class="hljs-number">1772.5</span>,<span class="hljs-number">2468</span>,<span class="hljs-number">34.5</span>},
+  {<span class="hljs-number">87</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,vh,h,vh,n,n,xh,xh,n,h,h,n,h,h,h,n,n,n,<span class="hljs-number">70</span>,<span class="hljs-number">1645.9</span>,<span class="hljs-number">2658</span>,<span class="hljs-number">35.4</span>},
+  {<span class="hljs-number">88</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,vh,h,xh,n,n,xh,xh,n,h,h,n,h,h,h,n,n,n,<span class="hljs-number">50</span>,<span class="hljs-number">1924.5</span>,<span class="hljs-number">2102</span>,<span class="hljs-number">34.2</span>},
+  {<span class="hljs-number">89</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1982</span>,h,h,h,vh,l,vh,l,vh,n,n,vh,xh,l,h,n,n,l,vl,l,h,n,n,<span class="hljs-number">7.25</span>,<span class="hljs-number">648</span>,<span class="hljs-number">406</span>,<span class="hljs-number">15.6</span>},
+  {<span class="hljs-number">90</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1980</span>,h,h,h,vh,h,vh,h,vh,n,n,xh,xh,n,h,h,n,h,h,h,n,n,n,<span class="hljs-number">233</span>,<span class="hljs-number">8211</span>,<span class="hljs-number">8848</span>,<span class="hljs-number">53.1</span>},
+  {<span class="hljs-number">91</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1983</span>,h,h,h,vh,n,h,n,vh,n,n,vh,vh,h,n,n,n,n,l,l,n,n,n,<span class="hljs-number">16.3</span>,<span class="hljs-number">480</span>,<span class="hljs-number">1253</span>,<span class="hljs-number">21.5</span>},
+  {<span class="hljs-number">92</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1983</span>,h,h,h,vh,n,h,n,vh,n,n,vh,vh,h,n,n,n,n,l,l,n,n,n,<span class="hljs-number">6.2</span>,<span class="hljs-number">12</span>,<span class="hljs-number">477</span>,<span class="hljs-number">15.4</span>},
+  {<span class="hljs-number">93</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1983</span>,h,h,h,vh,n,h,n,vh,n,n,vh,vh,h,n,n,n,n,l,l,n,n,n,<span class="hljs-number">3</span>,<span class="hljs-number">38</span>,<span class="hljs-number">231</span>,<span class="hljs-number">12</span>}} <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-18">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-18">&#x00a7;</a>
+                <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
               <h2 id="demos">DEMOS</h2>
 
@@ -621,11 +708,11 @@ multiple sets of examples.</li>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
               <p>Convert help string to a table. Check command line for any updates.</p>
 
@@ -639,11 +726,11 @@ multiple sets of examples.</li>
         </li>
         
         
-        <li id="section-20">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
               <p>Run the demos, resetting settings and random number see before each.
 Return number of failures.</p>
@@ -669,11 +756,11 @@ Return number of failures.</p>
         </li>
         
         
-        <li id="section-21">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-21">&#x00a7;</a>
+                <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
               <p>Simple stuff</p>
 
@@ -696,11 +783,11 @@ Return number of failures.</p>
         </li>
         
         
-        <li id="section-22">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-22">&#x00a7;</a>
+                <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
               <p>Can we read rows off the disk?</p>
 
@@ -712,11 +799,11 @@ Return number of failures.</p>
         </li>
         
         
-        <li id="section-23">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-23">&#x00a7;</a>
+                <a class="ss" href="#section-22">&#x00a7;</a>
               </div>
               <p>Can we turn a list of names into columns?</p>
 
@@ -729,11 +816,11 @@ Return number of failures.</p>
         </li>
         
         
-        <li id="section-24">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
+                <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
               <p>Can we read data, summazized as columns?</p>
 
@@ -745,11 +832,11 @@ Return number of failures.</p>
         </li>
         
         
-        <li id="section-25">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-25">&#x00a7;</a>
+                <a class="ss" href="#section-24">&#x00a7;</a>
               </div>
               <p>Can we discretize</p>
 
@@ -762,21 +849,21 @@ Return number of failures.</p>
   <span class="hljs-keyword">for</span> j,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(it.rows)) <span class="hljs-keyword">do</span> row.klass = <span class="hljs-number">1</span>+j//(#it.rows*<span class="hljs-number">.35</span>/<span class="hljs-number">6</span>) <span class="hljs-keyword">end</span>
   n = (#it.rows)^<span class="hljs-number">.5</span>  
   best,rest = slice(it.rows,<span class="hljs-number">1</span>,n), slice(it.rows, n+<span class="hljs-number">1</span>, #it.rows, <span class="hljs-number">3</span>*n)
-  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;best&quot;</span>,o(rnds(it:copy(best):mid()))) 
-  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;rest&quot;</span>,o(rnds(it:copy(rest):mid())))
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;best&quot;</span>,#best,o(rnds(it:copy(best):mid()))) 
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;rest&quot;</span>,#rest,o(rnds(it:copy(rest):mid())))
   <span class="hljs-keyword">for</span> _,ranges <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(it:ranges(best,rest)) <span class="hljs-keyword">do</span> 
     <span class="hljs-built_in">print</span><span class="hljs-string">&quot;&quot;</span>
     <span class="hljs-keyword">for</span> at,range <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(ranges) <span class="hljs-keyword">do</span>
-      <span class="hljs-built_in">print</span>(range) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+      <span class="hljs-built_in">print</span>(range,o(range.y.all)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-26">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-26">&#x00a7;</a>
+                <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
               <p>oo(a:mid())
 oo(b:mid())</p>
@@ -788,11 +875,11 @@ oo(b:mid())</p>
         </li>
         
         
-        <li id="section-27">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-27">&#x00a7;</a>
+                <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
               <h2 id="main">Main</h2>
 
@@ -801,11 +888,11 @@ oo(b:mid())</p>
         </li>
         
         
-        <li id="section-28">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-28">&#x00a7;</a>
+                <a class="ss" href="#section-27">&#x00a7;</a>
               </div>
               <ul>
 <li>Parse help text for flags and defaults, check CLI for updates. </li>

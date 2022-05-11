@@ -1,3 +1,9 @@
+for k,__ in pairs(_ENV) do b4[k]=k end 
+local the={}
+local big,csv,fmt,map,o,oo,push,rand,rnd,rnds,slice,string2thing
+local COL,ROW,COLS,EGS
+local col,row,cols,egs
+--------------------------------------------------------------------------------
 big=math.huge
 rand=math.random
 fmt=string.format
@@ -32,38 +38,58 @@ function o(t,    u)
 function rnds(t,f) return map(t, function(x) return rnd(x,f) end) end
 function rnd(x,f) 
   return fmt(type(x)=="number" and (x~=x//1 and f or the.rnd) or"%s",x) end
+--------------------------------------------------------------------------------
+function row.new(cells,of) return {cells=cells, of=of, cooked={}} end
+function egs.new()         return {rows={},   cols=nil} end
 
-function is_skip(x) return x:find":$"     end
-function is_goal(x) return x:find"[-+!]$" end
-function is_num(x)  return x:find"^[A-Z]" end
+function new(klass,t) klass.__tostring=o; return setmetatable(t,klass) end
 
-function ROW(cells) return {cooked={}, cells=cells} end
-function COLS()     return {names={},  all=xy(), num=xy(), sym=xy{}} end
-function EGS()      return {rows={},   cols=nil} end
-function XY()       return {all={},    x={}, y={}} end
+function Col.__call(at,txt,    i)
+  i = new(Col,{at=at or 0, txt=txt or "", n=0, w=1, goalp=false})
+  if i.txt:find"-$"     then i.w=-1       end
+  if i.txt:find"[!-+]$" then i.goalp=true end 
+  if i.txt:find"^[A-Z]" then i.lo,i.hi=big,-big else i.syms={} end 
+  return i  end 
 
-function cols(names)
-  i=COLS()
-  i.names=names
-  for at,txt in pairs(names) do
-    for _,slot in pairs{i.all,is_num(txt) and i.num or i.sym} do 
-      push(slot.all, at)
-      if not is_skip(txt) then 
-        push(is_goal(txt) and slot.y or slot.x, at) end end end
+function Col.add(i,x) 
+  if x=="?" then  return x end
+  col.n = col.n + 1
+  if   col.syms 
+  then col.syms[x]=1+(cols.syms[x] or 0)
+  else col.lo = math.min(x, col.lo)
+       col.hi = math.max(x, col.hi) end 
   return i end
 
-function w(i,row,   lo,hi)
-  lo,hi,x = {},{}
-  if not i.cols0 then 
-    i.cols =COLS(row)
-    for _,at in pairs(i.cols.nums.all) do lo[at],hi[at] = 1E32, -1E32 end
-  else
-    push(i.rows,ROW(row))
-    for _,at in pairs(i.cols.nums.all) do 
-      if row[at] ~="?" then 
-        lo[at] = math.min(lo[at], row[at])
-        hi[at] = math.max(hi[at], row[at]) end end end end
-    
+function Col.norm(i,x) 
+  if x=="?" or i.syms then return x end
+  return i.hi-i.lo<1E-9 and 0 or(x-i.lo)/(i.hi-i.lo)end
 
+function Cols.__call(names)
+  i = new(Cols,{name=names,    syms={}, nums={}, all={},
+                           x= {syms={}, nums={}, all={}},
+                           y= {syms={}, nums={}, all={}}})
+  for at,txt in pairs(i.names) do 
+    col = Col(at,txt)
+    for _,here in pairs{i, col.goalp and i.y or i.x} do
+      push(here.all, col)
+      if not txt:find":$" then 
+        push(col.syms and here.syms or here.nums,col) end end end 
+  return i end
+
+local Egs,Cols={},{}
+
+function Egs.__call(src,        i)
+  i= new(Egs,{rows={},cols=nil})
+  if   src==nil or type(src)=="string" 
+  then for   row in csv(src)  do i:add(row) end
+  else for _,row in pais(src) do i:add(row) end end
+  return i end
+
+function Egs.add(i,row)
+  if   not i.cols 
+  then i.cols = cols(COLS(row))
+  else row = push(i.rows, row.cells and row or Row(row,i))
+       for _,col in pairs(i.cols.all) do col:add(row.cells[col.at]) end
+  return i end
 
 
