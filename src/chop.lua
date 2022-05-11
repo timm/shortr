@@ -1,4 +1,5 @@
---- vim: ts=2 sw=2 et:
+---------------------------------------------------------------------------------
+--- vim: ts=2 sw=2 et : 
 local b4,help = {},[[ 
 CHOP: best or rest multi-objective optimization.
 (c) 2022 Tim Menzies, timm@ieee.org
@@ -6,7 +7,7 @@ CHOP: best or rest multi-objective optimization.
  Anything else is just...in between." ~ Jim Morrison
 
 USAGE: lua chop.lua [OPTIONS]
- 
+
 OPTIONS:
   -b  --bins  max bins                 = 16
   -s  --seed  random number seed       = 10019
@@ -23,6 +24,15 @@ OPTIONS (other):
 Usage of the works is permitted provided that this instrument is
 retained with the works, so that any entity that uses the works is
 notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]] 
+--------------------------------------------------------------------------------
+-- ## Namespace
+local the={}
+local _,big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,like,lt
+local map,merge,mid,mode,mu,norm,num,o,obj,oo,pdf,per,push,rand,range
+local rnd,rnds,rowB4,slice,sort,some,same,sd,string2thing,sym,these
+local NUM,SYM,RANGE,EGS,COLS,ROW
+for k,__ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
+--------------------------------------------------------------------------------
 -- ## Coding Conventions
 -- - _Separate policy from mechanism:_
 --   All "magic parameters" that control code behavior should be part
@@ -57,15 +67,7 @@ notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]]
 --   a place to store the `lo,hi` values for all numerics.
 -- - XXX tables very sueful
 -- - XXX table have cols. cols are num, syms. ranges 
-
---------------------------------------------------------------------------------
--- ## Namespace
-local the={}
-local _,big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,like,lt
-local map,merge,mid,mode,mu,norm,num,o,obj,oo,pdf,per,push
-local rand,range,rangeB4,rnd,rnds,rowB4,slice,sort,some,same,sd,string2thing,sym,these
-local NUM,SYM,RANGE,EGS,COLS,ROW
-for k,__ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
+
 --------------------------------------------------------------------------------
 -- ## Utils
 -- Misc
