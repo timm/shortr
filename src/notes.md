@@ -54,6 +54,8 @@ linux kernel best pracrices
   - e.g. static code tools
 
 --
+y=f(x) what does different y,x mean
+
 variance, entropy
 
 ranges. erging

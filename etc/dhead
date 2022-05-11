@@ -16,7 +16,7 @@ href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://i
 <em>P</em> with confidence<br><em>C=1-(1-P) <sup>N</sup></em>.
 Rearranged, this means that  <em>N=log(1-C)/log(1-P)</em>.
 
-<li> Now suppose some order predict can sort examples into a linear
+<li> Now suppose some order predict can sort items into a linear
 list, with  <em>p</em> best examples.  Then with confidence
 <em>C</em>, after  <em>N=log2(log(1-C)/log(1-P))</em> random probes,
 we can find those best  <em>P</em>.

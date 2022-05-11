@@ -45,7 +45,7 @@ notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]]
 --   Use UPPERCASE for class names. 
 --    
 -- ## About the Learning
--- - Data is stored in ROWS
+-- - Data is stored in ROWs.
 -- - Beware missing values (marked in "?") and avoid them
 -- - Where possible all learning should be  incremental.
 -- - Standard deviation and entropy generalized to `div` (diversity);
@@ -62,7 +62,7 @@ notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]]
 -- ## Namespace
 local the={}
 local _,big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,like,lt
-local map,merged,mid,mode,mu,norm,num,o,obj,oo,pdf,per,push
+local map,merge,mid,mode,mu,norm,num,o,obj,oo,pdf,per,push
 local rand,range,rangeB4,rnd,rnds,rowB4,slice,sort,some,same,sd,string2thing,sym,these
 local NUM,SYM,RANGE,EGS,COLS,ROW
 for k,__ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
@@ -82,9 +82,9 @@ function lt(x)        return function(a,b) return a[x] < b[x] end end
 function map(t,f, u)  u={};for k,v in pairs(t) do u[1+#u]=f(v) end; return u end
 function push(t,x)    t[1+#t]=x; return x end
 function slice(t,i,j,k,     u) 
-  i,j = i or 1,j or #t
-  k   = (k and (j-i)/k or 1)
-  u={}; for n=i,j,k//1 do u[1+#u] = t[n] end return u end
+  i,j = (i or 1)//1, (j or #t)//1
+  k   = (k and (j-i)/k or 1)//1
+  u={}; for n=i,j,k do u[1+#u] = t[n] end return u end
 
 -- "Strings 2 things" coercion. 
 function string2thing(x)
@@ -123,7 +123,8 @@ function obj(name,    t,new)
 
 -- ### NUM
 -- - For a stream of `add`itions, incrementally maintain `mu,sd`. 
--- - `Norm`alize data for distance and discretization calcs (see `dist` and `bin`).
+-- - `Norm`alize data for distance and discretization calcs 
+--    (see `dist` and `range`).
 -- - Comment on `like`lihood that something belongs to this distribution.
 NUM=obj"NUM"
 function _.new(i,at,txt) 
@@ -140,7 +141,7 @@ function _.add(i,x,   d)
   i.lo = math.min(i.lo,x)
   i.hi = math.max(i.hi,x) end
 
-function _.bin(i,x,n,  b) b=(i.hi-i.lo)/n; return math.floor(x/b+0.5)*b end
+function _.range(i,x,n,  b) b=(i.hi-i.lo)/n; return math.floor(x/b+0.5)*b end
 function _.mid(i) return i.mu end
 
 function _.norm(i,x) return i.hi-i.lo<1E-9 and 0 or (x-i.lo)/(i.hi-i.lo+1/big)end
@@ -161,12 +162,15 @@ function _.like(i,x,__,       e)
 -- - Using that info, report `dist`, mode (`mid`) symbol, and entropy
 --   (`div`) of this distribution.  
 -- - Comment on `like`lihood that something belongs to this distribution.
+-- - Discretization of a symbol just returns that sym (`range`).
 SYM=obj"SYM"
 function _.new(i,at,txt) i.at=at or 0; i.txt=txt or ""; i.n,i.all = 0,{} end
 function _.add(i,x,n) 
   if x=="?" then return x end
-  i.n=i.n+1; i.all[x] = (n or 1) + (i.all[x] or 0) end
+  n = n or 1
+  i.n=i.n+n; i.all[x] = n + (i.all[x] or 0) end
 
+function _.range(i,x,__) return x end
 function _.dist(i,x,y) return (a==b and 0 or 1) end
 
 function _.mid(i)
@@ -186,16 +190,16 @@ function _.like(i,x,prior) return ((c.all[x] or 0) + the.m*prior)/(c.n+the.m) en
 -- - `Merge` adjacent ranges if the entropy of the whole is less than the parts.
 RANGE=obj"RANGE"
 function _.new(i,col,lo,hi,y) 
-  i.cols, i.x, i.y = col, ({lo=lo or big, hi=hi or -big}), (y or  SYM()) end
+  i.col, i.x, i.y = col, {lo=lo or big, hi=hi or -big}, (y or  SYM()) end
 
 function _.add(i,x,y)
   if x=="?" then return x end
   i.x.lo = math.min(i.x.lo,x)
   i.x.hi = math.max(i.x.hi,x)
-  i.y:add(x,y) end
+  i.y:add(y) end
 
-function _.__lt(i,j) return i.col.at == j.col.at and i.x.lo < j.x.lo end
-function _.of(i,x)   return i.y.all[x] or 0 end
+function _.__lt(i,j) return i.x.lo < j.x.lo end
+function _.of(i,x) return i.y.all[x] or 0 end
 
 function _.selects(i,t,     x)
   t = t.cells and t.cells or t
@@ -203,20 +207,19 @@ function _.selects(i,t,     x)
   return x=="?" or (i.x.lo==i.x.hi and i.x.lo==x) or (i.x.lo<=x and x<i.x.hi)end
 
 function _.__tostring(i)
-  local x, lo, hi = i.txt, i.x.lo, i.x.hi
+  local x, lo, hi = i.col.txt, i.x.lo, i.x.hi
   if     lo ==  hi  then return fmt("%s == %s",x, lo)  
   elseif hi ==  big then return fmt("%s >= %s",x, lo)  
   elseif lo == -big then return fmt("%s < %s", x, hi)  
   else                   return fmt("%s <= %s < %s",lo,x,hi) end end
 
 function _.merge(i,j,n0,    k)
-  if i.at == j.at then
-    k = SYM(i.y.at, i.y.txt)
-    i,j = i.y, j.y
-    for x,n in pairs(i.all) do sym(k,x,n) end
-    for x,n in pairs(j.all) do sym(k,x,n) end
-    if i.y.n<(n0 or 0) or j.y.n<(n0 or 0) or (ent(i)*i.n+ent(j)*j.n)/k.n > ent(k) 
-    then return RANGE(i.col, i.lo, j.hi, k) end end end
+  k = SYM(i.col.at, i.col.txt)
+  for x,n in pairs(i.y.all) do k:add(x,n) end
+  for x,n in pairs(j.y.all) do k:add(x,n) end
+  if i.y.n<(n0 or 0) or j.y.n<(n0 or 0) or (
+     (i.y:div(i)*i.y.n + j.y:div()*j.y.n)/k.n >= .99*k:div())
+  then return RANGE(i.col, i.x.lo, j.x.hi, k) end end 
 ---------------------------------------------------------------------------------
 -- ### ROW
 -- - Using knowledge of the `base` geometry of the data, support distance calcs
@@ -300,22 +303,25 @@ function _ranges(col,yes,no,    out,x,d)
   out = {}
   for _,what in pairs{{rows=yes, klass=true}, {rows=no, klass=false}} do
     for _,row in pairs(what.rows) do x = row.cells[col.at]; if x~="?" then
-      d = col:discretize(x,the.bins)
-      out[d] = out[d] or RANGE{col,x,x}
+      d = col:range(x,the.bins)
+      out[d] = out[d] or RANGE(col,x,x)
       out[d]:add(x, what.klass) end end end 
-  return _xpand(_merge(sort(out)))  end 
+  return _xpand(_merge(sort(map(out,same)),(#yes+#no)^.5))  end 
+  --return _xpand(_merge(sort(out)))  end 
 
-function _merge(b4,        a,b,c,j,n,tmp)
+function _merge(b4,min,        a,b,c,j,n,tmp)
   j,n,tmp = 1,#b4,{}
   while j<=n do 
     a, b = b4[j], b4[j+1]
-    if b then c = a:merged(b); if c then a,j = c,j+1 end end
+    if b then c = a:merge(b,min); if c then a,j = c,j+1 end end
     tmp[#tmp+1] = a
     j = j+1 end
-  return #tmp==#b4 and tmp or _merge(tmp) end
+  return #tmp==#b4 and tmp or _merge(tmp,min) end
 
 function _xpand(t) 
-  for j=2,#t do t[j].lo=t[j-1].hi end; t[1].lo, t[#t].hi= -big,big;return t end
+  for j=2,#t do t[j].lo=t[j-1].hi end
+  t[1].x.lo, t[#t].x.hi= -big,big
+  return t end
 -------------------------------------------------------------------------------
 -- ## DEMOS
 local go,no={},{}
@@ -348,11 +354,10 @@ function demos(    fails,names,defaults,status)
 function go.the()     return type(the.bins)=="number" end
 function go.sort(  t) return 0==sort({100,3,4,2,10,0})[1] end
 function go.slice( t,u)
-  t={10,20,30,40,50,60,70,80,90.100,110,120,130,140}
-  u=slice(t,3,#t,3)
-  t=slice(t,3,5)
-  oo(u)
-  return #t==3 end
+  t = {10,20,30,40,50,60,70,80,90,100,110,120,130,140}
+  u = slice(t,3,#t,3)
+  t = slice(t,3,5)
+  return #t==3 and #u==4 end
 
 function go.num(     n,mu,sd) 
   n, mu, sd = NUM(), 10, 1
@@ -374,14 +379,19 @@ function go.egs(  it)
   it = EGS.load(the.file); return math.abs(2970 - it.cols.y[1].mu) < 1 end
 
 -- Can we discretize
-function go.ranges(  it,n,a,b)
+function go.ranges(  it,n,best,rest,min)
   it = EGS.load(the.file)
-  print(oo(rnds(it:mid())))
+  print("all",o(rnds(it:mid())))
   it.rows = sort(it.rows)
+  for j,row in pairs(sort(it.rows)) do row.klass = 1+j//(#it.rows*.35/6) end
   n = (#it.rows)^.5  
-  print(n)
-  a,b = slice(it.rows,1,n), slice(it.rows,n+1,#it.rows,3*n)
-  print(o(rnds(it:copy(a):mid())), o(rnds(it:copy(b):mid())))
+  best,rest = slice(it.rows,1,n), slice(it.rows, n+1, #it.rows, 3*n)
+  print("best",o(rnds(it:copy(best):mid()))) 
+  print("rest",o(rnds(it:copy(rest):mid())))
+  for _,ranges in pairs(it:ranges(best,rest)) do 
+    print""
+    for at,range in pairs(ranges) do
+      print(range) end end 
   --oo(a:mid())
   --oo(b:mid())
   return math.abs(2970 - it.cols.y[1].mu) < 1 end
