@@ -39,9 +39,12 @@ for k,_ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
 --------------------------------------------------------------------------------
 -- ## Coding Conventions
 -- - _Separate policy from mechanism:_     
---   All "magic parameters" that control code behavior should be part
---   of that help text. Allow for `-h` on the command line to print
---   help.  Parse that string to set the options.
+--   For commonly revised parts of this processing (e.g. the name and type of data
+--   columns) define a little language to support easy revision. 
+--   Also, all "magic parameters" that control code behavior should be part
+--   of the help text. Parse that string to set those options.
+--   Allow for `-h` on the command line to print that help. Allow other command
+--   line flags to update those options.
 -- - _Dialogue independence_:     
 --    Isolate and separate operating system interaction.
 -- - _Test-driven development_:    
@@ -448,14 +451,20 @@ function COLS.new(i,names,     head,row,col)
 -- - Discretize columns as `ranges` that distinguish two sets of rows 
 --   (merging irrelevant distinctions).
 -- - Summarize the `mid`point of these examples.
-function EGS.new(i,names) i.rows,i.cols = {}, COLS(names) end
+
+function EGS.new(i,src,    add)
+  i.rows = {}
+  if type(src)=="table" 
+  then  for _,row in pairs(src) do i:add(row) end 
+   else for  row in csv(src)    do i:add(row) end end end
 
 function EGS.add(i,row,    cells) 
-  cells = push(i.rows, row.cells and row or ROW(i,row)).cells
-  for n,col in pairs(i.cols.all) do col:add(cells[n]) end end
+  if not i.cols then i.cols = COLS(row) else
+    cells = push(i.rows, row.cells and row or ROW(i,row)).cells
+    for n,col in pairs(i.cols.all) do col:add(cells[n]) end end end
 
 function EGS.copy(i,rows,  j)
-  j=EGS(i.cols.names); for _,r in pairs(rows or {}) do j:add(r) end;return j end
+  j=EGS({i.cols.names});for _,r in pairs(rows or {}) do j:add(r)end;return j end
 
 function EGS.like(i,t,overall, nHypotheses,      c)
   prior = (#i.rows + the.k) / (overall + the.k * nHypotheses)
@@ -466,16 +475,10 @@ function EGS.like(i,t,overall, nHypotheses,      c)
       like = math.log(col:like(x)) + like end end
   return like end
 
-function EGS.load(src,   i)
-  if    src==nil or type(src)=="string" 
-  then for   row in csv(src)   do if i then i:add(row) else i=EGS(row)end end
-  else for _,row in pairs(src) do if i then i:add(row) else i=EGS(row)end end end
-  return i end
-
 function EGS.mid(i,cols) 
   return map(cols or i.cols.y, function(c) return c:mid() end) end
 
-function EGS.ranges(i,yes,no,   out,x,bin,tmp,score)
+function EGS.ranges(i,yes,no,   out,x,bin,tmp,fun)
   out={}
   for _,col in pairs(i.cols.x) do  -- for each x col
     tmp = {}                       -- find ranges that distinguish yes and no
@@ -488,8 +491,8 @@ function EGS.ranges(i,yes,no,   out,x,bin,tmp,score)
     tmp = map(tmp,same) --  a hack. makes tmp sortable (has consecutive indexes)
     for _,range in pairs(col:merge(sort(tmp),(#yes+#no)^the.min)) do
       push(out,range) end end 
-  score = function(range) return range:score(true,#yes, #no) end
-  return sort(out,score) end
+  fun=function(a,b) return a:score(true,#yes, #no) > b:score(true,#yes,#no) end
+  return sort(out,fun) end
 ------------------------------------------------------------------------------
 -- ## Code for tests and demos
 
@@ -519,16 +522,14 @@ function go.cols(  i)
 
 -- Can we read data, summazized as columns?
 function go.egs(  it)
-  it=EGS.load(nasa93dem()) 
+  it=EGS(nasa93dem()) 
   return math.abs(it.cols.y[1].mu - 624) < 1 end
-  --for _,row in pairs(nasa93dem())do oo(row) end end
-  --it = EGS.load(the.file); return math.abs(2970 - it.cols.y[1].mu) < 1 end
 
 -- Does discretization work?
 function go.ranges(  it,n,best,rest,min)
   --it = EGS.load(the.file)
   print(the.how)
-  it=EGS.load(nasa93dem()) 
+  it=EGS(nasa93dem()) 
   print("all",o(rnds(it:mid())))
   it.rows = sort(it.rows)
   for j,row in pairs(sort(it.rows)) do row.klass = 1+j//(#it.rows*.35/6) end
