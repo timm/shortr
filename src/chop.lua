@@ -230,12 +230,12 @@ function _.score(i,goal,B,R)
   b, r, z = 0, 0, 1/big
   for x,n in pairs(i.y.all) do
     if x==goal then b = b+n else r=r+n end end
-  return _.how[the.how or "good"](b/(B+z), r/(R+z)) end
+  return RANGE.how[the.how or "good"](b/(B+z), r/(R+z)) end
 
 _.how={}
-function _.how.good(   b,r) return ((b<r or b+r < .05) and 0) or b^2/(b+ri) end
-function _.how.bad(b,r)     return ((r<b or b+r < .05) and 0) or r^2/(b+r) end
-function _.how.novel(b,r)   return 1/(b+r) end
+function _.how.good(b,r)  return ((b<r or b+r < .05) and 0) or b^2/(b+ri) end
+function _.how.bad(b,r)   return ((r<b or b+r < .05) and 0) or r^2/(b+r) end
+function _.how.novel(b,r) return 1/(b+r) end
 ---------------------------------------------------------------------------------
 -- ### ROW
 -- - Using knowledge `of` the geometry of the data, support distance calcs
@@ -502,6 +502,7 @@ function go.egs(  it)
 -- Can we discretize
 function go.ranges(  it,n,best,rest,min)
   --it = EGS.load(the.file)
+  print(the.how)
   it=EGS.load(nasa93dem()) 
   print("all",o(rnds(it:mid())))
   it.rows = sort(it.rows)
@@ -510,10 +511,9 @@ function go.ranges(  it,n,best,rest,min)
   best,rest = slice(it.rows,1,n), slice(it.rows, n+1, #it.rows, 3*n)
   print("best",#best,o(rnds(it:copy(best):mid()))) 
   print("rest",#rest,o(rnds(it:copy(rest):mid())))
-  for _,ranges in pairs(it:ranges(best,rest)) do 
-    print""
-    for at,range in pairs(ranges) do
-      print(range,range.y.n, o(range.y.all)) end end 
+  tmp={}; for _,ranges in pairs(it:ranges(best,rest)) do 
+    for at,range in pairs(ranges) do push(tmp,range).val= range:score(true,#best,#rest) end end
+  for _,range in pairs(sort(tmp,lt"val")) do print(range.val, range) end
   --oo(a:mid())
   --oo(b:mid())
   return math.abs(2970 - it.cols.y[1].mu) < 1 end
