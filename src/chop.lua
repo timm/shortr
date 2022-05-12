@@ -46,8 +46,14 @@ for k,_ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
 --   disabled by renaming from `go.fun` to `no.fun`. Tests should
 --   return `true` if the test passes.  On exit, return number of
 --   failed tests.
--- - _Code as specification:_ "I have made this letter longer since I
---   did not have time to make it shorter". Good code is short code.
+-- - _Wrote less code:_   
+--   "One of my most productive days was throwing away 1,000 lines of code."  
+--   -- Ken Thompson
+--   "It is vain to do with more what can be done with less." 
+--   -- William of Occam   
+--   "Less, but better".     
+--   -- Dieter Rams  
+--   Good code is short code.
 --   Lots of short functions. Methods listed alphabetically.
 --   Code 80 chars wide, or less.  Functions in 1 line,
 --   if you can. Indent with two spaces. Divide code into 120 line (or
