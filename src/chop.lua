@@ -9,11 +9,12 @@ CHOP: best or rest multi-objective optimization.
 USAGE: lua chop.lua [OPTIONS]
 
 OPTIONS:
-  -m  --min   exponent of min size     = .5
-  -b  --bins  max bins                 = 16
-  -s  --seed  random number seed       = 10019
-  -S  --some  number of nums to keep   = 256
-  -p  --p     exponent of distance     = 2
+  -how --how   good or bad or novel    = good
+  -m  --min    exponent of min size    = .5
+  -b  --bins   max bins                = 16
+  -s  --seed   random number seed      = 10019
+  -S  --some   number of nums to keep  = 256
+  -p  --p      exponent of distance    = 2
 
 
 OPTIONS (other):
@@ -29,7 +30,7 @@ notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]]
 -- ## Namespace
 local the={}
 local _,big,clone,csv,demos,discretize,dist,eg,entropy,fmt,gap,is,like,lt
-local map,merge,mid,mode,mu,norm,num,o,oo,pdf,per,push,rand,range
+local map,merge,mid,mode,mu,nasa93dem,norm,num,o,oo,pdf,per,push,rand,range
 local rnd,rnds,rowB4,slice,sort,some,same,sd,string2thing,sym,these
 local NUM,SYM,RANGE,EGS,COLS,ROW
 for k,__ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
@@ -45,7 +46,8 @@ for k,__ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
 --   disabled by renaming from `go.fun` to `no.fun`. Tests should
 --   return `true` if the test passes.  On exit, return number of
 --   failed tests.
--- - _Less is more:_ Code 80 chars wide, or less.  Functions in 1 line,
+-- - _Minimize debt:_ Write less code.
+--   Code 80 chars wide, or less.  Functions in 1 line,
 --   if you can. Indent with two spaces. Divide code into 120 line (or
 --   less) pages.  Use `i` instead of `self`. Use `_` to denote the
 --   last created class/ Use `__` for anonymous variable.s Minimize
@@ -223,6 +225,17 @@ function _.merge(i,j,n0,    k)
   if i.y.n<(n0 or 0) or j.y.n<(n0 or 0) or (
      (i.y:div(i)*i.y.n + j.y:div()*j.y.n)/k.n >= .99*k:div())
   then return RANGE(i.col, i.x.lo, j.x.hi, k) end end 
+
+function _.score(i,goal,B,R)
+  b, r, z = 0, 0, 1/big
+  for x,n in pairs(i.y.all) do
+    if x==goal then b = b+n else r=r+n end end
+  return _.how[the.how or "good"](b/(B+z), r/(R+z)) end
+
+_.how={}
+function _.how.good(   b,r) return ((b<r or b+r < .05) and 0) or b^2/(b+ri) end
+function _.how.bad(b,r)     return ((r<b or b+r < .05) and 0) or r^2/(b+r) end
+function _.how.novel(b,r)   return 1/(b+r) end
 ---------------------------------------------------------------------------------
 -- ### ROW
 -- - Using knowledge `of` the geometry of the data, support distance calcs
@@ -275,8 +288,10 @@ function _.new(i,names,     head,row,col)
 -- - Summarize the `mid`point of these examples.
 EGS=is"EGS"
 function _.new(i,names) i.rows,i.cols = {}, COLS(names) end
-function _.load(f,   i)
-  for row in csv(the.file) do if i then i:add(row) else i=EGS(row) end end
+function _.load(src,   i)
+  if    src==nil or type(src)=="string" 
+  then for   row in csv(src)   do if i then i:add(row) else i=EGS(row)end end
+  else print(1);for _,row in pairs(src) do  if i then i:add(row) else i=EGS(row)end end end
   return i end
  
 function _.add(i,row,    cells) 
@@ -310,7 +325,7 @@ function _ranges(col,yes,no,    out,x,bin)
       out[bin] = out[bin] or RANGE(col,x,x)
       out[bin]:add(x, what.klass) end end end 
   return _xpand(_merge(sort(map(out,same)),
-                      .9*(#yes+#no)^the.min)) end 
+                      (#yes+#no)^the.min)) end 
 
 function _merge(b4,min,        a,b,c,j,n,tmp)
   j,n,tmp = 1,#b4,{}
@@ -324,10 +339,10 @@ function _merge(b4,min,        a,b,c,j,n,tmp)
 function _xpand(t) 
   for j=2,#t do t[j].lo=t[j-1].hi end
   t[1].x.lo, t[#t].x.hi= -big,big
-  return t end
+  return #t>1 and t or {}  end
 ------------------------------------------------------------------------------
 function nasa93dem() 
-  local vl,l,n,h,vl,xh=1,2,3,4,5,6; return {
+  local vl,l,n,h,vh,xh=1,2,3,4,5,6; return {
   {"id:","center:","Year","prec","flex","resl","team","pmat","rely","data","cplx",
                           "ruse","docu","time","stor","pvol","acap","pcap","pcon",
                           "apex","plex","ltex","tool","site","sced","Kloc",
@@ -479,11 +494,15 @@ function go.cols(  i)
 
 -- Can we read data, summazized as columns?
 function go.egs(  it)
-  it = EGS.load(the.file); return math.abs(2970 - it.cols.y[1].mu) < 1 end
+  it=EGS.load(nasa93dem()) 
+  return math.abs(it.cols.y[1].mu - 624) < 1 end
+  --for _,row in pairs(nasa93dem())do oo(row) end end
+  --it = EGS.load(the.file); return math.abs(2970 - it.cols.y[1].mu) < 1 end
 
 -- Can we discretize
 function go.ranges(  it,n,best,rest,min)
-  it = EGS.load(the.file)
+  --it = EGS.load(the.file)
+  it=EGS.load(nasa93dem()) 
   print("all",o(rnds(it:mid())))
   it.rows = sort(it.rows)
   for j,row in pairs(sort(it.rows)) do row.klass = 1+j//(#it.rows*.35/6) end
@@ -494,7 +513,7 @@ function go.ranges(  it,n,best,rest,min)
   for _,ranges in pairs(it:ranges(best,rest)) do 
     print""
     for at,range in pairs(ranges) do
-      print(range,o(range.y.all)) end end 
+      print(range,range.y.n, o(range.y.all)) end end 
   --oo(a:mid())
   --oo(b:mid())
   return math.abs(2970 - it.cols.y[1].mu) < 1 end
