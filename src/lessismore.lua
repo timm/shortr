@@ -1,15 +1,17 @@
 ---------------------------------------------------------------------------------
 --- vim: ts=2 sw=2 et : 
 local b4,help = {},[[ 
-CHOP: best or rest multi-objective optimization.
+LESSISMORE: best or rest multi-objective optimization.
 (c) 2022 Tim Menzies, timm@ieee.org
 "I think the highest and lowest points are the important ones. 
  Anything else is just...in between." ~ Jim Morrison
 
-USAGE: lua chop.lua [OPTIONS]
+USAGE: 
+  alias lim="lua lessismore.lua"
+  lim [OPTIONS]
 
 OPTIONS:
-  -how --how   good or bad or novel    = good
+  -H  --how   good or bad or novel    = good
   -m  --min    exponent of min size    = .5
   -b  --bins   max bins                = 16
   -s  --seed   random number seed      = 10019
@@ -36,33 +38,44 @@ local NUM,SYM,RANGE,EGS,COLS,ROW
 for k,_ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
 --------------------------------------------------------------------------------
 -- ## Coding Conventions
--- - _Separate policy from mechanism:_
+-- - _Separate policy from mechanism:_     
 --   All "magic parameters" that control code behavior should be part
 --   of that help text. Allow for `-h` on the command line to print
 --   help.  Parse that string to set the options.
---   _Dialogue independence_: Isolate and separate operating system interaction.
--- - _Test-driven development_: The `go` functions store tests.
+-- - _Dialogue independence_:     
+--    Isolate and separate operating system interaction.
+-- - _Test-driven development_:    
+--   The `go` functions store tests.
 --   Tests should be silent unless they --   fail. ~tests can be
 --   disabled by renaming from `go.fun` to `no.fun`. Tests should
 --   return `true` if the test passes.  On exit, return number of
 --   failed tests.
--- - _Wrote less code:_   
+-- - _Write less code:_   
 --   "One of my most productive days was throwing away 1,000 lines of code."  
---   -- Ken Thompson
+--   (Ken Thompson);
 --   "It is vain to do with more what can be done with less." 
---   -- William of Occam   
---   "Less, but better".     
---   -- Dieter Rams  
---   Good code is short code.
+--   (William of Occam);
+--   "Less, but better"
+--   (Dieter Rams).
+--   Good code is short code. If you know what is going on, the code
+--   is shorter. While the code is longer, find patterns of processing
+--   that combines N things into less things. Strive to write shorter.
 --   Lots of short functions. Methods listed alphabetically.
 --   Code 80 chars wide, or less.  Functions in 1 line,
 --   if you can. Indent with two spaces. Divide code into 120 line (or
 --   less) pages.  Use `i` instead of `self`. 
 --   Minimize use of local (exception: define all functions 
 --   local at top of file).
--- - _Encapsulation:_ Use polymorphism but no inheritance (simpler
+-- - _Encapsulation:_   
+--   Use polymorphism but no inheritance (simpler
 --   debugging).  All classes get a `new` constructor.
 --   Use UPPERCASE for class names. 
+-- - _Class,Responsibilities,Collaborators_:   
+--   Each class is succinctly documented as a set of collaborations 
+--   to fulfill some  responsibility.
+-- - _Falsifiable:_   
+--   Code does something. It should be possible to say when that thing
+--   is not happening. See external and internal metrics (Fenton).
 --      
 -- ## About the Learning
 -- - Data is stored in ROWs.
@@ -187,7 +200,7 @@ fmt=string.format
 same = function(x) return x end
 
 -- Sorting
-function sort(t,f)    table.sort(#t>0 and t or map(t,same), f); return t end
+function sort(t,f)    table.sort(t, f); return t end
 function lt(x)        return function(a,b) return a[x] < b[x] end end
 
 -- Query and update
@@ -257,8 +270,8 @@ function is(name,    t,new)
 ---------------------------------------------------------------------------------
 -- ## Objects
 COLS,EGS,NUM,RANGE,ROW,SYM=is"COLS",is"EGS",is"NUM",is"RANGE",is"SYM",is"ROW"
-
--- ### NUM
+---------------------------------------------------------------------------------
+-- ## NUM
 -- - For a stream of `add`itions, incrementally maintain `mu,sd`. 
 -- - `Norm`alize data for distance and discretization calcs 
 --    (see `dist` and `range`).
@@ -310,7 +323,7 @@ function NUM.norm(i,x)
 
 function NUM.range(i,x,n,  b) b=(i.hi-i.lo)/n; return math.floor(x/b+0.5)*b end
 ---------------------------------------------------------------------------------
--- ### SYM
+-- ## SYM
 -- - For a stream of `add`itions, incrementally maintain count of `all` symbols.
 -- - Using that info, report `dist`, mode (`mid`) symbol, and entropy
 --   (`div`) of this distribution.  
@@ -337,7 +350,7 @@ function SYM.mid(i)
 
 function SYM.range(i,x,_) return x end
 --------------------------------------------------------------------------------
--- ### RANGE
+-- ## RANGE
 -- - For a stream of `add`itions, incrementally maintain counts of `x` and `y`.
 -- - Summarize `x` as the `lo,hi` seen so far and summarize `y` in `SYM` counts 
 --   in `y.all` (and get counts there using `of`).
@@ -374,7 +387,7 @@ function RANGE.of(i,x) return i.y.all[x] or 0 end
 
 function RANGE.score(i,goal,B,R, how)
   how={}
-  how.good= function(b,r) return ((b<r or b+r < .05) and 0) or b^2/(b+ri) end
+  how.good= function(b,r) return ((b<r or b+r < .05) and 0) or b^2/(b+r) end
   how.bad=  function(b,r) return ((r<b or b+r < .05) and 0) or r^2/(b+r)  end
   how.novel=function(b,r) return 1/(b+r) end
   b, r, z = 0, 0, 1/big
@@ -387,7 +400,7 @@ function RANGE.selects(i,t,     x)
   x = t[i.at]
   return x=="?" or (i.x.lo==i.x.hi and i.x.lo==x) or (i.x.lo<=x and x<i.x.hi)end
 ---------------------------------------------------------------------------------
--- ### ROW
+-- ## ROW
 -- - Using knowledge `of` the geometry of the data, support distance calcs
 -- i  (`__sub` and `around`) as well as multi-objective ranking (`__lt`).
 function ROW.new(i,eg, cells) i.of,i.cells = eg,cells end
@@ -413,7 +426,7 @@ function ROW.around(i,rows)
   return sort(map(rows or i.of.rows, function(j) return {dist=i-j,row=j} end), 
               lt"dist") end
 ---------------------------------------------------------------------------------
--- ### COLS
+-- ## COLS
 -- - Factory for converting column `names` to `NUM`s ad `SYM`s. 
 -- - Store all columns in -- `all`, and for all columns we are not skipping, 
 --   store the independent and dependent columns distributions in `x` and `y`.
@@ -426,7 +439,7 @@ function COLS.new(i,names,     head,row,col)
       if txt:find"!$" then i.klass=col end
       push(col.goalp and i.y or i.x, col) end end end 
 -------------------------------------------------------------------------------
--- ### EGS
+-- ## EGS
 -- - For a stream of `add`itions, incrementally store rows, summarized in `cols`.
 -- - When `add`ing, build new rows for new data. Otherwise reuse rows across 
 --   multiple sets of examples.
@@ -464,8 +477,8 @@ function EGS.mid(i,cols)
 
 function EGS.ranges(i,yes,no,   out,x,bin,tmp,score)
   out={}
-  for _,col in pairs(i.cols.x) do 
-    tmp = {}
+  for _,col in pairs(i.cols.x) do  -- for each x col
+    tmp = {}                       -- find ranges that distinguish yes and no
     for _,what in pairs{{rows=yes, klass=true}, {rows=no, klass=false}} do
       for _,row in pairs(what.rows) do x = row.cells[col.at]
         if x~="?" then
