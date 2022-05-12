@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>lessismore.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>lessismore.lua</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+<img 
+align=right width=250 src=heads2.png>
+<a 
+href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <img 
+src="https://img.shields.io/badge/platform-osx,linux-informational?logo=linux&logoColor=white&color=red"> <img 
+src="https://img.shields.io/badge/purpose-se,ai-informational?logo=hyper&logoColor=white&color=orange"> <img 
+src="https://img.shields.io/badge/language-lua-informational?logo=lua&logoColor=white&color=yellow"> <a
+href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a
+href="https://github.com/timm/l5/blob/master/LICENSE.md#top"><img src="https://img.shields.io/badge/license-BSD2-informational?logo=adblock&logoColor=white&color=blueviolet"></a>
+<br>
+&copy;2022, <a href="mailto:timm@ieee.org">Tim Menzies</a>
+<br clear=all>
+<ul>
+<li> How long does it take to find  rules that identify the "best" ideas?
+Let's find out.
+
+<li>We know that after <em>N</em> samples, we can find an event of probability
+<em>P</em> with confidence <em>C=1-(1-P) <sup>N</sup></em>.
+Rearranged, this  implies  <em>N=log(1-C)/log(1-P)</em>.
+
+<li> Now suppose some order predict can sort items into a linear
+list, with  <em>p</em> best examples.  Then with confidence
+<em>C</em>, after  <em>N=log2(log(1-C)/log(1-P))</em> random probes,
+we can find those best  <em>P</em>.
+Statisticians tell us that it is hard to distinguish items
+that are less that .35*&sigma;</em> apart.  Therefore,  for items
+across &pm;3&sigma;</em> has a region of size  <em>P=.35/(2*3)=5.8%</em>
+that is indistinguishable from the top item.
+This means that at confidence  <em>C=0.99</em>, <em>N=6</em>
+random samples should be enough to find that best region.
+
+<li> Let load some items, sort
+them using the Zitzler predicate, and label the top 6% as "good"
+(this is our ground truth).  Then lets pick 3 items at random, sort
+them (using Zitzler), and analyze all items by their likelihood of
+being "best" (nearest the top item) or "rest?" (i.e. not "best").
+After that, then loop over evaluated the most likely item, sort all
+the evaluated, and re-analyze all items as likely to be "best" or
+"rest".
+</ul>
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> b4,help = {},<span class="hljs-string">[[ 
+LESSISMORE: best or rest multi-objective optimization.
+(c) 2022 Tim Menzies, timm@ieee.org
+&quot;I think the highest and lowest points are the important ones. 
+ Anything else is just...in between.&quot; ~ Jim Morrison
+
+USAGE: 
+  alias lim=&quot;lua lessismore.lua&quot;
+  lim [OPTIONS]
+
+OPTIONS:
+  -H  --how   good or bad or novel    = good
+  -m  --min    exponent of min size    = .5
+  -b  --bins   max bins                = 16
+  -s  --seed   random number seed      = 10019
+  -S  --some   number of nums to keep  = 256
+  -p  --p      exponent of distance    = 2
+
+
+OPTIONS (other):
+  -f  --file  where to find data       = ../etc/data/auto93.csv
+  -h  --help  show help                = false
+  -r  --rnd   rounding rules           = %5.2f
+  -g  --go    start up action          = nothing
+
+Usage of the works is permitted provided that this instrument is
+retained with the works, so that any entity that uses the works is
+notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY. ]]</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-2">&#x00a7;</a>
+              </div>
+              <h2 id="namespace">Namespace</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> the={}
+<span class="hljs-keyword">local</span> big,copy,csv,demos,discretize,dist,eg,entropy,fill_in_the,fmt,gap,is,like,lt
+<span class="hljs-keyword">local</span> map,merge,mid,mode,mu,nasa93dem,norm,num,o,oo,pdf,per,push,rand,range
+<span class="hljs-keyword">local</span> rnd,rnds,rowB4,slice,<span class="hljs-built_in">sort</span>,some,same,sd,string2thing,sym
+<span class="hljs-keyword">local</span> NUM,SYM,RANGE,EGS,COLS,ROW
+<span class="hljs-keyword">for</span> k,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span> <span class="hljs-comment">-- At end, use `b4` to find rogue vars.</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-3">&#x00a7;</a>
+              </div>
+              <h2 id="coding-conventions">Coding Conventions</h2>
+<ul>
+<li><em>Separate policy from mechanism:</em><br>For commonly revised parts of this processing (e.g. the name and type of data
+columns) define a little language to support easy revision. 
+Also, all “magic parameters” that control code behavior should be part
+of the help text. {arse that string to set those options.
+Allow for <code>-h</code> on the command line to print that help. Allow other command
+line flags to update those options.</li>
+<li><em>Dialogue independence</em>:<br> Isolate and separate operating system interaction.</li>
+<li><em>Test-driven development</em>:<br>The <code>go</code> functions store tests.
+Tests should be silent unless they –   fail. ~tests can be
+disabled by renaming from <code>go.fun</code> to <code>no.fun</code>. Tests should
+return <code>true</code> if the test passes.  On exit, return number of
+failed tests.</li>
+<li><em>Write less code:</em><br>“One of my most productive days was throwing away 1,000 lines of code.”<br>(Ken Thompson);
+“It is vain to do with more what can be done with less.” 
+(William of Occam);
+“Less, but better”
+(Dieter Rams).
+Good code is short code. If you know what is going on, the code
+is shorter. While the code is longer, find patterns of processing
+that combines N things into less things. Strive to write shorter.
+Lots of short functions. Methods listed alphabetically.
+Code 80 chars wide, or less.  Functions in 1 line,
+if you can. Indent with two spaces. Divide code into 120 line (or
+less) pages.  Use <code>i</code> instead of <code>self</code>. 
+Minimize use of local (exception: define all functions 
+local at top of file).</li>
+<li><em>Encapsulation:</em><br>Use polymorphism but no inheritance (simpler
+debugging).  All classes get a <code>new</code> constructor.
+Use UPPERCASE for class names. </li>
+<li><em>Class,Responsibilities,Collaborators</em>:<br>Each class is succinctly documented as a set of collaborations 
+to fulfill some  responsibility.</li>
+<li><em>Falsifiable:</em><br>Code does something. It should be possible to say when that thing
+is not happening. See external and internal metrics (Fenton).</li>
+</ul>
+<h2 id="about-the-learning">About the Learning</h2>
+<ul>
+<li>Data is stored in ROWs.</li>
+<li>Beware missing values (marked in “?”) and avoid them</li>
+<li>Where possible all learning should be  incremental.</li>
+<li>Standard deviation and entropy generalized to <code>div</code> (diversity);</li>
+<li>Mean and mode generalized to <code>mid</code> (middle);</li>
+<li>Rows are created once and shared between different sets of
+examples (so we can accumulate statistics on how we are progressing
+inside each row). </li>
+<li>When a row is first created, it is assigned to a <code>base</code>; i.e.
+a place to store the <code>lo,hi</code> values for all numerics.</li>
+<li>XXX tables very sueful</li>
+<li>XXX table have cols. cols are num, syms. ranges</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nasa93dem</span><span class="hljs-params">()</span></span> 
+  <span class="hljs-keyword">local</span> vl,l,n,h,vh,xh=<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>; <span class="hljs-keyword">return</span> {
+  {<span class="hljs-string">&quot;id:&quot;</span>,<span class="hljs-string">&quot;center:&quot;</span>,<span class="hljs-string">&quot;Year&quot;</span>,<span class="hljs-string">&quot;prec&quot;</span>,<span class="hljs-string">&quot;flex&quot;</span>,<span class="hljs-string">&quot;resl&quot;</span>,<span class="hljs-string">&quot;team&quot;</span>,<span class="hljs-string">&quot;pmat&quot;</span>,<span class="hljs-string">&quot;rely&quot;</span>,<span class="hljs-string">&quot;data&quot;</span>,<span class="hljs-string">&quot;cplx&quot;</span>,
+                          <span class="hljs-string">&quot;ruse&quot;</span>,<span class="hljs-string">&quot;docu&quot;</span>,<span class="hljs-string">&quot;time&quot;</span>,<span class="hljs-string">&quot;stor&quot;</span>,<span class="hljs-string">&quot;pvol&quot;</span>,<span class="hljs-string">&quot;acap&quot;</span>,<span class="hljs-string">&quot;pcap&quot;</span>,<span class="hljs-string">&quot;pcon&quot;</span>,
+                          <span class="hljs-string">&quot;apex&quot;</span>,<span class="hljs-string">&quot;plex&quot;</span>,<span class="hljs-string">&quot;ltex&quot;</span>,<span class="hljs-string">&quot;tool&quot;</span>,<span class="hljs-string">&quot;site&quot;</span>,<span class="hljs-string">&quot;sced&quot;</span>,<span class="hljs-string">&quot;Kloc&quot;</span>,
+                          <span class="hljs-string">&quot;Effort-&quot;</span>,<span class="hljs-string">&quot;Defects-&quot;</span>,<span class="hljs-string">&quot;Months-&quot;</span>},
+ {<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">25.9</span>,<span class="hljs-number">117.6</span>,<span class="hljs-number">808</span>,<span class="hljs-number">15.3</span>},
+ {<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">24.6</span>,<span class="hljs-number">117.6</span>,<span class="hljs-number">767</span>,<span class="hljs-number">15</span>},
+ {<span class="hljs-number">3</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">7.7</span>,<span class="hljs-number">31.2</span>,<span class="hljs-number">240</span>,<span class="hljs-number">10.1</span>},
+ {<span class="hljs-number">4</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">8.2</span>,<span class="hljs-number">36</span>,<span class="hljs-number">256</span>,<span class="hljs-number">10.4</span>},
+ {<span class="hljs-number">5</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">9.7</span>,<span class="hljs-number">25.2</span>,<span class="hljs-number">302</span>,<span class="hljs-number">11</span>},
+ {<span class="hljs-number">6</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">2.2</span>,<span class="hljs-number">8.4</span>,<span class="hljs-number">69</span>,<span class="hljs-number">6.6</span>},
+ {<span class="hljs-number">7</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">3.5</span>,<span class="hljs-number">10.8</span>,<span class="hljs-number">109</span>,<span class="hljs-number">7.8</span>},
+ {<span class="hljs-number">8</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">66.6</span>,<span class="hljs-number">352.8</span>,<span class="hljs-number">2077</span>,<span class="hljs-number">21</span>},
+ {<span class="hljs-number">9</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1980</span>,h,h,h,vh,h,h,l,h,n,n,xh,xh,l,h,h,n,h,n,h,h,n,n,<span class="hljs-number">7.5</span>,<span class="hljs-number">72</span>,<span class="hljs-number">226</span>,<span class="hljs-number">13.6</span>},
+ {<span class="hljs-number">10</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1980</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,vh,n,vh,n,h,n,n,n,<span class="hljs-number">20</span>,<span class="hljs-number">72</span>,<span class="hljs-number">566</span>,<span class="hljs-number">14.4</span>},
+ {<span class="hljs-number">11</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1984</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,h,n,vh,n,h,n,n,n,<span class="hljs-number">6</span>,<span class="hljs-number">24</span>,<span class="hljs-number">188</span>,<span class="hljs-number">9.9</span>},
+ {<span class="hljs-number">12</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1980</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,vh,n,vh,n,h,n,n,n,<span class="hljs-number">100</span>,<span class="hljs-number">360</span>,<span class="hljs-number">2832</span>,<span class="hljs-number">25.2</span>},
+ {<span class="hljs-number">13</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1985</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,n,n,vh,n,l,n,n,n,<span class="hljs-number">11.3</span>,<span class="hljs-number">36</span>,<span class="hljs-number">456</span>,<span class="hljs-number">12.8</span>},
+ {<span class="hljs-number">14</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1980</span>,h,h,h,vh,n,n,l,h,n,n,n,n,h,h,h,n,h,l,vl,n,n,n,<span class="hljs-number">100</span>,<span class="hljs-number">215</span>,<span class="hljs-number">5434</span>,<span class="hljs-number">30.1</span>},
+ {<span class="hljs-number">15</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1983</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,h,n,vh,n,h,n,n,n,<span class="hljs-number">20</span>,<span class="hljs-number">48</span>,<span class="hljs-number">626</span>,<span class="hljs-number">15.1</span>},
+ {<span class="hljs-number">16</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1982</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,n,n,n,n,vl,n,n,n,<span class="hljs-number">100</span>,<span class="hljs-number">360</span>,<span class="hljs-number">4342</span>,<span class="hljs-number">28</span>},
+ {<span class="hljs-number">17</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1980</span>,h,h,h,vh,n,n,l,h,n,n,n,xh,l,h,vh,n,vh,n,h,n,n,n,<span class="hljs-number">150</span>,<span class="hljs-number">324</span>,<span class="hljs-number">4868</span>,<span class="hljs-number">32.5</span>},
+ {<span class="hljs-number">18</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1984</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,h,n,h,n,h,n,n,n,<span class="hljs-number">31.5</span>,<span class="hljs-number">60</span>,<span class="hljs-number">986</span>,<span class="hljs-number">17.6</span>},
+ {<span class="hljs-number">19</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1983</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,h,h,n,vh,n,h,n,n,n,<span class="hljs-number">15</span>,<span class="hljs-number">48</span>,<span class="hljs-number">470</span>,<span class="hljs-number">13.6</span>},
+ {<span class="hljs-number">20</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1984</span>,h,h,h,vh,n,n,l,h,n,n,n,xh,l,h,n,n,h,n,h,n,n,n,<span class="hljs-number">32.5</span>,<span class="hljs-number">60</span>,<span class="hljs-number">1276</span>,<span class="hljs-number">20.8</span>},
+ {<span class="hljs-number">21</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1985</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">19.7</span>,<span class="hljs-number">60</span>,<span class="hljs-number">614</span>,<span class="hljs-number">13.9</span>},
+ {<span class="hljs-number">22</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1985</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">66.6</span>,<span class="hljs-number">300</span>,<span class="hljs-number">2077</span>,<span class="hljs-number">21</span>},
+ {<span class="hljs-number">23</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1985</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">29.5</span>,<span class="hljs-number">120</span>,<span class="hljs-number">920</span>,<span class="hljs-number">16</span>},
+ {<span class="hljs-number">24</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,h,n,n,n,n,h,n,n,n,h,n,h,n,n,n,n,n,<span class="hljs-number">15</span>,<span class="hljs-number">90</span>,<span class="hljs-number">575</span>,<span class="hljs-number">15.2</span>},
+ {<span class="hljs-number">25</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,h,n,h,n,n,n,n,n,n,h,n,h,n,n,n,n,n,<span class="hljs-number">38</span>,<span class="hljs-number">210</span>,<span class="hljs-number">1553</span>,<span class="hljs-number">21.3</span>},
+ {<span class="hljs-number">26</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,n,n,n,n,n,n,n,n,n,h,n,h,n,n,n,n,n,<span class="hljs-number">10</span>,<span class="hljs-number">48</span>,<span class="hljs-number">427</span>,<span class="hljs-number">12.4</span>},
+ {<span class="hljs-number">27</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,vh,h,n,n,vh,vh,l,vh,n,n,h,l,h,n,n,l,<span class="hljs-number">15.4</span>,<span class="hljs-number">70</span>,<span class="hljs-number">765</span>,<span class="hljs-number">14.5</span>},
+ {<span class="hljs-number">28</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,vh,h,n,n,vh,vh,l,vh,n,n,h,l,h,n,n,l,<span class="hljs-number">48.5</span>,<span class="hljs-number">239</span>,<span class="hljs-number">2409</span>,<span class="hljs-number">21.4</span>},
+ {<span class="hljs-number">29</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,vh,h,n,n,vh,vh,l,vh,n,n,h,l,h,n,n,l,<span class="hljs-number">16.3</span>,<span class="hljs-number">82</span>,<span class="hljs-number">810</span>,<span class="hljs-number">14.8</span>},
+ {<span class="hljs-number">29</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,vh,h,n,n,vh,vh,l,vh,n,n,h,l,h,n,n,l,<span class="hljs-number">12.8</span>,<span class="hljs-number">62</span>,<span class="hljs-number">636</span>,<span class="hljs-number">13.6</span>},
+ {<span class="hljs-number">31</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,vh,h,n,n,vh,vh,l,vh,n,n,h,l,h,n,n,l,<span class="hljs-number">32.6</span>,<span class="hljs-number">170</span>,<span class="hljs-number">1619</span>,<span class="hljs-number">18.7</span>},
+ {<span class="hljs-number">32</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,vh,h,n,n,vh,vh,l,vh,n,n,h,l,h,n,n,l,<span class="hljs-number">35.5</span>,<span class="hljs-number">192</span>,<span class="hljs-number">1763</span>,<span class="hljs-number">19.3</span>},
+ {<span class="hljs-number">33</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1985</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">5.5</span>,<span class="hljs-number">18</span>,<span class="hljs-number">172</span>,<span class="hljs-number">9.1</span>},
+ {<span class="hljs-number">34</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1987</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">10.4</span>,<span class="hljs-number">50</span>,<span class="hljs-number">324</span>,<span class="hljs-number">11.2</span>},
+ {<span class="hljs-number">35</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1987</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">14</span>,<span class="hljs-number">60</span>,<span class="hljs-number">437</span>,<span class="hljs-number">12.4</span>},
+ {<span class="hljs-number">36</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,h,n,h,n,n,n,n,n,n,n,n,n,n,n,n,n,n,<span class="hljs-number">6.5</span>,<span class="hljs-number">42</span>,<span class="hljs-number">290</span>,<span class="hljs-number">12</span>},
+ {<span class="hljs-number">37</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,n,n,h,n,n,n,n,n,n,n,n,n,n,n,n,n,n,<span class="hljs-number">13</span>,<span class="hljs-number">60</span>,<span class="hljs-number">683</span>,<span class="hljs-number">14.8</span>},
+ {<span class="hljs-number">38</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,h,n,n,h,n,n,n,n,n,n,h,n,n,n,h,h,n,n,<span class="hljs-number">90</span>,<span class="hljs-number">444</span>,<span class="hljs-number">3343</span>,<span class="hljs-number">26.7</span>},
+ {<span class="hljs-number">39</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,n,n,h,n,n,n,n,n,n,n,n,n,n,n,n,n,n,<span class="hljs-number">8</span>,<span class="hljs-number">42</span>,<span class="hljs-number">420</span>,<span class="hljs-number">12.5</span>},
+ {<span class="hljs-number">40</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1986</span>,h,h,h,vh,n,n,n,h,n,n,h,n,n,n,n,n,n,n,n,n,n,n,<span class="hljs-number">16</span>,<span class="hljs-number">114</span>,<span class="hljs-number">887</span>,<span class="hljs-number">16.4</span>},
+ {<span class="hljs-number">41</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1980</span>,h,h,h,vh,h,n,h,h,n,n,vh,h,l,h,h,n,n,l,h,n,n,l,<span class="hljs-number">177.9</span>,<span class="hljs-number">1248</span>,<span class="hljs-number">7998</span>,<span class="hljs-number">31.5</span>},
+ {<span class="hljs-number">42</span>,<span class="hljs-number">6</span>,<span class="hljs-number">1975</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,h,n,n,n,n,n,n,n,<span class="hljs-number">302</span>,<span class="hljs-number">2400</span>,<span class="hljs-number">8543</span>,<span class="hljs-number">38.4</span>},
+ {<span class="hljs-number">43</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,n,h,l,n,n,n,n,h,h,n,n,h,n,n,h,n,n,<span class="hljs-number">282.1</span>,<span class="hljs-number">1368</span>,<span class="hljs-number">9820</span>,<span class="hljs-number">37.3</span>},
+ {<span class="hljs-number">44</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1982</span>,h,h,h,vh,h,h,h,l,n,n,n,n,n,h,n,n,h,n,n,n,n,n,<span class="hljs-number">284.7</span>,<span class="hljs-number">973</span>,<span class="hljs-number">8518</span>,<span class="hljs-number">38.1</span>},
+ {<span class="hljs-number">45</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1982</span>,h,h,h,vh,n,h,h,n,n,n,n,n,l,n,h,n,h,n,h,n,n,n,<span class="hljs-number">79</span>,<span class="hljs-number">400</span>,<span class="hljs-number">2327</span>,<span class="hljs-number">26.9</span>},
+ {<span class="hljs-number">46</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,l,l,n,n,n,n,n,n,l,h,vh,n,h,n,h,n,n,n,<span class="hljs-number">423</span>,<span class="hljs-number">2400</span>,<span class="hljs-number">18447</span>,<span class="hljs-number">41.9</span>},
+ {<span class="hljs-number">47</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,n,n,n,n,n,n,n,l,h,vh,n,vh,l,h,n,n,n,<span class="hljs-number">190</span>,<span class="hljs-number">420</span>,<span class="hljs-number">5092</span>,<span class="hljs-number">30.3</span>},
+ {<span class="hljs-number">48</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1984</span>,h,h,h,vh,h,n,n,h,n,n,n,h,n,h,n,n,h,n,h,n,n,n,<span class="hljs-number">47.5</span>,<span class="hljs-number">252</span>,<span class="hljs-number">2007</span>,<span class="hljs-number">22.3</span>},
+ {<span class="hljs-number">49</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1980</span>,h,h,h,vh,l,vh,n,xh,n,n,h,h,l,n,n,n,h,n,n,h,n,n,<span class="hljs-number">21</span>,<span class="hljs-number">107</span>,<span class="hljs-number">1058</span>,<span class="hljs-number">21.3</span>},
+ {<span class="hljs-number">50</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1983</span>,h,h,h,vh,l,n,h,h,n,n,vh,n,n,h,h,n,h,n,h,n,n,n,<span class="hljs-number">78</span>,<span class="hljs-number">571.4</span>,<span class="hljs-number">4815</span>,<span class="hljs-number">30.5</span>},
+ {<span class="hljs-number">51</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1984</span>,h,h,h,vh,l,n,h,h,n,n,vh,n,n,h,h,n,h,n,h,n,n,n,<span class="hljs-number">11.4</span>,<span class="hljs-number">98.8</span>,<span class="hljs-number">704</span>,<span class="hljs-number">15.5</span>},
+ {<span class="hljs-number">52</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1985</span>,h,h,h,vh,l,n,h,h,n,n,vh,n,n,h,h,n,h,n,h,n,n,n,<span class="hljs-number">19.3</span>,<span class="hljs-number">155</span>,<span class="hljs-number">1191</span>,<span class="hljs-number">18.6</span>},
+ {<span class="hljs-number">53</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,h,n,vh,n,n,h,h,l,h,n,n,n,h,h,n,n,n,<span class="hljs-number">101</span>,<span class="hljs-number">750</span>,<span class="hljs-number">4840</span>,<span class="hljs-number">32.4</span>},
+ {<span class="hljs-number">54</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,h,n,h,n,n,h,h,l,n,n,n,h,n,n,n,n,n,<span class="hljs-number">219</span>,<span class="hljs-number">2120</span>,<span class="hljs-number">11761</span>,<span class="hljs-number">42.8</span>},
+ {<span class="hljs-number">55</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,h,n,h,n,n,h,h,l,n,n,n,h,n,n,n,n,n,<span class="hljs-number">50</span>,<span class="hljs-number">370</span>,<span class="hljs-number">2685</span>,<span class="hljs-number">25.4</span>},
+ {<span class="hljs-number">56</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,vh,h,h,n,n,vh,vh,n,vh,vh,n,vh,n,h,h,n,l,<span class="hljs-number">227</span>,<span class="hljs-number">1181</span>,<span class="hljs-number">6293</span>,<span class="hljs-number">33</span>},
+ {<span class="hljs-number">57</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,n,h,vh,n,n,n,n,l,h,vh,n,n,l,n,n,n,l,<span class="hljs-number">70</span>,<span class="hljs-number">278</span>,<span class="hljs-number">2950</span>,<span class="hljs-number">20.2</span>},
+ {<span class="hljs-number">58</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,<span class="hljs-number">0.9</span>,<span class="hljs-number">8.4</span>,<span class="hljs-number">28</span>,<span class="hljs-number">4.9</span>},
+ {<span class="hljs-number">59</span>,<span class="hljs-number">6</span>,<span class="hljs-number">1974</span>,h,h,h,vh,l,vh,l,xh,n,n,xh,vh,l,h,h,n,vh,vl,h,n,n,n,<span class="hljs-number">980</span>,<span class="hljs-number">4560</span>,<span class="hljs-number">50961</span>,<span class="hljs-number">96</span>},
+ {<span class="hljs-number">60</span>,<span class="hljs-number">6</span>,<span class="hljs-number">1975</span>,h,h,h,vh,n,n,l,h,n,n,n,n,l,vh,vh,n,n,h,h,n,n,n,<span class="hljs-number">350</span>,<span class="hljs-number">720</span>,<span class="hljs-number">8547</span>,<span class="hljs-number">35.7</span>},
+ {<span class="hljs-number">61</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1976</span>,h,h,h,vh,h,h,n,xh,n,n,h,h,l,h,n,n,n,h,h,h,n,n,<span class="hljs-number">70</span>,<span class="hljs-number">458</span>,<span class="hljs-number">2404</span>,<span class="hljs-number">27.5</span>},
+ {<span class="hljs-number">62</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,h,h,n,xh,n,n,h,h,l,h,n,n,n,h,h,h,n,n,<span class="hljs-number">271</span>,<span class="hljs-number">2460</span>,<span class="hljs-number">9308</span>,<span class="hljs-number">43.4</span>},
+ {<span class="hljs-number">63</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1971</span>,h,h,h,vh,n,n,n,n,n,n,n,n,l,h,h,n,h,n,h,n,n,n,<span class="hljs-number">90</span>,<span class="hljs-number">162</span>,<span class="hljs-number">2743</span>,<span class="hljs-number">25</span>},
+ {<span class="hljs-number">64</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1980</span>,h,h,h,vh,n,n,n,n,n,n,n,n,l,h,h,n,h,n,h,n,n,n,<span class="hljs-number">40</span>,<span class="hljs-number">150</span>,<span class="hljs-number">1219</span>,<span class="hljs-number">18.9</span>},
+ {<span class="hljs-number">65</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,n,h,n,h,n,n,h,n,l,h,h,n,h,n,h,n,n,n,<span class="hljs-number">137</span>,<span class="hljs-number">636</span>,<span class="hljs-number">4210</span>,<span class="hljs-number">32.2</span>},
+ {<span class="hljs-number">66</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,n,h,n,h,n,n,h,n,h,h,h,n,h,n,h,n,n,n,<span class="hljs-number">150</span>,<span class="hljs-number">882</span>,<span class="hljs-number">5848</span>,<span class="hljs-number">36.2</span>},
+ {<span class="hljs-number">67</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1976</span>,h,h,h,vh,n,vh,n,h,n,n,h,n,l,h,h,n,h,n,h,n,n,n,<span class="hljs-number">339</span>,<span class="hljs-number">444</span>,<span class="hljs-number">8477</span>,<span class="hljs-number">45.9</span>},
+ {<span class="hljs-number">68</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1983</span>,h,h,h,vh,n,l,h,l,n,n,n,n,h,h,h,n,h,n,h,n,n,n,<span class="hljs-number">240</span>,<span class="hljs-number">192</span>,<span class="hljs-number">10313</span>,<span class="hljs-number">37.1</span>},
+ {<span class="hljs-number">69</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1978</span>,h,h,h,vh,l,h,n,h,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">144</span>,<span class="hljs-number">576</span>,<span class="hljs-number">6129</span>,<span class="hljs-number">28.8</span>},
+ {<span class="hljs-number">70</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,n,l,n,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">151</span>,<span class="hljs-number">432</span>,<span class="hljs-number">6136</span>,<span class="hljs-number">26.2</span>},
+ {<span class="hljs-number">71</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,n,l,h,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">34</span>,<span class="hljs-number">72</span>,<span class="hljs-number">1555</span>,<span class="hljs-number">16.2</span>},
+ {<span class="hljs-number">72</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,n,n,h,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">98</span>,<span class="hljs-number">300</span>,<span class="hljs-number">4907</span>,<span class="hljs-number">24.4</span>},
+ {<span class="hljs-number">73</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,n,n,h,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">85</span>,<span class="hljs-number">300</span>,<span class="hljs-number">4256</span>,<span class="hljs-number">23.2</span>},
+ {<span class="hljs-number">74</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1982</span>,h,h,h,vh,l,n,l,n,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">20</span>,<span class="hljs-number">240</span>,<span class="hljs-number">813</span>,<span class="hljs-number">12.8</span>},
+ {<span class="hljs-number">75</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1978</span>,h,h,h,vh,l,n,l,n,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">111</span>,<span class="hljs-number">600</span>,<span class="hljs-number">4511</span>,<span class="hljs-number">23.5</span>},
+ {<span class="hljs-number">76</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1978</span>,h,h,h,vh,l,h,vh,h,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">162</span>,<span class="hljs-number">756</span>,<span class="hljs-number">7553</span>,<span class="hljs-number">32.4</span>},
+ {<span class="hljs-number">77</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1978</span>,h,h,h,vh,l,h,h,vh,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">352</span>,<span class="hljs-number">1200</span>,<span class="hljs-number">17597</span>,<span class="hljs-number">42.9</span>},
+ {<span class="hljs-number">78</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1979</span>,h,h,h,vh,l,h,n,vh,n,n,n,vh,l,h,h,n,h,h,h,n,n,l,<span class="hljs-number">165</span>,<span class="hljs-number">97</span>,<span class="hljs-number">7867</span>,<span class="hljs-number">31.5</span>},
+ {<span class="hljs-number">79</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1984</span>,h,h,h,vh,h,h,n,vh,n,n,h,h,l,h,n,n,n,h,h,n,n,n,<span class="hljs-number">60</span>,<span class="hljs-number">409</span>,<span class="hljs-number">2004</span>,<span class="hljs-number">24.9</span>},
+ {<span class="hljs-number">80</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1984</span>,h,h,h,vh,h,h,n,vh,n,n,h,h,l,h,n,n,n,h,h,n,n,n,<span class="hljs-number">100</span>,<span class="hljs-number">703</span>,<span class="hljs-number">3340</span>,<span class="hljs-number">29.6</span>},
+ {<span class="hljs-number">81</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1980</span>,h,h,h,vh,n,h,vh,vh,n,n,xh,xh,h,n,n,n,n,l,l,n,n,n,<span class="hljs-number">32</span>,<span class="hljs-number">1350</span>,<span class="hljs-number">2984</span>,<span class="hljs-number">33.6</span>},
+ {<span class="hljs-number">82</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1980</span>,h,h,h,vh,h,h,h,h,n,n,vh,xh,h,h,h,n,h,h,h,n,n,n,<span class="hljs-number">53</span>,<span class="hljs-number">480</span>,<span class="hljs-number">2227</span>,<span class="hljs-number">28.8</span>},
+ {<span class="hljs-number">83</span>,<span class="hljs-number">3</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,h,l,vh,n,n,vh,xh,l,vh,vh,n,vh,vl,vl,h,n,n,<span class="hljs-number">41</span>,<span class="hljs-number">599</span>,<span class="hljs-number">1594</span>,<span class="hljs-number">23</span>},
+ {<span class="hljs-number">84</span>,<span class="hljs-number">3</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,h,l,vh,n,n,vh,xh,l,vh,vh,n,vh,vl,vl,h,n,n,<span class="hljs-number">24</span>,<span class="hljs-number">430</span>,<span class="hljs-number">933</span>,<span class="hljs-number">19.2</span>},
+ {<span class="hljs-number">85</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,vh,h,vh,n,n,xh,xh,n,h,h,n,h,h,h,n,n,n,<span class="hljs-number">165</span>,<span class="hljs-number">4178.2</span>,<span class="hljs-number">6266</span>,<span class="hljs-number">47</span>},
+ {<span class="hljs-number">86</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,vh,h,vh,n,n,xh,xh,n,h,h,n,h,h,h,n,n,n,<span class="hljs-number">65</span>,<span class="hljs-number">1772.5</span>,<span class="hljs-number">2468</span>,<span class="hljs-number">34.5</span>},
+ {<span class="hljs-number">87</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,vh,h,vh,n,n,xh,xh,n,h,h,n,h,h,h,n,n,n,<span class="hljs-number">70</span>,<span class="hljs-number">1645.9</span>,<span class="hljs-number">2658</span>,<span class="hljs-number">35.4</span>},
+ {<span class="hljs-number">88</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1977</span>,h,h,h,vh,h,vh,h,xh,n,n,xh,xh,n,h,h,n,h,h,h,n,n,n,<span class="hljs-number">50</span>,<span class="hljs-number">1924.5</span>,<span class="hljs-number">2102</span>,<span class="hljs-number">34.2</span>},
+ {<span class="hljs-number">89</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1982</span>,h,h,h,vh,l,vh,l,vh,n,n,vh,xh,l,h,n,n,l,vl,l,h,n,n,<span class="hljs-number">7.25</span>,<span class="hljs-number">648</span>,<span class="hljs-number">406</span>,<span class="hljs-number">15.6</span>},
+ {<span class="hljs-number">90</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1980</span>,h,h,h,vh,h,vh,h,vh,n,n,xh,xh,n,h,h,n,h,h,h,n,n,n,<span class="hljs-number">233</span>,<span class="hljs-number">8211</span>,<span class="hljs-number">8848</span>,<span class="hljs-number">53.1</span>},
+ {<span class="hljs-number">91</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1983</span>,h,h,h,vh,n,h,n,vh,n,n,vh,vh,h,n,n,n,n,l,l,n,n,n,<span class="hljs-number">16.3</span>,<span class="hljs-number">480</span>,<span class="hljs-number">1253</span>,<span class="hljs-number">21.5</span>},
+ {<span class="hljs-number">92</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1983</span>,h,h,h,vh,n,h,n,vh,n,n,vh,vh,h,n,n,n,n,l,l,n,n,n,<span class="hljs-number">6.2</span>,<span class="hljs-number">12</span>,<span class="hljs-number">477</span>,<span class="hljs-number">15.4</span>},
+ {<span class="hljs-number">93</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1983</span>,h,h,h,vh,n,h,n,vh,n,n,vh,vh,h,n,n,n,n,l,l,n,n,n,<span class="hljs-number">3</span>,<span class="hljs-number">38</span>,<span class="hljs-number">231</span>,<span class="hljs-number">12</span>}} <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-4">&#x00a7;</a>
+              </div>
+              <h2 id="utils">Utils</h2>
+<p>Misc</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>big=<span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span>
+rand=<span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span>
+fmt=<span class="hljs-built_in">string</span>.<span class="hljs-built_in">format</span>
+same = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-5">&#x00a7;</a>
+              </div>
+              <p>Sorting</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sort</span><span class="hljs-params">(t,f)</span></span>    <span class="hljs-built_in">table</span>.<span class="hljs-built_in">sort</span>(t, f); <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lt</span><span class="hljs-params">(x)</span></span>        <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> a[x] &lt; b[x] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-6">&#x00a7;</a>
+              </div>
+              <p>Query and update</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">map</span><span class="hljs-params">(t,f, u)</span></span>  u={};<span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> u[<span class="hljs-number">1</span>+#u]=f(v) <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">push</span><span class="hljs-params">(t,x)</span></span>    t[<span class="hljs-number">1</span>+#t]=x; <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">slice</span><span class="hljs-params">(t,i,j,k,     u)</span></span> 
+  i,j = (i <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)//<span class="hljs-number">1</span>, (j <span class="hljs-keyword">or</span> #t)//<span class="hljs-number">1</span>
+  k   = (k <span class="hljs-keyword">and</span> (j-i)/k <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)//<span class="hljs-number">1</span>
+  u={}; <span class="hljs-keyword">for</span> n=i,j,k <span class="hljs-keyword">do</span> u[<span class="hljs-number">1</span>+#u] = t[n] <span class="hljs-keyword">end</span> <span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-7">&#x00a7;</a>
+              </div>
+              <p>“Strings 2 things” coercion. </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">string2thing</span><span class="hljs-params">(x)</span></span>
+  x = x:<span class="hljs-built_in">match</span><span class="hljs-string">&quot;^%s*(.-)%s*$&quot;</span>
+  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">elseif</span> x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.tointeger(x) <span class="hljs-keyword">or</span> <span class="hljs-built_in">tonumber</span>(x) <span class="hljs-keyword">or</span> x  <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">csv</span><span class="hljs-params">(csvfile)</span></span> 
+  csvfile = <span class="hljs-built_in">io</span>.<span class="hljs-built_in">input</span>(csvfile)
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(line, row)</span></span> 
+    line=<span class="hljs-built_in">io</span>.<span class="hljs-built_in">read</span>()
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> line <span class="hljs-keyword">then</span> <span class="hljs-built_in">io</span>.<span class="hljs-built_in">close</span>(csvfile) <span class="hljs-keyword">else</span>
+      row={}; <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> line:<span class="hljs-built_in">gmatch</span>(<span class="hljs-string">&quot;([^,]+)&quot;</span>) <span class="hljs-keyword">do</span> push(row,string2thing(x)) <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">return</span> row <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-8">&#x00a7;</a>
+              </div>
+              <p>“Things 2 strings” coercion.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">oo</span><span class="hljs-params">(t)</span></span> <span class="hljs-built_in">print</span>(o(t)) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">o</span><span class="hljs-params">(t,    u)</span></span>
+  <span class="hljs-keyword">if</span> #t&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;{&quot;</span>..<span class="hljs-built_in">table</span>.<span class="hljs-built_in">concat</span>(map(t,<span class="hljs-built_in">tostring</span>),<span class="hljs-string">&quot; &quot;</span>)..<span class="hljs-string">&quot;}&quot;</span> <span class="hljs-keyword">else</span>
+    u={}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> u[<span class="hljs-number">1</span>+#u] = fmt(<span class="hljs-string">&quot;:%s %s&quot;</span>,k,v) <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">return</span> (t.is <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>)..<span class="hljs-string">&quot;{&quot;</span>..<span class="hljs-built_in">table</span>.<span class="hljs-built_in">concat</span>(<span class="hljs-built_in">sort</span>(u),<span class="hljs-string">&quot; &quot;</span>)..<span class="hljs-string">&quot;}&quot;</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rnds</span><span class="hljs-params">(t,f)</span></span> <span class="hljs-keyword">return</span> map(t, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> rnd(x,f) <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rnd</span><span class="hljs-params">(x,f)</span></span> 
+  <span class="hljs-keyword">return</span> fmt(<span class="hljs-built_in">type</span>(x)==<span class="hljs-string">&quot;number&quot;</span> <span class="hljs-keyword">and</span> (x~=x//<span class="hljs-number">1</span> <span class="hljs-keyword">and</span> f <span class="hljs-keyword">or</span> the.rnd) <span class="hljs-keyword">or</span><span class="hljs-string">&quot;%s&quot;</span>,x) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-9">&#x00a7;</a>
+              </div>
+              <p>Convert help string to a table. Check command line for any updates.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fill_in_the</span><span class="hljs-params">(shortFlag,longFlag,slot,x)</span></span>
+  <span class="hljs-keyword">for</span> n,flag <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">arg</span>) <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">if</span> flag==shortFlag <span class="hljs-keyword">or</span> flag==longFlag <span class="hljs-keyword">then</span>
+      x = x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">and</span><span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">or</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">and</span><span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">arg</span>[n+<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  the[slot] = string2thing(x) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-10">&#x00a7;</a>
+              </div>
+              <p>Run demos, each time resetting settings and random seed. Return #failures.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> go,no={},{} <span class="hljs-comment">-- place to store enabled and disabled tests</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">demos</span><span class="hljs-params">(    fails,names,defaults,status)</span></span>
+  fails=<span class="hljs-number">0</span>     <span class="hljs-comment">-- this code will return number of failures</span>
+  names, defaults = {},{}
+  <span class="hljs-keyword">for</span> k,f <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(go) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">type</span>(f)==<span class="hljs-string">&quot;function&quot;</span> <span class="hljs-keyword">then</span> push(names,k) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(the) <span class="hljs-keyword">do</span> defaults[k]=v <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> go[the.go] <span class="hljs-keyword">then</span> names={the.go} <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _,one <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(names))  <span class="hljs-keyword">do</span>         <span class="hljs-comment">-- for all we want to do</span>
+    <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(defaults) <span class="hljs-keyword">do</span> the[k]=v <span class="hljs-keyword">end</span> <span class="hljs-comment">-- set settings to defaults</span>
+    <span class="hljs-built_in">math</span>.<span class="hljs-built_in">randomseed</span>(the.seed <span class="hljs-keyword">or</span> <span class="hljs-number">10019</span>)         <span class="hljs-comment">-- reset random number seed</span>
+    <span class="hljs-built_in">io</span>.<span class="hljs-built_in">stderr</span>:<span class="hljs-built_in">write</span>(<span class="hljs-string">&quot;.&quot;</span>)
+    <span class="hljs-built_in">status</span> = go[one]()                         <span class="hljs-comment">-- run demo</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">status</span> ~= <span class="hljs-literal">true</span> <span class="hljs-keyword">then</span>
+      <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;-- Error&quot;</span>,one,<span class="hljs-built_in">status</span>) 
+      fails = fails + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>                <span class="hljs-comment">-- update fails</span>
+  <span class="hljs-keyword">return</span> fails <span class="hljs-keyword">end</span>                             <span class="hljs-comment">-- return total failure count</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-11">&#x00a7;</a>
+              </div>
+              <p>Polymorphic objects.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is</span><span class="hljs-params">(name,    t,new)</span></span>
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">new</span><span class="hljs-params">(kl,...)</span></span> 
+    <span class="hljs-keyword">local</span> x=<span class="hljs-built_in">setmetatable</span>({},kl); kl.new(x,...); <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span> 
+  t = {<span class="hljs-built_in">__tostring</span>=o, is=name <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>}; t.<span class="hljs-built_in">__index</span>=t
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">setmetatable</span>(t, {<span class="hljs-built_in">__call</span>=new}) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-12">&#x00a7;</a>
+              </div>
+              <h2 id="objects">Objects</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>COLS,EGS,NUM,RANGE,ROW,SYM=is<span class="hljs-string">&quot;COLS&quot;</span>,is<span class="hljs-string">&quot;EGS&quot;</span>,is<span class="hljs-string">&quot;NUM&quot;</span>,is<span class="hljs-string">&quot;RANGE&quot;</span>,is<span class="hljs-string">&quot;SYM&quot;</span>,is<span class="hljs-string">&quot;ROW&quot;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-13">&#x00a7;</a>
+              </div>
+              <h2 id="num">NUM</h2>
+<ul>
+<li>For a stream of <code>add</code>itions, incrementally maintain <code>mu,sd</code>. </li>
+<li><code>Norm</code>alize data for distance and discretization calcs 
+ (see <code>dist</code> and <code>range</code>).</li>
+<li>Comment on <code>like</code>lihood that something belongs to this distribution.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.new</span><span class="hljs-params">(i,at,txt)</span></span> 
+  i.at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>; i.txt=txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>; i.lo,i.hi=big, -big
+  i.n,i.mu,i.m2,i.sd = <span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>;  i.w=(txt <span class="hljs-keyword">or</span><span class="hljs-string">&quot;&quot;</span>):<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.add</span><span class="hljs-params">(i,x,   d)</span></span>
+  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+  i.n  = i.n + <span class="hljs-number">1</span>
+  d    = x - i.mu
+  i.mu = i.mu + d/i.n
+  i.m2 = i.m2 + d*(x - i.mu)
+  i.sd = (i.m2&lt;<span class="hljs-number">0</span> <span class="hljs-keyword">or</span> i.n&lt;<span class="hljs-number">2</span>) <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> ((i.m2/(i.n - <span class="hljs-number">1</span>))^<span class="hljs-number">0.5</span>) 
+  i.lo = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(i.lo,x)
+  i.hi = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(i.hi,x) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.dist</span><span class="hljs-params">(i, x,y)</span></span>
+  <span class="hljs-keyword">if</span>     x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> y==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span>     x==<span class="hljs-string">&quot;?&quot;</span>            <span class="hljs-keyword">then</span> y = i:norm(y); x = y&lt;<span class="hljs-number">.5</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">0</span> 
+  <span class="hljs-keyword">elseif</span> y==<span class="hljs-string">&quot;?&quot;</span>            <span class="hljs-keyword">then</span> x = i:norm(x); y = x&lt;<span class="hljs-number">.5</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>
+  <span class="hljs-keyword">else</span> x,y = i:norm(x), i:norm(y) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">abs</span>(x - y) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.like</span><span class="hljs-params">(i,x,_,       e)</span></span>
+  <span class="hljs-keyword">return</span> (x &lt; i.mu - <span class="hljs-number">4</span>*i.sd <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> x &gt; i.mu + <span class="hljs-number">4</span>*i.sd <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span>
+    <span class="hljs-number">2.7183</span>^(-(x - i.mu)^<span class="hljs-number">2</span> / (z + <span class="hljs-number">2</span>*i.sd^<span class="hljs-number">2</span>))/(z + (<span class="hljs-built_in">math</span>.<span class="hljs-built_in">pi</span>*<span class="hljs-number">2</span>*i.sd^<span class="hljs-number">2</span>)^<span class="hljs-number">.5</span>)) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.merge</span><span class="hljs-params">(i,ranges,min,      a,b,c,j,n,tmp)</span></span>
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">expand</span><span class="hljs-params">(t)</span></span> 
+    <span class="hljs-keyword">if</span> #t&lt;<span class="hljs-number">2</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> {} <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">for</span> j=<span class="hljs-number">2</span>,#t <span class="hljs-keyword">do</span> t[j].lo=t[j<span class="hljs-number">-1</span>].hi <span class="hljs-keyword">end</span>
+    t[<span class="hljs-number">1</span>].x.lo, t[#t].x.hi= -big,big
+    <span class="hljs-keyword">return</span> t  
+  j,n,tmp = <span class="hljs-number">1</span>,#ranges,{}
+  <span class="hljs-keyword">while</span> j&lt;=n <span class="hljs-keyword">do</span> 
+    a, b = ranges[j], ranges[j+<span class="hljs-number">1</span>]
+    <span class="hljs-keyword">if</span> b <span class="hljs-keyword">then</span> c = a:merge(b,<span class="hljs-built_in">min</span>); <span class="hljs-keyword">if</span> c <span class="hljs-keyword">then</span> a,j = c,j+<span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    tmp[#tmp+<span class="hljs-number">1</span>] = a
+    j = j+<span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> #tmp==#ranges <span class="hljs-keyword">and</span> expand(tmp) <span class="hljs-keyword">or</span> i:merge(tmp,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.mid</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.mu <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.norm</span><span class="hljs-params">(i,x)</span></span> 
+  <span class="hljs-keyword">return</span> i.hi-i.lo&lt;<span class="hljs-number">1E-9</span> <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> (x-i.lo)/(i.hi-i.lo+<span class="hljs-number">1</span>/big) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.range</span><span class="hljs-params">(i,x,n,  b)</span></span> b=(i.hi-i.lo)/n; <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">floor</span>(x/b+<span class="hljs-number">0.5</span>)*b <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-14">&#x00a7;</a>
+              </div>
+              <h2 id="sym">SYM</h2>
+<ul>
+<li>For a stream of <code>add</code>itions, incrementally maintain count of <code>all</code> symbols.</li>
+<li>Using that info, report <code>dist</code>, mode (<code>mid</code>) symbol, and entropy
+(<code>div</code>) of this distribution.  </li>
+<li>Comment on <code>like</code>lihood that something belongs to this distribution.</li>
+<li>Discretization of a symbol just returns that sym (<code>range</code>).</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.new</span><span class="hljs-params">(i,at,txt)</span></span> i.at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>; i.txt=txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>; i.n,i.all = <span class="hljs-number">0</span>,{} <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.add</span><span class="hljs-params">(i,x,n)</span></span> 
+  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+  n = n <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>
+  i.n=i.n+n; i.all[x] = n + (i.all[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.dist</span><span class="hljs-params">(i,x,y)</span></span> <span class="hljs-keyword">return</span> (a==b <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.div</span><span class="hljs-params">(i,   n,e)</span></span>
+  e=<span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> k,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> e=e-n/i.n*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(n/i.n,<span class="hljs-number">2</span>) <span class="hljs-keyword">end</span> ;<span class="hljs-keyword">return</span> e <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.like</span><span class="hljs-params">(i,x,prior)</span></span> <span class="hljs-keyword">return</span> ((c.all[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>)+the.m*prior)/(c.n+the.m) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.merge</span><span class="hljs-params">(i,ranges,min)</span></span> <span class="hljs-keyword">return</span> ranges <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.mid</span><span class="hljs-params">(i)</span></span>
+  m=<span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> y,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.all) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n&gt;m <span class="hljs-keyword">then</span> m,x=n,y <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.range</span><span class="hljs-params">(i,x,_)</span></span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-15">&#x00a7;</a>
+              </div>
+              <h2 id="range">RANGE</h2>
+<ul>
+<li>For a stream of <code>add</code>itions, incrementally maintain counts of <code>x</code> and <code>y</code>.</li>
+<li>Summarize <code>x</code> as the <code>lo,hi</code> seen so far and summarize <code>y</code> in <code>SYM</code> counts 
+in <code>y.all</code> (and get counts there using <code>of</code>).</li>
+<li>Support range sorting (<code>__lt</code>) and printing (<code>__tostring</code>).</li>
+<li>Check if this range’s <code>x</code> values <code>select</code>s for a particular row.</li>
+<li><code>Merge</code> adjacent ranges if the entropy of the whole is less than the parts.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.new</span><span class="hljs-params">(i,col,lo,hi,y)</span></span> 
+  i.col, i.x, i.y = col, {lo=lo <span class="hljs-keyword">or</span> big, hi=hi <span class="hljs-keyword">or</span> -big}, (y <span class="hljs-keyword">or</span>  SYM()) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.__lt</span><span class="hljs-params">(i,j)</span></span> <span class="hljs-keyword">return</span> i.x.lo &lt; j.x.lo <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.__tostring</span><span class="hljs-params">(i)</span></span>
+  <span class="hljs-keyword">local</span> x, lo, hi = i.col.txt, i.x.lo, i.x.hi
+  <span class="hljs-keyword">if</span>     lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x, lo)  
+  <span class="hljs-keyword">elseif</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x, lo)  
+  <span class="hljs-keyword">elseif</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s&quot;</span>, x, hi)  
+  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s &lt; %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.add</span><span class="hljs-params">(i,x,y)</span></span>
+  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+  i.x.lo = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(i.x.lo,x)
+  i.x.hi = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(i.x.hi,x)
+  i.y:add(y) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.merge</span><span class="hljs-params">(i,j,n0,    k)</span></span>
+  k = SYM(i.col.at, i.col.txt)
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.y.all) <span class="hljs-keyword">do</span> k:add(x,n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.y.all) <span class="hljs-keyword">do</span> k:add(x,n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> i.y.n&lt;(n0 <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">or</span> j.y.n&lt;(n0 <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">or</span> (
+     (i.y:div(i)*i.y.n + j.y:div()*j.y.n)/k.n &gt;= <span class="hljs-number">.99</span>*k:div())
+  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> RANGE(i.col, i.x.lo, j.x.hi, k) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.of</span><span class="hljs-params">(i,x)</span></span> <span class="hljs-keyword">return</span> i.y.all[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.score</span><span class="hljs-params">(i,goal,B,R, how)</span></span>
+  how={}
+  how.good= <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(b,r)</span></span> <span class="hljs-keyword">return</span> ((b&lt;r <span class="hljs-keyword">or</span> b+r &lt; <span class="hljs-number">.05</span>) <span class="hljs-keyword">and</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">or</span> b^<span class="hljs-number">2</span>/(b+r) <span class="hljs-keyword">end</span>
+  how.bad=  <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(b,r)</span></span> <span class="hljs-keyword">return</span> ((r&lt;b <span class="hljs-keyword">or</span> b+r &lt; <span class="hljs-number">.05</span>) <span class="hljs-keyword">and</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">or</span> r^<span class="hljs-number">2</span>/(b+r)  <span class="hljs-keyword">end</span>
+  how.novel=<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(b,r)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>/(b+r) <span class="hljs-keyword">end</span>
+  b, r, z = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>/big
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.y.all) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">if</span> x==goal <span class="hljs-keyword">then</span> b = b+n <span class="hljs-keyword">else</span> r=r+n <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> how[the.how <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;good&quot;</span>](b/(B+z), r/(R+z)) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.selects</span><span class="hljs-params">(i,t,     x)</span></span>
+  t = t.cells <span class="hljs-keyword">and</span> t.cells <span class="hljs-keyword">or</span> t
+  x = t[i.at]
+  <span class="hljs-keyword">return</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">or</span> (i.x.lo==i.x.hi <span class="hljs-keyword">and</span> i.x.lo==x) <span class="hljs-keyword">or</span> (i.x.lo&lt;=x <span class="hljs-keyword">and</span> x&lt;i.x.hi)<span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-16">&#x00a7;</a>
+              </div>
+              <h2 id="row">ROW</h2>
+<ul>
+<li>Using knowledge <code>of</code> the geometry of the data, support distance calcs
+i  (<code>__sub</code> and <code>around</code>) as well as multi-objective ranking (<code>__lt</code>).</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROW.new</span><span class="hljs-params">(i,eg, cells)</span></span> i.of,i.cells = eg,cells <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROW.__lt</span><span class="hljs-params">(i,j,     s1,s2,e,y,a,b)</span></span>
+  y = i.of.cols.y
+  s1, s2, e = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,  <span class="hljs-built_in">math</span>.<span class="hljs-built_in">exp</span>(<span class="hljs-number">1</span>)
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(y) <span class="hljs-keyword">do</span>
+     a  = col:norm(i.cells[col.at])
+     b  = col:norm(j.cells[col.at])
+     s1 = s1 - e^(col.w * (a - b) / #y)
+     s2 = s2 - e^(col.w * (b - a) / #y) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> s1/#y &lt; s2/#y <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROW.__sub</span><span class="hljs-params">(i,j)</span></span>
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.of.cols.x) <span class="hljs-keyword">do</span>
+    a,b = i.cells[col.at], j.cells[col.at]
+    inc = a==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> b==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> col:dist(a,b) 
+    d   = d + inc^the.p <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> (d / (#i.of.cols.x)) ^ (<span class="hljs-number">1</span>/the.p) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROW.around</span><span class="hljs-params">(i,rows)</span></span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(map(rows <span class="hljs-keyword">or</span> i.of.rows, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(j)</span></span> <span class="hljs-keyword">return</span> {dist=i-j,row=j} <span class="hljs-keyword">end</span>), 
+              lt<span class="hljs-string">&quot;dist&quot;</span>) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-17">&#x00a7;</a>
+              </div>
+              <h2 id="cols">COLS</h2>
+<ul>
+<li>Factory for converting column <code>names</code> to <code>NUM</code>s ad <code>SYM</code>s. </li>
+<li>Store all columns in – <code>all</code>, and for all columns we are not skipping, 
+store the independent and dependent columns distributions in <code>x</code> and <code>y</code>.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">COLS.new</span><span class="hljs-params">(i,names,     head,row,col)</span></span>
+  i.names=names; i.all={}; i.y={}; i.x={}
+  <span class="hljs-keyword">for</span> at,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(names) <span class="hljs-keyword">do</span>
+    col       = push(i.all, (txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">and</span> NUM <span class="hljs-keyword">or</span> SYM)(at, txt))
+    col.goalp = txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;[!+-]$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">or</span> <span class="hljs-literal">false</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">then</span> 
+      <span class="hljs-keyword">if</span> txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;!$&quot;</span> <span class="hljs-keyword">then</span> i.klass=col <span class="hljs-keyword">end</span>
+      push(col.goalp <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x, col) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-18">&#x00a7;</a>
+              </div>
+              <h2 id="egs">EGS</h2>
+<ul>
+<li>For a stream of <code>add</code>itions, incrementally store rows, summarized in <code>cols</code>.</li>
+<li>When <code>add</code>ing, build new rows for new data. Otherwise reuse rows across 
+multiple sets of examples.</li>
+<li>Supporting <code>copy</code>ing of this structure, without or without rows of data.</li>
+<li>Report how much this set of examples <code>like</code> a new row.   </li>
+<li>Discretize columns as <code>ranges</code> that distinguish two sets of rows 
+(merging irrelevant distinctions).</li>
+<li>Summarize the <code>mid</code>point of these examples.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.new</span><span class="hljs-params">(i,names)</span></span> i.rows,i.cols = {}, COLS(names) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.add</span><span class="hljs-params">(i,row,    cells)</span></span> 
+  cells = push(i.rows, row.cells <span class="hljs-keyword">and</span> row <span class="hljs-keyword">or</span> ROW(i,row)).cells
+  <span class="hljs-keyword">for</span> n,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.all) <span class="hljs-keyword">do</span> col:add(cells[n]) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.copy</span><span class="hljs-params">(i,rows,  j)</span></span>
+  j=EGS(i.cols.names); <span class="hljs-keyword">for</span> _,r <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> j:add(r) <span class="hljs-keyword">end</span>;<span class="hljs-keyword">return</span> j <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.like</span><span class="hljs-params">(i,t,overall, nHypotheses,      c)</span></span>
+  prior = (#i.rows + the.k) / (overall + the.k * nHypotheses)
+  like  = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(prior)
+  <span class="hljs-keyword">for</span> at,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span>
+    c=i.cols.all.at[at]
+    <span class="hljs-keyword">if</span> x~=<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> c.goalp <span class="hljs-keyword">then</span>
+      like = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(col:like(x)) + like <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> like <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.load</span><span class="hljs-params">(src,   i)</span></span>
+  <span class="hljs-keyword">if</span>    src==<span class="hljs-literal">nil</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">type</span>(src)==<span class="hljs-string">&quot;string&quot;</span> 
+  <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span>   row <span class="hljs-keyword">in</span> csv(src)   <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> i <span class="hljs-keyword">then</span> i:add(row) <span class="hljs-keyword">else</span> i=EGS(row)<span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">else</span> <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(src) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> i <span class="hljs-keyword">then</span> i:add(row) <span class="hljs-keyword">else</span> i=EGS(row)<span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.mid</span><span class="hljs-params">(i,cols)</span></span> 
+  <span class="hljs-keyword">return</span> map(cols <span class="hljs-keyword">or</span> i.cols.y, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(c)</span></span> <span class="hljs-keyword">return</span> c:mid() <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">EGS.ranges</span><span class="hljs-params">(i,yes,no,   out,x,bin,tmp,score)</span></span>
+  out={}
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.x) <span class="hljs-keyword">do</span>  <span class="hljs-comment">-- for each x col</span>
+    tmp = {}                       <span class="hljs-comment">-- find ranges that distinguish yes and no</span>
+    <span class="hljs-keyword">for</span> _,what <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{{rows=yes, klass=<span class="hljs-literal">true</span>}, {rows=no, klass=<span class="hljs-literal">false</span>}} <span class="hljs-keyword">do</span>
+      <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(what.rows) <span class="hljs-keyword">do</span> x = row.cells[col.at]
+        <span class="hljs-keyword">if</span> x~=<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
+          bin      = col:range(x,the.bins)
+          tmp[bin] = tmp[bin] <span class="hljs-keyword">or</span> RANGE(col,x,x)
+          tmp[bin]:add(x, what.klass) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+    tmp = map(tmp,same) <span class="hljs-comment">--  a hack. makes tmp sortable (has consecutive indexes)</span>
+    <span class="hljs-keyword">for</span> _,range <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(col:merge(<span class="hljs-built_in">sort</span>(tmp),(#yes+#no)^the.<span class="hljs-built_in">min</span>)) <span class="hljs-keyword">do</span>
+      push(out,range) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  score = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(range)</span></span> <span class="hljs-keyword">return</span> range:score(<span class="hljs-literal">true</span>,#yes, #no) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(out,score) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-19">&#x00a7;</a>
+              </div>
+              <h2 id="code-for-tests-and-demos">Code for tests and demos</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-20">&#x00a7;</a>
+              </div>
+              <p>Simple stuff</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.the</span><span class="hljs-params">()</span></span>     <span class="hljs-keyword">return</span> <span class="hljs-built_in">type</span>(the.bins)==<span class="hljs-string">&quot;number&quot;</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.sort</span><span class="hljs-params">(  t)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>==<span class="hljs-built_in">sort</span>({<span class="hljs-number">100</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">2</span>,<span class="hljs-number">10</span>,<span class="hljs-number">0</span>})[<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.slice</span><span class="hljs-params">( t,u)</span></span>
+  t = {<span class="hljs-number">10</span>,<span class="hljs-number">20</span>,<span class="hljs-number">30</span>,<span class="hljs-number">40</span>,<span class="hljs-number">50</span>,<span class="hljs-number">60</span>,<span class="hljs-number">70</span>,<span class="hljs-number">80</span>,<span class="hljs-number">90</span>,<span class="hljs-number">100</span>,<span class="hljs-number">110</span>,<span class="hljs-number">120</span>,<span class="hljs-number">130</span>,<span class="hljs-number">140</span>}
+  u = slice(t,<span class="hljs-number">3</span>,#t,<span class="hljs-number">3</span>)
+  t = slice(t,<span class="hljs-number">3</span>,<span class="hljs-number">5</span>)
+  <span class="hljs-keyword">return</span> #t==<span class="hljs-number">3</span> <span class="hljs-keyword">and</span> #u==<span class="hljs-number">4</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.num</span><span class="hljs-params">(     n,mu,sd)</span></span> 
+  n, mu, sd = NUM(), <span class="hljs-number">10</span>, <span class="hljs-number">1</span>
+  <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">10</span>^<span class="hljs-number">4</span> <span class="hljs-keyword">do</span>
+    n:add(mu+sd*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">sqrt</span>(<span class="hljs-number">-2</span>*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(rand()))*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">cos</span>(<span class="hljs-number">2</span>*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">pi</span>*rand())) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">abs</span>(n.mu - mu) &lt; <span class="hljs-number">0.05</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">abs</span>(n.sd - sd) &lt; <span class="hljs-number">0.5</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-21">&#x00a7;</a>
+              </div>
+              <p>Can we read rows off the disk?</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.rows</span><span class="hljs-params">( n,m)</span></span>
+  m,n=<span class="hljs-number">0</span>,<span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> csv(the.file) <span class="hljs-keyword">do</span> m=m+<span class="hljs-number">1</span>; n=n+#row; <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> n/m==<span class="hljs-number">8</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-22">&#x00a7;</a>
+              </div>
+              <p>Can we turn a list of names into columns?</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.cols</span><span class="hljs-params">(  i)</span></span>
+  i=COLS{<span class="hljs-string">&quot;name&quot;</span>,<span class="hljs-string">&quot;Age&quot;</span>,<span class="hljs-string">&quot;ShoeSize-&quot;</span>}
+  <span class="hljs-keyword">return</span> i.y[<span class="hljs-number">1</span>].w == <span class="hljs-number">-1</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-23">&#x00a7;</a>
+              </div>
+              <p>Can we read data, summazized as columns?</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.egs</span><span class="hljs-params">(  it)</span></span>
+  it=EGS.<span class="hljs-built_in">load</span>(nasa93dem()) 
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">abs</span>(it.cols.y[<span class="hljs-number">1</span>].mu - <span class="hljs-number">624</span>) &lt; <span class="hljs-number">1</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-24">&#x00a7;</a>
+              </div>
+              <p>for _,row in pairs(nasa93dem())do oo(row) end end
+it = EGS.load(the.file); return math.abs(2970 - it.cols.y[1].mu) &lt; 1 end</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-25">&#x00a7;</a>
+              </div>
+              <p>Does discretization work?</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.ranges</span><span class="hljs-params">(  it,n,best,rest,min)</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-26">&#x00a7;</a>
+              </div>
+              <p>it = EGS.load(the.file)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-built_in">print</span>(the.how)
+  it=EGS.<span class="hljs-built_in">load</span>(nasa93dem()) 
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;all&quot;</span>,o(rnds(it:mid())))
+  it.rows = <span class="hljs-built_in">sort</span>(it.rows)
+  <span class="hljs-keyword">for</span> j,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(it.rows)) <span class="hljs-keyword">do</span> row.klass = <span class="hljs-number">1</span>+j//(#it.rows*<span class="hljs-number">.35</span>/<span class="hljs-number">6</span>) <span class="hljs-keyword">end</span>
+  n = (#it.rows)^<span class="hljs-number">.5</span>  
+  best,rest = slice(it.rows,<span class="hljs-number">1</span>,n), slice(it.rows, n+<span class="hljs-number">1</span>, #it.rows, <span class="hljs-number">3</span>*n)
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;best&quot;</span>,#best,o(rnds(it:copy(best):mid()))) 
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;rest&quot;</span>,#rest,o(rnds(it:copy(rest):mid())))
+  tmp={}; <span class="hljs-keyword">for</span> _,ranges <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(it:ranges(best,rest)) <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">for</span> at,range <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(ranges) <span class="hljs-keyword">do</span> 
+    push(tmp,range).val= range:score(<span class="hljs-literal">true</span>,#best,#rest) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _,range <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(tmp,lt<span class="hljs-string">&quot;val&quot;</span>)) <span class="hljs-keyword">do</span> <span class="hljs-built_in">print</span>(range.val, range) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-27">&#x00a7;</a>
+              </div>
+              <p>oo(a:mid())
+oo(b:mid())</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">abs</span>(<span class="hljs-number">2970</span> - it.cols.y[<span class="hljs-number">1</span>].mu) &lt; <span class="hljs-number">1</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-28">&#x00a7;</a>
+              </div>
+              <h2 id="main">Main</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-29">&#x00a7;</a>
+              </div>
+              <ul>
+<li>Parse help text for flags and defaults, check CLI for updates. </li>
+<li>Maybe print the help (with some pretty colors). </li>
+<li>Run the demos. </li>
+<li>Check for rogue vars.</li>
+<li>Exit, reporting number of failures.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)&quot;</span>,fill_in_the)
+<span class="hljs-keyword">if</span> the.help <span class="hljs-keyword">then</span>
+  <span class="hljs-built_in">print</span>(help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;%u%u+&quot;</span>, <span class="hljs-string">&quot;\27[31m%1\27[0m&quot;</span>)
+            :<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;(%s)([-][-]?[^%s]+)(%s)&quot;</span>,<span class="hljs-string">&quot;%1\27[33m%2\27[0m%3&quot;</span>),<span class="hljs-string">&quot;&quot;</span>)
+<span class="hljs-keyword">else</span> 
+  <span class="hljs-keyword">local</span> fails = demos()
+  <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> b4[k] <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;?&quot;</span>,k,<span class="hljs-built_in">type</span>(v)) <span class="hljs-keyword">end</span>  <span class="hljs-keyword">end</span>
+  <span class="hljs-built_in">os</span>.<span class="hljs-built_in">exit</span>(fails) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
