@@ -34,7 +34,6 @@ local the={}
 local big,copy,csv,demos,discretize,dist,eg,entropy,fill_in_the,fmt,gap,is,like,lt
 local map,merge,mid,mode,mu,nasa93dem,norm,num,o,oo,pdf,per,push,rand,range
 local rnd,rnds,rowB4,slice,sort,some,same,sd,string2thing,sym
-local NUM,SYM,RANGE,EGS,COLS,ROW
 for k,_ in pairs(_ENV) do b4[k]=k end -- At end, use `b4` to find rogue vars.
 --------------------------------------------------------------------------------
 -- ## Coding Conventions
@@ -202,7 +201,7 @@ rand=math.random
 fmt=string.format
 same = function(x) return x end
 
--- Sorting
+--- Sorting
 function sort(t,f)    table.sort(t, f); return t end
 function lt(x)        return function(a,b) return a[x] < b[x] end end
 
@@ -272,7 +271,8 @@ function is(name,    t,new)
   return setmetatable(t, {__call=new}) end
 ---------------------------------------------------------------------------------
 -- ## Objects
-COLS,EGS,NUM,RANGE,ROW,SYM=is"COLS",is"EGS",is"NUM",is"RANGE",is"SYM",is"ROW"
+local COLS,EGS,NUM=is"COLS",is"EGS",is"NUM"
+local RANGE,ROW,SYM=is"RANGE",is"ROW",is"SYM"
 ---------------------------------------------------------------------------------
 -- ## NUM
 -- - For a stream of `add`itions, incrementally maintain `mu,sd`. 
@@ -304,7 +304,7 @@ function NUM.like(i,x,_,       e)
   return (x < i.mu - 4*i.sd and 0 or x > i.mu + 4*i.sd and 0 or
     2.7183^(-(x - i.mu)^2 / (z + 2*i.sd^2))/(z + (math.pi*2*i.sd^2)^.5)) end
 
-function NUM.merge(i,ranges,min,      a,b,c,j,n,tmp)
+function NUM.merge(i,ranges,min,      a,b,c,j,n,tmp,expand)
   function expand(t) 
     if #t<2 then return {} end
     for j=2,#t do t[j].lo=t[j-1].hi end
@@ -388,7 +388,7 @@ function RANGE.merge(i,j,n0,    k)
 
 function RANGE.of(i,x) return i.y.all[x] or 0 end
 
-function RANGE.score(i,goal,B,R, how)
+function RANGE.score(i,goal,B,R, how,    b,r,z)
   how={}
   how.good= function(b,r) return ((b<r or b+r < .05) and 0) or b^2/(b+r) end
   how.bad=  function(b,r) return ((r<b or b+r < .05) and 0) or r^2/(b+r)  end
@@ -491,7 +491,7 @@ function EGS.ranges(i,yes,no,   out,x,bin,tmp,fun)
     tmp = map(tmp,same) --  a hack. makes tmp sortable (has consecutive indexes)
     for _,range in pairs(col:merge(sort(tmp),(#yes+#no)^the.min)) do
       push(out,range) end end 
-  fun=function(a,b) return a:score(true,#yes, #no) > b:score(true,#yes,#no) end
+  fun=function(a,b) return a:score(true,#yes, #no) > b:score(true,#yes,#no)  end
   return sort(out,fun) end
 ------------------------------------------------------------------------------
 -- ## Code for tests and demos
@@ -526,11 +526,12 @@ function go.egs(  it)
   return math.abs(it.cols.y[1].mu - 624) < 1 end
 
 -- Does discretization work?
-function go.ranges(  it,n,best,rest,min)
+function go.ranges(  it,n,best,rest,min,tmp)
   --it = EGS.load(the.file)
   print(the.how)
   it=EGS(nasa93dem()) 
-  print("all",o(rnds(it:mid())))
+  print("names",o(map(it.cols.y,function(c) return c.txt end)))
+  print("all",#it.rows, o(rnds(it:mid())))
   it.rows = sort(it.rows)
   for j,row in pairs(sort(it.rows)) do row.klass = 1+j//(#it.rows*.35/6) end
   n = (#it.rows)^.5  
@@ -539,8 +540,9 @@ function go.ranges(  it,n,best,rest,min)
   print("rest",#rest,o(rnds(it:copy(rest):mid())))
   tmp={}; for _,ranges in pairs(it:ranges(best,rest)) do 
     for at,range in pairs(ranges) do 
-    push(tmp,range).val= range:score(true,#best,#rest) end end
-  for _,range in pairs(sort(tmp,lt"val")) do print(range.val, range) end
+       push(tmp,range) end end
+  for _,range in pairs(tmp) do print("r", o(range)) end
+  --for _,range in pairs(sort(tmp,lt"val")) do print(range.val, range) end
   --oo(a:mid())
   --oo(b:mid())
   return math.abs(2970 - it.cols.y[1].mu) < 1 end
