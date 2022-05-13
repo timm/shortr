@@ -1,3 +1,22 @@
+
+
+
+Less is more
+
+Made famous by the designer and architect Ludwig Mies van der Rohe,
+the dictum, Less is More came to define the brave, utopian ideals
+of modernist design and architecture. In fact the phrase originated
+in Robert Browning's 1855 poem Andrea del Sarto.
+
+https://www.poetryfoundation.org/poems/43745/andrea-del-sarto
+
+Although the postmodernism movement of the Eighties and Nineties
+aimed at redefining this notion (one of postmodernism's chief
+chroniclers, architect Robert Venturi proclaimed 'Less is a bore' [https://www.archdaily.com/964625/what-is-postmodernism] ,
+the original phrase is still used widely today, especially to chasten
+artists and designers who may have got carried away with ideas of
+their own brilliance.
+
 ----
 static code analysis
 formatting conventions
