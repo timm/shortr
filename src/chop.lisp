@@ -137,9 +137,10 @@
 (defthing num 
   (n 0) (at) (txt) (mu 0) (m2 0) (sd 0) (w 1) (lo *big*) (hi (* -1 *big*)))
 
-(defun make-num (&optional (at 0) (txt "")(it (%num :at at :txt txt)))
+(defun make-num (&optional (at 0) (txt " ") (it (%num :at at :txt txt)))
   (if (lessp txt) (setf (? it w) -1))
   it)
+
 
 (defmethod add ((self num) x)
  (with-slots (n mu m2 sd lo hi) self
@@ -175,20 +176,22 @@
 
 (defmethod range ((self num) x n)
   (let ((b (/ (- hi lo) n))) (* b (floor (+ (/ x b) .5)))))
-
-(let ((self (make-num  10 "asds")))
-  (dolist (x '(10 1 20 4 30)) (add self x))
-  (print self))
-
 ;-------------------------------------------------------------------------------
 (defthing sym
-  (n 0) (at 0) (txt "") (all))
+  (n 0) (at) (txt) (all))
+
+(defun make-sym (&optional (at 0) (txt " ")(it (%sym :at at :txt txt)))
+  it)
 
 (defmethod add ((self sym) x)
   (with-slots (n all) self 
-    (unless (no x)
-      (incf n)
-      (incf (has x all))))
+    (unless (no x) (incf n) (incf (has x all)))))
+
+(defmethod adds (self lst) (dolist (one lst self) (add self one)))
+
+(let ((self (make-num  10 "asds")))
+   (print (adds (make-num) '(10 1 20 3 30)))
+   (print (adds (make-sym) '(a a a a b b c))))
 
 ; function SYM.dist(i,x,y) return (a==b and 0 or 1) end
 ;
