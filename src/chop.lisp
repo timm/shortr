@@ -189,9 +189,8 @@
 
 (defmethod adds (self lst) (dolist (one lst self) (add self one)))
 
-(let ((self (make-num  10 "asds")))
-   (print (adds (make-num) '(10 1 20 3 30)))
-   (print (adds (make-sym) '(a a a a b b c))))
+(print (adds (make-num) '(10 1 20 3 30)))
+(print (adds (make-sym) '(a a a a b b c)))
 
 ; function SYM.dist(i,x,y) return (a==b and 0 or 1) end
 ;
