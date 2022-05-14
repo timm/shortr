@@ -53,6 +53,7 @@ set lispwords+=until
 set lispwords+=whale
 set lispwords+=aif
 set lispwords+=dofun
+set lispwords+=loop
 set lispwords+=defthing
 set lispwords+=defmemo
 set lispwords+=do-pairs
