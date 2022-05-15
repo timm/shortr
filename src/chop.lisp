@@ -1,4 +1,9 @@
-;  vim: ts=2 sw=2 et : 
+;vim: ts=2 sw=2 et :
+(defstruct cntrl
+  (p 2))
+
+(defparameter my (make-cntrl))
+
 (defun get-file (file) 
   (with-open-file (str file) (read str nil)))
 
@@ -14,17 +19,14 @@
   (defun goalp(x) (member       (chrn x) '(#\- #\+ #\!)))
   (defun nump (x) (upper-case-p (chr0 x))))
 
+(defmacro ?  (p x &rest xs)
+  (if (null xs) `(slot-value ,p ',x) `(? (slot-value ,p ',x) ,@xs)))
+
 (defun no (x) (eq '? x))
 
 (defmacro has (x a)
    `(cdr (or (assoc ,x ,a :test #'equal)
              (car (setf ,a (cons (cons ,x 0) ,a))))))
-
-(defstruct thing)
-(defmethod print-object ((x thing) str) 
-  (labels ((fun (y) (cons y (slot-value x y))))
-    (format str "~a" (cons (type-of x) (mapcar #'fun (slots x))))))
-
 
 (defmacro defthing (x &rest lst) 
   (let ((it (gensym)))
@@ -33,6 +35,11 @@
                       (:constructor ,(intern (format nil "%~@:(~a~)" x)))) ,@lst)
        (defmethod slots ((,it ,x)) 
          ',(remove-if-not 'showp (sort (mapcar 'first lst) 'string<))))))
+
+(defstruct thing)
+(defmethod print-object ((x thing) str) 
+  (labels ((fun (y) (cons y (slot-value x y))))
+    (format str "~a" (cons (type-of x) (mapcar #'fun (slots x))))))
 
 (defun nasa93dem() 
   '((idX centerX Year prec flex resl team pmat rely data cplx 
@@ -137,10 +144,9 @@
 (defthing num 
   (n 0) (at) (txt) (mu 0) (m2 0) (sd 0) (w 1) (lo *big*) (hi (* -1 *big*)))
 
-(defun make-num (&optional (at 0) (txt " ") (it (%num :at at :txt txt)))
-  (if (lessp txt) (setf (? it w) -1))
-  it)
-
+(defun make-num (&optional (at 0) (txt " ") (self (%num :at at :txt txt)))
+  (if (lessp txt) (setf (num-w self) -1))
+  self)
 
 (defmethod add ((self num) x)
  (with-slots (n mu m2 sd lo hi) self
@@ -152,12 +158,16 @@
       (setf sd (if (or  (< m2 0) (< n 2)) 0 (sqrt (/ m2 (- n 1))))
             lo (min x lo)
             hi (max x hi))))))
-   
+
+(defmethod norm ((self num) x) 
+  (with-slots (lo hi) self
+    (if  (< (- hi lo) 1E9) 0 (/ (- x lo) (- hi lo (/ -1 *big*))))))
+
 (defmethod dist ((self num) x y)
   (cond ((and (no x) (no y)) 0)
         ((no x) (setf y (norm self y) x (if (< y .5) 1 0)))
         ((no y) (setf x (norm self x) y (if (< x .5) 1 0)))
-        (t      (setf x (norm self x) y (norm y))))
+        (t      (setf x (norm self x) y (norm self y))))
   (abs (- x y)))
 
 (defmethod like ((self num) x prior)
@@ -170,12 +180,9 @@
 
 (defmethod mid ((self num)) (num-mu self))
 
-(defmethod norm ((self num) x) 
-  (with-slots (lo hi) self
-    (if  (< (- hi lo) 1E9) 0 (/ (- x lo) (- hi lo (/ -1 *big*))))))
-
 (defmethod range ((self num) x n)
-  (let ((b (/ (- hi lo) n))) (* b (floor (+ (/ x b) .5)))))
+  (with-slots (lo hi) self
+  (let ((b (/ (- hi lo) n))) (* b (floor (+ (/ x b) .5))))))
 ;-------------------------------------------------------------------------------
 (defthing sym
   (n 0) (at) (txt) (all))
@@ -184,19 +191,25 @@
   it)
 
 (defmethod add ((self sym) x)
-  (with-slots (n all) self 
+  (with-slots (n all ) self 
     (unless (no x) (incf n) (incf (has x all)))))
+
+(defmethod dist ((self sym) x y)
+  (if (equal x y) 0 1))
+
+(defmethod div ((self sym))
+  (with-slots (n all) self
+    (reduce '- (loop for (_ . v) in all collect (* (/ v n) (log (/ v n) 2))))))
+
+(defmethod like ((self sym) x prior)
+   
 
 (defmethod adds (self lst) (dolist (one lst self) (add self one)))
 
 (print (adds (make-num) '(10 1 20 3 30)))
 (print (adds (make-sym) '(a a a a b b c)))
 
-; function SYM.dist(i,x,y) return (a==b and 0 or 1) end
-;
-; function SYM.div(i,   n,e)
-;   e=0; for k,n in pairs(i.all) do e=e-n/i.n*math.log(n/i.n,2) end ;return e end
-;
+
 ; function SYM.like(i,x,prior) return ((c.all[x] or 0)+the.m*prior)/(c.n+the.m) end
 ;
 ; function SYM.merge(i,ranges,min) return ranges end
