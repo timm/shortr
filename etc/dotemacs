@@ -1,9 +1,9 @@
-(setq column-number-mode t)
+;(setq column-number-mode t)
   ;(menu-bar-mode 0)
 
   (progn
    (setq inhibit-startup-message t)
-(setq create-lockfiles nil)
+   (setq create-lockfiles nil)
    (setq make-backup-files nil)  
    (global-font-lock-mode t)
    (xterm-mouse-mode t)
@@ -12,7 +12,7 @@
    (setq scroll-step 1)
    (global-hl-line-mode 1)
    (setq-default indent-tabs-mode nil)
-   (setq-default fill-column 52))
+   ;(setq-default fill-column 52))
 
   (setq inferior-lisp-program "/opt/homebrew/bin/sbcl")
 
