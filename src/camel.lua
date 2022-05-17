@@ -13,6 +13,10 @@ local function lt(x)       return function(a,b) return a[x] < b[x] end end
 local function push(t,x)   t[1+#t]=x; return x end
 local function sort(t,f)   table.sort(t,f); return t end
 local function map(t,f, u) u={};for k,v in pairs(t) do u[1+#u]=f(v) end; return u end
+function copy(t,   u)
+  if type(t) ~= "table" then return t end
+  u={};for k,v in pairs(t) do u[copy(k)]=copy(v) end
+  return setmetatable(u,getmetatable(t)) end
 
 local function string2thing(x)
   x = x:match"^%s*(.-)%s*$"
@@ -115,43 +119,40 @@ function ROWS.copy(i,rows, j)
   return j end
 
 --------------------------------------------------------------------------------
-local _numbins, _xys
-function SYM.bestBins(i,yes,no,   all,tmp,best)
+local function map_xy(at,yes,no,fun)
+  for _,rowsy in pairs{{rows=yes, y=true}, {rows=no, y=false}} do
+    for _,row in pairs(rowsy.rows) do 
+      if use(row.cells[at]) then fun(row.cells[at],rowsy.y) end end end end
+
+function SYM.bestBin(i,yes,no,   all,tmp,fun)
+  local function fun(x,y) do
+    tmp[x] = tmp[x] or push(all,SYM())
+    tmp[x]:add(y) end
   all,tmp = {},{}
-  for _,xy in pairs(_xys(i,yes,no)) do
-    tmp[xy.x] = tmp[xy.x] or push(all,SYM())
-    tmp[xy.x]:add(xy.y) end
+  map_xy(i.at,yes,no,fun)
   best = sort(all, function(a,b) return a:val() > b:val() end)[1]
   return best.x, best.x, best:val() end
 
-function NUM.bestBins(i,yes,no)
-  t = sort(_xys(i,yes,no), lt"x")
-  return _numbins(t, 1, #t, 2, (#t)^the.min,
+function NUM.bestBin(i,yes,no,   fun, t)
+  all,t=SYM(),{}
+  map_xys(i.at,yes,no, function(x,y) all:add(y); push(t,{x=x,y=y}) end)
+  t = sort(t,lt"x")
+  return _numbins(t, 1, #t, all, (#t)^the.min,
                                (t[.9*#t//1] - t[.1*#t//1])/2.56*the.cohen) end
 
-function _xys(col,yes,no,    x,out)
-  out = {}
-  for _,rk in pairs{{rows=yes, klass=true}, {rows=no, klass=false}} do
-    for _,row in pairs(rk.rows) do 
-      x= row.cells[col.at]
-      if use(x) then push(out, {x=x, y=rk.klass}) end end end
-  return out end
-
-function _numbins(t, lo, hi, n, min, epsilon)
-  local lhs, rhs = SYM(), SYM()
-  for j in lo,hi do rhs:add(t[j].y) end
-  local x0, x1, best = t[1].x, t[#t].x, hi or rhs.all:val()
-  if n>0 then 
-    local cut, x, y, z0, z1, down, up
-    for j in lo,hi do
-      x, y = t[j].x, t[j].y
-      lhs:add(y)
-      rhs:sub(y)
-      if j-lo>min and hi-j+1> min and x-x0 > epsilon and x1-x > epsilon then
-        if x ~= t[j+1].x then
-          z0, z1 = lhs:val(), rhs:val() 
-          if z0>best then best, down, up = z0, lo,    cut end
-          if z1>best then best, down, up = z1, cut+1, hi  end end end end 
-     if down 
-     then return _numbins(t, down, up, n-1, min, epsilon) end end 
-  return t[lo].x, t[hi].x, best end
+function _numbins(t, lo, hi, rhs, min, epsilon)
+  local lhs = SYM()
+  local x0, x1, best = t[lo].x, t[hi].x, hi or rhs.all:val()
+  local so,ok,x, y, down, up = copy(rhs),false
+  for j in lo,hi do
+    x, y = t[j].x, t[j].y
+    lhs:add(y)
+    rhs:sub(y)
+    if j-lo>min and hi-j+1> min and x-x0 > epsilon and x1-x > epsilon then
+      if x ~= t[j+1].x then
+        l,r = lhs:val(), rhs:val() 
+        if l>best then ok,best,down,up,so=true,l,lo,  j,copy(lhs) end
+        if r>best then ok,best,down,up,so=true,l,j+1,hi copy(rhs) end end end end 
+   if   ok 
+   then return _numbins(t, down, up, so, min, epsilon) 
+   else return t[lo].x, t[hi].x,so end end
