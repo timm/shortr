@@ -115,7 +115,21 @@ function ROWS.copy(i,rows, j)
   return j end
 
 --------------------------------------------------------------------------------
-function xys(col,yes,no,    x,out)
+local _numbins, _xys
+function SYM.bestBins(i,yes,no,   all,tmp,best)
+  all,tmp = {},{}
+  for _,xy in pairs(_xys(i,yes,no)) do
+    tmp[xy.x] = tmp[xy.x] or push(all,SYM())
+    tmp[xy.x]:add(xy.y) end
+  best = sort(all, function(a,b) return a:val() > b:val() end)[1]
+  return best.x, best.x, best:val() end
+
+function NUM.bestBins(i,yes,no)
+  t = sort(_xys(i,yes,no), lt"x")
+  return _numbins(t, 1, #t, 2, (#t)^the.min,
+                               (t[.9*#t//1] - t[.1*#t//1])/2.56*the.cohen) end
+
+function _xys(col,yes,no,    x,out)
   out = {}
   for _,rk in pairs{{rows=yes, klass=true}, {rows=no, klass=false}} do
     for _,row in pairs(rk.rows) do 
@@ -123,24 +137,21 @@ function xys(col,yes,no,    x,out)
       if use(x) then push(out, {x=x, y=rk.klass}) end end end
   return out end
 
-local _bins
-function NUM.bins(i,t)
-  t = sort(t, lt"x")
-  return _bins(t, 1, #t, 0, (#t)^the.min,
-                            (t[.9*#t//1] - t[.1*#t//1])/2.56*the.cohen) end
-
-function _bins(t, lo, hi, n, min, epsilon)
+function _numbins(t, lo, hi, n, min, epsilon)
   local lhs, rhs = SYM(), SYM()
   for j in lo,hi do rhs:add(t[j].y) end
   local x0, x1, best = t[1].x, t[#t].x, hi or rhs.all:val()
-  local cut, x, y, z0, z1,down,up
-  for j in lo,hi do
-    x, y = t[j].x, t[j].y
-    lhs:add(y)
-    rhs:sub(y)
-    if j-lo>min and hi-j+1> min and x-x0 > epsilon and x1-x > epsilon then
-      if x ~= t[j+1].x then
-        z0, z1 = lhs:val(), rhs:val() 
-        if z0>best then best, down, up = z0, lo,   cut end
-        if z1>best then best, down, up = z1, cut+1,hi  end end end end 
-  return n<=1 and down and _bins(t, down, up, n+1, min, epsilon) or lo,hi,best end
+  if n>0 then 
+    local cut, x, y, z0, z1, down, up
+    for j in lo,hi do
+      x, y = t[j].x, t[j].y
+      lhs:add(y)
+      rhs:sub(y)
+      if j-lo>min and hi-j+1> min and x-x0 > epsilon and x1-x > epsilon then
+        if x ~= t[j+1].x then
+          z0, z1 = lhs:val(), rhs:val() 
+          if z0>best then best, down, up = z0, lo,    cut end
+          if z1>best then best, down, up = z1, cut+1, hi  end end end end 
+     if down 
+     then return _numbins(t, down, up, n-1, min, epsilon) end end 
+  return t[lo].x, t[hi].x, best end
