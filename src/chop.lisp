@@ -7,7 +7,7 @@
 (defun get-file (file) 
   (with-open-file (str file) (read str nil)))
 
-(defvar *e*   (exp 1))
+(defvar *e*   (exp 1))x
 (defvar *big* most-positive-fixnum)
 
 (labels ((chars (s) (if (stringp s) s (symbol-name s)))
@@ -182,7 +182,7 @@
 
 (defmethod range ((self num) x n)
   (with-slots (lo hi) self
-  (let ((b (/ (- hi lo) n))) (* b (floor (+ (/ x b) .5))))))
+    (let ((b (/ (- hi lo) n))) (* b (floor (+ (/ x b) .5))))))
 ;-------------------------------------------------------------------------------
 (defthing sym
   (n 0) (at) (txt) (all))
@@ -202,6 +202,10 @@
     (reduce '- (loop for (_ . v) in all collect (* (/ v n) (log (/ v n) 2))))))
 
 (defmethod like ((self sym) x prior)
+  (with-slots (all n) self
+  (let ((n (or (cdr (assoc x all) 0))))
+    (/ (+ n (* prior (? my m))) (
+  
    
 
 (defmethod adds (self lst) (dolist (one lst self) (add self one)))
