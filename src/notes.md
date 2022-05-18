@@ -33,7 +33,7 @@ rapid feedback
   https://www.youtube.com/watch?v=nIonZ6-4nuU
 - tdd
   - refactoring, rule of three.
-- normally tests different to code since most tests are
+- tests different to code since most tests are
   platform specific and dont want to change the code code,
   just the platfrom specific bits
 - GH workspaces; unix error conventions

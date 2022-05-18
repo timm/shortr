@@ -107,6 +107,7 @@ function NUM.norm(i,x)
 
 function NUM.range(i,x,n,  b) b=(i.hi-i.lo)/n; return math.floor(x/b+0.5)*b end
 --------------------------------------------------------------------------------
+-- XXX make egs. self initilizing
 function EGS.new(i,names)
   i.rows, i.names, i.all, i.x, i.y = {}, names, {}, {}, {}
   for at,txt in pairs(names) do 
