@@ -26,6 +26,7 @@ formatting conventions
 less is more
 - stop writing classes
 
+- self docuenting code. documentaion is part of cde
 
 rapid feedback
 - making making

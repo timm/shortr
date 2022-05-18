@@ -78,6 +78,20 @@ $D/docs/%.html: %.lua ../etc/dhead Makefile
 	@rm -rf $D/docs/$<
 	@cp $D/etc/docco.css $D/docs/
 
+$D/docs/ego.pdf : ego.lua etc.lua egs.lua  
+	@echo "pdf-ing $@ ... "
+	@a2ps -Bjr    -q                        \
+		-L 120 -K \
+		--line-numbers=1                    \
+		--highlight-level=normal  \
+		--borders=no --pro=color --columns 3 \
+		--right-footer="" --left-footer=""    \
+		--pretty-print=$D/etc/lua.ssh             \
+		--footer="page %p."                     \
+		-M letter -o $@.ps $^
+	@ps2pdf $@.ps $@; rm $@.ps; git add $@
+
+
 $D/docs/%.pdf : %.lua  
 	@echo "pdf-ing $@ ... "
 	@a2ps -Bjr    -q                        \

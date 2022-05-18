@@ -11,9 +11,9 @@ ego.lua: landscape analysis (code that is "conscious" of shape of data)
  'ego' is not a dirty word" ~ Greg Macainsh
 
 INSTALL:
-  (1) install  lua 5.4+
-  (2) download etc.lua, ego.lua, egs.lua
-  (3) test via "lua egs.lua -h"
+  Requires : lua 5.4+
+  Download : etc.lua, ego.lua, egs.lua
+  Test     : lua egs.lua -h
 
 USAGE:
   lua egs.lua [OPTIONS]
@@ -40,15 +40,15 @@ local the = {}
 --------------------------------------------------------------------------------
 local SOME,NUM,SYM,ROWS = is"SOME", is"NUM", is"SYM", is"ROWS"
 
-local function merge(ranges,min,       a,b,c,j,n,tmp)
+local function merge(ranges,min,       a,b,ab,j,n,tmp)
   if ranges[1].x.is == "SYM" then return ranges end
   j,n,tmp = 1,#ranges,{}
   while j<=n do 
     a, b = ranges[j], ranges[j+1]
     if b then 
-      y = a.y:clone():inject(a.y,b.y)
+      ab = a.y:clone():inject(a.y,b.y)
       if a.n<min or b.n<min or ( 
-         y:div() < (a.y:div()*a.y.n + b.y:div()*b.y.n)/y.n)
+         ab:div() < (a.y:div()*a.y.n + b.y:div()*b.y.n)/ab.n)
       then a = {x=a.x:clone():inject(a.x,b.x),   y=y}
            j = j+1 end end
     tmp[#tmp+1] = a
@@ -59,10 +59,6 @@ local function merge(ranges,min,       a,b,c,j,n,tmp)
   tmp[1].x.lo, tmp[#tmp].x.hi = -big, big         -- stretch across all numbers
   return tmp end  
 
-local function egs(f, i)
-  for row in csv(f or the.file) do 
-    if i then i:add(row) else i=ROWS(row) end end
-  return i end
 --------------------------------------------------------------------------------
 function SYM.new(i,at,name) i.n,i.txt,i.at,i.has = 0,txt or "",at or 0,{} end
 function SYM.add(i,x,inc)
@@ -89,7 +85,7 @@ function SYM.want(u,goal,B,R,how,   b,r,z)
   goal = goal~=nil and goal or true
   for x,n in pairs(i.has) do
     if x==goal then b=b+n else r=r+n end end
-  return how[the.how or "good"](b/(B+z), r/(R+z)) end
+  return how[the.Goal or "good"](b/(B+z), r/(R+z)) end
 --------------------------------------------------------------------------------
 function SOME.new(i) i.has, i.ok, i.n = {}, false,0 end
 function SOME:all() if not i.ok then sort(i.has) end;i.ok=true; return i.has end
@@ -168,4 +164,4 @@ function ROWS.xx(i)
     for j=1,n,1            do i:xx1(col,SYM,j,true, tmp) end
     for j=n+1,#i.rows,step do i:xx1(col,SYM,j,false,tmp) end end end
 --------------------------------------------------------------------------------
-return {SOME=SOME,NUM=NUM,SYM=SYM,ROWS=ROWS,help=help,egs=egs}
+return {SOME=SOME,NUM=NUM,SYM=SYM,ROWS=ROWS,help=help}
