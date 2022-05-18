@@ -10,19 +10,27 @@ M.b4={}; for k,_ in pairs(_ENV) do M.b4[k]=k end
 M.big =1E32
 M.fmt =string.format
 M.rand=math.random
+
 M.lt  =function(x)      return function(a,b) return a[x] < b[x] end end 
 M.map =function(t,f, u) u={};for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
 M.push=function(t,x)    t[1+#t]=x; return x end
 M.sort=function(t,f)    table.sort(t,f); return t end
 
-function M.cli(d)
-  for slot,x in pairs(d) do
-    x = tostring(x)
+function M.settings(help)
+  --                                  (--longFlag)
+  --                  (-c)             --(slot)              (default)  
+  local pattern="\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)"
+  local d={}
+  help:gsub(pattern, function(c,longFlag,slot,x)
     for n,flag in ipairs(arg) do 
-      if flag=="--"..slot or flag=="-"..slot:sub(1,1) then
+      if flag==c or flag==longFlag then
         x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
-    d[slot] = M.string2thing(x) end 
-  return d end
+    d[slot] = M.string2thing(x) end)
+  if d.help then
+    print(help:gsub("%u%u+", "\27[31m%1\27[0m")
+              :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[33m%2\27[0m%3"),"") 
+    os.exit(0) 
+  else return d end end
 
 function M.csv(csvfile) 
   csvfile = io.input(csvfile)

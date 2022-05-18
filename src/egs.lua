@@ -4,17 +4,34 @@
 -- is notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY.  
 
 --------------------------------------------------------------------------------
-etc=require"etc"
-local big,cli,csv,fmt,is,lt,map= etc.big,etc.cli, etc.csv,etc.etc.fmt
-local is,lt,map,o,o,push       = etc.is,etc.lt, etc.map,etc.o, etc.oo,etc.push
-local splice,sort,string2thing = etc.splice, etc.sort, etc.string2thing
+local etc=require"etc"
+local ego= require"ego"
+local oo,push,sort = etc.oo, etc.push, etc.sort
+local the = ego.the
+local EGS = ego.EGS
+local go,no={},{} -- place to store enabled and disabled tests
 
-ego= require"ego"
-the = cli(the)
-math.random(the.seed or 10019)
-local x=egs()
-for i=1,5 do oo(x.rows[i]) end; print""
-for i=#x.rows-5,#x.rows do oo(x.rows[i]) end
-for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end
+function no.load(x)
+  for i=1,5 do oo(x.rows[i]) end; print""
+  for i=#x.rows-5,#x.rows do oo(x.rows[i]) end
+end
 
+local function demos(    fails,names,defaults,status)
+  fails=0     -- this code will return number of failures
+  names, defaults = {},{}
+  for k,f in pairs(go) do if type(f)=="function" then etc.push(names,k) end end 
+  for k,v in pairs(the) do defaults[k]=v end
+  if go[the.go] then names={the.go} end
+  for _,one in pairs(sort(names))  do         -- for all we want to do
+    for k,v in pairs(defaults) do the[k]=v end -- set settings to defaults
+    math.randomseed(the.seed or 10019)         -- reset random number seed
+    io.stderr:write(".")
+    status = go[one]()                         -- run demo
+    if status ~= true then
+      print("-- Error",one,status) 
+      fails = fails + 1 end end                -- update fails
+  for k,v in pairs(_ENV) do if not etc.b4[k] then print("?",k,type(v)) end end
+  return fails end                             -- return total failure count
 
+the = etc.settings(ego.help)
+os.exit(demos())
