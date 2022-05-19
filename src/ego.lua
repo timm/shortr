@@ -93,6 +93,7 @@ function SOME.new(i) i.has, i.ok, i.n = {}, false,0 end
 function SOME:all() if not i.ok then sort(i.has) end;i.ok=true; return i.has end
 function SOME.add(i,x)
   i.n = 1 + i.n
+  print(1,x)
   if     #i.has < the.keep     then i.ok=false; push(i.has,x)  
   elseif rand() < the.keep/i.n then i.ok=false; i.has[rand(#i.has)]=x end end 
 --------------------------------------------------------------------------------
