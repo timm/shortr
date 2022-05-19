@@ -45,4 +45,5 @@ local function demos(    fails,names,defaults,status)
   return fails end                             -- return total failure count
 
 the = etc.settings(ego.help)
+print(type(the.keep))
 os.exit(demos())

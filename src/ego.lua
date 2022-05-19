@@ -24,7 +24,7 @@ OPTIONS:                                    default
   -B  --Best  use #t^Best as 'best'         = .5
   -b  --bins  max bins for numeric          = 16
   -G  --Goal  goal;  one of: up,down,over   = up
-  -k  --keep  #numerics to keep per column  = 256
+  -k  --keep  how many nums to keep per column  = 256
   -s  --seed  random number seed            = 10019
 
 OPTIONS (other):
@@ -35,7 +35,7 @@ OPTIONS (other):
 local etc=require"etc"
 local big,cli,csv,fmt         =etc.big, etc.cli, etc.csv, etc.fmt
 local is,lt,map,o,o,push      =etc.is,  etc.lt,  etc.map, etc.o, etc.oo,etc.push
-local splice,sort,string2thing=etc.splice, etc.sort, etc.string2thing
+local rand,splice,sort,string2thing=etc.rand,etc.splice, etc.sort, etc.string2thing
 local the = {}
 --------------------------------------------------------------------------------
 local SOME,NUM,SYM,ROWS = is"SOME", is"NUM", is"SYM", is"ROWS"
@@ -93,8 +93,9 @@ function SOME.new(i) i.has, i.ok, i.n = {}, false,0 end
 function SOME:all() if not i.ok then sort(i.has) end;i.ok=true; return i.has end
 function SOME.add(i,x)
   i.n = 1 + i.n
-  print(1,x)
-  if     #i.has < the.keep     then i.ok=false; push(i.has,x)  
+  etc.oo(the)
+  print(1,x,#i.has, the.keep,rand(#i.has))
+  if     #i.has < the.keep     then i.ok=false; push(i.has,x)  ; print(1000)
   elseif rand() < the.keep/i.n then i.ok=false; i.has[rand(#i.has)]=x end end 
 --------------------------------------------------------------------------------
 function NUM.new(i,at,txt) 
@@ -104,6 +105,7 @@ function NUM.new(i,at,txt)
 function NUM.add(i,x,   d)
   if x~="?" then 
     i.has:add(x)
+    print("!!")
     i.n  = i.n+1
     d    = i.mu - x
     i.mu = i.mu + d/i.n
