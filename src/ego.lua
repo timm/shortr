@@ -5,32 +5,32 @@
 -- is notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY.  
 
 local help=[[
-ego.lua: landscape analysis (code that is "conscious" of shape of data)
-(c) 2022 Tim Menzies, timm@ieee.org
+ego.lua: landscape analysis (being 'conscious' of shape of data)
+(c) 2022 Tim Menzies, timm@ieee.org     
 "Don't you believe what you've seen or you've heard, 
  'ego' is not a dirty word" ~ Greg Macainsh
 
 INSTALL:
-  Requires : lua 5.4+
-  Download : etc.lua, ego.lua, egs.lua
-  Test     : lua egs.lua -h
+  requires: lua 5.4+
+  download: etc.lua, ego.lua, egs.lua
+  test    : lua egs.lua -h
 
 USAGE:
   lua egs.lua [OPTIONS]
 
-OPTIONS:                                        default
-                                                -------
-  -A  --Also  rest is "also"*Best               = 3
-  -B  --Best  use #t^Best as 'best'             = .5
-  -b  --bins  max bins for numeric              = 16
-  -G  --Goal  optimization goal (up,down,over)  = up
-  -k  --keep  #numerics to keep per column      = 256
-  -s  --seed  random number seed                = 10019
+OPTIONS:                                    default
+                                            -------
+  -A  --Also  rest is 'also'*Best           = 3
+  -B  --Best  use #t^Best as 'best'         = .5
+  -b  --bins  max bins for numeric          = 16
+  -G  --Goal  goal;  one of: up,down,over   = up
+  -k  --keep  #numerics to keep per column  = 256
+  -s  --seed  random number seed            = 10019
 
 OPTIONS (other):
-  -f  --file  csv file with data                = ../etc/data/auto93.csv
-  -h  --help  show help                         = false
-  -g  --go    start up action                   = nothing ]]
+  -f  --file  csv file with data            = ../etc/data/auto93.csv
+  -h  --help  show help                     = false
+  -g  --go    start up action               = nothing ]]
 
 local etc=require"etc"
 local big,cli,csv,fmt         =etc.big, etc.cli, etc.csv, etc.fmt
@@ -86,6 +86,8 @@ function SYM.want(u,goal,B,R,how,   b,r,z)
   for x,n in pairs(i.has) do
     if x==goal then b=b+n else r=r+n end end
   return how[the.Goal or "good"](b/(B+z), r/(R+z)) end
+
+function SYM.select(i,t)   x=t[i.at]; return x=="?" or i.has[x] end
 --------------------------------------------------------------------------------
 function SOME.new(i) i.has, i.ok, i.n = {}, false,0 end
 function SOME:all() if not i.ok then sort(i.has) end;i.ok=true; return i.has end
@@ -119,7 +121,8 @@ function NUM.div() return i.sd end
 function NUM.norm(i,x) 
   return (x=="?" and x) or (i.hi-i.lo<1E-9 and 0) or (x-i.lo)/(i.hi-i.lo) end
 
-function NUM.range(i,x,n,  b) b=(i.hi-i.lo)/n; return math.floor(x/b+0.5)*b end
+function NUM.range(i,x,n,   b) b=(i.hi-i.lo)/n; return math.floor(x/b+0.5)*b end
+function NUM.select(i,t) x=t[i.at]; return x=="?" or i.lo <= x and x <= i.hi end 
 --------------------------------------------------------------------------------
 function ROWS.new(i, src)
   i.name, i.has, i.cols, i.x, i.y = {}, {}, {}, {}, {}

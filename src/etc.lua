@@ -28,6 +28,8 @@ function M.settings(help)
     d[slot] = M.string2thing(x) end)
   if d.help then
     print(help:gsub("%u%u+", "\27[31m%1\27[0m")
+              :gsub('^[^\n]+\n',"\27[31m%1\27[0m")
+              :gsub('"[^"]+"',"\27[33m%1\27[0m")
               :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[33m%2\27[0m%3"),"") 
     os.exit(0) 
   else return d end end
