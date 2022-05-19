@@ -27,10 +27,10 @@ function M.settings(help)
         x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
     d[slot] = M.string2thing(x) end)
   if d.help then
-    print(help:gsub("%u%u+", "\27[31m%1\27[0m")
-              :gsub('^[^\n]+\n',"\27[31m%1\27[0m")
-              :gsub('"[^"]+"',"\27[33m%1\27[0m")
-              :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[33m%2\27[0m%3"),"") 
+    print(help:gsub("%u%u+", "\27[1;33m%1\27[0m")
+              :gsub('^[^\n]+\n',"\27[1;33m%1\27[0m")
+              :gsub('"[^"]+"',"\27[1;30m%1\27[0m")
+              :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[1;30m%2\27[0m%3"),"") 
     os.exit(0) 
   else return d end end
 
