@@ -16,24 +16,21 @@ M.map =function(t,f, u) u={};for k,v in pairs(t) do u[1+#u]=f(v) end;return u en
 M.push=function(t,x)    t[1+#t]=x; return x end
 M.sort=function(t,f)    table.sort(t,f); return t end
 M.any= function(t)      return t[math.random(#t)] end
+M.per= function(t,p, i) i=p*#t//1; return t[math.max(1,math.min(#t,i))] end
 
-function M.settings(help)
-  --                                  (--longFlag)
-  --                  (-c)             --(slot)              (default)  
-  local pattern="\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)"
-  local d={}
-  help:gsub(pattern, function(c,longFlag,slot,x)
+function M.cli(d,help)
+  for key,x in pairs(d) do
+    x = tostring(x)
     for n,flag in ipairs(arg) do 
-      if flag==c or flag==longFlag then
+      if flag==("-"..key:sub(1,1)) or flag==("--"..key) then
         x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
-    d[slot] = M.string2thing(x) end)
-  if d.help then
-    print""
-    print(help:gsub("%u%u+", "\27[1;37m%1\27[0m") -- bold upper case
-         :gsub('^[^\n]+\n',"\27[1;37m%1\27[0m") -- bold line one
-         :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[1;30m%2\27[0m%3"),"")--gray flags 
-    os.exit(0) 
-  else return d end end
+      d[key] = M.string2thing(x) end 
+  if d.help then  
+     os.exit(
+       print(
+         help:gsub("%u%u+", "\27[1;31m%1\27[0m")
+             :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[1;36m%2\27[0m%3"),"")) end
+  return d end
 
 function M.csv(csvfile) 
   csvfile = io.input(csvfile)

@@ -5,10 +5,10 @@
 -- is notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY.  
 
 local help=[[
-ego.lua: landscape analysis (being 'conscious' of shape of data)
+EGO.LUA: landscape analysis (being 'conscious' of shape of data)
 (c) 2022 Tim Menzies, timm@ieee.org     
 "Don't you believe what you've seen or you've heard, 
- 'ego' is not a dirty word" ~ Greg Macainsh
+ 'ego' is not a dirty word." ~ Greg Macainsh
 
 INSTALL:
   requires: lua 5.4+
@@ -18,26 +18,33 @@ INSTALL:
 USAGE:
   lua egs.lua [OPTIONS]
 
-OPTIONS:                                    default
-                                            -------
-  -A  --Also  rest is 'also'*Best           = 3
-  -B  --Best  use #t^Best as 'best'         = .5
-  -b  --bins  max bins for numeric          = 16
-  -G  --Goal  goal;  one of: up,down,over   = up
-  -k  --keep  how many nums to keep per column  = 256
-  -s  --seed  random number seed            = 10019
+OPTIONS:                                  default
+                                          -------
+  --Also  -A  rest is 'also'*Best         = 3
+  --Best  -B  use #t^Best as 'best'       = .5
+  --bins  -b  max bins for numeric        = 16
+  --Goal  -G  goal;  one of: up,down,over = up
+  --keep  -k  max nums kept per column    = 256
+  --seed  -s  random number seed          = 10019
 
 OPTIONS (other):
-  -f  --file  csv file with data            = ../etc/data/auto93.csv
-  -h  --help  show help                     = false
-  -g  --go    start up action               = nothing ]]
+  --file  -f  csv file with data          = ../etc/data/auto93.csv
+  --help  -h  show help                   = false
+  --loud  -l  show extra info              = false
+  --go    -g  start up action             = nothing ]]
+
 local etc=require"etc"
-local the=etc.settings(help)
 local big,cli,csv,fmt         =etc.big, etc.cli, etc.csv, etc.fmt
-local is,lt,map,o,o,push      =etc.is,  etc.lt,  etc.map, etc.o, etc.oo,etc.push
+local is,lt,map,o,oo,push      =etc.is,  etc.lt,  etc.map, etc.o, etc.oo,etc.push
+local per                      =etc.per
 local rand,splice,sort,string2thing=etc.rand,etc.splice, etc.sort, etc.string2thing
---------------------------------------------------------------------------------
-local SOME,NUM,SYM,ROWS = is"SOME", is"NUM", is"SYM", is"ROWS"
+
+local the={}
+help:gsub("  [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,default)
+  the[key] = string2thing(default) end)
+
+ --------------------------------------------------------------------------------
+local SOME,NUM,SYM,ROW,ROWS = is"SOME", is"NUM", is"SYM", is"ROW", is"ROWS"
 
 local function merge(ranges,min,       a,b,ab,j,n,tmp)
   if ranges[1].x.is == "SYM" then return ranges end
@@ -69,6 +76,10 @@ function SYM.inject(i,...)
   for _,more in pairs{...} do for x,n in pairs(more.has) do i:add(x,n) end end
   return i end
 
+function SYM.mid(i, mode,most)
+  most=-1; for x,v in pairs(i.has) do if v>most then mode,most = x,v end end
+  return mode end
+
 function SYM.div(i, e)
   e=0;for _,v in pairs(i.has) do if v>0 then e=e-v/i.n*math.log(v/i.n,2) end end
   return e end
@@ -89,7 +100,7 @@ function SYM.want(u,goal,B,R,how,   b,r,z)
 function SYM.select(i,t)   x=t[i.at]; return x=="?" or i.has[x] end
 --------------------------------------------------------------------------------
 function SOME.new(i) i.has, i.ok, i.n = {}, false,0 end
-function SOME:all() if not i.ok then sort(i.has) end;i.ok=true; return i.has end
+function SOME.all(i) if not i.ok then sort(i.has) end;i.ok=true; return i.has end
 function SOME.add(i,x)
   i.n = 1 + i.n
   if     #i.has < the.keep     then i.ok=false; push(i.has,x) 
@@ -103,7 +114,7 @@ function NUM.add(i,x,   d)
   if x~="?" then 
     i.has:add(x)
     i.n  = i.n+1
-    d    = i.mu - x
+    d    = x - i.mu
     i.mu = i.mu + d/i.n
     i.m2 = i.m2 + d*(x - i.mu)
     i.sd = (i.n<2 or i.m2<0) and 0 or (i.m2/(i.n-1))^0.5 
@@ -115,13 +126,25 @@ function NUM.inject(i,...)
   for _,more in pairs{...} do for _,n in pairs(more.has.has) do i:add(n) end end
   return i end
 
-function NUM.div() return i.sd end
+function NUM.mid(i) return per(i.has:all(),.5) end
+function NUM.div(i) return i.sd end
 
 function NUM.norm(i,x) 
   return (x=="?" and x) or (i.hi-i.lo<1E-9 and 0) or (x-i.lo)/(i.hi-i.lo) end
 
-function NUM.range(i,x,n,   b) b=(i.hi-i.lo)/n; return math.floor(x/b+0.5)*b end
 function NUM.select(i,t) x=t[i.at]; return x=="?" or i.lo <= x and x <= i.hi end 
+function NUM.range(i,x,   b) 
+  b=(i.hi-i.lo)/the.bins; return math.floor(x/b+0.5)*b end
+--------------------------------------------------------------------------------
+function ROW.new(i,cells,rows) i.cells,i.rows = cells, rows end
+function ROW.__lt(i,j)
+  local s1,s2,e,y,a,b = 0,0,math.exp(1),i.rows.y
+  for _,col in pairs(y) do
+    a,b = col:norm(i.cells[col.at]), col:norm(j.cells[col.at])
+    s1 = s1 - e^(col.w * (a - b) / #y)
+    s2 = s2 - e^(col.w * (b - a) / #y) end
+  return s1/#y < s2/#y end
+
 --------------------------------------------------------------------------------
 function ROWS.new(i, src)
   i.names, i.has, i.cols, i.x, i.y = {}, {}, {}, {}, {}
@@ -130,40 +153,47 @@ function ROWS.new(i, src)
   else for   row in csv(  src) do i:add(row) end end end
 
 function ROWS.add(i,row)
-  if    #i.names > 0 
-  then  push(i.has,row)
-        for _,col in pairs(i.cols) do col:add(row[col.at]) end 
-  else  i.names = row
-        for at,txt in pairs(row) do 
-          local col = push(i.cols, (txt:find"^[A-Z]" and NUM or SYM)(at,txt))
-          if not txt:find":$" then
-            if txt:find"!$" then i.klass=col end
-            push(txt:find"[!+-]$" and i.y or i.x, col) end end end end 
+  local function data()
+    row = push(i.has, row.cells and row or ROW(row,i))
+    for _,col in pairs(i.cols) do col:add(row.cells[col.at]) end end 
+  local function header()
+    i.names = row
+    for at,txt in pairs(row) do 
+      local col = push(i.cols, (txt:find"^[A-Z]" and NUM or SYM)(at,txt))
+      if not txt:find":$" then
+        if txt:find"!$" then i.klass=col end
+          push(txt:find"[!+-]$" and i.y or i.x, col) end end end 
+  if #i.names==0 then header() else data() end end
 
-function ROWS.betters(i)
-  return sort(i.has, function(r1,r2) 
-                       local s1,s2,e,y,a,b = 0,0,math.exp(1),i.y
-                       for _,col in pairs(y) do
-                         a,b = col:norm(r1[col.at]), col:norm(r2[col.at])
-                         s1 = s1 - e^(col.w * (a - b) / #y)
-                         s2 = s2 - e^(col.w * (b - a) / #y) end
-                       return s1/#y < s2/#y end) end
+function ROWS.clone(i,inits,    j)
+  j=ROWS({i.names});for _,row in pairs(inits or{}) do j:add(row)end; return j end
 
-function ROWS.xx1(col,yklass,j,y,seen)
-  x=i.has[j][col.at]
+function ROWS.mid(i,cols) 
+  return map(cols or i.y, function(col) return col:mid() end) end
+
+function ROWS.xx1(i,col,yklass,j,klass,bins)
+  x=i.has[j].cells[col.at]
   if x~="?" then 
     bin= col:range(x)
-    seen[bin] = seen[bin] or {x=col:clone(), y=yklass()}
-    seen[bin].x:add(x)
-    seen[bin].y:add(y) end end
+    bins[bin] = bins[bin] or {x=col:clone(), y=yklass()}
+    bins[bin].x:add(x)
+    bins[bin].y:add(klass) end end
 
-function ROWS.xx(i)
-  i.rows = i:betters()
-  n = (#i.has)^the.Best
-  step = (#i.has - n1)/(the.Also*n1)
+function ROWS.xx(i,n,step)
+  i.has = sort(i.has)
+  n = (#i.has)^the.Best //1
+  step = (#i.has - n)/(the.Also*n)//1
+  print("all",o(i:mid()))
+  print("top",o(i:clone(splice(i.has,1,n)):mid()))
+  print("end",o(i:clone(splice(i.has,n+1,#i.has,step)):mid()))
   for _,col in pairs(i.x) do
-    tmp={}
-    for j=1,n,1            do i:xx1(col,SYM,j,true, tmp) end
-    for j=n+1,#i.rows,step do i:xx1(col,SYM,j,false,tmp) end end end
+     local bins={}
+     for j=1,n,1           do i:xx1(col,SYM,j,true, bins) end
+     for j=n+1,#i.has,step do i:xx1(col,SYM,j,false,bins) end 
+     print""
+     for x,bin in pairs(bins) do print(col.txt,x,bin.x.lo,bin.x.hi,bin.x.n) end
+  end 
+  return true
+  end
 --------------------------------------------------------------------------------
-return {SOME=SOME,NUM=NUM,SYM=SYM,ROWS=ROWS,the=the}
+return {SOME=SOME,NUM=NUM,SYM=SYM,ROWS=ROWS,help=help,the=the}
