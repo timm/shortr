@@ -125,7 +125,7 @@ function NUM.range(i,x,n,   b) b=(i.hi-i.lo)/n; return math.floor(x/b+0.5)*b end
 function NUM.select(i,t) x=t[i.at]; return x=="?" or i.lo <= x and x <= i.hi end 
 --------------------------------------------------------------------------------
 function ROWS.new(i, src)
-  i.name, i.has, i.cols, i.x, i.y = {}, {}, {}, {}, {}
+  i.names, i.has, i.cols, i.x, i.y = {}, {}, {}, {}, {}
   if type(src)=="table"
   then for _,row in pairs(src) do i:add(row) end
   else for   row in csv(  src) do i:add(row) end end end

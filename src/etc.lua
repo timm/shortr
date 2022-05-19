@@ -44,7 +44,7 @@ function M.csv(csvfile)
 
 function M.oo(t) print(M.o(t)) end
 function M.o(t,    u)
-  if #t>0 then return "{"..table.concat(map(t,tostring)," ").."}" else
+  if #t>0 then return "{"..table.concat(M.map(t,tostring)," ").."}" else
     u={}; for k,v in pairs(t) do u[1+#u] = M.fmt(":%s %s",k,v) end
     return (t.is or "").."{"..table.concat(M.sort(u)," ").."}" end end
 
