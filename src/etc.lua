@@ -15,6 +15,7 @@ M.lt  =function(x)      return function(a,b) return a[x] < b[x] end end
 M.map =function(t,f, u) u={};for k,v in pairs(t) do u[1+#u]=f(v) end;return u end
 M.push=function(t,x)    t[1+#t]=x; return x end
 M.sort=function(t,f)    table.sort(t,f); return t end
+M.any= function(t)      return t[math.random(#t)] end
 
 function M.settings(help)
   --                                  (--longFlag)

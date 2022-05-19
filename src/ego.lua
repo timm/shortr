@@ -31,12 +31,11 @@ OPTIONS (other):
   -f  --file  csv file with data            = ../etc/data/auto93.csv
   -h  --help  show help                     = false
   -g  --go    start up action               = nothing ]]
-
 local etc=require"etc"
+local the=etc.settings(help)
 local big,cli,csv,fmt         =etc.big, etc.cli, etc.csv, etc.fmt
 local is,lt,map,o,o,push      =etc.is,  etc.lt,  etc.map, etc.o, etc.oo,etc.push
 local rand,splice,sort,string2thing=etc.rand,etc.splice, etc.sort, etc.string2thing
-local the = {}
 --------------------------------------------------------------------------------
 local SOME,NUM,SYM,ROWS = is"SOME", is"NUM", is"SYM", is"ROWS"
 
@@ -71,7 +70,7 @@ function SYM.inject(i,...)
   return i end
 
 function SYM.div(i, e)
-  e=0;for _,v in pairs(i.has) do if n>0 then e=e-v/i.n*math.log(v/i.n,2) end end
+  e=0;for _,v in pairs(i.has) do if v>0 then e=e-v/i.n*math.log(v/i.n,2) end end
   return e end
 
 function SYM.range(i,x) return x end
@@ -93,9 +92,7 @@ function SOME.new(i) i.has, i.ok, i.n = {}, false,0 end
 function SOME:all() if not i.ok then sort(i.has) end;i.ok=true; return i.has end
 function SOME.add(i,x)
   i.n = 1 + i.n
-  etc.oo(the)
-  print(1,x,#i.has, the.keep,rand(#i.has))
-  if     #i.has < the.keep     then i.ok=false; push(i.has,x)  ; print(1000)
+  if     #i.has < the.keep     then i.ok=false; push(i.has,x) 
   elseif rand() < the.keep/i.n then i.ok=false; i.has[rand(#i.has)]=x end end 
 --------------------------------------------------------------------------------
 function NUM.new(i,at,txt) 
@@ -105,7 +102,6 @@ function NUM.new(i,at,txt)
 function NUM.add(i,x,   d)
   if x~="?" then 
     i.has:add(x)
-    print("!!")
     i.n  = i.n+1
     d    = i.mu - x
     i.mu = i.mu + d/i.n
@@ -170,4 +166,4 @@ function ROWS.xx(i)
     for j=1,n,1            do i:xx1(col,SYM,j,true, tmp) end
     for j=n+1,#i.rows,step do i:xx1(col,SYM,j,false,tmp) end end end
 --------------------------------------------------------------------------------
-return {SOME=SOME,NUM=NUM,SYM=SYM,ROWS=ROWS,help=help}
+return {SOME=SOME,NUM=NUM,SYM=SYM,ROWS=ROWS,the=the}

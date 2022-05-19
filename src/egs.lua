@@ -4,10 +4,10 @@
 -- is notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY.  
 local etc=require"etc"
 local ego= require"ego"
-local map,o,oo,push,sort = etc.map, etc.o, etc.oo, etc.push, etc.sort
+local any,map,o,oo,push,sort = etc.any, etc.map, etc.o, etc.oo, etc.push, etc.sort
 local csv,splice = etc.csv, etc.splice
-local the = ego.the
-local EGS,ROWS = ego.EGS, ego.ROWS
+local SYM,EGS,ROWS = ego.SYM,ego.EGS, ego.ROWS
+local the =  ego.the
 local go,no={},{} -- place to store enabled and disabled tests
 
 function go.the() return type(the.seed) == "number" end
@@ -24,13 +24,32 @@ function go.csv(    n)
     n=n+#t end
   return n==3192 end
 
-function go.egs(    n) ROWS("../etc/data/auto93.csv")  end
+local function ish(x,y,e) return math.abs((x-y)/x) < e end
 
+function go.merge( s1,s2,s3,a)
+  a={"a","a","a","a","b","b","c"}
+  s1=SYM(); for _,x in pairs(a) do s1:add(x) end
+  s2=SYM(); for _,x in pairs(a) do s2:add(x) end
+  s3=s1:clone():inject(s1,s2)
+  oo(s3.has)
+  print(s3:div())
+  return s3.has.a==8 and s3.has.c==2 end
+
+function go.sym( s,e)
+  s=SYM()
+  for i=1,1000 do s:add(any{"a","a","a","a","b","b","c"}) end
+  return ish(s.has.a/s.has.b, 2,.1) and ish(s.has.b/s.has.c, 2,.1) end
+
+-- add in ROW
+function go.egs(    r) 
+  r=ROWS("../etc/data/auto93.csv") 
+  end
 --------------------------------------------------------------------------------
+
 local function demos(    fails,names,defaults,status)
   fails=0     -- this code will return number of failures
   names, defaults = {},{}
-  for k,f in pairs(go) do if type(f)=="function" then etc.push(names,k) end end 
+  for k,f in pairs(go) do if type(f)=="function" then push(names,k) end end 
   for k,v in pairs(the) do defaults[k]=v end
   if go[the.go] then names={the.go} end
   for _,one in pairs(sort(names))  do         -- for all we want to do
@@ -44,6 +63,4 @@ local function demos(    fails,names,defaults,status)
   for k,v in pairs(_ENV) do if not etc.b4[k] then print("?",k,type(v)) end end
   return fails end                             -- return total failure count
 
-the = etc.settings(ego.help)
-print(type(the.keep))
 os.exit(demos())

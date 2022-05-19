@@ -22,6 +22,9 @@ static code analysis
 formatting conventions
 ---
 
+encapsulation (infrmation hiding ; e.g. dont exprt help string)
+
+technical debt. the set in the ego code. hard not too
 
 less is more
 - stop writing classes
