@@ -1,11 +1,6 @@
 -- vim: ts=2 sw=2 et : 
--- ego.lua : simple landscape analysis (code that is "conscious" of shape of data)
--- (c) 2022 Tim Menzies.  Usage of the works is permitted provided that this
--- instrument is retained with the works, so that any entity that uses the works
--- is notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY.  
-
 local help=[[  
-EGO.LUA: landscape analysis (being 'conscious' of shape of data)
+EGO.LUA: landscape analysis (be 'conscious' of data's shape)
 (c) 2022 Tim Menzies, timm@ieee.org     
 "Don't you believe what you've seen or you've heard, 
  'ego' is not a dirty word." ~ Greg Macainsh
@@ -31,7 +26,11 @@ OPTIONS (other):
   --file  -f  csv file with data          = ../etc/data/auto93.csv
   --help  -h  show help                   = false
   --loud  -l  show extra info             = false
-  --go    -g  start up action             = nothing ]]
+  --go    -g  start up action             = nothing
+
+Usage of the works is permitted provided that this instrument is
+retained with the works, so that any entity that uses the works is
+notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY.]]
 
 local _ = require"etc"
 local big,cli,csv,fmt,is,lt   = _.big, _.cli, _.csv, _.fmt, _.is, _.lt
@@ -39,28 +38,9 @@ local map,o,oo,push,per,rand  = _.map, _.o, _.oo, _.push, _.pear, _.rand
 local splice,sort,tothing     = _.splice, _.sort, _.tothing
 
 local the={}
-help:gsub("  [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(k,x) the[k]=tothing(x) end)
+help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(k,x) the[k]=tothing(x) end)
 --------------------------------------------------------------------------------
 local SOME,NUM,SYM,ROW,ROWS = is"SOME", is"NUM", is"SYM", is"ROW", is"ROWS"
-
-local function merge(ranges,min,       a,b,ab,j,n,tmp)
-  if ranges[1].x.is == "SYM" then return ranges end
-  j,n,tmp = 1,#ranges,{}
-  while j<=n do 
-    a, b = ranges[j], ranges[j+1]
-    if b then 
-      ab = a.y:clone():inject(a.y,b.y)
-      if a.n<min or b.n<min or ( 
-         ab:div() < (a.y:div()*a.y.n + b.y:div()*b.y.n)/ab.n)
-      then a = {x=a.x:clone():inject(a.x,b.x),   y=y}
-           j = j+1 end end
-    tmp[#tmp+1] = a
-    j = j+1 end
-  if #tmp < 2       then return {} end           -- distribution has no splits
-  if #tmp < #ranges then return merge(tmp,min) end
-  for j=2,#tmp do tmp[j].x.lo = tmp[j-1].x.hi end -- fill in any gaps
-  tmp[1].x.lo, tmp[#tmp].x.hi = -big, big         -- stretch across all numbers
-  return tmp end  
 
 --------------------------------------------------------------------------------
 function SYM.new(i,at,name) i.n,i.txt,i.at,i.has = 0,txt or "",at or 0,{} end
@@ -95,6 +75,7 @@ function SYM.want(u,goal,B,R,how,   b,r,z)
   return how[the.Goal or "good"](b/(B+z), r/(R+z)) end
 
 function SYM.select(i,t)   x=t[i.at]; return x=="?" or i.has[x] end
+function SYM.merge(ranges,_) return ranges end
 --------------------------------------------------------------------------------
 function SOME.new(i) i.has, i.ok, i.n = {}, false,0 end
 function SOME.all(i) if not i.ok then sort(i.has) end;i.ok=true; return i.has end
@@ -132,6 +113,29 @@ function NUM.norm(i,x)
 function NUM.select(i,t) x=t[i.at]; return x=="?" or i.lo <= x and x <= i.hi end 
 function NUM.range(i,x,   b) 
   b=(i.hi-i.lo)/the.bins; return math.floor(x/b+0.5)*b end
+
+function NUM.merge(i,ranges,min,       a,j,n,tmp)
+  local function merged(a,b,  ab)
+    ab = a.y:clone():inject(a.y,b.y)
+    if a.n<min or b.n<min or (
+       ab:div() < (a.y:div()*a.y.n + b.y:div()*b.y.n)/ab.n) then
+  end ------------------------
+  local function xpand(ranges)
+    for j=2,#tmp do tmp[j].x.lo = tmp[j-1].x.hi end -- fill in any gaps
+    tmp[1].x.lo, tmp[#tmp].x.hi = -big, big         -- stretch across all numbers
+    return #tmp < 2 and {} or tmp end  
+  end ------------------
+  j,n,tmp = 1,#ranges,{}
+  while j<=n do 
+    a = ranges[j]
+    if ranges[j+1] then 
+      ab = merged(a, ranges[j+1])
+      if ab then 
+        a = {x=a.x:clone():inject(a.x,b.x),   y=y}
+        j = j+1 end end
+    tmp[#tmp+1] = a
+    j = j+1 end
+  return #tmp < #ranges and  i:merge(tmp,min) or xpand(ranges) end
 --------------------------------------------------------------------------------
 function ROW.new(i,cells,rows) i.cells,i.rows = cells, rows end
 function ROW.__lt(i,j)

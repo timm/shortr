@@ -24,13 +24,14 @@ function M.cli(d,help)
     for n,flag in ipairs(arg) do 
       if flag==("-"..key:sub(1,1)) or flag==("--"..key) then
         x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
-      d[key] = M.tothing(x) end 
-  if d.help then  
-     os.exit(
-       print(
-         help:gsub("%u%u+", "\27[1;31m%1\27[0m")
-             :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[1;36m%2\27[0m%3"),"")) end
-  return d end
+    d[key] = M.tothing(x) 
+  end 
+  if   d.help 
+  then os.exit(
+         print(help:gsub("%u%u+", "\27[1;31m%1\27[0m")
+                   :gsub('"[^"]+"', "\27[1;32m%1\27[0m")
+                   :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[1;36m%2\27[0m%3"),"")) 
+  else return d end end
 
 function M.csv(csvfile) 
   csvfile = io.input(csvfile)

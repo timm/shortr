@@ -69,23 +69,21 @@ function go.egs(    r)
 
 function go.xx(    r) 
   ROWS("../etc/data/auto93.csv"):xx() end
+
 --------------------------------------------------------------------------------
+local names, defaults, fails = {},{},0
+for k,f in pairs(go) do if type(f)=="function" then push(names,k) end end 
+for k,v in pairs(the) do defaults[k]=v end
+if go[the.go] then names={the.go} end
 
-local function demos(    fails,names,defaults,status)
-  fails=0     -- this code will return number of failures
-  names, defaults = {},{}
-  for k,f in pairs(go) do if type(f)=="function" then push(names,k) end end 
-  for k,v in pairs(the) do defaults[k]=v end
-  if go[the.go] then names={the.go} end
-  for _,one in pairs(sort(names))  do         -- for all we want to do
-    for k,v in pairs(defaults) do the[k]=v end -- set settings to defaults
-    math.randomseed(the.seed or 10019)         -- reset random number seed
-    io.stderr:write(".")
-    status = go[one]()                         -- run demo
-    if status ~= true then
-      print("-- Error",one,status) 
-      fails = fails + 1 end end                -- update fails
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end
-  return fails end                             -- return total failure count
+for _,one in pairs(sort(names))  do          -- for all we want to do
+  for k,v in pairs(defaults) do the[k]=v end -- set settings to defaults
+  math.randomseed(the.seed or 10019)         -- reset random number seed
+  io.stderr:write(".")
+  local status = go[one]()                   -- run demo
+  if status ~= true then
+    print("-- Error",one,status) 
+    fails = fails + 1 end end                -- update fails
 
-os.exit(demos())
+for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end
+os.exit(fails)                               -- return total failure count
