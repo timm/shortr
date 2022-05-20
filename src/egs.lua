@@ -2,15 +2,15 @@
 -- (c) 2022 Tim Menzies.  Usage of the works is permitted provided that this
 -- instrument is retained with the works, so that any entity that uses the works
 -- is notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY.  
-local etc=require"etc"
-local ego= require"ego"
+local _ = require"etc"
+local any,cli,map,o,oo,push,sort = _.any, _.cli, _.map, _.o, _.oo, _.push
+local csv,sort,splice,b4         = _.csv, _.sort, _.splice, _.b4
 
-local any,map,o,oo,push,sort = etc.any, etc.map, etc.o, etc.oo, etc.push, etc.sort
-local csv,splice = etc.csv, etc.splice
-local SOME,NUM,SYM,EGS,ROWS = ego.SOME,ego.NUM,ego.SYM,ego.EGS, ego.ROWS
+local _= require"ego"
+local SOME,NUM,SYM,EGS,ROWS  = _.SOME, _.NUM, _.SYM, _.EGS, _.ROWS
+local the = cli(_.the, _.help)
 
 --------------------------------------------------------------------------------
-local the =  etc.cli(ego.the,ego.help)
 local go,no={},{} -- place to store enabled and disabled tests
 
 function go.the() 
@@ -85,7 +85,7 @@ local function demos(    fails,names,defaults,status)
     if status ~= true then
       print("-- Error",one,status) 
       fails = fails + 1 end end                -- update fails
-  for k,v in pairs(_ENV) do if not etc.b4[k] then print("?",k,type(v)) end end
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end
   return fails end                             -- return total failure count
 
 os.exit(demos())

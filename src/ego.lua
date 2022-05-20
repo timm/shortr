@@ -4,7 +4,7 @@
 -- instrument is retained with the works, so that any entity that uses the works
 -- is notified of this instrument. DISCLAIMER:THE WORKS ARE WITHOUT WARRANTY.  
 
-local help=[[
+local help=[[  
 EGO.LUA: landscape analysis (being 'conscious' of shape of data)
 (c) 2022 Tim Menzies, timm@ieee.org     
 "Don't you believe what you've seen or you've heard, 
@@ -30,20 +30,17 @@ OPTIONS:                                  default
 OPTIONS (other):
   --file  -f  csv file with data          = ../etc/data/auto93.csv
   --help  -h  show help                   = false
-  --loud  -l  show extra info              = false
+  --loud  -l  show extra info             = false
   --go    -g  start up action             = nothing ]]
 
-local etc=require"etc"
-local big,cli,csv,fmt         =etc.big, etc.cli, etc.csv, etc.fmt
-local is,lt,map,o,oo,push      =etc.is,  etc.lt,  etc.map, etc.o, etc.oo,etc.push
-local per                      =etc.per
-local rand,splice,sort,string2thing=etc.rand,etc.splice, etc.sort, etc.string2thing
+local _ = require"etc"
+local big,cli,csv,fmt,is,lt   = _.big, _.cli, _.csv, _.fmt, _.is, _.lt
+local map,o,oo,push,per,rand  = _.map, _.o, _.oo, _.push, _.pear, _.rand
+local splice,sort,tothing     = _.splice, _.sort, _.tothing
 
 local the={}
-help:gsub("  [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,default)
-  the[key] = string2thing(default) end)
-
- --------------------------------------------------------------------------------
+help:gsub("  [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(k,x) the[k]=tothing(x) end)
+--------------------------------------------------------------------------------
 local SOME,NUM,SYM,ROW,ROWS = is"SOME", is"NUM", is"SYM", is"ROW", is"ROWS"
 
 local function merge(ranges,min,       a,b,ab,j,n,tmp)

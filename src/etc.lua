@@ -24,7 +24,7 @@ function M.cli(d,help)
     for n,flag in ipairs(arg) do 
       if flag==("-"..key:sub(1,1)) or flag==("--"..key) then
         x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
-      d[key] = M.string2thing(x) end 
+      d[key] = M.tothing(x) end 
   if d.help then  
      os.exit(
        print(
@@ -37,7 +37,7 @@ function M.csv(csvfile)
   return function(line, t) 
     line=io.read()
     if not line then io.close(csvfile) else
-      t={}; for x in line:gmatch("([^,]+)") do M.push(t,M.string2thing(x)) end
+      t={}; for x in line:gmatch("([^,]+)") do M.push(t,M.tothing(x)) end
       return t end end end 
 
 function M.oo(t) print(M.o(t)) end
@@ -49,7 +49,7 @@ function M.o(t,    u)
 function M.splice(t,i,j,k,     u) 
   u={}; for n=(i or 1), (j or #t),(k or 1) do u[1+#u] = t[n] end return u end
 
-function M.string2thing(x)
+function M.tothing(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
   return math.tointeger(x) or tonumber(x) or x  end
