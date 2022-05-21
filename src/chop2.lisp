@@ -64,7 +64,7 @@
 
 (defstruct row has within)
 
-(defstruct (cols (:constructor %make-cols)) has x y)
+(defstruct (cols (:constructor %make-cols)) names has x y)
 (defun make-cols (lst)
   (let (has x y (at 0)) 
     (dolist (name lst)
@@ -73,7 +73,7 @@
         (push col has)
         (when (not (skipp name))
           (if (goalp name) (push col y) (push col x)))))
-    (%make-cols :has (reverse has) :x (reverse x) :y (reverse y))))
+    (%make-cols :has (reverse has) :x x :y y :names lst)))
 
 (defstruct (egs (:constructor %make-egs)) has cols)
 (defun make-egs (&optional src &aux (self (%make-egs)))
