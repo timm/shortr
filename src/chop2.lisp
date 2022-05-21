@@ -18,9 +18,8 @@
    `(cdr (or (assoc ,x ,a :test #'equal)
              (car (setf ,a (cons (cons ,x 0) ,a))))))
 
-(defmethod str2thing ((x string))
-  (let ((y (ignore-errors (read-from-string x))))
-    (if (numberp y) y x)))
+(defun str2thing (x &aux (y (ignore-errors (read-from-string x))))
+  (if (numberp y) y x))
 
 (defun str2things (s 
                    &optional (sep #\,) (x 0) (y (position sep s :start (1+ x))))
