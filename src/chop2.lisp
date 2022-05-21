@@ -22,6 +22,30 @@
    `(cdr (or (assoc ,x ,a :test #'equal)
              (car (setf ,a (cons (cons ,x 0) ,a))))))
 
+(defmethod str2thing ((x string))
+  (let ((x (string-trim '(#\Space #\Tab) x)))
+    (if (equal x "?") 
+      #\?
+      (let ((y (ignore-errors (read-from-string x))))
+        (if (numberp y) y x))))))
+
+(defun str2things (s &optional (sep #\,) (x 0) (y (position sep s :start (1+ x))))
+  (cons (str2thing (subseq s x y)) (and y (str2list s sep (1+ y)))))
+
+(defmacro with-csv ((lst file &optional out) &body body)
+  (let ((str (gensym)))
+      `(let (,lst) 
+         (with-open-file (,str ,file)
+           (loop while (setf ,lst (read-line ,str nil)) do 
+             (setf ,lst (str2things ,lst))
+             ,@body))
+         ,out)))
+
+(defmacro with-csv ((row file &optional out) &body body)
+  (let ((x (gensym)))
+    `(lines ,file (lambda (,x) 
+                    (let ((,x (str2list ,x))) ,@body)))))
+
 (labels ((chars (s) (if (stringp s) s (symbol-name s)))
          (chrn  (x) (let ((s (chars x))) (char s (1- (length s)))))
          (chr0  (x) (char (chars x) 0)))
