@@ -32,20 +32,19 @@ local tothing                    = _.tothing
 local the={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(k,x) the[k]=_.tothing(x)end)
 
-local function num(s)  return s:find"^[A-Z].*" end
-local function skip(s) return s:find":$" end
-local function goal(s) return s:find"[!+-]$" end
+local function nump(s)  return s:find"^[A-Z].*" end
+local function skipp(s) return s:find":$" end
+local function goalp(s) return s:find"[!+-]$" end
 local function wght(s) return s:find"-$" and -1 or 1 end 
 --------------------------------------------------------------------------------
 local ROW=is"ROW"
 function ROW.new(i,of,cells) i.cells, i.of, i.evaluated = cells,of,false end 
 function ROW.__lt(i,j,        n,s1,s2,v1,v2)
-  n,s1,s2 = 0,0,0
-  for _,__ in pairs(i.of.ys) do n = n + 1 end
-  for c,w in pairs(i.of.ys) do
-    v1,v2 = i.of:norm(c, i.cells[c]), i.of:norm(c, j.cells[c])
-    s1    = s1 - 2.7183^(w * (v1 - v2) / n)
-    s2    = s2 - 2.7183^(w * (v2 - v1) / n) end
+  s1,s2 = 0,0
+  for _,col in pairs(i.of.ys) do
+    v1,v2 = col:norm(i.cells[col.at]), col:norm(j.cells[c.at])
+    s1    = s1 - 2.7183^(col.w * (v1 - v2) / n)
+    s2    = s2 - 2.7183^(col.w * (v2 - v1) / n) end
   return s1/n < s2/n end
 
 function ROW.dist(i,j,     d,n)
@@ -96,7 +95,7 @@ function NUM.div(i,  a) a=i.has(); return (per(a,.9) - per(a,.1))/2.56 end
 --------------------------------------------------------------------------------
 local ROWS=is"ROWS"
 function ROWS.new(i,src) 
-  i.rows, i.nums, i.xs, i.ys, i.names =  {},{},{},{},nil
+  i.rows, i.all, i.xs, i.ys, i.names =  {},{},{},{},nil
   if type(src)=="table" then for _,r in pairs(src) do i:add(r) end
                         else for   r in csv(  src) do i:add(r) end end end
 
@@ -110,9 +109,11 @@ function ROWS.add(i,t,     r)
 
 function ROWS.header(i,t)
   i.names = t
-  for at,txt in pairs(t) do 
-    col = push(i.all, (num(txt) and NUM or SYM)(at,txt)) 
-    if not skip(txt) then push(goal(txt) and i.ys or i.xs, col) end end end
+  oo(t)
+  for at,txt in pairs(t) do  
+    col = push(i.all, (nump(txt) and NUM or SYM)(at,txt)) 
+    oo(col)
+    if not skipp(txt) then push(goalp(txt) and i.ys or i.xs, col) end end end
 
 function ROWS.update(i,t,   v)
   for _,col in pairs(i.cols) do col:add(t[col.at]) end end
