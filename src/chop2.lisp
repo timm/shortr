@@ -2,16 +2,17 @@
 (make-package :chops)
 (in-package   :chops)
 
-(defstruct (settings (:conc-name !)) 
-  (inf    most-positive-fixnum)
-  (ninf   most-negative-fixnum)
-  (file   "../etc/data/auto93.csv")
+(defstruct o 
+  (tiny   (/ 1 most-positive-fixnum))
+  (inf         most-positive-fixnum)
+  (ninf        most-negative-fixnum)
+  (file   "../data/auto93.csv")
   (round  2)
   (p      2)) 
 
 (defvar my (make-settings))
 ;--------------------------------------------------------------------
-(defmacro ?  (p x &rest xs)
+(defmacro ? (p x &rest xs)
   (if (null xs) `(slot-value ,p ',x) `(? (slot-value ,p ',x) ,@xs)))
 
 (defmacro has (x a)
@@ -34,15 +35,14 @@
              ,@body))
          ,out)))
 
-(defun get-file (file) 
-  (with-open-file (str (format nil "~a.lisp" file)) (read str nil)))
+(defun omit (x) (equalp "?" x))
 
 (defun charn (s &rest lst) (member (char s (1- (length s))) lst)); :test #'eql))
 
-(defun rnd (number &optional (digits (!round my )))
+(defun rnd (number &optional (digits (o-round my )))
   (let* ((div (expt 10 digits))
-           (tmp (/ (round (* number div)) div)))
-               (if (zerop digits) (floor tmp) (float tmp))))
+         (tmp (/ (round (* number div)) div)))
+    (if (zerop digits) (floor tmp) (float tmp))))
 
 (defun rnds (lst) (mapcar #'rnd lst))
 
@@ -53,14 +53,14 @@
 (defstruct (egs (:constructor %make-egs)) has cols)
 (defstruct sym (at 0) (txt "") (n 0) mode (most 0) has)
 (defstruct (num (:constructor %make-num))
-  (at 0) (txt "") (w 1) (n 0) (mu 0) (hi (!ninf my)) (lo (!inf my)))
+  (at 0) (txt "") (w 1) (n 0) (mu 0) (hi (o-ninf my)) (lo (o-inf my)))
 
 ;--------------------------------------------------------------
 (defun make-num (&key (at 0) (txt ""))
   (%make-num :at at :txt txt :w (if (charn txt -1 #\-) -1 1)))
 
 (defmethod add ((self num) (x string))
-  (if (string-equal x "?")
+  (if (omit x)
     x
     (add self (read-from-string x))))
 
@@ -76,11 +76,20 @@
 
 (defmethod norm ((self num) x)
   (with-slots (lo hi) self
-    (if (< (- hi lo) 1E9) (/ (- x lo) (- hi lo)))))
+    (if (< (- hi lo) (/ 1 1E9)) (/ (- x lo) (- hi lo)))))
+
+(defmethod dist ((self num) x y)
+  (print 1000)
+  (cond ((and (omit x) (omit y)) (print 3) 0)
+        ((omit x)                (print 4) (setf y (norm self y) x (if (< y .5) 1 0)))
+        ((omit y)                (print 5) (setf x (norm self x) y (if (< x .5) 1 0)))
+        (t                       (print 6) (setf x (norm self x) y (norm self y))))
+  (abs (- x y)))
+
 ;--------------------------------------------------------------------
 (defmethod add ((self sym) x)
   (with-slots (n has most mode) self 
-    (unless (string-equal x "?")
+    (unless (omit "?")
       (incf n)
       (incf (has x has))
       (if (> n most) (setf most n
@@ -88,6 +97,7 @@
   x)
 
 (defmethod mid ((self sym)) (? self mode))
+(defmethod dist ((self sym) x y) (if (equal x y) 0 1))
 ;--------------------------------------------------------------------
 (defmethod lt ((i row) (j row))
   (let* ((s1 0) (s2 0) 
@@ -97,19 +107,20 @@
             (b (norm y (elt (? j has) (? y at)))))
         (decf s1 (exp (/  (* (? y w) (- a b)) n)))
         (decf s2 (exp (/  (* (? y w) (- b a)) n)))))))
+
 ;--------------------------------------------------------------------
 (defun make-cols (lst)
-  (labels ((nump  (s)           (upper-case-p (char s  0)))
-           (goalp (s)           (charn s #\- #\+ #\!))
-           (skipp (s)           (charn s  #\X)))
+  (labels ((nump  (s) (equal (char s  0) #\$))
+           (goalp (s) (charn s #\- #\+ #\!))
+           (skipp (s) (charn s  #\X)))
     (let (has xs ys (at -1))
       (loop for name in lst
-        for at from 0 do
-        (let* ((what (if (nump name) 'make-num 'make-sym))
-               (col  (funcall what :at at :txt name)))
-          (push col has)
-          (when (not (skipp name))
-            (if (goalp name) (push col ys) (push col xs)))))
+        for at  from 0 
+        do (let* ((what (if (nump name) 'make-num 'make-sym))
+                  (col  (funcall what :at at :txt name)))
+             (push col has)
+             (when (not (skipp name))
+               (if (goalp name) (push col ys) (push col xs)))))
       (%make-cols :has (reverse has) :xs xs :ys ys :names lst))))
 ;--------------------------------------------------------------------
 (defun make-egs (&optional src &aux (self (%make-egs)))
@@ -129,13 +140,25 @@
   (make-egs (cons (? self cols names) inits)))
 
 (defmethod mid ((self egs)) (mapcar 'mid (? self cols ys)))
+
+(defmethod dist ((self egs) (r1 row) (r2 row))
+  (let ((d 0) 
+        (n (o-tiny my)))
+    (dolist (col (? self cols xs)
+                 (expt (/ d n) (/ 1 (o-p my))))
+      (print col)
+      (incf n)
+      (incf d (expt (dist col r1 r2) (o-p my))))))
 ;--------------------------------------------------------------------
 
- (let ((e (make-egs (!file my))))
+ (let ((e (make-egs (o-file my))))
    (setf (? e has ) (sort (? e has) #'lt))
    (let* ((n (length (? e has)))
           (n1 (floor (sqrt n))))
      (print (mapcar (lambda (c) (? c txt)) (? e cols ys)))
      (print (mapcar (lambda (c) (? c w)) (? e cols ys)))
      (print (rnds (mid (clone e (subseq (? e has) 1 n1)))))
-     (print (rnds (mid (clone e (subseq (? e has) (- n n1))))))))
+     (print (rnds (mid (clone e (subseq (? e has) (- n n1))))))
+      ; (dolist (row (? e has))
+      ;   (print (dist e row (first (? e has)) )))
+       ))
