@@ -14,6 +14,8 @@ local function sort(t,f)    table.sort(t,f); return t end
 local function map(t,f,  u) u={}; for k,v in pairs(t) do u[1+#u]=f(v) end
                             return u end
 
+local function per(t,p, i) i=p*#t//1; return t[math.max(1,math.min(#t,i))] end
+
 local function shuffle(t,    j) 
   for i = #t, 2, -1 do j=rand(i); t[i],t[j] = t[j],t[i] end
   return t end
@@ -78,5 +80,5 @@ local function main(funs,settings)
   os.exit(fails) end
 
 return {any=any, big=big, cli=cli, csv=csv, fmt=fmt, is=is, lt=lt, oo=oo, o=o,
-        main=main, many=many, map=map, push=push, rand=rand, shuffle=shuffle, 
-        sort=sort, tothing=tothing}
+        main=main, many=many, map=map, per=per, push=push, rand=rand, 
+        shuffle=shuffle, sort=sort, tothing=tothing}

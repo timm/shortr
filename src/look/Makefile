@@ -7,12 +7,12 @@ looked.lua :  look.lua lib.lua looking.lua
 ../../docs/%.pdf : %.lua  
 	@echo "pdf-ing $@ ... "
 	@a2ps -BjR    -q                        \
-		-L 120 \
-		--line-numbers=1 -f 5                    \
+		-l 82 \
+		--line-numbers=1                     \
 		--highlight-level=normal  \
-		--borders=no --pro=color --columns 2 \
+		--borders=no --pro=color --columns 3 \
 		--right-footer="" --left-footer=""    \
 		--pretty-print=../../etc/lua.ssh             \
-		--footer="page %p."                     \
+		--footer="page %p."                    \
 		-M letter -o $@.ps $<
 	@ps2pdf $@.ps $@; rm $@.ps; git add $@
