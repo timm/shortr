@@ -1,6 +1,9 @@
 -- vim: ts=2 sw=2 et : 
--- LIB.LUA : misc support code.
--- (c) 2022 Tim Menzies.  BSD-2 license.
+-- LIB.LUA
+
+--- misc support code.
+-- (c) 2022 Tim Menzies, BSD-2 license.
+
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local fmt =string.format
 local rand=math.random
@@ -15,16 +18,26 @@ local function sort(t,f)    table.sort(t,f); return t end
 local function map(t,f,  u) u={}; for k,v in pairs(t) do u[1+#u]=f(v) end
                             return u end
 
-local function splice(t,i,j,k,     u) 
-  u={}; for n=(i or 1)//1, (j or #t)//1,(k or 1)//1 do 
+
+local splice
+
+--- returns parts of the table `t`.
+-- treturn: tab 
+function splice(t, -- tab: input
+                i, -- ?int=1: start here 
+                j, -- ?int=end: stop here 
+                k) -- ?int=1: internal step 
+  local u={}; for n=(i or 1)//1, (j or #t)//1,(k or 1)//1 do 
           u[1+#u] = t[n] end return u end
 
-local function per(t,p, i) i=p*#t//1; return t[math.max(1,math.min(#t,i))] end
+---   `p`-the percent item from `t`.
+function per(t,p, i) i=p*#t//1; return t[math.max(1,math.min(#t,i))] end
 
 local function shuffle(t,    j) 
   for i = #t, 2, -1 do j=rand(i); t[i],t[j] = t[j],t[i] end
   return t end
 
+--- Read things from strings
 local function tothing(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
@@ -84,6 +97,7 @@ local function main(funs,settings)
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end 
   os.exit(fails) end
 
+--- return the functions.
 return {any=any, big=big, cli=cli, csv=csv, fmt=fmt, gt=gt,is=is, lt=lt, 
         oo=oo, o=o, main=main, many=many, map=map, per=per, push=push, rand=rand, 
         shuffle=shuffle, sort=sort, splice=splice, tothing=tothing}
