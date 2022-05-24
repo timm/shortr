@@ -52,6 +52,7 @@ local function ranges(col,...)
         local bin = col:bin(v)
         tmp[bin]  = tmp[bin] or push(tmp, RANGE(v,v,SYM(col.at, col.txt)))
         tmp[bin]:add(v,klass) end end end 
+  print(col.n, the.min, col.n^the.min)
   return col:binsMerge(sort(tmp, lt"lo"),col.n^the.min) end 
 --------------------------------------------------------------------------------
 function ROW.new(i,of,cells) i.cells, i.of, i.evaluated = cells,of,false end 
@@ -114,12 +115,11 @@ function RANGE.selects(i,t,     v)
   v = t.cells[i.at]
   return v=="?" or (i.lo==i.hi and i.lo==v) or (i.lo<=v and v<i.hi) end
 
-function RANGE.score(i,goal,B,R, how,    b,r,z)
-  how={}
+function RANGE.score(i,goal,B,R)
+  local how, b, r, z = {}, 0, 0, 1/big
   how.more= function(b,r) return ((b<r or b+r < .05) and 0) or b^2/(b+r) end
   how.less= function(b,r) return ((r<b or b+r < .05) and 0) or r^2/(b+r) end
   how.tabu= function(b,r) return 1/(b+r) end 
-  b, r, z = 0, 0, 1/big
   for v,n in pairs(i.y.all) do
     if v==goal then b = b+n else r=r+n end end
   return how[the.How or "good"](b/(B+z), r/(R+z)) end
@@ -130,6 +130,7 @@ function NUM.new(i,at,txt)
 
 function NUM.add(i,v) 
   if v ~="?" then  
+    i.n = i.n + 1
     i.lo=math.min(v,i.lo);i.hi=math.max(v,i.hi);push(i.all,v); i.ok=false end end
 
 function NUM.norm(i,v)
@@ -220,7 +221,10 @@ function ROWS.how(i, bests, rests)
   for _,col in pairs(i.xs) do
     print""
     for _,bin in pairs(ranges(col, bests, rests)) do
-     push(bins,{score=bin:score(1,#bests,#rests), bin=oo(bin)}) end end 
+      print(1000,o(bin))
+      print(2000,bin:score(1,#bests,#rests))
+      print(3000)
+      push(bins,{score=bin:score(1,#bests,#rests), bin=bin}) end end 
  -- for _,bin in pairs(sort(bins,gt"score")) do oo(bin) end 
   end
 
