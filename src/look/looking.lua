@@ -58,15 +58,19 @@ function go.betters(  t,n1)
   return t[1] < t[#t]
 end
 
-function go.how(  t,n,bests,rests) 
+function go.how(  t,n,bests,rests,step) 
   t     = ROWS(the.file)
   t.all = sort(t.all)
   n     = (#t.all)^.5 // 1
+  step  = (#t.all - n)/(n*the.also)//1
   bests = splice(t.all, 1,  n)
-  rests = splice(t.all, n+1, #t.all)
-  t:how(bests,rests)
+  rests = splice(t.all, n+1, #t.all, step)
+  print("sizes",o{bests=#bests,rests=#rests})
+  how,guess= t:how(bests,rests)
+  print(#how)
   oo(t:clone(bests):mid())
   oo(t:clone(rests):mid())
+  oo(t:clone(guess):mid())
   return true
 end
 

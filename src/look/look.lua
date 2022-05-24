@@ -15,7 +15,7 @@ USAGE: lua looking.lua [OPTIONS]
   --How   -H  how we optimize: more,less,tabu = more
   --Min   -M  min size pass2                  = 10
   --Some  -S  sample size                     = 512
-  --also  -a  size of rest=best*also          = 4
+  --also  -a  size of rest=best*also          = 3
   --bins  -b  number of bins                  = 16
   --min   -m  min size pass1                  = .5
   --p     -p  distance coefficient            = 2
@@ -44,16 +44,15 @@ local RANGE,ROWS,TREE = is"RANGE", is"ROWS", is"TREE"
 local ROW,SYM,NUM     = is"ROW",   is"SYM",  is"NUM"
 
 local function ranges(col,...)
-  local tmp,tmp={},{}
+  local tmp,out={},{}
   for klass,rows in pairs{...} do
     for _,row in pairs(rows) do
       local v = row.cells[col.at]
       if v~="?" then 
         local bin = col:bin(v)
-        tmp[bin]  = tmp[bin] or push(tmp, RANGE(v,v,SYM(col.at, col.txt)))
+        tmp[bin]  = tmp[bin] or push(out, RANGE(v,v,SYM(col.at, col.txt)))
         tmp[bin]:add(v,klass) end end end 
-  print(col.n, the.min, col.n^the.min)
-  return col:binsMerge(sort(tmp, lt"lo"),col.n^the.min) end 
+  return col:binsMerge(sort(out, lt"lo"),col.n^the.min) end 
 --------------------------------------------------------------------------------
 function ROW.new(i,of,cells) i.cells, i.of, i.evaluated = cells,of,false end 
 function ROW.__lt(i,j,        n,s1,s2,v1,v2)
@@ -97,7 +96,8 @@ function SYM.merged(i,j,min,  k)
   if i.n < min or j.n < min or k:div()*1.01 <= (i.n*i:div() + j.n*j:div())/k.n then 
     return k end end
 --------------------------------------------------------------------------------
-function RANGE.new(i,lo,hi,y) i.lo,i.hi,i.y = lo, hi, y end
+function RANGE.new(i,lo,hi,y) 
+  i.lo,i.hi,i.y = lo, hi, y end
 
 function RANGE.__tostring(i)
   local x, lo, hi = i.y.txt, i.lo, i.hi
@@ -112,7 +112,7 @@ function RANGE.add(i,v,y)
                                i.y:add(y) end end
 
 function RANGE.selects(i,t,     v)
-  v = t.cells[i.at]
+  v = t.cells[i.y.at]
   return v=="?" or (i.lo==i.hi and i.lo==v) or (i.lo<=v and v<i.hi) end
 
 function RANGE.score(i,goal,B,R)
@@ -150,7 +150,7 @@ function NUM.bin(i,v,  b) b=(i.hi-i.lo)/the.bins;return math.floor(v/b+0.5)*b en
 function NUM.binsMerge(i,ranges,min,      a,b,c,j,n,tmp,expand)
   function expand(t) 
     if #t<2 then return {} end
-    --for j=2,#t do t[j].lo=t[j-1].hi end
+    for j=2,#t do t[j].lo=t[j-1].hi end
     t[1].lo, t[#t].hi= -big,big
     return t  
   end ------------------
@@ -216,14 +216,27 @@ function ROWS.look(i,  w,sample,best,rests)
       sample = many(w,the.Some) end end
  return ra,w,many(rests, #w*the.also) end
 
-function ROWS.how(i, bests, rests) 
-  local bins={}
-  for _,col in pairs(i.xs) do
-    print""
-    for _,bin in pairs(ranges(col, bests, rests)) do
-      push(bins,{score=bin:score(1,#bests,#rests), bin=oo(bin)}) end end 
-  --for _,bin in pairs(sort(bins,gt"score")) do oo(bin) end 
-  end
+function ROWS.how(i, bests,rests,how,stop)
+  stop = stop or #bests /2
+  how  = how  or {}
+  print(#bests+#rests,stop)
+  if   (#bests + #rests) > stop 
+  then local most,best = -1
+       for _,col in pairs(i.xs) do 
+         for _,bin in pairs(ranges(col,bests,rests)) do
+           score = bin:score(1,#bests,#rests)
+           if score > most then  best, most=bin,score end end end 
+       print("best",o(best.y.all))
+       if best then
+         push(how,best)
+         local bests1,rests1 = {},{}
+         for _,t in pairs{bests,rests} do
+           for _,r in pairs(t) do
+             push(best:selects(r) and bests1 or rests1, r) end end
+         oo{b1=#bests1,r1=#rests1}
+         if #bests1 < #bests then
+           return i:how(bests1,rests1,how,stop) end end end 
+  return how,bests end
 
 --------------------------------------------------------------------------------
 return {NUM=NUM,ROWS=ROWS, ROW=ROW, help=help, the=the}

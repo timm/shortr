@@ -1,7 +1,7 @@
 -- vim: ts=2 sw=2 et : 
 -- LIB.LUA
 
---- misc support code.
+-- Misc support code.
 -- (c) 2022 Tim Menzies, BSD-2 license.
 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
@@ -9,24 +9,24 @@ local fmt =string.format
 local rand=math.random
 local big = 1E32
 
+-- Return any 1 item
 local function any(t)       return t[math.random(#t)] end
+-- Return any n items
 local function many(t,n, u) u={};for j=1,n do u[1+#u]=any(t) end; return u end
+-- Sort up/down on `x`.
 local function lt(x)        return function(a,b) return a[x]<b[x] end end
 local function gt(x)        return function(a,b) return a[x]>b[x] end end
+-- Add `x` to `t`, returning `x`.
 local function push(t,x)    t[1+#t]=x; return x end
+-- Sort `t` on function `f`, returning the sorted table.
 local function sort(t,f)    table.sort(t,f); return t end
+-- Return a table, filtering all items through `f`.
 local function map(t,f,  u) u={}; for k,v in pairs(t) do u[1+#u]=f(v) end
                             return u end
 
-
-local splice
-
---- returns parts of the table `t`.
--- treturn: tab 
-function splice(t, -- tab: input
-                i, -- ?int=1: start here 
-                j, -- ?int=end: stop here 
-                k) -- ?int=1: internal step 
+-- **splice(t:tab, start:int=1, stop:int=#t, step:int=1): tab**    
+-- Return all items in a table between `start` and `stop`.
+local function splice( t, i, j, k) 
   local u={}; for n=(i or 1)//1, (j or #t)//1,(k or 1)//1 do 
           u[1+#u] = t[n] end return u end
 
@@ -66,6 +66,7 @@ local function cli(d,help)
   return d end 
 
 local function o(t,    u)
+  if type(t)~="table" then return tostring(t) end
   if #t>0 then return "{"..table.concat(map(t,tostring)," ").."}" end
   u={}; for k,v in pairs(t) do u[1+#u] = fmt(":%s %s",k,v) end
   return (t.is or "").."{"..table.concat(sort(u)," ").."}" end 

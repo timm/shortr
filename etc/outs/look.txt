@@ -1,0 +1,104 @@
+../../etc/data/auto2.csv
+{CityMPG+ HighwayMPG+ Weight- Class-}    {21 28 3030 17.5}     {29 33 2045 8.4}
+{CityMPG+ HighwayMPG+ Weight- Class-}    {21 28 3030 17.5}     {25 33 2045 8.4}
+{CityMPG+ HighwayMPG+ Weight- Class-}    {21 28 3030 17.5}       {23 30 2270 9}
+{CityMPG+ HighwayMPG+ Weight- Class-}    {21 28 3030 17.5}     {29 33 1965 8.6}
+{CityMPG+ HighwayMPG+ Weight- Class-}    {21 28 3030 17.5}     {32 37 1965 8.4}
+{CityMPG+ HighwayMPG+ Weight- Class-}    {21 28 3030 17.5}     {32 37 1965 8.4}
+{CityMPG+ HighwayMPG+ Weight- Class-}    {21 28 3030 17.5}     {25 33 2045 8.4}
+{CityMPG+ HighwayMPG+ Weight- Class-}    {21 28 3030 17.5}     {30 36 1965 8.6}
+{CityMPG+ HighwayMPG+ Weight- Class-}    {21 28 3030 17.5}     {29 33 1965 8.4}
+{CityMPG+ HighwayMPG+ Weight- Class-}    {21 28 3030 17.5}     {25 33 2045 8.4}
+1 2 4 11 18 
+3 18 36 46 74 
+../../etc/data/SSN.csv
+     {PSNR- Energy-}     {45.907 1258.08}    {33.228 363.0375}
+     {PSNR- Energy-}     {45.907 1258.08} {48.188 2315.902174}
+     {PSNR- Energy-}     {45.907 1258.08} {39.443 555.4694444}
+     {PSNR- Energy-}     {45.907 1258.08} {37.377 879.5716049}
+     {PSNR- Energy-}     {45.907 1258.08}      {41.837 454.53}
+     {PSNR- Energy-}     {45.907 1258.08} {45.998 1077.681818}
+     {PSNR- Energy-}     {45.907 1258.08} {40.318 482.9191919}
+     {PSNR- Energy-}     {45.907 1258.08}  {30.57 1721.878403}
+     {PSNR- Energy-}     {45.907 1258.08} {50.788 820.4396446}
+     {PSNR- Energy-}     {45.907 1258.08} {45.292 420.7407407}
+0 1 19 47 83 
+0 26 44 62 83 
+../../etc/data/china.csv
+         {N_effort-}               {2082}                {631}
+         {N_effort-}               {2082}                {466}
+         {N_effort-}               {2082}                {145}
+         {N_effort-}               {2082}                {686}
+         {N_effort-}               {2082}                {170}
+         {N_effort-}               {2082}                {296}
+         {N_effort-}               {2082}                {281}
+         {N_effort-}               {2082}                {170}
+         {N_effort-}               {2082}                {164}
+         {N_effort-}               {2082}               {1158}
+0 2 10 17 36 
+3 25 55 63 83 
+../../etc/data/coc1000.csv
+     {RISK- EFFORT-}            {5 19641}             {1 5820}
+     {RISK- EFFORT-}            {5 19641}             {0 5679}
+     {RISK- EFFORT-}            {5 19641}             {0 7436}
+     {RISK- EFFORT-}            {5 19641}             {2 7845}
+     {RISK- EFFORT-}            {5 19641}            {0 30121}
+     {RISK- EFFORT-}            {5 19641}             {3 8341}
+     {RISK- EFFORT-}            {5 19641}             {2 4207}
+     {RISK- EFFORT-}            {5 19641}             {2 7845}
+     {RISK- EFFORT-}            {5 19641}             {0 5754}
+     {RISK- EFFORT-}            {5 19641}             {0 7436}
+0 6 15 27 53 
+0 18 39 57 73 
+../../etc/data/healthCloseIsses12mths0001-hard.csv
+ {MRE- ACC+ PRED40+}      {75.04 7.14 25}       {73.03 7.01 0}
+ {MRE- ACC+ PRED40+}      {75.04 7.14 25}      {73.55 7.38 25}
+ {MRE- ACC+ PRED40+}      {75.04 7.14 25}       {68.86 6.54 0}
+ {MRE- ACC+ PRED40+}      {75.04 7.14 25}      {72.53 7.71 25}
+ {MRE- ACC+ PRED40+}      {75.04 7.14 25}      {73.56 7.43 25}
+ {MRE- ACC+ PRED40+}      {75.04 7.14 25}       {69.74 7.9 25}
+ {MRE- ACC+ PRED40+}      {75.04 7.14 25}      {73.61 7.28 25}
+ {MRE- ACC+ PRED40+}      {75.04 7.14 25}        {74.6 7.03 0}
+ {MRE- ACC+ PRED40+}      {75.04 7.14 25}      {72.98 7.72 25}
+ {MRE- ACC+ PRED40+}      {75.04 7.14 25}       {73.64 7.05 0}
+0 11 24 38 80 
+0 19 40 58 78 
+../../etc/data/healthCloseIsses12mths0011-easy.csv
+ {MRE- ACC+ PRED40+}    {119.33 -12.24 0}    {0 0 83.33333333}
+ {MRE- ACC+ PRED40+}    {119.33 -12.24 0}    {0 0 83.33333333}
+ {MRE- ACC+ PRED40+}    {119.33 -12.24 0}          {0 -0.49 0}
+ {MRE- ACC+ PRED40+}    {119.33 -12.24 0}    {0 0 83.33333333}
+ {MRE- ACC+ PRED40+}    {119.33 -12.24 0}    {0 0 83.33333333}
+ {MRE- ACC+ PRED40+}    {119.33 -12.24 0}      {100.5 -0.49 0}
+ {MRE- ACC+ PRED40+}    {119.33 -12.24 0}    {0 0 83.33333333}
+ {MRE- ACC+ PRED40+}    {119.33 -12.24 0}    {0 0 83.33333333}
+ {MRE- ACC+ PRED40+}    {119.33 -12.24 0}    {0 0 83.33333333}
+ {MRE- ACC+ PRED40+}    {119.33 -12.24 0}    {0 0 83.33333333}
+0 7 13 15 21 
+0 19 40 58 78 
+../../etc/data/nasa93dem.csv
+{Effort- Defects- Months-}      {240 2004 21.3}        {72 226 13.6}
+{Effort- Defects- Months-}      {240 2004 21.3}         {8.4 69 6.6}
+{Effort- Defects- Months-}      {240 2004 21.3}         {8.4 69 6.6}
+{Effort- Defects- Months-}      {240 2004 21.3}         {8.4 69 6.6}
+{Effort- Defects- Months-}      {240 2004 21.3}        {70 765 14.5}
+{Effort- Defects- Months-}      {240 2004 21.3}          {38 290 12}
+{Effort- Defects- Months-}      {240 2004 21.3}         {8.4 69 6.6}
+{Effort- Defects- Months-}      {240 2004 21.3}         {8.4 69 6.6}
+{Effort- Defects- Months-}      {240 2004 21.3}      {150 1219 18.9}
+{Effort- Defects- Months-}      {240 2004 21.3}        {42 420 12.4}
+1 2 5 12 38 
+3 18 36 46 74 
+../../etc/data/pom.csv
+{Cost- Completion+ Idle-} {327.3049146 0.9 0.238095238} {174.8795339 0.947368421 0.073170732}
+{Cost- Completion+ Idle-} {327.3049146 0.9 0.238095238} {197.1998186 0.888888889 0.314285714}
+{Cost- Completion+ Idle-} {327.3049146 0.9 0.238095238} {109.2198901 0.888888889 0.3}
+{Cost- Completion+ Idle-} {327.3049146 0.9 0.238095238} {141.704032 0.818181818 0}
+{Cost- Completion+ Idle-} {327.3049146 0.9 0.238095238} {143.8445252 0.875 0.238095238}
+{Cost- Completion+ Idle-} {327.3049146 0.9 0.238095238} {216.9408434 1 0.111111111}
+{Cost- Completion+ Idle-} {327.3049146 0.9 0.238095238} {372.0747807 0.890909091 0.241935484}
+{Cost- Completion+ Idle-} {327.3049146 0.9 0.238095238} {267.946667 0.875 0.111111111}
+{Cost- Completion+ Idle-} {327.3049146 0.9 0.238095238} {180.9523168 0.897959184 0.142857143}
+{Cost- Completion+ Idle-} {327.3049146 0.9 0.238095238}  {209.3701091 0.8 0}
+0 9 26 50 72 
+0 19 40 58 78 
