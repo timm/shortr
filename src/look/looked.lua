@@ -17,8 +17,8 @@ USAGE: lua looking.lua [OPTIONS]
                                       --------
   --also  -a  size of rest=best*also  = 4
   --p     -p  distance coefficient    = 2
-  --far   -f  far                     = .95 
-  --Some  -S  sample size             = 256
+  --Far   -F  far                     = .95 
+  --Some  -S  sample size             = 512
   --seed  -s  random number seed      = 10019
   --min   -m  min size pass1          = .5
   --Min   -M  min size pass2          = 10
@@ -36,31 +36,30 @@ local tothing                    = _.tothing
 local the={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(k,x) the[k]=_.tothing(x)end)
 
-local function num(s)  return s:find"^[A-Z].*" end
-local function skip(s) return s:find":$" end
-local function goal(s) return s:find"[!+-]$" end
+local function nump(s)  return s:find"^[A-Z].*" end
+local function skipp(s) return s:find":$" end
+local function goalp(s) return s:find"[!+-]$" end
 local function wght(s) return s:find"-$" and -1 or 1 end 
+local ROW,ROWS,SYM,NUM = is"ROW", is"ROWS", is"SYM", is"NUM"
 --------------------------------------------------------------------------------
-local ROW=is"ROW"
 function ROW.new(i,of,cells) i.cells, i.of, i.evaluated = cells,of,false end 
 function ROW.__lt(i,j,        n,s1,s2,v1,v2)
-  n,s1,s2 = 0,0,0
-  for _,__ in pairs(i.of.ys) do n = n + 1 end
-  for c,w in pairs(i.of.ys) do
-    v1,v2 = i.of:norm(c, i.cells[c]), i.of:norm(c, j.cells[c])
-    s1    = s1 - 2.7183^(w * (v1 - v2) / n)
-    s2    = s2 - 2.7183^(w * (v2 - v1) / n) end
+  s1, s2, n = 0, 0, #i.of.ys
+  for _,col in pairs(i.of.ys) do
+    v1,v2 = col:norm(i.cells[col.at]), col:norm(j.cells[col.at])
+    s1    = s1 - 2.7183^(col.w * (v1 - v2) / n)
+    s2    = s2 - 2.7183^(col.w * (v2 - v1) / n) end
   return s1/n < s2/n end
 
 function ROW.dist(i,j,     d,n)
   d,n = 0,0
   for _,col in pairs(i.of.xs) do 
-    n,d = n+1, d + (col:dist(i.cells[col.at], j.cells[col.at]))^the.p end
+    n = n+1
+    d =d + (col:dist(i.cells[col.at], j.cells[col.at]))^the.p end
   return (d/n)^(1/the.p) end
 --------------------------------------------------------------------------------
-local SYM=is"SYM"
 function SYM.new(i,at,txt) 
-  i.at=at or 0; i.txt=txt or ""; i.all, i.n. i.most, i.mode = {},0,0,nil end
+  i.at=at or 0; i.txt=txt or ""; i.all, i.n, i.most, i.mode = {},0,0,nil end
 
 function SYM.dist(i,v1,v2) 
   return (v1=="?" and v2=="?" and 1) or (v1==v2 and 0 or 1) end
@@ -75,13 +74,12 @@ function SYM.div(i,   e)
 
 function SYM.mid(i) return i.mode end
 --------------------------------------------------------------------------------
-local NUM=is"NUM"
 function NUM.new(i,at,txt) 
   i.at=at or 0; i.txt=txt or ""; i.w = wght(i.txt)
-  i.all,i.n,i.ok,i.lo,hi={},0,true,1E32,-1E32 end
+  i.all,i.n,i.ok,i.lo,i.hi={},0,true,1E32,-1E32 end
 
 function NUM.add(i,v) 
-  if x ~="?" then  
+  if v ~="?" then  
     i.lo=math.min(v,i.lo);i.hi=math.max(v,i.hi);push(i.all,v); i.ok=false end end
 
 function NUM.norm(i,v)
@@ -96,11 +94,10 @@ function NUM.dist(i,v1,v2)
 
 function NUM.has(i) if not i.ok then sort(i.all) end;i.ok=true; return i.all end
 function NUM.mid(i) return per(i:has(),.5) end
-function NUM.div(i,  a) a=i.has(); return (per(a,.9) - per(a,.1))/2.56 end
+function NUM.div(i,  a) a=i.has(); return (per(a,.9) - per(a,.1))/2.56 end
 --------------------------------------------------------------------------------
-local ROWS=is"ROWS"
 function ROWS.new(i,src) 
-  i.rows, i.nums, i.xs, i.ys, i.names =  {},{},{},{},nil
+  i.all, i.cols, i.xs, i.ys, i.names =  {},{},{},{},nil
   if type(src)=="table" then for _,r in pairs(src) do i:add(r) end
                         else for   r in csv(  src) do i:add(r) end end end
 
@@ -109,35 +106,35 @@ function ROWS.clone(i,inits,    j)
 
 function ROWS.add(i,t,     r)
   if   i.names 
-  then r = t.cells and r or ROW(i,t); i:update(r.cells); push(i.rows, r) 
+  then r = t.cells and t or ROW(i,t); i:update(r.cells); push(i.all, r) 
   else i:header(t) end end
 
-function ROWS.header(i,t)
+function ROWS.header(i,t,     col)
   i.names = t
-  for at,txt in pairs(t) do 
-    col = push(i.all, (num(txt) and NUM or SYM)(at,txt)) 
-    if not skip(txt) then push(goal(txt) and i.ys or i.xs, col) end end end
+  for at,txt in pairs(t) do  
+    col = push(i.cols, (nump(txt) and NUM or SYM)(at,txt)) 
+    if not skipp(txt) then push(goalp(txt) and i.ys or i.xs, col) end end end
 
-function ROWS.update(i,t,   v)
+function ROWS.update(i,t)
   for _,col in pairs(i.cols) do col:add(t[col.at]) end end
 
 function ROWS.around(i,r1,t,          fun)
   function fun(r2) return {dist=r1:dist(r2), row=r2} end
-  return sort(map(t or i.rows, fun), lt"dist") end
+  return sort(map(t or i.all, fun), lt"dist") end
 
 function ROWS.far(i,r1,t,   tmp)
   tmp= i:around(r1,t)
-  return tmp[(#tmp)*the.far//1].row end
+  return tmp[(#tmp)*the.Far//1].row end
 
-function ROWS.mid(i,cols) 
-  return map(cols or i.ys, function(col) return col:mid() end) end
+function ROWS.mid(i,cols) return map(cols or i.ys, function(col) return col:mid() end) end
+function ROWS.lo(i,cols) return map(cols or i.ys, function(col) return col.lo end) end
  
 function ROWS.look(i,  w,sample,best,rests)
-  w      = i.rows
+  w      = i.all
   sample = many(w, the.Some)
-  best   = i:far(any(sample), sample)
   rests  = {}
-  for _,stop in pairs({2*(#w)^the.min, the.Min})  do
+  best   = i:far(any(sample), sample)
+  for _,stop in pairs({(#w)^the.min,the.Min})  do
     while #w > stop do
       local rest = i:far(best, sample)
       if rest < best then best,rest = rest,best end
@@ -146,11 +143,11 @@ function ROWS.look(i,  w,sample,best,rests)
       for _,r in pairs(w) do r.x=(r:dist(best)^2 +c^2- r:dist(rest)^2)/(2*c) end 
       local bests = {}
       for n,r in pairs(sort(w,lt"x")) do push(n<=#w/2 and bests or rests,r) end 
-      if #bests==#w then break else w=bests end
+      w=bests 
       sample = many(w,the.Some) end end
  return ra,w,many(rests, #w*the.also) end
-
-return {ROWS=ROWS, ROW=ROW, help=help, the=the}
+--------------------------------------------------------------------------------
+return {NUM=NUM,ROWS=ROWS, ROW=ROW, help=help, the=the}
 
 _    _ ___   _    _  _ ____ 
 |    | |__]  |    |  | |__| 
@@ -249,9 +246,10 @@ _    ____ ____ _  _ _ _  _ ____  _    _  _ ____
 -- LOOK.LUA: landscape analysis 
 -- (c) 2022 Tim Menzies, timm@ieee.org, BSD-2 license 
 local l,L  = require"lib", require"look"
-local any,cli,csv,main,map = l.any, l.cli, l.csv, l.main, l.map
-local o, oo,shuffle,sort   = l.o, l.oo, l.shuffle, l.sort
-local ROW,ROWS             = L.ROW, L.ROWS
+local any,cli,csv,fmt      =  l.any, l.cli, l.csv, l.fmt
+local lt, main, many, map  = l.lt, l.main, l.many,l.map
+local o, oo,per,shuffle,sort   = l.o, l.oo, l.per, l.shuffle, l.sort
+local NUM,ROW,ROWS             = L.NUM, L.ROW, L.ROWS
 local the                  = cli(L.the,L.help)
 --------------------------------------------------------------------------------
 local go,no={},{} -- place to store enabled and disabled tests
@@ -266,55 +264,65 @@ function go.row(    n)
 
 function go.egs(    rows) 
   rows= ROWS(the.file)
-  if the.loud then map(rows.nums,oo) end
-  return rows.nums[1].hi==8 end
+  if the.loud then map(rows.ys,oo) end
+  return rows.ys[1].hi==5140 and rows.ys[1].lo==1613 end
 
 function go.clone(    rows) 
   rows= ROWS(the.file)
-  oo(rows:mid()) end
+  return rows:mid()[3]==20 end
 
 function go.dist(    r1,rows,ok) 
   ok,rows= true, ROWS(the.file); 
-  r1 = rows.rows[1]
-  for _,r2 in pairs(rows.rows) do 
+  r1 = rows.all[1]
+  for _,r2 in pairs(rows.all) do 
     ok = ok and r2:dist(r2)==0 
     ok = ok and r1:dist(r2) == r2:dist(r1) end 
   return ok end 
 
 function go.around(    r1,rows, order) 
   rows = ROWS(the.file); 
-  r1 = rows.rows[1]
+  r1 = rows.all[1]
   order = rows:around(r1)
   return order[#order//3].dist < order[#order//2].dist  end
 
 function go.far(    rows,r1,r2,ok)
   ok = true
   rows = ROWS(the.file); 
-  for k=1,50 do
-    r1 = rows:far(any(rows.rows))
+  for k=1,10 do
+    r1 = rows:far(any(rows.all))
     r2 = rows:far(r1) 
     ok = ok and r1:dist(r2) > .5 end 
   return ok end
 
 function go.betters(  t,n1) 
-  t=sort(ROWS(the.file).rows)
+  t=sort(ROWS(the.file).all)
   n1=10
   for k =1,n1 do oo(t[k].cells) end; print""
   for k =#t-n1, #t do oo(t[k].cells) end
   return t[1] < t[#t]
 end
 
-function go.look(   rs,best,bests,rests,n)
-  for i=1,20 do 
-    print("")
-    rs = ROWS(the.file)
-    rs.rows = shuffle(rows.rows)
-    best,bests,rests = rs:look() 
-    for n,r in pairs(sort(rs.rows)) do r.rank = n // (#rows.rows // (6/.35)) end
-    for _,r in pairs(bests) do print(r.rank) end
-    n=0
-    for _,r in pairs(rs.rows) do if r.evaluated then n=n+1 end end
-    oo{bests=#bests,rests=#rests,n=n} end
+function go.look(   rows,best,bests,rests,n,names,b4,guess,b,g)
+  rows = ROWS(the.file)
+  names=map(rows.ys,function(col) return col.txt end)
+  b=NUM()
+  g=NUM()
+  b4=rows:mid()
+  for i=1,10 do 
+    rows = ROWS(the.file)
+    rows.all = shuffle(rows.all)
+    best,bests,rests = rows:look() 
+    for n,r in pairs(sort(rows.all)) do r.rank = math.floor(100*n/#rows.all //1) end
+    n=0;for _,r in pairs(rows.all) do if r.evaluated then n=n+1 end end
+    guess=rows:clone(many(rows.all,n))
+    for _,rank in pairs(map(sort(bests,lt"rank"),function(r) return r.rank end)) do b:add(rank) end
+    for _,rank in pairs(map(sort(guess.all,lt"rank"),function(r) return r.rank end)) do g:add(rank) end
+    print(fmt("%20s %20s %20s",
+          o(names),o(b4),
+          o(rows:clone(bests):mid()),
+          o{bests=#bests,rests=#rests,evalled=n})) end
+  for _,p in pairs{0,.2,.4,.6,.8}  do io.write(per(b:has(),p)," ") end; print""
+  for _,p in pairs{0,.2,.4,.6,.8}  do io.write(per(g:has(),p)," ") end; print""
   return true end
 --------------------------------------------------------------------------------
 main(go, the)

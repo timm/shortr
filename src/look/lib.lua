@@ -9,10 +9,15 @@ local big = 1E32
 local function any(t)       return t[math.random(#t)] end
 local function many(t,n, u) u={};for j=1,n do u[1+#u]=any(t) end; return u end
 local function lt(x)        return function(a,b) return a[x]<b[x] end end
+local function gt(x)        return function(a,b) return a[x]>b[x] end end
 local function push(t,x)    t[1+#t]=x; return x end
 local function sort(t,f)    table.sort(t,f); return t end
 local function map(t,f,  u) u={}; for k,v in pairs(t) do u[1+#u]=f(v) end
                             return u end
+
+local function splice(t,i,j,k,     u) 
+  u={}; for n=(i or 1)//1, (j or #t)//1,(k or 1)//1 do 
+          u[1+#u] = t[n] end return u end
 
 local function per(t,p, i) i=p*#t//1; return t[math.max(1,math.min(#t,i))] end
 
@@ -79,6 +84,6 @@ local function main(funs,settings)
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end 
   os.exit(fails) end
 
-return {any=any, big=big, cli=cli, csv=csv, fmt=fmt, is=is, lt=lt, oo=oo, o=o,
-        main=main, many=many, map=map, per=per, push=push, rand=rand, 
-        shuffle=shuffle, sort=sort, tothing=tothing}
+return {any=any, big=big, cli=cli, csv=csv, fmt=fmt, gt=gt,is=is, lt=lt, 
+        oo=oo, o=o, main=main, many=many, map=map, per=per, push=push, rand=rand, 
+        shuffle=shuffle, sort=sort, splice=splice, tothing=tothing}

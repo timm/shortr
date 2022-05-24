@@ -2,11 +2,11 @@
 -- LOOK.LUA: landscape analysis 
 -- (c) 2022 Tim Menzies, timm@ieee.org, BSD-2 license 
 local l,L  = require"lib", require"look"
-local any,cli,csv,fmt      =  l.any, l.cli, l.csv, l.fmt
-local lt, main, many, map  = l.lt, l.main, l.many,l.map
-local o, oo,per,shuffle,sort   = l.o, l.oo, l.per, l.shuffle, l.sort
-local NUM,ROW,ROWS             = L.NUM, L.ROW, L.ROWS
-local the                  = cli(L.the,L.help)
+local any,cli,csv,fmt              = l.any, l.cli, l.csv, l.fmt
+local lt, main, many, map          = l.lt, l.main, l.many,l.map
+local o, oo,per,shuffle,sort,splice= l.o,l.oo,l.per,l.shuffle,l.sort,l.splice
+local NUM,ROW,ROWS                 = L.NUM, L.ROW, L.ROWS
+local the                          = cli(L.the,L.help)
 --------------------------------------------------------------------------------
 local go,no={},{} -- place to store enabled and disabled tests
 
@@ -56,6 +56,18 @@ function go.betters(  t,n1)
   for k =1,n1 do oo(t[k].cells) end; print""
   for k =#t-n1, #t do oo(t[k].cells) end
   return t[1] < t[#t]
+end
+
+function go.how(  t,n,bests,rests) 
+  t     = ROWS(the.file)
+  t.all = sort(t.all)
+  n     = (#t.all)^.5 // 1
+  bests = splice(t.all, 1,  n)
+  rests = splice(t.all, n+1, #t.all)
+  t:how(bests,rests)
+  oo(t:clone(bests):mid())
+  oo(t:clone(rests):mid())
+  return true
 end
 
 function go.look(   rows,best,bests,rests,n,names,b4,guess,b,g)
