@@ -57,7 +57,7 @@ local function o(t,    u)
   u={}; for k,v in pairs(t) do u[1+#u] = fmt(":%s %s",k,v) end
   return (t.is or "").."{"..table.concat(sort(u)," ").."}" end 
 
-local function oo(x) print(o(x)) end
+local function oo(x) print(o(x)); return x end
 
 local function is(name,    t,new)
   function new(kl,...) local x=setmetatable({},kl); kl.new(x,...); return x end 

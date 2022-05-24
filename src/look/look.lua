@@ -16,6 +16,7 @@ USAGE: lua looking.lua [OPTIONS]
   --Min   -M  min size pass2                  = 10
   --Some  -S  sample size                     = 512
   --also  -a  size of rest=best*also          = 4
+  --bins  -b  number of bins                  = 16
   --min   -m  min size pass1                  = .5
   --p     -p  distance coefficient            = 2
   --seed  -s  random number seed              = 10019
@@ -26,9 +27,10 @@ USAGE: lua looking.lua [OPTIONS]
   --loud  -l  verbose mode                    = false]]
 
 local _ = require"lib"
-local any,big,csv,is,lt,many,map= _.any, _.big, _.csv, _.is, _.lt, _.many, _.map
-local o,oo,per,push,shuffle,sort= _.o, _.oo, _.per, _.push, _.shuffle, _.sort
-local tothing                   = _.tothing
+local any,big,csv,fmt,is,lt,gt= _.any, _.big, _.csv, _.fmt, _.is, _.lt, _.gt
+local many,map,o,oo                = _.many, _.map,_.o, _.oo
+local per, push, shuffle, sort     = _.per, _.push, _.shuffle, _.sort
+local tothing                      = _.tothing
 
 local the={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(k,x) the[k]=_.tothing(x)end)
@@ -37,19 +39,20 @@ help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(k,x) the[k]=_.tothing(x)end
 local function skipp(s) return s:find":$" end
 local function goalp(s) return s:find"[!+-]$" end
 local function wght(s) return s:find"-$" and -1 or 1 end 
-local function ranges(col,...)
-  local ranges,tmp={},{}
-  for klass,rows in pairs{...} do
-    for _,row in pairs(rows) do
-      local v=row[col.at]
-      if v~="?" then 
-        local bin = col:bin(v)
-        tmp[bin]  = tmp[bin] or push(ranges, RANGE(x,x,SYM(col.at, col.txt)))
-        tmp[bin]:add(v,klass) end end end 
-  return col:binsMerge(sort(ranges, lt"lo")) end 
 --------------------------------------------------------------------------------
 local RANGE,ROWS,TREE = is"RANGE", is"ROWS", is"TREE"
 local ROW,SYM,NUM     = is"ROW",   is"SYM",  is"NUM"
+
+local function ranges(col,...)
+  local tmp,tmp={},{}
+  for klass,rows in pairs{...} do
+    for _,row in pairs(rows) do
+      local v = row.cells[col.at]
+      if v~="?" then 
+        local bin = col:bin(v)
+        tmp[bin]  = tmp[bin] or push(tmp, RANGE(v,v,SYM(col.at, col.txt)))
+        tmp[bin]:add(v,klass) end end end 
+  return col:binsMerge(sort(tmp, lt"lo"),col.n^the.min) end 
 --------------------------------------------------------------------------------
 function ROW.new(i,of,cells) i.cells, i.of, i.evaluated = cells,of,false end 
 function ROW.__lt(i,j,        n,s1,s2,v1,v2)
@@ -96,7 +99,7 @@ function SYM.merged(i,j,min,  k)
 function RANGE.new(i,lo,hi,y) i.lo,i.hi,i.y = lo, hi, y end
 
 function RANGE.__tostring(i)
-  local x, lo, hi = i.y.txt, i.x.lo, i.x.hi
+  local x, lo, hi = i.y.txt, i.lo, i.hi
   if     lo ==  hi  then return fmt("%s == %s",x, lo)  
   elseif hi ==  big then return fmt("%s >= %s",x, lo)  
   elseif lo == -big then return fmt("%s < %s", x, hi)  
@@ -142,19 +145,19 @@ function NUM.dist(i,v1,v2)
 function NUM.has(i) if not i.ok then sort(i.all) end;i.ok=true; return i.all end
 function NUM.mid(i) return per(i:has(),.5) end
 function NUM.div(i,  a) a=i.has(); return (per(a,.9) - per(a,.1))/2.56 end
-function NUM.bin(i,x,  b) b=(i.hi-i.lo)/the.bins;return math.floor(x/b+0.5)*b end
+function NUM.bin(i,v,  b) b=(i.hi-i.lo)/the.bins;return math.floor(v/b+0.5)*b end
 function NUM.binsMerge(i,ranges,min,      a,b,c,j,n,tmp,expand)
   function expand(t) 
     if #t<2 then return {} end
     for j=2,#t do t[j].lo=t[j-1].hi end
-    t[1].x.lo, t[#t].x.hi= -big,big
+    t[1].lo, t[#t].hi= -big,big
     return t  
   end ------------------
   j,n,tmp = 1,#ranges,{}
   while j<=n do 
     a, b = ranges[j], ranges[j+1]
     if b then 
-      c = a.y:merge(b.y,min)
+      c = a.y:merged(b.y,min)
       if c then a = {lo=a.lo, hi=b.hi, y=c}
                 j = j+1 end end
     tmp[#tmp+1] = a
@@ -214,10 +217,12 @@ function ROWS.look(i,  w,sample,best,rests)
 
 function ROWS.how(i, bests, rests) 
   local bins={}
-  for _,col in pairs(XXX.xs) do
+  for _,col in pairs(i.xs) do
+    print""
     for _,bin in pairs(ranges(col, bests, rests)) do
-     push(bins,{score=bin:score(1,#bests,#rests), bin=bin}) end end 
-  for _,bin in pairs(sort(bins,gt"score")) do print(bin) end end
+     push(bins,{score=bin:score(1,#bests,#rests), bin=oo(bin)}) end end 
+ -- for _,bin in pairs(sort(bins,gt"score")) do oo(bin) end 
+  end
 
 --------------------------------------------------------------------------------
 return {NUM=NUM,ROWS=ROWS, ROW=ROW, help=help, the=the}
