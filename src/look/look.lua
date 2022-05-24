@@ -94,7 +94,7 @@ function SYM.merged(i,j,min,  k)
   for v,n in pairs(i.all) do k:add(v,n) end
   for v,n in pairs(j.all) do k:add(v,n) end
   min = min or 0
-  if i.n < min or j.n < min or k:div() < (i.n*i:div() + j.n*j:div())/k.n then 
+  if i.n < min or j.n < min or k:div()*1.01 <= (i.n*i:div() + j.n*j:div())/k.n then 
     return k end end
 --------------------------------------------------------------------------------
 function RANGE.new(i,lo,hi,y) i.lo,i.hi,i.y = lo, hi, y end
@@ -150,7 +150,7 @@ function NUM.bin(i,v,  b) b=(i.hi-i.lo)/the.bins;return math.floor(v/b+0.5)*b en
 function NUM.binsMerge(i,ranges,min,      a,b,c,j,n,tmp,expand)
   function expand(t) 
     if #t<2 then return {} end
-    for j=2,#t do t[j].lo=t[j-1].hi end
+    --for j=2,#t do t[j].lo=t[j-1].hi end
     t[1].lo, t[#t].hi= -big,big
     return t  
   end ------------------
@@ -159,7 +159,7 @@ function NUM.binsMerge(i,ranges,min,      a,b,c,j,n,tmp,expand)
     a, b = ranges[j], ranges[j+1]
     if b then 
       c = a.y:merged(b.y,min)
-      if c then a = {lo=a.lo, hi=b.hi, y=c}
+      if c then a = RANGE(a.lo, b.hi, c)
                 j = j+1 end end
     tmp[#tmp+1] = a
     j = j+1 end
@@ -221,11 +221,8 @@ function ROWS.how(i, bests, rests)
   for _,col in pairs(i.xs) do
     print""
     for _,bin in pairs(ranges(col, bests, rests)) do
-      print(1000,o(bin))
-      print(2000,bin:score(1,#bests,#rests))
-      print(3000)
-      push(bins,{score=bin:score(1,#bests,#rests), bin=bin}) end end 
- -- for _,bin in pairs(sort(bins,gt"score")) do oo(bin) end 
+      push(bins,{score=bin:score(1,#bests,#rests), bin=oo(bin)}) end end 
+  --for _,bin in pairs(sort(bins,gt"score")) do oo(bin) end 
   end
 
 --------------------------------------------------------------------------------
