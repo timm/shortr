@@ -1,3 +1,13 @@
+have to get the 5 laws in here somehow
+
+the important thing here is not the specific ai algorithms but the infrastructure around it. if we do word counts on this code base and count
+how many line are specific to (e.g.)  knn or naive bayes etc , the interesting pattern is that most of the code
+is NOT specific. that is this code is a worknecnhu of N lines of code within which it is fast to assemble a NB (10 lines) or a KNN (12 lines)
+.
+
+better yet, with when software contains many small utilities that share the same (much larger) underling infrastructure,
+then it becomes easy to mix and match more; i.e. to combine parts of this and parts of that according to your whims
+or the needs of the next problem.
 
 
 
