@@ -1,3 +1,6 @@
+
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css');
+
 /*--------------------- Typography ----------------------------*/
 
 @font-face {
@@ -14,7 +17,6 @@
     font-family: 'aller-bold';
     src: url('public/fonts/aller-bold.eot');
     src: url('public/fonts/aller-bold.eot?#iefix') format('embedded-opentype'),
-         url('public/fonts/aller-bold.woff') format('woff'),
          url('public/fonts/aller-bold.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
@@ -74,13 +76,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
+  font-size: 2.8em;
   margin-top: 11px;
 }
 h2 {
-  font-size: 1.26em;
+  font-size: 2em;
   margin: 10px 0 15px 0;
   border-top: 2px solid #ccc;
 }
+h3 { color: #954121;
+  xtext-decoration: underline; }
 h4 {
   text-decoration: italic;
 }
@@ -91,6 +96,7 @@ hr {
   background: 1px #ddd;
   height: 1px;
   margin: 20px 0;
+  margin-color: #000080;
 }
 
 pre, tt, code {

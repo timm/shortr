@@ -4,7 +4,7 @@
 local l,L  = require"lib", require"look"
 local any,cli,csv,fmt              = l.any, l.cli, l.csv, l.fmt
 local lt, main, many, map          = l.lt, l.main, l.many,l.map
-local o, oo,per,shuffle,sort,splice= l.o,l.oo,l.per,l.shuffle,l.sort,l.splice
+local o, oo,per,rand,shuffle,sort,splice= l.o,l.oo,l.per,l.rand,l.shuffle,l.sort,l.splice
 local NUM,ROW,ROWS                 = L.NUM, L.ROW, L.ROWS
 local the                          = cli(L.the,L.help)
 --------------------------------------------------------------------------------
@@ -58,43 +58,48 @@ function go.betters(  t,n1)
   return t[1] < t[#t]
 end
 
-function go.how(  t,n,bests,rests,step) 
+function go.how(  t,n,bests,rests,step,
+                  how,found) 
   t     = ROWS(the.file)
   t.all = sort(t.all)
   n     = (#t.all)^.5 // 1
   step  = (#t.all - n)/(n*the.also)//1
   bests = splice(t.all, 1,  n)
-  rests = splice(t.all, n+1, #t.all, step)
-  print("sizes",o{bests=#bests,rests=#rests})
-  how,guess= t:how(bests,rests)
-  print(#how)
-  oo(t:clone(bests):mid())
-  oo(t:clone(rests):mid())
-  oo(t:clone(guess):mid())
+  rests = splice(t.all, #t.all-n) 
+  how,found= t:how(bests,rests)
+  map(how,print)
+  print("b4",o(t:mid()))
+  print("best",o(t:clone(bests):mid()))
+  print("found",o(t:clone(found):mid()))
   return true
 end
 
-function go.look(   rows,best,bests,rests,n,names,b4,guess,b,g)
+function go.look(   rows,best,bests,rests,n,names,b4,guess,b,g,f)
   rows = ROWS(the.file)
   names=map(rows.ys,function(col) return col.txt end)
   b=NUM()
   g=NUM()
+  f=NUM()
   b4=rows:mid()
   for i=1,10 do 
     rows = ROWS(the.file)
     rows.all = shuffle(rows.all)
     best,bests,rests = rows:look() 
+    local how,found = rows:how(bests,splice(rests,1,#bests*the.also//1))
+    map(how, function(how1) io.write(tostring(how1).." ") end);print""
     for n,r in pairs(sort(rows.all)) do r.rank = math.floor(100*n/#rows.all //1) end
     n=0;for _,r in pairs(rows.all) do if r.evaluated then n=n+1 end end
     guess=rows:clone(many(rows.all,n))
-    for _,rank in pairs(map(sort(bests,lt"rank"),function(r) return r.rank end)) do b:add(rank) end
+    for _,rank in pairs(map(sort(bests,lt"rank"),    function(r) return r.rank end)) do b:add(rank) end
     for _,rank in pairs(map(sort(guess.all,lt"rank"),function(r) return r.rank end)) do g:add(rank) end
-    print(fmt("%20s %20s %20s",
-          o(names),o(b4),
+    for _,rank in pairs(map(sort(found,lt"rank"),    function(r) return r.rank end)) do f:add(rank) end
+    print(fmt("%20s %20s %20s %20s",
+          "",o(names),o(b4),
           o(rows:clone(bests):mid()),
           o{bests=#bests,rests=#rests,evalled=n})) end
   for _,p in pairs{0,.2,.4,.6,.8}  do io.write(per(b:has(),p)," ") end; print""
   for _,p in pairs{0,.2,.4,.6,.8}  do io.write(per(g:has(),p)," ") end; print""
+  for _,p in pairs{0,.2,.4,.6,.8}  do io.write(per(f:has(),p)," ") end; print""
   return true end
 --------------------------------------------------------------------------------
 main(go, the)

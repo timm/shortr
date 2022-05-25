@@ -13,12 +13,12 @@ USAGE: lua looking.lua [OPTIONS]
                                               --------
   --Far   -F  far                             = .95 
   --How   -H  how we optimize: more,less,tabu = more
-  --Min   -M  min size pass2                  = 10
+  --Min   -M  min size pass2                  = 9
   --Some  -S  sample size                     = 512
-  --also  -a  size of rest=best*also          = 3
+  --also  -a  size of rest=best*also          = 2
   --bins  -b  number of bins                  = 16
   --min   -m  min size pass1                  = .5
-  --p     -p  distance coefficient            = 2
+  --p     -p  distance coefficient            = 1
   --seed  -s  random number seed              = 10019
 
   --file  -f  csv file with data              = ../../etc/data/auto93.csv
@@ -115,14 +115,16 @@ function RANGE.selects(i,t,     v)
   v = t.cells[i.y.at]
   return v=="?" or (i.lo==i.hi and i.lo==v) or (i.lo<=v and v<i.hi) end
 
-function RANGE.score(i,goal,B,R)
+function RANGE.score(i,goal,B,R,tmp)
   local how, b, r, z = {}, 0, 0, 1/big
+  how.most= function(b,r) return b end
   how.more= function(b,r) return ((b<r or b+r < .05) and 0) or b^2/(b+r) end
   how.less= function(b,r) return ((r<b or b+r < .05) and 0) or r^2/(b+r) end
   how.tabu= function(b,r) return 1/(b+r) end 
   for v,n in pairs(i.y.all) do
     if v==goal then b = b+n else r=r+n end end
-  return how[the.How or "good"](b/(B+z), r/(R+z)) end
+  tmp= how[the.How or "more"](b/(B+z), r/(R+z))
+  return tmp end
 --------------------------------------------------------------------------------
 function NUM.new(i,at,txt) 
   i.at=at or 0; i.txt=txt or ""; i.w = wght(i.txt)
@@ -204,38 +206,36 @@ function ROWS.look(i,  w,sample,best,rests)
   rests  = {}
   best   = i:far(any(sample), sample)
   for _,stop in pairs({(#w)^the.min,the.Min})  do
-    while #w > stop do
+    while #w >= 2*stop do
       local rest = i:far(best, sample)
-      if rest < best then best,rest = rest,best end
+      if rest < best then io.write"<"; best,rest = rest,best else io.write"." end
       best.evaluated, rest.evaluated = true,true
       local c = best:dist(rest)
       for _,r in pairs(w) do r.x=(r:dist(best)^2 +c^2- r:dist(rest)^2)/(2*c) end 
       local bests = {}
-      for n,r in pairs(sort(w,lt"x")) do push(n<=#w/2 and bests or rests,r) end 
+      for n,r in pairs(sort(w,gt"x")) do push(n<=#w/2 and rests or bests,r) end 
       w=bests 
       sample = many(w,the.Some) end end
  return ra,w,many(rests, #w*the.also) end
 
-function ROWS.how(i, bests,rests,how,stop)
-  stop = stop or #bests /2
+function ROWS.how(i, bests,rests,how,stop, n)
+  stop = stop or #bests /4
   how  = how  or {}
-  print(#bests+#rests,stop)
+  n    = n or 1
   if   (#bests + #rests) > stop 
   then local most,best = -1
        for _,col in pairs(i.xs) do 
          for _,bin in pairs(ranges(col,bests,rests)) do
-           score = bin:score(1,#bests,#rests)
+           local score = bin:score(1,#bests,#rests)
            if score > most then  best, most=bin,score end end end 
-       print("best",o(best.y.all))
        if best then
          push(how,best)
          local bests1,rests1 = {},{}
          for _,t in pairs{bests,rests} do
            for _,r in pairs(t) do
              push(best:selects(r) and bests1 or rests1, r) end end
-         oo{b1=#bests1,r1=#rests1}
-         if #bests1 < #bests then
-           return i:how(bests1,rests1,how,stop) end end end 
+         if #bests < #bests then
+           return i:how(bests1,rests1,how,stop,n+1) end end end 
   return how,bests end
 
 --------------------------------------------------------------------------------
