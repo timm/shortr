@@ -59,7 +59,7 @@ function SOME.add(i,x,     a)
   if     #a     < the.some     then i.ok=false; push(a,x)  
   elseif rand() < the.some/i.n then i.ok=false; a[rand(#a)]=x end end 
 
-function SOME.has(i) if not i.ok then sort(i.all) end;i.ok=true; return i.all end
+function SOME.has(i) if not i.ok then sort(i.all) end;i.ok=true; return i.all end
 ---------------------------------------------------------------------------------
 NUM=is"NUM"
 function NUM.new(i,at,txt) 
