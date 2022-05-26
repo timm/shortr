@@ -67,6 +67,7 @@ function NUM.new(i,at,txt)
   i.at,i.txt=at or 0,txt or ""; i.hi=-big;i.lo=big; i.n,i.mu=0,0 
   i.w = i.txt:find"-$" and -1 or 1 
   i.all = SOME() end
+
 function NUM.add(i,x) 
   if x ~="?" then 
     i.all:add(x) 
@@ -81,31 +82,27 @@ function NUM.div(i,  a) a=i.all:has(); return (per(a,.9) - per(a,.1))/2.56 end
 function NUM.norm(i,x)
   return x=="?" and x or i.hi-i.lo<1E-9 and 0 or (x - i.lo)/(i.hi - i.lo) end
 
-local _bins
 function NUM.bin(i,v,  b) b=(i.hi-i.lo)/the.bins;return math.floor(v/b+0.5)*b end
-function NUM.bins(i,bins) _bins(sort(bins,lt"lo"),1,#bins-1,i.n^the.min, 1) end
-
--- gotta make a new range with x and y. need a num merge
-function _bins(bins, lo,hi, enough, rank)
-  lhs, rhs, all = SYM(), SYM(), SYM()
-  for _,bin in pairs(bins) do 
-    for x,n in pairs(bin.y.all) do 
-       all:add(x,n); rhs:add(x,n) end end
+function NUM.bins(i,bins,         lo,hi,enough,out)
+  bins[#bins].hi = big
+  bins[1].lo = -big
+  out        = out or {}
+  lo, hi     = lo or 1, hi or #bins
+  enough     = enough or i.n^the.min
+  local lhs, rhs, all = SYM(), SYM(), SYM()
+  for j=lo,hi do for x,n in pairs(bins[j].y.all) do all:add(x,n);rhs:add(x,n)end
   local n,best,cut = rhs.n, rhs:div()
   for j=lo,hi do
-    for x,n in pairs(bins[j].y.all) do lhs:add(x,n); rhs:sub(x,n) end 
+    for x,n in pairs(bins[j].all) do lhs:add(x,n); rhs:sub(x,n) end
     if rhs.n >= enough and lhs.n >= enough then
       local tmp= rhs:div()*rhs.n/n + lhs:div()*lhs.n/n 
       if tmp < best*1.01 then cut,best =j,tmp end end end
   if cut 
-  then rank = _bins(bins, lo, cut,   enough, rank) + 1
-       rank = _bins(bins, cut+1, hi, enough, rank)
-  else for _,bin in pairs(bins) do bin.rank = rank end end
-  return rank end 
-   
- 
-    
-
+  then i:bins(bins, lo, cut,    enough,out)
+       i:bins(bins,  cut+1, hi, enough,out)
+  else local hi1 = hi < #bins and bins[hi+1].lo or big
+       push(out, {at=i.at, lo=bins[lo].lo, hi=hi1, y=all}) end end 
+  return out end
 
 --------------------------------------------------------------------------------
 SYM=is"SYM"
@@ -132,7 +129,8 @@ function SYM.div(i,   e)
 
 function SYM.clone(i) return SYM(i.at,i.txt) end
 function SYM.bin(i,x) return x end
-function SYM.bins(i,ranges) return ranges end
+-- XXX got to do something with range
+function SYM.bins(i,ranges,out) return ranges end
 --------------------------------------------------------------------------------
 ROW=is"ROW"
 function ROW.new(i,of,cells) i.of,i.cells = of,cells end
@@ -144,18 +142,16 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
     s2    = s2 - 2.7183^(col.w * (v2 - v1) / n) end
   return s1/n < s2/n end
 --------------------------------------------------------------------------------
-function bins(col,...)
+function bins(c,...)
   local tmp,out={},{}
   for klass,rows in pairs{...} do
     for _,row in pairs(rows) do
-      local v = row.cells[col.at]
+      local v = row.cells[c.at]
       if v~="?" then 
-        local bin = col:bin(v)
-        tmp[bin]  = tmp[bin] or push(out, {x=col:clone(),y=SYM(col.at, col.txt)})
-        tmp[bin].x:add(v)
-        tmp[bin].y:add(v) end end end
-   col:bins(out) 
-   return out end
+        v = col:bin(v)
+        tmp[v]  = tmp[v] or push(out, {at=c.at,lo=v,hi=v,y=SYM()})
+        tmp[v].y:add(v) end end end
+   return col:bins(sort(out,lt"lo")) end
 --------------------------------------------------------------------------------
 ROWS=is"ROWS"
 function ROWS.new(i,src)
