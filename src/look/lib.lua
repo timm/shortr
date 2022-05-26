@@ -1,8 +1,10 @@
 -- vim: ts=2 sw=2 et :    
--- <img align=left width=150 src="heads2.png">
+-- <img align=left width=150 src="logo.png">  
 --      
 -- LIB: misc support code.   
--- (c) 2022 Tim Menzies, BSD-2 license.
+-- (c) 2022 Tim Menzies. BSD-2 license.<p>    
+-- [look](look.html) :: [lib](lib.html) ::  [looking](looking.html) ::
+-- [src](https://github.com/timm/l5) :: [license](https://github.com/timm/l5/blob/master/LICENSE.md)
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local any,big,cli,csv, fmt, gt,is, lt 
 local oo, o, main, many, map, per, push, rand 
@@ -18,10 +20,8 @@ local big = math.huge
 -- ## Tabels
 -- ### Update <i class="fa fa-edit"></i>
 
-
 -- **push(t:tab, x:any):any**<br> Add `x` to `t`, returning `x`.
 function push(t,x) t[1+#t]=x; return x end
-
 -- ### Filter <i class="fa fa-filter"></i>
 -- **map(t:tab, f:fun):tab**<br> Return a table, filtering items through `f`.  
 -- If `f` returns `nil` then this can be used to select a subset for `t`.
@@ -50,8 +50,7 @@ function gt(x) return function(a,b) return a[x]>b[x] end end
 function sort(t,f) table.sort(t,f); return t end
 -- **shuffle(t:tab):tab**<br> Shuffles contents, in-place
 function shuffle(t,    j) 
-  for i = #t, 2, -1 do j=rand(i); t[i],t[j] = t[j],t[i] end
-  return t end
+  for i = #t, 2, -1 do j=rand(i); t[i],t[j]=t[j],t[i] end; return t end
 
 -- ## Strings
 -- ### Strings to things  <i class="fas fa-drafting-compass"></i>
@@ -88,58 +87,70 @@ function o(t,    u)
 -- Same as `o` but print the result
 function oo(x) print(o(x)); return x end
 
+-- ## Polymorphism 
+
+-- **is(name:str):tab**     
+-- Create a class constructor  that calls the `new` method **[1]**   
+-- Set a print name and a print methods. **[2]**  
+-- Create a delegation link to a new class. **[3]**  
+function is(name,    t,new)
+  function new(kl,...)  -- [1]
+    local x=setmetatable({},kl); kl.new(x,...); return x end 
+  t = {__tostring=o, is=name or ""}; t.__index=t -- [2]
+  return setmetatable(t, {__call=new}) end -- [3]
 
 -- ## Main functions
 
 -- **cli(d:tab, help;str):d**    
--- - Return `d`, updated from command line.
--- - For each `key` in `d`, check for 
---   `--key update` or `-k update` .
--- - If the current slot value is a boolean, then no `update`
---   value is needed on command line (we'll just flip the value).
--- - If the `d.help` is set then pretty print the `help` string and
---   exit program.
-local function cli(d,help)
+-- Return `d`, updated from command line. **[1]**  
+-- For each `key` in `d`, check the command line for 
+-- `--key update` or `-k update`. **[2]**  
+-- If the current slot value is a boolean, then no `update`
+-- value is needed on command line (we'll just flip the value). **[3]**  
+-- If the `d.help` is set then pretty print the `help` string and
+-- exit program. **[4]**  
+function cli(d,help)
   d = d or {}
   for key,x in pairs(d) do
     x = tostring(x)
     for n,flag in ipairs(arg) do 
-      if flag==("-"..key:sub(1,1)) or flag==("--"..key) then
-        x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
+      if flag==("-"..key:sub(1,1)) or flag==("--"..key) then  --[2]
+        x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end--[3]
     d[key] = tothing(x) end
-  if d.help then return os.exit(print(
+  if d.help then return os.exit(print( --[4]
      help:gsub("[%u][%u%d]+", "\27[31m%1\27[0m")            -- highlight capitals
          :gsub("\"[^\"]+\"", "\27[32m%1\27[0m")             -- highlight strings  
          :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[33m%2\27[0m%3"),--highlight flags
          "")) end 
-  return d end 
+  return d end  --[1]
 
-local function is(name,    t,new)
-  function new(kl,...) local x=setmetatable({},kl); kl.new(x,...); return x end 
-  t = {__tostring=o, is=name or ""}; t.__index=t
-  return setmetatable(t, {__call=new}) end
-
-local function main(funs,settings)
+-- **main(funs:tab, settings:tab)**  
+-- Grab a local copy of the settings.                             **[1]**   
+-- Select some functions to run (either all, or one from `.go`).  **[2]**  
+-- Run the functions, resetting everything beforehand each times. **[3]**  
+-- If a function does not return `true`, increment `fails`.       **[4]**   
+-- Check for any locals that are rogue.                           **[5]**   
+-- Return the failure count to the operating system.              **[6]**
+function main(funs,settings)
   local defaults, names, fails = {}, {}, 0
   for k,f in pairs(funs) do 
     if type(f)=="function" then push(names,k) end end 
   for k,v in pairs(settings) do 
-    defaults[k]=v end
+    defaults[k]=v end -- [1]
   if funs[settings.go] then 
-    names={settings.go} end
+    names={settings.go} end  -- [2]
   for _,one in pairs(sort(names))  do         -- for all we want to do
     for k,v in pairs(defaults) do 
-      settings[k]=v end                      -- reset the settings to defaults
-    math.randomseed(settings.seed or 10019)  -- reset random number seed
+      settings[k]=v end                      -- reset settings to defaults --[3]
+    math.randomseed(settings.seed or 10019)  -- reset random number seed   --[3]
     io.stderr:write(".")
     local status = funs[one]()               -- run demo
     if status ~= true then
       print("-- Error",one,status) 
-      fails = fails + 1 end end              -- update fails
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end 
-  os.exit(fails) end
-
+      fails = fails + 1 end end              -- update fails -- [4]
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end--[5]
+  os.exit(fails) end -- [6]
+-----------------------------------------------------------------------
 return {any=any, big=big, cli=cli, csv=csv, fmt=fmt, gt=gt,is=is, lt=lt, 
         oo=oo, o=o, main=main, many=many, map=map, per=per, push=push, rand=rand, 
         shuffle=shuffle, sort=sort, splice=splice, tothing=tothing}
---- return the functions.
