@@ -30,6 +30,7 @@ function rnd(n, p) local m=10^(p or 0); return math.floor(n*m+0.5)/m  end
 function map(t,f,  u) u={}; for k,v in pairs(t) do u[1+#u]=f(v) end return u end
 function sort(t,f) table.sort(t,f); return t end
 function push(t,x) t[1+#t]=x; return x end
+function per(t,p, i) i=p*#t//1; return t[math.max(1,math.min(#t,i))] end
 function splice( t, i, j, k,    u) 
   u={}; for n=(i or 1), (j or #t), (k or 1) do u[1+#u]=t[n] end return u end
 
@@ -73,26 +74,65 @@ function NUM.add(i,x)
     local d = x - i.mu
     i.mu    = i.mu + d/i.n
     i.hi=math.max(x,i.hi); i.lo=math.min(x,i.lo) end end
+
+function NUM.clone(i) return NUM(i.at,i.txt) end
 function NUM.mid(i) return i.mu end
-function NUM.bin(i,v,  b) b=(i.hi-i.lo)/the.bins;return math.floor(v/b+0.5)*b end
+function NUM.div(i,  a) a=i.all:has(); return (per(a,.9) - per(a,.1))/2.56 end
 function NUM.norm(i,x)
   return x=="?" and x or i.hi-i.lo<1E-9 and 0 or (x - i.lo)/(i.hi - i.lo) end
-function NUM.bins(i)
-  local x,y={},{}; for k in i.lo,i.hi, (i.hi-i.lo)/the.bins do x[k]=0; y[k]=0 end 
-  return x,y end
+
+local _bins
+function NUM.bin(i,v,  b) b=(i.hi-i.lo)/the.bins;return math.floor(v/b+0.5)*b end
+function NUM.bins(i,bins) _bins(sort(bins,lt"lo"),1,#bins-1,i.n^the.min, 1) end
+
+-- gotta make a new range with x and y. need a num merge
+function _bins(bins, lo,hi, enough, rank)
+  lhs, rhs, all = SYM(), SYM(), SYM()
+  for _,bin in pairs(bins) do 
+    for x,n in pairs(bin.y.all) do 
+       all:add(x,n); rhs:add(x,n) end end
+  local n,best,cut = rhs.n, rhs:div()
+  for j=lo,hi do
+    for x,n in pairs(bins[j].y.all) do lhs:add(x,n); rhs:sub(x,n) end 
+    if rhs.n >= enough and lhs.n >= enough then
+      local tmp= rhs:div()*rhs.n/n + lhs:div()*lhs.n/n 
+      if tmp < best*1.01 then cut,best =j,tmp end end end
+  if cut 
+  then rank = _bins(bins, lo, cut,   enough, rank) + 1
+       rank = _bins(bins, cut+1, hi, enough, rank)
+  else for _,bin in pairs(bins) do bin.rank = rank end end
+  return rank end 
+   
+ 
+    
+
+
 --------------------------------------------------------------------------------
 SYM=is"SYM"
 function SYM.new(i,at,txt) 
   i.at,i.txt = at or 0,txt or ""; i.n,i.all=0,{}; i.most,i.mode=0 end
-function SYM.bin(i,x) return x end
-function SYM.add(i,x) 
+function SYM.add(i,x,inc) 
   if x~="?" then 
-    i.n=i.n+1; i.all[x] = 1 + (i.all[x] or 0)
+    inc = inc or 1
+    i.n = i.n+inc
+    i.all[x] = inc + (i.all[x] or 0)
     if i.all[x] > i.most then i.most,i.mode=i.all[x], x end end end
+
+function SYM.sub(i,x,inc) 
+  if x~="?" then 
+    inc = inc or 1
+    i.n = i.n-inc
+    i.all[x] = i.all[x]  - inc end end
+ 
 function SYM.mid(i) return i.mode end
-function SYM.bins(i)
-  local x,y = {},{}; for k,_ in pairs(i.all) do x[k]=0; y[k]=0 end 
-  return x,y end
+function SYM.div(i,   e)
+  e=0; 
+  for k,n in pairs(i.all) do if n>0 then e=e-n/i.n*math.log(n/i.n,2) end end 
+  return e end
+
+function SYM.clone(i) return SYM(i.at,i.txt) end
+function SYM.bin(i,x) return x end
+function SYM.bins(i,ranges) return ranges end
 --------------------------------------------------------------------------------
 ROW=is"ROW"
 function ROW.new(i,of,cells) i.of,i.cells = of,cells end
@@ -104,14 +144,18 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
     s2    = s2 - 2.7183^(col.w * (v2 - v1) / n) end
   return s1/n < s2/n end
 --------------------------------------------------------------------------------
-function ranges(col,rows1,rows2,     v,bin)
-  one,two = col:bins()
-  for _,pair in pairs{{rows=rows1, bins=one},{rows=rows2, bins=two}} do
-    for _,row in pairs(pair.rows) do
-      v = row.cells[col.at]
+function bins(col,...)
+  local tmp,out={},{}
+  for klass,rows in pairs{...} do
+    for _,row in pairs(rows) do
+      local v = row.cells[col.at]
       if v~="?" then 
-        bin = col:bin(v)
-        pair.bins[bin] = 1 + (pair.bins[bin] or 0) end end end end 
+        local bin = col:bin(v)
+        tmp[bin]  = tmp[bin] or push(out, {x=col:clone(),y=SYM(col.at, col.txt)})
+        tmp[bin].x:add(v)
+        tmp[bin].y:add(v) end end end
+   col:bins(out) 
+   return out end
 --------------------------------------------------------------------------------
 ROWS=is"ROWS"
 function ROWS.new(i,src)
