@@ -107,7 +107,7 @@ function NUM.add(i,x)
 
 function NUM.clone(i) return NUM(i.at,i.txt) end
 function NUM.mid(i) return i.mu end
-function NUM.div(i,  a) print("!!!!"); a=i.all:has(); return (per(a,.9) - per(a,.1))/2.56 end
+function NUM.div(i,  a) a=i.all:has(); return (per(a,.9) - per(a,.1))/2.56 end
 function NUM.norm(i,x)
   return x=="?" and x or i.hi-i.lo<1E-9 and 0 or (x - i.lo)/(i.hi - i.lo) end
 
