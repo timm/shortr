@@ -38,7 +38,7 @@ OPTIONS (other):
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local atom,big,bins,cli,csv,fmt,gt,is,lt,map,o,oo
 local per,push,rand,rnd,sort,splice,the,tothing
-local the, fails = {}, 0
+local the = {}
 
 function is(name,    t,new)
   function new(kl,...) local x=setmetatable({},kl); kl.new(x,...); return x end 
@@ -232,6 +232,18 @@ function csv(csvfile)
       t={}; for x in s:gmatch("([^,]+)") do t[1+#t]=atom(x) end
       return t end end end 
    
+function going(settings,funs,       defaults)
+  defaults={}; for k,v in pairs(settings) do defaults[k]=v end 
+  return defaults, (funs[settings.go]  and {settings.go} or sort(
+     map(funs,function(x)if type(funs[x])=="function" then return x end end)))end 
+
+function goes(fun,defaults,settings,      status)
+  for k,v in pairs(defaults) do settings[k]=v end 
+  math.randomseed(settings.seed or 10019)
+  io.stderr:write(".")
+  status = fun() 
+  if status ~= true then print("-- Error",one,status); fails = fails + 1 end end       
+
 function gt(x)        return function(a,b) return a[x] > b[x] end end
 function lt(x)        return function(a,b) return a[x] < b[x] end end
 function map(t,f,  u) u={}; for k,v in pairs(t) do u[1+#u]=f(v) end return u end
@@ -248,6 +260,22 @@ function sort(t,f)   table.sort(t,f); return t end
 function splice( t, i, j, k,    u) 
   u={}; for n=(i or 1)//1, (j or #t)//1, (k or 1)//1 do u[1+#u]=t[n] end return u end
 --------------------------------------------------------------------------------
+-- ## Demos
+local no,go,fails = {},{},0
+
+function go.the() oo(the) end
+
+function go.ranges(       rows,n,m,bests,rests)
+  math.randomseed(the.Seed)
+  lrows = ROWS(the.file)
+  sort(rows.all)
+  n=#rows.all
+  m=n^the.min  
+  bests = splice(rows.all, 1,  m)
+  rests = splice(rows.all, n - m)
+  rows:bins(bests,rests) end
+
+--------------------------------------------------------------------------------
 -- ## RETURN MODULE
 if   pcall(debug.getlocal, 4, 1) then return {
             o=o,oo=oo,the=the,EGS=EGS,NUM=NUM,RANGE=RANGE,
@@ -262,14 +290,8 @@ if the.help then os.exit(print(
 end
 
 -- Change anything from here done (except last 2 lines)
-math.randomseed(the.Seed)
-local rows = ROWS(the.file)
-sort(rows.all)
-local n=#rows.all
-local m=n^the.min  
-local bests = splice(rows.all, 1,  m)
-local rests = splice(rows.all, n - m)
-rows:bins(bests,rests)
+local defaults,todo=going(the,go)
+for _,one in pairs(todo) do goes(go[one],defaults,the) end
 
 -- Last two lines. Do not change. Check for rogues and report any failures.
 for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end--[5]
