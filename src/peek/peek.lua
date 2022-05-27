@@ -112,18 +112,20 @@ function NUM.norm(i,x)
   return x=="?" and x or i.hi-i.lo<1E-9 and 0 or (x - i.lo)/(i.hi - i.lo) end
 
 function NUM.bin(i,v,  b) b=(i.hi-i.lo)/the.bins;return math.floor(v/b+0.5)*b end
+
 function NUM.bins(i,bins,lo,hi,enough,out,lvl)
-  print(string.rep(".. ",lvl or 0), lo, hi)
+  local pre=string.rep(".. ",lvl or 0)
+  print(fmt("%s|%s %s",pre,lo, hi))
   local lhs, rhs, all = SYM(), SYM(), SYM()
   for j=lo,hi do 
-    for x,n in pairs(bins[j].y.all) do all:add(x,n);rhs:add(x,n)end end
+    for x1,n1 in pairs(bins[j].y.all) do all:add(x1,n1);rhs:add(x1,b1)end end
   local n,best,cut = rhs.n, rhs:div()
   for j=lo,hi do
-    for x,n in pairs(bins[j].y.all) do lhs:add(x,n); rhs:sub(x,n) end
+    for x2,n2 in pairs(bins[j].y.all) do lhs:add(x2,n2); rhs:sub(x2,n2) end
     if rhs.n >= enough and lhs.n >= enough then
       local tmp= rhs:div()*rhs.n/n + lhs:div()*lhs.n/n 
       if tmp < best*1.01 then cut,best =j,tmp end end end
-  print("cut",i.at, cut)
+  print(ipre,"cut",i.at, cut)
   if cut 
   then i:bins(bins, lo, cut,    enough, out, (lvl or 0) + 1)
        i:bins(bins,  cut+1, hi, enough, out, (lvl or 0) + 1)
@@ -211,7 +213,7 @@ function ROWS.bins(i,bests,rests)
         end 
       end 
     end
-    return col:bins(sort(bins,lt"lo"), 1, #bins, (#bests+#rests)^the.min)  
+    return col:bins(sort(bins,lt"lo"), 1, #bins, (#bests+#rests)^the.min,{})  
   end --------------------------------------------------
   local out={}
   for _,col in pairs(i.xs) do 
