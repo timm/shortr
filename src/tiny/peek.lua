@@ -18,7 +18,6 @@ USAGE: lua peek.lua [OPTIONS]
   --Seed  -S  random number seed   = 10019
   --bins  -b  number of bins       = 16
   --min   -m  min size pass1       = .5
-  --min   -m  min size pass2       = 9
   --p     -p  distance coefficient = 1
   --some  -s  sample size          = 512
 
@@ -108,20 +107,24 @@ function NUM.add(i,x)
 
 function NUM.clone(i) return NUM(i.at,i.txt) end
 function NUM.mid(i) return i.mu end
-function NUM.div(i,  a) a=i.all:has(); return (per(a,.9) - per(a,.1))/2.56 end
+function NUM.div(i,  a) print("!!!!"); a=i.all:has(); return (per(a,.9) - per(a,.1))/2.56 end
 function NUM.norm(i,x)
   return x=="?" and x or i.hi-i.lo<1E-9 and 0 or (x - i.lo)/(i.hi - i.lo) end
 
 function NUM.bin(i,v,  b) b=(i.hi-i.lo)/the.bins;return math.floor(v/b+0.5)*b end
 function NUM.bins(i,bins,lo,hi,enough)
   local lhs, rhs, all, out = SYM(), SYM(), SYM(), {}
+  print""
   for j=lo,hi do 
-    for x,n in pairs(bins[j].y.all) do all:add(x,n);rhs:add(x,n)end end
+    for x,n in pairs(bins[j].y.all) do print("==",x,n); all:add(x,n);rhs:add(x,n)end end
   local n,best,cut = rhs.n, rhs:div()
+  print("best",best)
   for j=lo,hi do
     for x,n in pairs(bins[j].y.all) do lhs:add(x,n); rhs:sub(x,n) end
+    print("rle", rhs.n, lhs.n, enough)
     if rhs.n >= enough and lhs.n >= enough then
       local tmp= rhs:div()*rhs.n/n + lhs:div()*lhs.n/n 
+      print("tmp",tmp)
       if tmp < best*1.01 then cut,best =j,tmp end end end
   if cut 
   then i:bins(bins, lo, cut,    enough, out)
@@ -152,7 +155,7 @@ function SYM.sub(i,x,inc)
 function SYM.mid(i) return i.mode end
 function SYM.div(i,   e)
   e=0; 
-  for k,n in pairs(i.all) do if n>0 then e=e-n/i.n*math.log(n/i.n,2) end end 
+  for k,n in pairs(i.all) do if n>0 then print(",",n); e=e-n/i.n*math.log(n/i.n,2) end end 
   return e end
 
 function SYM.clone(i) return SYM(i.at,i.txt) end
@@ -198,26 +201,34 @@ function ROWS.mid(i,    p,t)
   return t end
 
 function ROWS.bins(i,bests,rests)
-  local function bins1(col, tmp, bins)
-    for klass,rows in ipairs{bests,rests} do
+  print(#bests, #rests)
+  local function bins1(col)
+    local tmp, bins = {}, {}
+    for klass,rows in pairs{bests,rests} do
       for n,row in pairs(rows) do
         local x = row.cells[col.at]
         if x ~= "?" then
           x = col:bin(x)
           tmp[x] = tmp[x] or push(bins, {at=col.at, lo=x, hi=x, y=SYM()})
-          tmp[x].y:add(klass) end end end
-    return col:bins(sort(bins,lt"lo"), 1,#bins, col.n^the.min)  
+          tmp[x].y:add(klass)
+        end 
+      end 
+    end
+    return col:bins(sort(bins,lt"lo"), 1, #bins, (#bests+#rests)^the.min)  
   end --------------------------------------------------
   local out={}
   for _,col in pairs(i.xs) do 
-    for _,bin in pairs(bins1(col, {}, {})) do push(out,bin) end end
+    print("===",col.at)
+    for _,bin in pairs(bins1(col)) do push(out,bin) end end
   for k,v in pairs(out) do print(k,o(v)) end
   return out end
 --------------------------------------------------------------------------------
 local rows = ROWS(the.file)
 sort(rows.all)
-local bests = splice(rows.all,1,(#rows)^.5)
-local rests = splice(rows.all,#rows-(#rows)^.5) --#rows.all - 40)
+local n=#rows.all
+local m=n^the.min // 1
+local bests = splice(rows.all,1,m)
+local rests = splice(rows.all,n - m)
 rows:bins(bests,rests)
-
+--
 for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end--[5]
