@@ -1,32 +1,62 @@
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local atom,big,cli,csv,is,map,o,oo,push,rand,rnd,sort,splice,the,tothing
+local atom,big,bins,cli,csv,fmt,gt,is,lt,map,o,oo
+local per,push,rand,rnd,sort,splice,the,tothing
 local EGS, NUM, ROW, ROWS, SOME, SYM
-local the={p    = 2,
-           bins = 16,
-           min  = .5,
-           file = "../../etc/data/auto93.csv",
-           some = 512}
+local help=[[  
+PEEK: landscape analysis 
+(c) 2022 Tim Menzies, timm@ieee.org, BSD2 license 
+"I think the highest and lowest points are the important ones. 
+ Anything else is just... in between." ~Jim Morrison
+
+INSTALL: requires: lua 5.4+
+         download: peek.lua
+         test    : lua peek.lua -h
+
+USAGE: lua peek.lua [OPTIONS]
+                                   defaults
+                                   --------
+  --Seed  -S  random number seed   = 10019
+  --bins  -b  number of bins       = 16
+  --min   -m  min size pass1       = .5
+  --min   -m  min size pass2       = 9
+  --p     -p  distance coefficient = 1
+  --some  -s  sample size          = 512
+
+OPTIONS (other):
+  --file  -f  csv file with data   = ../../etc/data/auto93.csv
+  --go    -g  start up action      = nothing
+  --help  -h  show help            = false]]
 --------------------------------------------------------------------------------
 function atom(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
   return math.tointeger(x) or tonumber(x) or x  end
-
+     
 function cli(d)
   for key,x in pairs(d) do
     x = tostring(x)
     for n,flag in ipairs(arg) do 
       if flag==("-"..key:sub(1,1)) or flag==("--"..key) then 
         x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end
-    d[key] = atom(x) end 
-  return d end 
+    d[key] = atom(x) end  end
 
-the = cli(the)
+local the={}
+help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(k,x) the[k] = atom(x) end)
+help=help:gsub("[%u][%u%d]+", "\27[31m%1\27[0m")           -- highlight capitals
+         :gsub("\"[^\"]+\"", "\27[32m%1\27[0m")            -- highlight strings  
+         :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[33m%2\27[0m%3")--highlight flags
+ 
+cli(the)
+if the.help then os.exit(print(help)) end
+math.randomseed(the.Seed)
 --------------------------------------------------------------------------------
 big = math.huge
 rand= math.random
+fmt = string.format
 function rnd(n, p) local m=10^(p or 0); return math.floor(n*m+0.5)/m  end
 
+function lt(x) return function(a,b) return a[x] < b[x] end end
+function gt(x) return function(a,b) return a[x] > b[x] end end
 function map(t,f,  u) u={}; for k,v in pairs(t) do u[1+#u]=f(v) end return u end
 function sort(t,f) table.sort(t,f); return t end
 function push(t,x) t[1+#t]=x; return x end
@@ -83,27 +113,25 @@ function NUM.norm(i,x)
   return x=="?" and x or i.hi-i.lo<1E-9 and 0 or (x - i.lo)/(i.hi - i.lo) end
 
 function NUM.bin(i,v,  b) b=(i.hi-i.lo)/the.bins;return math.floor(v/b+0.5)*b end
-function NUM.bins(i,bins,         lo,hi,enough,out)
-  bins[#bins].hi = big
-  bins[1].lo = -big
-  out        = out or {}
-  lo, hi     = lo or 1, hi or #bins
-  enough     = enough or i.n^the.min
-  local lhs, rhs, all = SYM(), SYM(), SYM()
-  for j=lo,hi do for x,n in pairs(bins[j].y.all) do all:add(x,n);rhs:add(x,n)end
+function NUM.bins(i,bins,lo,hi,enough)
+  local lhs, rhs, all, out = SYM(), SYM(), SYM(), {}
+  for j=lo,hi do 
+    for x,n in pairs(bins[j].y.all) do all:add(x,n);rhs:add(x,n)end end
   local n,best,cut = rhs.n, rhs:div()
   for j=lo,hi do
-    for x,n in pairs(bins[j].all) do lhs:add(x,n); rhs:sub(x,n) end
+    for x,n in pairs(bins[j].y.all) do lhs:add(x,n); rhs:sub(x,n) end
     if rhs.n >= enough and lhs.n >= enough then
       local tmp= rhs:div()*rhs.n/n + lhs:div()*lhs.n/n 
       if tmp < best*1.01 then cut,best =j,tmp end end end
   if cut 
-  then i:bins(bins, lo, cut,    enough,out)
-       i:bins(bins,  cut+1, hi, enough,out)
+  then i:bins(bins, lo, cut,    enough, out)
+       i:bins(bins,  cut+1, hi, enough, out)
   else local hi1 = hi < #bins and bins[hi+1].lo or big
-       push(out, {at=i.at, lo=bins[lo].lo, hi=hi1, y=all}) end end 
+       push(out, {at=i.at, lo=bins[lo].lo, hi=hi1, y=all}) 
+  end 
+  out[1].lo    = -big
+  out[#out].hi =  big
   return out end
-
 --------------------------------------------------------------------------------
 SYM=is"SYM"
 function SYM.new(i,at,txt) 
@@ -118,7 +146,7 @@ function SYM.add(i,x,inc)
 function SYM.sub(i,x,inc) 
   if x~="?" then 
     inc = inc or 1
-    i.n = i.n-inc
+    i.n = i.n - inc
     i.all[x] = i.all[x]  - inc end end
  
 function SYM.mid(i) return i.mode end
@@ -129,8 +157,7 @@ function SYM.div(i,   e)
 
 function SYM.clone(i) return SYM(i.at,i.txt) end
 function SYM.bin(i,x) return x end
--- XXX got to do something with range
-function SYM.bins(i,ranges,out) return ranges end
+function SYM.bins(i,bins,...) return bins end
 --------------------------------------------------------------------------------
 ROW=is"ROW"
 function ROW.new(i,of,cells) i.of,i.cells = of,cells end
@@ -141,17 +168,6 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
     s1    = s1 - 2.7183^(col.w * (v1 - v2) / n)
     s2    = s2 - 2.7183^(col.w * (v2 - v1) / n) end
   return s1/n < s2/n end
---------------------------------------------------------------------------------
-function bins(c,...)
-  local tmp,out={},{}
-  for klass,rows in pairs{...} do
-    for _,row in pairs(rows) do
-      local v = row.cells[c.at]
-      if v~="?" then 
-        v = col:bin(v)
-        tmp[v]  = tmp[v] or push(out, {at=c.at,lo=v,hi=v,y=SYM()})
-        tmp[v].y:add(v) end end end
-   return col:bins(sort(out,lt"lo")) end
 --------------------------------------------------------------------------------
 ROWS=is"ROWS"
 function ROWS.new(i,src)
@@ -180,10 +196,24 @@ function ROWS.data(i,row)
 function ROWS.mid(i,    p,t) 
   t={}; for _,col in pairs(i.ys) do t[col.txt]=rnd(col:mid(),p or 3) end
   return t end
+
+function ROWS.bins(i,...)
+  for _,col in pairs(i.xs) do
+    local tmp,bins,x0,x = {},{}
+    for klass,rows in ipairs{...} do
+      for n,row in pairs(rows)  do
+        x0,x = row.cells[col.at]
+        if x0 ~= "?" then
+          x = col:bin(x0)
+          tmp[x] = tmp[x] or push(bins, {at=col.at, lo=x, hi=x, y=SYM()})
+          tmp[x].y:add(klass)  end end end
+    bins = col:bins(sort(bins,lt"lo"), 1,#bins, col.n^the.min) 
+    print(col.at,#bins) end end
 --------------------------------------------------------------------------------
 local rows = ROWS(the.file)
 sort(rows.all)
-oo(rows:clone(splice(rows.all,1,40)):mid(0))
-oo(rows:clone(splice(rows.all,#rows.all - 40)):mid(0))
+local bests = splice(rows.all,1,40)
+local rests = splice(rows.all,41) --#rows.all - 40)
+rows:bins(bests,rests)
 
 for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end--[5]
