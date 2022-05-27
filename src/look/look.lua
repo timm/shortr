@@ -9,22 +9,22 @@ INSTALL: requires: lua 5.4+
          test    : lua egs.lua -h
 
 USAGE: lua looking.lua [OPTIONS]
-                                              defaults
-                                              --------
-  --Far   -F  far                             = .95 
-  --How   -H  how we optimize: more,less,tabu = more
-  --Min   -M  min size pass2                  = 9
-  --Some  -S  sample size                     = 512
-  --also  -a  size of rest=best*also          = 2
-  --bins  -b  number of bins                  = 16
-  --min   -m  min size pass1                  = .5
-  --p     -p  distance coefficient            = 1
-  --seed  -s  random number seed              = 10019
-
-  --file  -f  csv file with data              = ../../etc/data/auto93.csv
-  --go    -g  start up action                 = nothing
-  --help  -h  show help                       = false
-  --loud  -l  verbose mode                    = false]]
+                                                defaults
+                                                ~~~~~~~~
+    --Far   -F  far                             = .95 
+    --How   -H  how we optimize: more,less,tabu = more
+    --Min   -M  min size pass2                  = 9
+    --Some  -S  sample size                     = 512
+    --also  -a  size of rest=best*also          = 2
+    --bins  -b  number of bins                  = 16
+    --min   -m  min size pass1                  = .5
+    --p     -p  distance coefficient            = 1
+    --seed  -s  random number seed              = 10019
+     
+    --file  -f  csv file with data              = ../../etc/data/auto93.csv
+    --go    -g  start up action                 = nothing
+    --help  -h  show help                       = false
+    --loud  -l  verbose mode                    = false]]
 
 local _ = require"lib"
 local any,big,csv,fmt,is,lt,gt= _.any, _.big, _.csv, _.fmt, _.is, _.lt, _.gt
