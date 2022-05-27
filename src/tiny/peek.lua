@@ -197,23 +197,27 @@ function ROWS.mid(i,    p,t)
   t={}; for _,col in pairs(i.ys) do t[col.txt]=rnd(col:mid(),p or 3) end
   return t end
 
-function ROWS.bins(i,...)
-  for _,col in pairs(i.xs) do
-    local tmp,bins,x0,x = {},{}
-    for klass,rows in ipairs{...} do
-      for n,row in pairs(rows)  do
-        x0,x = row.cells[col.at]
-        if x0 ~= "?" then
-          x = col:bin(x0)
+function ROWS.bins(i,bests,rests)
+  local function bins1(col, tmp, bins)
+    for klass,rows in ipairs{bests,rests} do
+      for n,row in pairs(rows) do
+        local x = row.cells[col.at]
+        if x ~= "?" then
+          x = col:bin(x)
           tmp[x] = tmp[x] or push(bins, {at=col.at, lo=x, hi=x, y=SYM()})
-          tmp[x].y:add(klass)  end end end
-    bins = col:bins(sort(bins,lt"lo"), 1,#bins, col.n^the.min) 
-    print(col.at,#bins) end end
+          tmp[x].y:add(klass) end end end
+    return col:bins(sort(bins,lt"lo"), 1,#bins, col.n^the.min)  
+  end --------------------------------------------------
+  local out={}
+  for _,col in pairs(i.xs) do 
+    for _,bin in pairs(bins1(col, {}, {})) do push(out,bin) end end
+  for k,v in pairs(out) do print(k,o(v)) end
+  return out end
 --------------------------------------------------------------------------------
 local rows = ROWS(the.file)
 sort(rows.all)
-local bests = splice(rows.all,1,40)
-local rests = splice(rows.all,41) --#rows.all - 40)
+local bests = splice(rows.all,1,(#rows)^.5)
+local rests = splice(rows.all,#rows-(#rows)^.5) --#rows.all - 40)
 rows:bins(bests,rests)
 
 for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end--[5]
