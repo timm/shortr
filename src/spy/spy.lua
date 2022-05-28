@@ -1,8 +1,32 @@
--- vim: filetype=lua ts=2 sw=2 et:
--- <img src="../../look/docs/heads2.png" align=left width=200>
+-- vim: ts=2 sw=2 et:
+-- <img src=spy.jpg align=left width=250><hr>   
+--  
+-- <b>SEMI-SUPERVISED<br>LANDSCAPE ANALYSIS</b>  
+-- 
+-- [&copy; 2022](#copyright) Tim Menzies<br clear=all>
+-- 
+-- |classes:   | [RANGE](#range) :: [SYM](#sym) :: [SOME](#some) :: [NUM](#num) :: [ROW](#row) :: [ROWS](#rows)|
+-- |----------:|-----------------------------------------------------------------------------------------------|   
+-- |**functions:** | [Lib](#lib) :: [Demos](#demos) :: [Return](#return) :: [Start](#start)                        |
+-- |**notes:**     | [Contribute](#contribute) :: [Copyright](#copyright)                                          |   
 --    
--- Semi-supervised landscape analysis.   
--- (c)2022 Tim Menzies, BSD2 license.
+-- &nbsp;   
+--    
+-- This code is an experiment in writing the _most_ learners in the _least_ code.
+-- Here, each learner is just a few lines of code (since they are share the same
+-- underlying code base). 
+--
+-- The code reads csv files where the column names are listed on the top line.
+-- NUMeric columns start with upper case (and everything is SYMbolic). 
+-- Goals to minimize or maximize end with `-` or `+`. 
+-- Class goals end with `!` and columns to ignore end with `:`. 
+--    
+-- Each csv line becomes a ROW which stored in a 
+-- ROWS objects.  ROWS summarize each ROW in column objects (NUMs or SYMs).
+--   
+-- RANGE objects comment on a pair of `x`  NUMeric column and a `y`
+-- SYMbolic column. It knows what `y` symbols are found between a set of `lo,hi` 
+local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local help=[[  
 SPY: semi-supervised landscape analysis    
 (c) 2022 Tim Menzies, timm@ieee.org, BSD2 license    
@@ -14,41 +38,63 @@ INSTALL: requires: lua 5.4+
          test    : lua spy.lua -h   
          
 USAGE: lua spy.lua [OPTIONS]   
-                                              defaults   
-                                              ~~~~~~~   
-    --Seed  -S  random number seed            = 10019   
-    --How   -H  optimize for (more,less,tabu) = more   
-    --bins  -b  number of bins                = 16   
-    --min   -m  min size pass1                = .5   
-    --p     -p  distance coefficient          = 1   
-    --some  -s  sample size                   = 512   
+                                            defaults   
+                                            ~~~~~~~~   
+  -S  --Seed  random number seed            = 10019   
+  -H  --How   optimize for (more,less,tabu) = more   
+  -b  --bins  number of bins                = 16   
+  -m  --min   min size pass1                = .5   
+  -p  --p     distance coefficient          = 1   
+  -s  --some  sample size                   = 512   
           
 OPTIONS (other):   
-    --file  -f  csv file with data            = ../../etc/data/auto93.csv   
-    --go    -g  start up action               = nothing   
-    --help  -h  show help                     = false]]   
---------------------------------------------------------------------------------
---
--- - asdass `asas`
--- - asdas
---
---        asdasadasd
---        asdaadadsa
---
-local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local atom,big,bins,cli,csv,fmt,gt,is,lt,map,o,oo
-local per,push,rand,rnd,sort,splice,the,tothing
-local the = {}
+  -f  --file  csv file with data            = ../../etc/data/auto93.csv   
+  -g  --go    start up action               = nothing   
+  -h  --help  show help                     = false]]   
 
+-- ## Build `the` Settings from Comment String
+-- - Build a settings object `the`, parsed from the top-of-file `help` string. 
+-- - In that string, find lines starting with `--xx`.
+-- - Add a slot to `the` with key `xx` and a value  
+--   valie built from the last word on the line. 
+-- - Check for updates (from command-line flags
+--   `--xx` or `-x`).   
+local the={}
+local function toatom(x)
+  x = x:match"^%s*(.-)%s*$"
+  if x=="true" then return true elseif x=="false" then return false end
+  return math.tointeger(x) or tonumber(x) or x  end
+
+local function cli(key,x)
+  x = tostring(x)
+  for n,flag in ipairs(arg) do 
+    if flag==("-"..key:sub(1,1)) or flag==("--"..key) then 
+      x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end
+  return toatom(x) end  
+        
+help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(k,x) the[k] = cli(k,x) end)
+
+-- ## Define the local names
+-- Define all local names at top of file (so code can be defined in any order).
+local atom,big,bins,csv,fmt,goes,going,gt,is,lt,map
+local o,oo,per,push,rand,rnd,sort,splice,the,tothing
+
+-- Make polymorphic classes.   
+-- - Define a `new` method that will add a link from a 
+-- new table, back to a metatables.
+-- -  Also, define a second link from that metatable
+-- to a variable storing the methods. 
+-- Further, add a print name and a print name for this class.
 function is(name,    t,new)
   function new(kl,...) local x=setmetatable({},kl); kl.new(x,...); return x end 
   t = {__tostring=o, is=name}; t.__index=t 
   return setmetatable(t, {__call=new}) end 
 
-local EGS, NUM, RANGE      = is"EGS",is"NUM", is"RANGE" 
+local EGS, NUM,  RANGE     = is"EGS",is"NUM", is"RANGE" 
 local ROW, ROWS, SOME, SYM = is"ROW",is"ROWS", is"SOME", is"SYM" 
 ---------------------------------------------------------------------------------
--- ## RANGE
+-- ## RANGE <a name=range></a>
+
 function RANGE.new(i,at,txt,lo,hi,ys) 
   i.at,i.txt,i.xlo,i.xhi,i.ys=at,txt,lo,hi or lo,ys or SYM() end
 
@@ -79,7 +125,8 @@ function RANGE.selects(i,row,     v)
   v = row.cells[i.at]
   return v=="?" or (i.xlo==i.xhi and i.xlo==v) or (i.xlo<=v and v<i.xhi) end
 --------------------------------------------------------------------------------
--- ## SYM
+-- ## SYM <a name=sym></a>
+
 function SYM.new(i,at,txt) 
   i.at,i.txt = at or 0,txt or ""; i.n,i.all=0,{}; i.most,i.mode=0 end
 
@@ -99,7 +146,10 @@ function SYM.div(i,   e)
 
 function SYM.sub(i,x,inc) SYM.add(i,x,-(inc or 1)) end
 ---------------------------------------------------------------------------------
--- ## SOME
+-- ## SOME <a name=some></a>
+
+--  NUMs hold their summary
+-- in a `SOME` object that, once it fills up, replaces old values with the new ones.
 function SOME.new(i) i.all, i.ok, i.n = {}, false,0 end
 function SOME.add(i,x,     a) 
   i.n, a = 1 + i.n, i.all
@@ -108,7 +158,8 @@ function SOME.add(i,x,     a)
 
 function SOME.has(i) if not i.ok then sort(i.all) end;i.ok=true; return i.all end
 ---------------------------------------------------------------------------------
--- ## NUM
+-- ## NUM <a name=num></a>
+
 function NUM.new(i,at,txt) 
   i.at,i.txt=at or 0,txt or ""; i.hi=-big;i.lo=big; i.n,i.mu=0,0 
   i.w = i.txt:find"-$" and -1 or 1 
@@ -151,7 +202,8 @@ function NUM.mid(i,p)     return rnd(i.mu,p or 3) end
 function NUM.norm(i,x)
   return x=="?" and x or i.hi-i.lo<1E-9 and 0 or (x - i.lo)/(i.hi - i.lo) end
 --------------------------------------------------------------------------------
--- ## ROW
+-- ## ROW <a name=row></a>
+
 function ROW.new(i,of,cells) i.of,i.cells = of,cells end
 function ROW.__lt(i,j,        n,s1,s2,v1,v2)
   s1, s2, n = 0, 0, #i.of.ys
@@ -161,7 +213,8 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
     s2    = s2 - 2.7183^(col.w * (v2 - v1) / n) end
   return s1/n < s2/n end
 --------------------------------------------------------------------------------
--- ## ROWS
+-- ## ROWS <a name=rows></a>
+
 function ROWS.new(i,src)
   i.all={}; i.cols={}; i.xs={}; i.ys={}; i.names={}
   if type(src)=="string" then for   row in csv(  src) do i:add(row) end 
@@ -205,31 +258,18 @@ function ROWS.bins(i,bests,rests)
   for k,v in pairs(out) do print(k,v) end
   return out end
 --------------------------------------------------------------------------------
--- ## LIB
+-- ## LIB <a name=lib></a>
+
 big = math.huge
 rand= math.random
 fmt = string.format
      
-function atom(x)
-  x = x:match"^%s*(.-)%s*$"
-  if x=="true" then return true elseif x=="false" then return false end
-  return math.tointeger(x) or tonumber(x) or x  end
-       
-help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(k,x) the[k] = atom(x) end)
-
-function cli(key,x)
-  x = tostring(x)
-  for n,flag in ipairs(arg) do 
-    if flag==("-"..key:sub(1,1)) or flag==("--"..key) then 
-      x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end
-  return atom(x) end  
-   
 function csv(csvfile) 
   csvfile = io.input(csvfile)
   return function(s, t) 
     s=io.read()
     if not s then io.close(csvfile) else
-      t={}; for x in s:gmatch("([^,]+)") do t[1+#t]=atom(x) end
+      t={}; for x in s:gmatch("([^,]+)") do t[1+#t] = tostring(x) end
       return t end end end 
    
 function going(settings,funs,       defaults)
@@ -252,7 +292,7 @@ function o(t,    u)
   if #t>0 then return "{"..table.concat(map(t,tostring)," ").."}" end
   u={}; for k,v in pairs(t) do u[1+#u] = string.format(":%s %s",k,v) end
   return (t.is or "").."{"..table.concat(sort(u)," ").."}" end 
-   
+  
 function per(t,p)    p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 function push(t,x)   t[1+#t]=x; return x end
 function rnd(n, p)   local m=10^(p or 0); return math.floor(n*m+0.5)/m  end
@@ -260,7 +300,8 @@ function sort(t,f)   table.sort(t,f); return t end
 function splice( t, i, j, k,    u) 
   u={}; for n=(i or 1)//1, (j or #t)//1, (k or 1)//1 do u[1+#u]=t[n] end return u end
 --------------------------------------------------------------------------------
--- ## Demos
+-- ## Demos <a name=demos></a>
+
 local no,go,fails = {},{},0
 
 function go.the() oo(the) end
@@ -276,23 +317,79 @@ function go.ranges(       rows,n,m,bests,rests)
   rows:bins(bests,rests) end
 
 --------------------------------------------------------------------------------
--- ## RETURN MODULE
-if   pcall(debug.getlocal, 4, 1) then return {
-            o=o,oo=oo,the=the,EGS=EGS,NUM=NUM,RANGE=RANGE,
-            ROW=ROW,ROWS=ROWS,SOME=SOME,SYM=SYM} end
+-- ## RETURN <a name=return></a>
+
+if pcall(debug.getlocal, 4, 1) then return {
+           o=o,oo=oo,the=the,EGS=EGS,NUM=NUM,RANGE=RANGE,
+           ROW=ROW,ROWS=ROWS,SOME=SOME,SYM=SYM} end
 --------------------------------------------------------------------------------
--- ## MAIN START UP
-for k,v in pairs(the) do the[k]=cli(k,v) end
+-- ## MAIN START UP <a name=start></a>
+
 if the.help then os.exit(print(
   help:gsub("[%u][%u%d]+", "\27[31m%1\27[0m")           -- highlight capitals
       :gsub("\"[^\"]+\"", "\27[32m%1\27[0m")            -- highlight strings  
-      :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[33m%2\27[0m%3")))--highlight flags
-end
+      :gsub("(%s)([-][-]?[^%s]+)(%s)","%1\27[33m%2\27[0m%3"),--highlight flags
+  "")) end
 
 -- Change anything from here done (except last 2 lines)
 local defaults,todo=going(the,go)
-for _,one in pairs(todo) do goes(go[one],defaults,the) end
+print(defaults)
+for _,one in pairs(todo) do print(one); goes(go[one],defaults,the) end
 
 -- Last two lines. Do not change. Check for rogues and report any failures.
 for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end--[5]
 os.exit(fails)
+--------------------------------------------------------------------------------
+-- ## Notes
+-- ### Contribute <a name=contribute></a>
+-- If you offer updates to this code, please follow the following conventions.
+--  
+-- - Settings generated from "help" string
+-- Settings can be updated from the strings seed in flags
+-- Settings stored in the global "the"
+-- - Layout lines 80 chars side (max,ish). Use 2 spaces for "tab".
+-- Do functions as one-liners (if possible). Multi-line functions need a trailing
+-- blank line. 
+-- - Use `i` for self
+-- - Use `col` for a col object.
+-- - Use `r` for rows
+-- - Use `v` for row cells values
+-- -  Define all local names at top of file (so code can be defined in any order).
+-- Otherwise, don't make much of use the "local" keyword (too ugly)
+-- - Object names are short and UPPER CASE
+-- Constructors need not return constructed instance.
+-- No inheritance (hard to debug)
+-- - Tests  in the "go" table at end. Reset settings to defaults after each
+--   (see `goes`).
+--   Tests pass if they return `true`, otherwose, add one to a `fails` counter.
+-- - Command line "-go x" calls test "go.x()".
+-- Command line "-h" shows help  
+-- - 2nd last line: look for "rogue" globals (there should be none)
+-- Last line: exit to operating system with number of failures seen in tests
+--
+-- ### Copyright <a name=copyright></a>
+-- BSD 2-Clause License
+--  
+-- Copyright (c) [year], [fullname]
+--  
+-- Redistribution and use in source and binary forms, with or without
+-- modification, are permitted provided that the following conditions are met:
+-- 
+-- 1. Redistributions of source code must retain the above copyright notice,
+--    this list of conditions and the following disclaimer.
+-- 2. Redistributions in binary form must reproduce the above copyright
+--    notice, this list of conditions and the following disclaimer in the
+--    documentation and/or other materials provided with the distribution.
+-- 
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+-- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+-- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+-- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+-- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+-- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+-- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+-- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+-- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+-- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+-- POSSIBILITY OF SUCH DAMAGE.
+

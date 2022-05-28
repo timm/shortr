@@ -1,3 +1,8 @@
+self-documentating code:
+
+- Makefile
+- sting text
+
 have to get the 5 laws in here somehow
 
 the important thing here is not the specific ai algorithms but the infrastructure around it. if we do word counts on this code base and count
