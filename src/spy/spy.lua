@@ -329,7 +329,7 @@ function NUM.mid(i,p)     return rnd(i.mu,p or 3) end
 function NUM.norm(i,x)
   return x=="?" and x or i.hi-i.lo<1E-9 and 0 or (x - i.lo)/(i.hi - i.lo) end
 
--- ## ROW <a name=rowlt></a><a name=row></a>
+-- ## class ROW <a name=rowlt></a><a name=row></a>
 
 -- - **DOES:**
 --   - Knows how to sort itself (based on multiple objectives)
@@ -357,7 +357,7 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
     s2    = s2 - 2.7183^(col.w * (v2 - v1) / n) end
   return s1/n < s2/n end
 
--- ## ROWS <a name=rows></a>
+-- ## class ROWS <a name=rows></a>
 
 -- - **DOES:**
 --   - Holds onto a set or ROWs, summarized into `ROWS.cols`.
