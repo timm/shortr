@@ -36,6 +36,9 @@ their own brilliance.
 static code analysis
 formatting conventions
 ---
+data independence
+
+isepeateion mechaism and policy
 
 encapsulation (infrmation hiding ; e.g. dont exprt help string)
 

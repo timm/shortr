@@ -1,64 +1,32 @@
- -- vim: ts=2 sw=2 et:
--- <img src=spy.jpg align=left width=250><hr>   
+-- <h3>SEMI-SUPERVISED MULTI-OBJECTIVE<br>LANDSCAPE ANALYSIS</h3>   
+-- <img src=spy.jpg align=left width=300>
 --      
--- <b>SEMI-SUPERVISED LANDSCAPE ANALYSIS</b>  
---     
--- [&copy; 2022](#copyright) Tim Menzies<br clear=all>
---   
--- |**classes:**   | [RANGE](#range) :: [SYM](#sym) :: [SOME](#some) :: [NUM](#num) :: [ROW](#row) :: [ROWS](#rows)|
--- |--------------:|-----------------------------------------------------------------------------------------------|   
--- |**functions:** | [Lib](#lib) :: [Demos](#demos) :: [Return](#return) :: [Start](#start)                        |
--- |**notes:**     | [Contribute](#contribute) :: [Copyright](#copyright)                                          |   
+-- [&copy; 2022](#copyright) Tim Menzies<br>[Contribute](#contribute)<br> 
 --      
--- &nbsp;   
---      
--- This code is an experiment in writing the _most_ learners in the _least_ code.
--- Here, each learner is just a few lines of code (since they are share the same
--- underlying code base). 
--- 
--- Given examples ((_x1,y1_), (_x2,y2_), ... etc, this
--- code explores things that make the most difference in the data.i
---  
--- -  Given _N_ examples,
--- we grabs, say,  **some=512** at random (to speed up the process) then find two extreme distant points
--- (to
--- avoid spurious outlier's, we pick a point that is only **far=95**%
--- most distant). 
--- - Distance is calculated using Minkowski (and at  **p=2**, this is 
--- a Euclidean measure) where numbers are normalized 0..1 (min..max) and symbols are at distance 0,1 
--- (for same,different). 
--- For missing values, we assume values that maximizes the distance.
--- - Using the _x_ values, 
--- we can position any other example _C &in; N_ somewhere between the two extremes.
--- If the extremes  _A,B_ are separated by
--- distance _c_,then _C_ has a distance _x=(a\*a + c\*c - b\*b)/(2c)_ from _A_. 
--- The data is divided
--- in two using the median _x_ value and we recurse (on all of _N_). 
--- - Optionally, we  might prune the half of the data nearest to
--- the worse extreme (where "worse" is defined by a multi-objective domination predicate 
--- (see [`ROW.__lt`](#rowlt). Note that this needs only two extreme points per pruning.
+-- Here, we write the _most_ learners in the _least_ code.
+-- Each learner is a few lines of code (since they share an 
+-- underlying code base).  
 --    
--- When recursing, if one extreme point is taken from an extreme in the parent, then
--- (e.g.) 10,000 options can be pruned back to around 20
--- "good"  ones
--- in less than two  dozen evaluations. 
+-- **classes**    : [RANGE](#range) | [SYM](#sym) | [SOME](#some)
+--                | [NUM](#num) | [ROW](#row) | [ROWS](#rows) 
 --  
--- The above heuristcs can be sometimes inaccurate,  so we loop a few times, each
--- time starting with some subset of "good" examples found in the last loop.
--- So of loop1 finds N<sup>**min1=.5**</sup> "good" examples, subsequent loops
--- look for **min2==10** best examples within  some of the "good" seen in prior
--- rounds.
+-- **functions:** : [Lib](#lib) | [Demos](#demos)
+--                | [Return](#return) | [Start](#start)   
+-- <br clear=all>                         
+-- This code reflects on the shape (the landscape) on the data
+-- to sample the fewest examples to find the "best" examples
+-- (where "best") is defined along multiple objectives. 
 --   
--- Once we have "good" and not "good" examples, the difference between them can summarise
--- what was found.  
--- - Those summaries are built from ranges that remember what `x` values
--- are seen in "good" and not "good". 
--- - For numbers, these ranges are built by dividing
--- lo to hi into 16 sized ranges (using (hi-lo)/**bins=16**). i
--- - This code combines ranges
--- if they have too few examples or if their "good"/not "good" distributions are uninformative
--- (see the  `div` in [NUM.bin](#numbin)). The resulting ranges are then ranked by
--- whatever is goal of the process (e.g. find choices that **goal=helps** us get to "good"). 
+-- ## Objects
+-- 1. Each row of data is stored in a ROW. 
+-- 2. Sets of ROWs are stored in a ROWS object, which summarizes 
+--    the colums in NUMeric or SYMbolic objects.
+-- 3. ROWs use ROWS to handle distance calculations and rankings.
+-- 4. RANGEs remember the `ys` values seen between `xlo` and `xhi`. 
+--    -   RANGEs use SYMs (to hold the `ys` counts).
+-- 6. NUMs use SOMEs which holds, at most the.some numbers 
+--    (and if it sees more than that, the SOMes just replaces 
+--    an existing item, picked at random).
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local help=[[  
 SPY: semi-supervised landscape analysis    
@@ -77,30 +45,29 @@ USAGE: lua spy.lua [OPTIONS]
   -S  --Seed  random number seed              = 10019   
   -G  --Goal  optimize for (helps,hurts,tabu) = helps   
   -b  --bins  number of bins                  = 16   
-  -m  --min   min size pass1                  = .5   
+  -m  --min   min1 size (for pass1)           = .5   
+  -M  --Min   min2 size (for pass2)           = 10
   -p  --p     distance coefficient            = 2   
   -s  --some  sample size                     = 512   
           
 OPTIONS (other):   
-  -f  --file  csv file with data              = ../../etc/data/auto93.csv   
-  -g  --go    start up action                 = nothing   
-  -h  --help  show help                       = false]]   
+  -f  --file  csv file with data = ../../etc/data/auto93.csv   
+  -g  --go    start up action    = nothing   
+  -h  --help  show help          = false]]   
+-- ## Start-up
 
--- ## Build `the` settings from comment string
-
--- At start-up, the first tasks is to create the settings object from the
--- top-of-file `help` string. 
--- - In that string, find lines starting with `--xx`.
--- - Add a slot to `the` with key `xx` and a value  
---   valie built from the last word on the line. 
--- - Check for updates (from command-line flags
---   `--xx` or `-x`).   
+-- At start, build `the` settings object from the top-of-file `help` string 
+-- using the **toatom** and **cli** functions.
 local the={}
+-- **toatom(x:str):any**<br>Convert a string to some LUA object.
 local function toatom(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
   return math.tointeger(x) or tonumber(x) or x  end
-
+    
+-- **cli(key:str, x:any):any**    
+-- If the command line contains the flags `--key` or `-k` then update `x`.
+-- If `x` is a boolean, them the flag does not need a value (we'll just flip to old one).
 local function cli(key,x)
   x = tostring(x)
   for n,flag in ipairs(arg) do 
@@ -108,127 +75,210 @@ local function cli(key,x)
       x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end
   return toatom(x) end  
         
+-- Now we have enough code to generate `the` from the `help` string.
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(k,x) the[k] = cli(k,x) end)
+-- ##  Options
 
--- ## Define the local names
+-- `--file`   
+-- Read data from a csv file where row1 has names for each
+-- column. NUMerics  start with upper case (and other columns are SYMbolic).
+-- Names ending with `+` or `-` are goals to be maximized or minimized (and
+-- internally, they get a weight `w=1` or `w=-1`). Names ending with `!` are
+-- symbolic goal class. 
+-- All columns are stored in `NUM.all` while `NUM.ys` and `NUM.xs`
+-- store goals and non-goals.
+-- Names to skip are marked with `:`,
+-- (and anything we are skipping is not added to `xs` or `ys`).
+--[[
+Clndrs ,Volume ,Hp: ,Lbs- ,Acc+ ,Model ,origin ,Mpg+
+8      ,304    ,193 ,4732 ,18.5 ,70    ,1      ,10
+8      ,360    ,215 ,4615 ,14   ,70    ,1      ,10
+8      ,307    ,200 ,4376 ,15   ,70    ,1      ,10
+8      ,318    ,210 ,4382 ,13.5 ,70    ,1      ,10
+8      ,429    ,208 ,4633 ,11   ,72    ,1      ,10
+8      ,400    ,150 ,4997 ,14   ,73    ,1      ,10
+...                                                --]]
+
+-- `--some [=512]`  
+--  Optimization trick: To sample the landscape, look for two extremely distant
+--  points within  `the.some` items (selected at random). 
+--   
+-- `--Far [=95]`     
+--  Outlier avoidance trick: When searching for extremes, don't use the thing
+--  100% most distant. Instead, only look acorss `the.far` percent.
+--   
+-- `--p [=2]`    
+-- Distance is calculated using the Minkowski distance
+-- ( &sum;<sub>i</sub> ( (xi-yi)<sup>p</sup>) )<sup>1/p</sup>.
+-- At `the.p=2`, this is the Euclidean measure.
+--  We normalized the numerics 0..1 (min..max) and symbols are at distance 0,1 
+-- (for same and different, respectively.). 
+-- For missing values, we assume values that maximizes the distance.
+-- 
+-- `--min [=.5]`     
+-- In pass1, this code uses various heuristics to  divide `N` examples down 
+-- to size `N<sup>the.min</sup>`.
+--   
+-- `--Min [=10]`     
+-- The heuristics used in pass1 are only approximate. Hence, in a 
+-- second pass2, we take the better items from pass1 and we try it all again,
+-- this time looking for `the.Min` examples that are "good"
+--
+-- `--bins [=16]`     
+-- After pass1 and pass2, we have found  examples of "good" and not "good". Next,
+-- we  divide NUMeric columns into `the.bins` (using `(hi-lo)/the.bins`)`, then
+-- look for ways to combine adjacent ranges (e.g. if they are too small or if
+-- combining them leads to simpler things than leaving them divided).
+-- 
+-- `--Goal [=helps]`     
+-- Once we know the ranges, we core each one by some goal function defined in `the.Goal`.
+-- To build a decision rule, we apply the best range then recurse looking for good ranges
+-- in the remaining data.
+-- ## Names
 
 -- Define all local names at top of file (so code can be defined in any order).
 local atom,big,bins,csv,fmt,goes,going,gt,is,lt,main,map
 local o,oo,per,push,rand,rnd,sort,splice,tothing
 
--- Make polymorphic classes.   
--- - Define a `new` method that will add a link from a 
+-- **is(name:str):class**    
+-- Make polymorphic classes. 
+-- Define a `new` method that will add a link from a
 -- new table, back to a metatables.
--- -  Also, define a second link from that metatable
--- to a variable storing the methods. 
+-- Also define a second link from that metatable
+-- to a variable storing the methods.
 -- Further, add a print name and a print name for this class.
+-- Finally, set up a `__call` method so that a call to `KLASS()` 
+-- becomes a call to `KLASS.__call`.
 function is(name,    t,new)
   function new(kl,...) local x=setmetatable({},kl); kl.new(x,...); return x end 
   t = {__tostring=o, is=name}; t.__index=t 
   return setmetatable(t, {__call=new}) end 
 
--- ### Define the objects <a name=range></a>
-
--- - ROWS use ROWs (to store data) and NUMs or SYMs  to summarize the cells.
--- - ROWs  use ROWS to handle distance calculations and rankings.
--- - RANGEs remember the `ys` values seen between `xlo` and `xhi`.
---   - RANGEs use SYMs (to hold the `ys` counts)
---
--- NUMs use SOMEs which holds, at most `the.some` numbers
--- (and if it sees more than that, the SOMes just replaces 
---   an existing item, picked at random).
 local NUM,  RANGE, ROW = is"NUM", is"RANGE", is"ROW" 
 local ROWS, SOME,  SYM = is"ROWS", is"SOME", is"SYM" 
   
--- ## RANGE <a name=range></a>
+-- ## class RANGE <a name=range></a>
 
--- - Remember the `ys` values seen between `xlo` and `xhi`.    
--- - Use SYMs (to remember the `ys` values).
--- - Score a range by (e.g.) how much it helps to 
---   select for a  `want'ed class (see **score**)
---   and for other goals, see **score.goal**).
--- - Report if a range is relevant to some row (see **selects**)   
---   
--- Implementation detail: ranges of SYMbolic columns have the
--- invariant `xlo==ylo` (while NUMeric ranges have xlo &le; xhi`).
+-- - **DOES:**
+--   - Remember the `ys` values seen between `xlo` and `xhi`.
+--   - Score a range by (e.g.) how much it helps to
+--     select for a  `want'ed class (see **score**)
+--     and for other goals, see **score.goal**).
+--   - Report if a range is relevant to some row (see **selects**)
+-- - **USES:**
+--   - Use SYMs (to remember the `ys` values).
+-- - **NOTES:**
+--   - Implementation detail: ranges of SYMbolic columns have the
+--     invariant `xlo==ylo` (while NUMeric ranges have xlo &le; xhi`).
 function RANGE.new(i,at,txt,lo,hi,ys) 
   i.at,i.txt,i.xlo,i.xhi,i.ys=at,txt,lo,hi or lo,ys or SYM() end
    
+-- **RANGE:add(x:num, y:atom)**
 function RANGE.add(i,x,y)
   if x<i.xlo then i.xlo = x end
   if x>i.xhi then i.xhi = x end
   i.ys:add(y) end
    
+-- **RANGE:__tostring()**<br>Pretty-print a range.
 function RANGE.__tostring(i)
   local x, lo, hi = i.txt, i.xlo, i.xhi
   if     lo ==  hi  then return fmt("%s == %s",x, lo)  
   elseif hi ==  big then return fmt("%s >= %s",x, lo)  
   elseif lo == -big then return fmt("%s < %s", x, hi)  
   else                   return fmt("%s <= %s < %s",lo,x,hi) end end
-    
+
+-- **goal.fun(b:float, r:float)**<br>Different ways to rank ranges.
+local goal = {}
+goal.helps = function(b,r) return ((b<r or b+r < .05) and 0) or b^2/(b+r) end
+goal.hurts = function(b,r) return ((r<b or b+r < .05) and 0) or r^2/(b+r) end
+goal.tabu  = function(b,r) return 1/(b+r) end 
+
+-- **RANGE:score(want:atom,  B:int, R:float):float**  
+-- Count how often we see `want`, or anything else. Use those counts
+-- to calcuate 
+-- to rank this range.
 function RANGE.score(i,want,B,R)
-  local goal, b, r, z = {}, 0, 0, 1/big
-  goal.helps= function(b,r) return ((b<r or b+r < .05) and 0) or b^2/(b+r) end
-  goal.hurts= function(b,r) return ((r<b or b+r < .05) and 0) or r^2/(b+r) end
-  goal.tabu= function(b,r) return 1/(b+r) end 
+  local b, r, z = 0, 0, 1/big
   for v,n in pairs(i.ys.all) do if v==want then b = b+n else r=r+n end end
   return goal[the.Goal](b/(B+z), r/(R+z)) end
-   
+  
+-- **RANGE:selects(row: ROW)**<br> Return true if `row` might be in this range. 
 function RANGE.selects(i,row,     v)
   v = row.cells[i.at]
   return v=="?" or (i.xlo==i.xhi and i.xlo==v) or (i.xlo<=v and v<i.xhi) end
--- ## SYM <a name=sym></a>
+-- ## class SYM <a name=sym></a>
 
--- Update a summary of a  stream of symbols.
--- 
--- Report their mode (a.k.a. **mid()**) and -- entropy (a.k.a. **div()**).   
+-- - **DOES:**
+--   - Incrementally update a summary of a stream of symbols.
+--   - Report central tendancy and diversity (`mid()=mode` and `div()=entropy`).
+--   - Support supervised discretization.
 function SYM.new(i,at,txt) 
   i.at,i.txt = at or 0,txt or ""; i.n,i.all=0,{}; i.most,i.mode=0 end
 
--- Subtracting data is just the inverse of adding data.
-function SYM.sub(i,x,inc) SYM.add(i,x,-(inc or 1)) end
--- Add by adjusting internal symbol counts.
+-- **SYM:add(x:atom,  ?inc=1)**<br>Add `inc` number of `x`.
 function SYM.add(i,x,inc) 
   if x~="?" then 
     inc = inc or 1
     i.n = i.n+inc
-    i.all[x] = inc + (i.all[x] or 0)
+    i.all[x]:w
+    = inc + (i.all[x] or 0)
     if i.all[x] > i.most then i.most,i.mode=i.all[x], x end end end
 
--- Though NUMerics are discretized into (at most **the.bins**) ranges,
--- SYMs just get discretized to themelves.
+-- **SYM:bin(x:atom)**   
+-- Return `x` mapped to a discreteized value. For SYMbols, that just mean return `x`.
 function SYM.bin(i,x) return x end
 
+-- **SYM:bins(bins:tab,...)**   
 -- While NUMeric ranges need some post-processing (after binning),
 -- SYMbolic ranges are just ready to go.
 function SYM.bins(i,bins,...) return bins end
 
+-- **SYM:div()**<br> Return the entropy.
 function SYM.div(i,   e)
   e=0; for k,n in pairs(i.all) do if n>0 then e=e-n/i.n*math.log(n/i.n,2) end end 
   return e end
 
+-- **SYM:mid()**<br> Return the `mode` value.
 function SYM.mid(i,...) return i.mode end
 
----------------------------------------------------------------------------------
--- ## SOME <a name=some></a>
+-- **SYM:sub(x:atom, inc:int)**<br>Subtracting data is just the inverse of adding data.
+function SYM.sub(i,x,inc) SYM.add(i,x,-(inc or 1)) end
 
---  NUMs hold their summary
--- in a `SOME` object that, once it fills up, replaces old values with the new ones.
+-- ## class SOME <a name=some></a>
+
+-- - **DOES:**
+--   - Remember, at most `the.some` number of items.
+--   - Return those items, sorted.
 function SOME.new(i) i.all, i.ok, i.n = {}, false,0 end
+
+-- **SOME:add(x:atom)**     
+-- Add `x`. If our local store is full, then 
+-- at a probability inverse to the number of seen items, replace any item at random.
 function SOME.add(i,x,     a) 
   i.n, a = 1 + i.n, i.all
   if     #a     < the.some     then i.ok=false; push(a,x)  
   elseif rand() < the.some/i.n then i.ok=false; a[rand(#a)]=x end end 
 
+-- **SOME:has(): tab**     
+-- Ensure contents are sorted. Return those contents.
 function SOME.has(i) if not i.ok then sort(i.all) end;i.ok=true; return i.all end
----------------------------------------------------------------------------------
--- ## NUM <a name=num></a>
 
+-- ## class NUM <a name=num></a>
+
+-- - **DOES:**
+--   - Incrementally update a summary of a stream of numbers 
+--     (`lo`, `hi`, `mu`).
+--   - Normalize numbers 0..1, `lo` to `hi`.
+--   - Report central tendency and diversity
+--     (`mid()=mu` and `div()=standard deviation`).
+--   - Support supervised discretization.
 function NUM.new(i,at,txt) 
   i.at,i.txt=at or 0,txt or ""; i.hi= -big;i.lo= big; i.n,i.mu=0,0 
   i.w = i.txt:find"-$" and -1 or 1 
   i.all = SOME() end
 
+-- **NUM:add(x:num)**   
+-- Increment our knowledge of _mu,lo,hi_.
 function NUM.add(i,x) 
   if x ~="?" then 
     i.all:add(x) 
@@ -237,12 +287,16 @@ function NUM.add(i,x)
     i.mu    = i.mu + d/i.n
     i.hi=math.max(x, i.hi); i.lo=math.min(x, i.lo) end end
 
+-- **NUM:bin(x:num):tab**<br>Return `x` mapped to a discreteized value. 
 function NUM.bin(i,v,  b) 
   if i.hi - i.lo < 1E-9 then return 0 end
   b=(i.hi-i.lo)/the.bins;return math.floor(v/b+0.5)*b end
--- <a name=numbin></a>
+
+-- **NUM:bins(bins:tab, enough:int):bins** <a name=numbin></a>    
+-- Combine adjacent ranges, pruning ranges that are too small
+-- (i.e. smaller than `enough`). Also,  combining two ranges
+-- if the whole is simpler than the parts.
 function NUM.bins(i,bins,enough)
-  print("enough", enough)
   local out={}
   local function cuts(lo,hi,       cut,lhs,rhs,all,tmp,n,best)
     lhs, rhs, all = SYM(), SYM(), SYM()
@@ -264,15 +318,35 @@ function NUM.bins(i,bins,enough)
   out[1].xlo, out[#out].xhi = -big, big
   return out end
 
-function NUM.clone(i)     return NUM(i.at,i.txt) end
+-- **NUM:div():float**    
+-- Return the standard deviation (90th percentile minus 10th) divided by 2.56.
 function NUM.div(i,  a)   a=i.all:has(); return (per(a,.9) - per(a,.1))/2.56 end
+
+-- **NUM:mid():num**<br>Return the median value.
 function NUM.mid(i,p)     return rnd(i.mu,p or 3) end
+
+-- **NUM:norm(x:num):float**<br>Map `x` into the range `lo` to `hi`.
 function NUM.norm(i,x)
   return x=="?" and x or i.hi-i.lo<1E-9 and 0 or (x - i.lo)/(i.hi - i.lo) end
---------------------------------------------------------------------------------
+
 -- ## ROW <a name=rowlt></a><a name=row></a>
--- 
+
+-- - **DOES:**
+--   - Knows how to sort itself (based on multiple objectives)
+--     and how to compute distance.
+--   - Also, tracks if ever we access the `y` variables
+-- - **NOTES:**
+--   - To do distance and sorting, ROWs need to normalize numeric values
+--     (using the `lo,hi` values). ROWs can appear in many ROWS so this
+--     raises the questions "which lo,hi should I use"? What happens here
+--     is that data is initially read into some master table containing the
+--     `lo,hi`  seen for all the data. The ROWs are then created, with a
+--     `Table.of` pointer back to this original master table.  This means
+--     that when ROWs get shared to different ROWS, then use `lo,hi` from
+--     the global space (as we would want).
 function ROW.new(i,of,cells) i.of,i.cells,i.evaluated = of,cells,false end
+
+-- <b>row1:ROW < row2:ROW</b> <br>Sorts rows, better one goes first.
 function ROW.__lt(i,j,        n,s1,s2,v1,v2)
   i.evaluated = true
   j.evaluated = true
@@ -282,17 +356,41 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
     s1    = s1 - 2.7183^(col.w * (v1 - v2) / n)
     s2    = s2 - 2.7183^(col.w * (v2 - v1) / n) end
   return s1/n < s2/n end
---------------------------------------------------------------------------------
+
 -- ## ROWS <a name=rows></a>
 
+-- - **DOES:**
+--   - Holds onto a set or ROWs, summarized into `ROWS.cols`.
+--   - Input a set of names (from row one of a data file) and convert that
+--     into the appropriate set of NUMeric and SYMbolic columns.
+--     Knows how to sort itself (based on multiple objectives)
+--     and how to compute distance.
+--   - Also, tracks if ever we access the `y` variables
+-- - **NOTES:**
+--   - To do distance and sorting, ROWs need to normalize numeric values
+--     (using the `lo,hi` values). ROWs can appear in many ROWS so this
+--     raises the questions "which lo,hi should I use"? What happens here
+--     is that data is initially read into some master table containing the
+--     `lo,hi`  seen for all the data. The ROWs are then created, with a
+--     `Table.of` pointer back to this original master table.  This means
+--     that when ROWs get shared to different ROWS, then use `lo,hi` from
+--     the global space (as we would want).
 function ROWS.new(i,src)
   i.all={}; i.cols={}; i.xs={}; i.ys={}; i.names={}
   if type(src)=="string" then for   row in csv(  src) do i:add(row) end 
                          else for _,row in pairs(src) do i:add(row) end end end
 
+-- **ROWS:clone(?inits:tab={}): ROWS**  
+-- Return a new table with the same column structure. If `inits` is supplied,
+-- add it all those initial rows.
 function ROWS.clone(i,inits,   j)
   j=ROWS{i.names}; for _,row in pairs(inits or {}) do j:add(row)end; return j end
 
+-- **ROWS:add( t:(lst|ROW) )**  
+-- Add a new row. If this the first header row, create all the NUMs and SYMs we
+-- need (storing the goal and non-goal columns in `NUM.ys` and `NUM.xs`, respectively.) 
+-- All columns also get stored in `NUM.all` (but only the columns not being skipped are
+-- also held in we are not held in `NUM.ys` and `NUM.xs`).
 function ROWS.add(i,row) 
   local function header(   col)
     i.names = row
@@ -306,15 +404,21 @@ function ROWS.add(i,row)
     row = push(i.all, row.cells and row or ROW(i,row))
     for _,col in pairs(i.cols) do col:add(row.cells[col.at]) end end end
 
+-- **ROWS:bestRest()**<br>Sort the rows and return the very best and the very worst.
 function ROWS.bestRest(i,  n,m)
   sort(i.all)
   n = #i.all
   m = n^the.min  
   return splice(i.all, 1,  m), splice(i.all, n - m) end
 
+-- **ROWS:mid()**<br>Return the `mid()` of all the goals.
 function ROWS.mid(i,    p,t) 
   t={}; for _,col in pairs(i.ys) do t[col.txt]=col:mid(p) end; return t end
 
+-- **ROWS:bins(bests:[ROW], rests:[ROW]): [RANGE]**      
+-- Given two sets of rows (`bests` and `rests`), return ranges that
+-- with different distributions in those spaces. Scores these ranges,
+-- sort them, and return them.
 function ROWS.bins(i,bests,rests)
   local function bins1(col,data,         tmp,bins,x,bin, out)
     tmp, bins = {}, {}
@@ -335,7 +439,11 @@ function ROWS.bins(i,bests,rests)
        push(out,{range=b, score=b:score(1, #bests, #rests)}) end end
   return out end
 
-function ROWS.contrast(i,bests,rests,hows,stop,n,how)
+-- **ROWS:contrast(bests:[ROW], rests:[ROW]):tab**a   
+-- Given two sets of rows (`bests` and `rests`), add the  ranges that
+-- with different distributions in those spaces. Scores these ranges,
+-- sort them, and return them.
+function ROWS.contrast(i,bests,rests,       hows,stop,n,how)
   stop = stop or #bests/4
   hows = hows or {}
   n    = n    or 1
@@ -354,7 +462,7 @@ function ROWS.contrast(i,bests,rests,hows,stop,n,how)
         push(hows,how)
         return i:contrast(bests1, rests1, hows, stop, n+1) end end end
   return hows,bests end
---------------------------------------------------------------------------------
+
 -- ## LIB <a name=lib></a>
 
 big = math.huge
@@ -498,4 +606,45 @@ os.exit(fails)
 -- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 -- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 -- POSSIBILITY OF SUCH DAMAGE.
+
+-- -----------
+-- we can position any other example _C &in; N_ somewhere between the two extremes.
+-- If the extremes  _A,B_ are separated by
+-- distance _c_,then _C_ has a distance _x=(a\*a + c\*c - b\*b)/(2c)_ from _A_. 
+-- The data is divided
+-- in two using the median _x_ value and we recurse (on all of _N_). 
+-- - Optionally, we  might prune the half of the data nearest to
+-- the worse extreme (where "worse" is defined by a multi-objective domination predicate 
+-- (see [`ROW.__lt`](#rowlt). Note that this needs only two extreme points per pruning.
+--    
+-- When recursing, if one extreme point is taken from an extreme in the parent, then
+-- (e.g.) 10,000 options can be pruned back to around 20
+-- "good"  ones
+-- in less than two  dozen evaluations. 
+--  
+-- The above heuristcs can be sometimes inaccurate,  so we loop a few times, each
+-- time starting with some subset of "good" examples found in the last loop.
+-- So of loop1 finds N<sup>**min1=.5**</sup> "good" examples, subsequent loops
+-- look for **min2==10** best examples within  some of the "good" seen in prior
+-- rounds.
+-- we can position any other example _C &in; N_ somewhere between the two extremes.
+-- If the extremes  _A,B_ are separated by
+-- distance _c_,then _C_ has a distance _x=(a\*a + c\*c - b\*b)/(2c)_ from _A_. 
+-- The data is divided
+-- in two using the median _x_ value and we recurse (on all of _N_). 
+-- - Optionally, we  might prune the half of the data nearest to
+-- the worse extreme (where "worse" is defined by a multi-objective domination predicate 
+-- (see [`ROW.__lt`](#rowlt). Note that this needs only two extreme points per pruning.
+--    
+-- When recursing, if one extreme point is taken from an extreme in the parent, then
+-- (e.g.) 10,000 options can be pruned back to around 20
+-- "good"  ones
+-- in less than two  dozen evaluations. 
+--  
+-- The above heuristcs can be sometimes inaccurate,  so we loop a few times, each
+-- time starting with some subset of "good" examples found in the last loop.
+-- So of loop1 finds N<sup>**min1=.5**</sup> "good" examples, subsequent loops
+-- look for **min2==10** best examples within  some of the "good" seen in prior
+-- rounds.
+
 

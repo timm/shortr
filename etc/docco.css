@@ -58,11 +58,11 @@ p {
   margin: 15px 0 0px;
 }
   .annotation ul, .annotation ol {
-    margin: 25px 0;
+    xmargin: 45px 0;
   }
     .annotation ul li, .annotation ol li {
       font-size: 12px;
-      line-height: 15px;
+      line-height: 13px;
       margin: 11px 0;
     }
 
@@ -80,11 +80,12 @@ h1 {
   margin-top: 11px;
 }
 h2 {
-  font-size: 2em;
+  font-size: 2.1em;
   margin: 10px 0 15px 0;
   border-top: 2px solid #ccc;
 }
 h3 { color: #954121;
+  font-size: 1.4em;
   xtext-decoration: underline; }
 h4 {
   text-decoration: italic;

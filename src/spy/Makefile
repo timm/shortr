@@ -1,5 +1,6 @@
 MAKEFLAGS += --silent
 SHELL:= /bin/bash#
+R=$(shell git rev-parse --show-toplevel)
 
 help : Makefile
 	echo ""; echo "usage: "
@@ -10,4 +11,6 @@ help : Makefile
 
 c=spy
 doc: ## make doc
-	docco -l classic $c.lua	
+	echo $R
+	docco -l classic $c.lua
+	cp $R/etc/docco.css docs/
