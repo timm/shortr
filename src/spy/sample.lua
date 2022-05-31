@@ -62,9 +62,9 @@ local ROW,ROWS,SYM,NUM,SOME = is"ROW",is"ROWS",is"SYM",is"NUM",is"SOME"
 
 --------------------------------------------------------------------------------
 function col(i,holds,at,txt) 
-  i.holds=holds
   i.n, i.at, i.txt = 0, at or 0, txt or ""
-  i.w= i.txt:find"-$" and -1 or 1 end
+  i.w= i.txt:find"-$" and -1 or 1 
+  i.holds = holds end
 
 function add(i,x,inc,fun)
   if x ~= "?" then
@@ -125,6 +125,14 @@ function SYM.div()
 
 function SYM.bin(i,x) return x end    
 
+function SYM.score(i,want, wants,donts)
+  local b, r, z, goal = 0, 0, 1/big, {}
+  goal.helps= function(b,r) return (b<r or b+r < .05) and 0 or b^2/(b+r) end
+  goal.hurts= function(b,r) return (r<b or b+r < .05) and 0 or r^2/(b+r) end
+  goal.tabu = function(b,r) return 1/(b+r) end 
+  for v,n in pairs(i.ys.all) do if v==want then b = b+n else r=r+n end end
+  return goal[the.Goal](b/(wants+z), r/(donts+z)) end
+ 
 --------------------------------------------------------------------------------
 function ROW.new(i,of,cells) i.of,i.cells,i.evaluated = of,cells,false end
 function ROW.__lt(i,j,        n,s1,s2,v1,v2)
@@ -165,6 +173,18 @@ function ROWS.bestRest(i,  n,m)
 function ROWS.mid(i,    p,t) 
   t={}; for _,col in pairs(i.ys) do t[col.txt]=col:mid(p) end; return t end
 
+function ROWS.splits(i,bests,rests)
+  most,at,lo,ho =-1
+  for _,col in pairs(i.xs) do
+    for _,r in ranges(col,...) do 
+      score =  r:score(1,#bests,#rests)
+      if score>most then score,at,lo,hi =  score,r.ys.at,r,lo,r.hi end end
+  for _,rows in pairs{bests,rests} do
+    for _,row in pairs(rows) do 
+      v= row.cells[at]
+      use = v=="?" or lo==hi and lo=v or lo<=v and v<=hi
+      push(use and yes or no, row) end end
+  return ROWS.split(i, bests1, rests1) end
 --------------------------------------------------------------------------------
 function ranges(col, ...)
   local function xpand(t) t[1].xlo, t[#tmp].xhi = -big, big; return t end
