@@ -10,13 +10,12 @@ help : Makefile
 	| grep -v gawk
 
 c=spy
-doc: ## make doc
-	echo $R
-	docco -l classic $c.lua
+docs/%.html:  %.lua ## make doc
+	docco -l classic $<
 	cp $R/etc/docco.css docs/
 
 
-$R/docs/%.pdf : %.lua  ## make pdf
+../../docs/%.pdf : %.lua  ## make pdf
 	@echo "pdf-ing $@ ... "
 	@a2ps -Bjr    -q                        \
 		-L 120 \

@@ -25,12 +25,15 @@ OPTIONS (other):
   -g  --go    start up action    = nothing   
   -v  --verbose show details     = false
   -h  --help  show help          = false]]   
+-- ## Convert help text to settings
 
-function read(str)
+-- String to thing.
+function read(str) -- :str --> :bool | int | float | str
   str = str:match"^%s*(.-)%s*$"
   if str=="true" then return true elseif str=="false" then return false end
   return math.tointeger(str) or tonumber(str) or str  end
 
+-- (1) parse `help`<br>(2) make `THE` settings;<br>(3) also make a `backup`.
 local THE, backup = {}, {}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) 
   for n,flag in ipairs(arg) do 
@@ -39,17 +42,24 @@ help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x)
   x = read(x) 
   backup[key] = x
   THE[key] = x end) 
- 
+
+-- If `-h` was used on command line, pretty print help text (then exit).
 if THE.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;31m%1\27[0m"))) end
 
---------------------------------------------------------------------------------
-function str(i,       j)
+-- ##  Objects
+
+-- Make pretty print string for tables. Print  slots of associative arrays in sorted order.
+-- To actually print this string, use `oo(i)` (see below).
+function str(i) -- :any --> :str
+  local j
   if type(i)~="table" then return tostring(i) end
   if #i> 0            then return table.concat(map(i,tostring),", ") end
   j={}; for k,v in pairs(i) do j[1+#j] = string.format(":%s %s",k,v) end
   table.sort(j)
   return (i.is or "").."{"..table.concat(j," ").."}" end 
 
+-- Object creation.<br>(1) Link to pretty print.<br>(2) Assign a unique id.  
+-- (3) Link new object to the class.<br>Map klass(i,...) to klass.new(...).
 local _id=0
 function is(name,    t)
   local function new(kl,...) 
@@ -58,12 +68,21 @@ function is(name,    t)
   t = {__tostring=str, is=name}; t.__index=t
   return setmetatable(t, {__call=new}) end 
 
+-- Make our classes.<br>(1) ROWS are containers for ROW. <br>(2) Columns summarizes
+-- as SYMbolic or NUMeric.<br>(3) SOME is a helper class for NUM
 local ROW,ROWS,SYM,NUM,SOME = is"ROW",is"ROWS",is"SYM",is"NUM",is"SOME"
---------------------------------------------------------------------------------
-function col(i,holds,at,txt) 
+
+-- ## SOME
+-- if we keep more than
+-- `THE.some` items then SOME replaces old items with the new old items.
+
+-- For SOME (and NUM and SYM), new columns have a container `has` and appear in
+-- column `at` and have name `txt`. If a column name ends in `-`, set its weight 
+-- to -1.
+function col(i,has,at,txt) 
   i.n, i.at, i.txt = 0, at or 0, txt or ""
   i.w= i.txt:find"-$" and -1 or 1 
-  i.holds = holds end
+  i.has = has end
 
 function add(i,x,inc,fun)
   if x ~= "?" then
@@ -74,10 +93,10 @@ function add(i,x,inc,fun)
 
 function SOME.new(i, ...) col(i,{},...); i.ok=false; end
 function SOME.sorted(i,  a)  
-  if not i.ok then table.sort(i.holds) end; i.ok=true; return i.holds end
+  if not i.ok then table.sort(i.has) end; i.ok=true; return i.has end
 function SOME.add(i,x)
   return add(i,x,1,function(     a)
-    a = i.holds
+    a = i.has
     if     #a     < THE.some     then i.ok=false; push(a,x)  
     elseif rand() < THE.some/i.n then i.ok=false; a[rand(#a)]=x end end) end 
 
@@ -86,19 +105,20 @@ function NUM.new(i, ...) col(i,SOME(),...); i.mu,i.lo,i.hi=0,big,-big end
 function NUM.clone(i)    return NUM(i.at, i.txt) end
 function NUM.add(i,x)
   return add(i,x,1,function(     d)
-    i.holds:add(x)
+    i.has:add(x)
     d = x - i.mu
     i.mu = i.mu + d/i.n
     i.hi = math.max(x, i.hi); i.lo=math.min(x, i.lo) end ) end
 
 function NUM.merge(i,j,      k)
   local k = NUM(i.at, i.txt)
-  for _,x in pairs(i.holds.holds) do k:add(x) end
-  for _,x in pairs(j.holds.holds) do k:add(x) end
+  for _,x in pairs(i.has.has) do k:add(x) end
+  for _,x in pairs(j.has.has) do k:add(x) end
   return k end
 
 function NUM.mid(i) return i.mu end
-function NUM.div(i, a) a=i.holds:all(); return (per(a, .9) - per(a, .1))/2.56 end
+function NUM.div(i, a) 
+  a=i.has:sorted(); return (per(a, .9) - per(a, .1))/2.56 end
 
 function NUM.bin(i,x,   b)     
   b = (col.hi - col.lo)/THE.bins; return math.floor(v/b+.5)*b end
@@ -108,8 +128,8 @@ function SYM.new( i, ...) col(i,{},...);     i.most, i.mode=0,nil end
 function SYM.clone(i) return SYM(i.at, i.txt) end
 function SYM.add(i,x,inc)
   return add(i,x,inc, function()
-    i.holds[x] = (inc or 1) + (i.holds[x] or 0)
-    if i.holds[x] > i.most then i.most,i.mode = i.holds[x],x end end) end 
+    i.has[x] = (inc or 1) + (i.has[x] or 0)
+    if i.has[x] > i.most then i.most,i.mode = i.has[x],x end end) end 
 
 function SYM.merged(i,j,      k)
   local k = SYM(i.at, i.txt)
@@ -119,7 +139,7 @@ function SYM.merged(i,j,      k)
 
 function SYM.mid(i) return i.mode end
 function SYM.div()
-  e=0;for k,n in pairs(i.holds) do if n>0 then e=e-n/i.n*math.log(n/i.n,2)end end 
+  e=0;for k,n in pairs(i.has) do if n>0 then e=e-n/i.n*math.log(n/i.n,2)end end 
   return e end
 
 function SYM.bin(i,x) return x end    
@@ -129,7 +149,7 @@ function SYM.score(i,want, wants,donts)
   how.helps= function(b,r) return (b<r or b+r < .05) and 0 or b^2/(b+r) end
   how.hurts= function(b,r) return (r<b or b+r < .05) and 0 or r^2/(b+r) end
   how.tabu = function(b,r) return 1/(b+r+z) end 
-  for v,n in pairs(i.ys.all) do if v==want then b = b+n else r=r+n end end
+  for v,n in pairs(i.ys.has) do if v==want then b = b+n else r=r+n end end
   return how[the.How](b/(wants+z), r/(donts+z)) end
  
 --------------------------------------------------------------------------------
@@ -150,7 +170,7 @@ function ROW.within(i,range,         lo,hi,at,v)
    return  v=="?" or lo==hi and v==lo or lo<=v and v<hi end
  --------------------------------------------------------------------------------
 function ROWS.new(i,src)
-  i.all={}; i.cols={}; i.xs={}; i.ys={}; i.names={}
+  i.has={}; i.cols={}; i.xs={}; i.ys={}; i.names={}
   if type(src)=="string" then for   row in csv(  src) do i:add(row) end 
                          else for _,row in pairs(src) do i:add(row) end end end
 
@@ -167,14 +187,14 @@ function ROWS.add(i,row)
         push(s:find"[!+-]$" and i.ys or i.xs, col) end end 
   end -------------------------------
   if #i.cols==0 then header(row) else
-    row = push(i.all, row.cells and row or ROW(i,row))
+    row = push(i.has, row.cells and row or ROW(i,row))
     for _,col in pairs(i.cols) do col:add(row.cells[col.at]) end end end
 
 function ROWS.bestRest(i,  n,m)
-  table.sort(i.all)
-  n = #i.all
+  table.sort(i.has)
+  n = #i.has
   m = n^the.min  
-  return splice(i.all, 1,  m), splice(i.all, n - m) end
+  return splice(i.has, 1,  m), splice(i.has, n - m) end
 
 function ROWS.mid(i,    p,t) 
   t={}; for _,col in pairs(i.ys) do t[col.txt]=col:mid(p) end; return t end
@@ -266,8 +286,8 @@ function go.the() fyi(str(THE));  str(THE) return true end
 
 function go.some( s)
   THE.some = 16
-  s=SOME(); for i=1,10000 do s:add(i) end; oo(s:all())
-  oo(s:all())
+  s=SOME(); for i=1,10000 do s:add(i) end; oo(s:sorted())
+  oo(s:sorted())
   return true end
 
 function go.num( n)
@@ -276,7 +296,7 @@ function go.num( n)
 
 function go.sym( s)
   s=SYM(); for i=1,10000 do s:add(math.random(10)) end; 
-  return s.holds[9]==1045  end
+  return s.has[9]==1045  end
 
 function go.csv()
   for row in csv(THE.file) do oo(row) end; return true; end
