@@ -1,3 +1,35 @@
++iterative diconphmzation: discretization, sctott-knot, decision tree
++
+ self-documentating code:
+
+ +
+ +----
+ +
+ +creational patterns
+ +singleton(s): the of pattern
+ +prototype: clone
+ +factory: dsl . headers
+ +
+ +
+ +
+ +----
+ +
+ +Structural patterns
+ +These patterns explain how to assemble objects and classes into larger structures while keeping these structures flexible and efficient.
+ +composition: ROWS: cols: num
+ +             ROWS: ROW
+ +
+ +farcade: dsl for th headers
+ +decorator: range is a decorator for SYM
+ +----
+ +
+ +behavior:
+ +These patterns are concerned with algorithms and the assignment of responsibilities between objects.
+ +iterator (csv)  stragey command (goal)
+ +visitor:: mid, div,bins
+
+
+
 self-documentating code:
 
 - Makefile
