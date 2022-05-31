@@ -145,7 +145,11 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
     s2    = s2 - 2.7183^(col.w * (v2 - v1) / n) end
   return s1/n < s2/n end
 
---------------------------------------------------------------------------------
+function ROW.selected(i,range,         lo,hi,at,v)
+   lo,hi,at = range.xlo, range.xhi, range.ys.at
+   v= i.cells[at]
+   return  v=="?" or lo==hi and lo=v or lo<=v and v<=hi end
+ --------------------------------------------------------------------------------
 function ROWS.new(i,src)
   i.all={}; i.cols={}; i.xs={}; i.ys={}; i.names={}
   if type(src)=="string" then for   row in csv(  src) do i:add(row) end 
@@ -173,18 +177,28 @@ function ROWS.bestRest(i,  n,m)
 function ROWS.mid(i,    p,t) 
   t={}; for _,col in pairs(i.ys) do t[col.txt]=col:mid(p) end; return t end
 
-function ROWS.splits(i,bests,rests)
-  most,at,lo,ho =-1
+function ROWS.splits(i,bests0,rests0)
+  most,range,tmp = -1
   for _,col in pairs(i.xs) do
-    for _,r in ranges(col,...) do 
-      score =  r:score(1,#bests,#rests)
-      if score>most then score,at,lo,hi =  score,r.ys.at,r,lo,r.hi end end
-  for _,rows in pairs{bests,rests} do
+    for _,r in ranges(col,bests0,rests0) do
+      tmp =  r:score(1,#bests0,#rests0)
+      if tmp>most then most,range = tmp,r end end end
+  local bests1, rests1 = {},{}
+  for _,rows in pairs{bests0,rests0} do
     for _,row in pairs(rows) do 
-      v= row.cells[at]
-      use = v=="?" or lo==hi and lo=v or lo<=v and v<=hi
-      push(use and yes or no, row) end end
-  return ROWS.split(i, bests1, rests1) end
+      push(row:selected(range) and bests1 or rests1, row) end end
+  return bests1, rests1,range end
+
+function ROWS.contrast(i,bests0,rests0,    hows,stop)
+  stop = stop or #bests0/4
+  hows = hows or {}
+  if (#bests0 + #rests0) > stop then
+    bests1, rests1,range = i:splits(bests0,rests0)
+    if #bests1>0 and (#bests1 < #bests0 or #rests1 < #rests0) then
+      push(hows,range)
+      return i:contrast(bests1, rests1, hows, stop) end end 
+  return hows,bests end
+
 --------------------------------------------------------------------------------
 function ranges(col, ...)
   local function xpand(t) t[1].xlo, t[#tmp].xhi = -big, big; return t end
