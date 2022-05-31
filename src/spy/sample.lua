@@ -224,7 +224,7 @@ function ranges(col, ...)
       t[#t+1] = a
       j = j + 1 end
     return #b4 == #t and t or merge(t,min) 
-  end ------------------
+  end ----------------------------
   local known,out,n,v,x = {},{}, 0
   for klass,rows in pairs{...} do
     n = n + #rows
