@@ -14,3 +14,19 @@ doc: ## make doc
 	echo $R
 	docco -l classic $c.lua
 	cp $R/etc/docco.css docs/
+
+
+$R/docs/%.pdf : %.lua  ## make pdf
+	@echo "pdf-ing $@ ... "
+	@a2ps -Bjr    -q                        \
+		-L 120 \
+		--line-numbers=1                    \
+		--highlight-level=normal  \
+		--borders=no --pro=color --columns 3 \
+		--right-footer="" --left-footer=""    \
+		--pretty-print=$R/etc/lua.ssh             \
+		--footer="page %p."                     \
+		-M letter -o $@.ps $<
+	@ps2pdf $@.ps $@; rm $@.ps; git add $@
+
+

@@ -58,8 +58,7 @@ function is(name,    t)
   t = {__tostring=str, is=name}; t.__index=t
   return setmetatable(t, {__call=new}) end 
 
-local ROW,ROWS,SYM,NUM,SOME = is"ROW",is"ROWS",is"SYM",is"NUM",is"SOME"
-
+local ROW,ROWS,SYM,NUM,SOME = is"ROW",is"ROWS",is"SYM",is"NUM",is"SOME"
 --------------------------------------------------------------------------------
 function col(i,holds,at,txt) 
   i.n, i.at, i.txt = 0, at or 0, txt or ""
@@ -148,8 +147,7 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
 function ROW.within(i,range,         lo,hi,at,v)
    lo, hi, at = range.xlo, range.xhi, range.ys.at
    v = i.cells[at]
-   return  v=="?" or lo==hi and v==lo or lo<=v and v<hi end
-
+   return  v=="?" or lo==hi and v==lo or lo<=v and v<hi end
  --------------------------------------------------------------------------------
 function ROWS.new(i,src)
   i.all={}; i.cols={}; i.xs={}; i.ys={}; i.names={}
@@ -238,8 +236,7 @@ function ranges(col, ...)
         known[x].ys:add(klass) end end end
   table.sort(out,lt("xlo"))
   out= col.is=="NUM" and xpand(merge(out, n^THE.bins)) or out 
-  return #out < 2 and {} or out end 
-
+  return #out < 2 and {} or out end 
 --------------------------------------------------------------------------------
 oo  = function(i) print(str(i)) end
 big = math.huge
@@ -261,8 +258,7 @@ function csv(csvfile)
     s=io.read()
     if not s then io.close(csvfile) else
       t={}; for x in s:gmatch("([^,]+)") do t[1+#t] = read(x) end
-      return t end end end 
- 
+      return t end end end 
 --------------------------------------------------------------------------------
 local fails,go,no=0,{},{}
 
