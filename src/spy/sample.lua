@@ -13,7 +13,7 @@ USAGE: lua sample.lua [OPTIONS]
                                               defaults   
                                               ~~~~~~~~   
   -S  --Seed  random number seed              = 10019   
-  -G  --Goal  optimize for (helps,hurts,tabu) = helps   
+  -H  --How   optimize for (helps,hurts,tabu) = helps   
   -b  --bins  number of bins                  = 16   
   -m  --min   min1 size (for pass1)           = .5   
   -M  --Min   min2 size (for pass2)           = 10
@@ -126,12 +126,12 @@ function SYM.div()
 function SYM.bin(i,x) return x end    
 
 function SYM.score(i,want, wants,donts)
-  local b, r, z, goal = 0, 0, 1/big, {}
-  goal.helps= function(b,r) return (b<r or b+r < .05) and 0 or b^2/(b+r) end
-  goal.hurts= function(b,r) return (r<b or b+r < .05) and 0 or r^2/(b+r) end
-  goal.tabu = function(b,r) return 1/(b+r) end 
+  local b, r, z, how = 0, 0, 1/big, {}
+  how.helps= function(b,r) return (b<r or b+r < .05) and 0 or b^2/(b+r) end
+  how.hurts= function(b,r) return (r<b or b+r < .05) and 0 or r^2/(b+r) end
+  how.tabu = function(b,r) return 1/(b+r+z) end 
   for v,n in pairs(i.ys.all) do if v==want then b = b+n else r=r+n end end
-  return goal[the.Goal](b/(wants+z), r/(donts+z)) end
+  return how[the.How](b/(wants+z), r/(donts+z)) end
  
 --------------------------------------------------------------------------------
 function ROW.new(i,of,cells) i.of,i.cells,i.evaluated = of,cells,false end
@@ -145,15 +145,19 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
     s2    = s2 - 2.7183^(col.w * (v2 - v1) / n) end
   return s1/n < s2/n end
 
-function ROW.selected(i,range,         lo,hi,at,v)
-   lo,hi,at = range.xlo, range.xhi, range.ys.at
-   v= i.cells[at]
-   return  v=="?" or lo==hi and lo=v or lo<=v and v<=hi end
+function ROW.within(i,range,         lo,hi,at,v)
+   lo, hi, at = range.xlo, range.xhi, range.ys.at
+   v = i.cells[at]
+   return  v=="?" or lo==hi and v==lo or lo<=v and v<hi end
+
  --------------------------------------------------------------------------------
 function ROWS.new(i,src)
   i.all={}; i.cols={}; i.xs={}; i.ys={}; i.names={}
   if type(src)=="string" then for   row in csv(  src) do i:add(row) end 
                          else for _,row in pairs(src) do i:add(row) end end end
+
+function ROWS.clone(i,with,    j)
+  j=ROWS({i.names}); for _,r in pairs(with or {}) do j:add(r) end; return j end
 
 function ROWS.add(i,row) 
   local function header(   col)
@@ -178,35 +182,36 @@ function ROWS.mid(i,    p,t)
   t={}; for _,col in pairs(i.ys) do t[col.txt]=col:mid(p) end; return t end
 
 function ROWS.splits(i,bests0,rests0)
-  most,range,tmp = -1
+  most,range,range1,score = -1
   for _,col in pairs(i.xs) do
-    for _,r in ranges(col,bests0,rests0) do
-      tmp =  r:score(1,#bests0,#rests0)
-      if tmp>most then most,range = tmp,r end end end
+    for _,range0 in ranges(col,bests0,rests0) do
+      score = range0:score(1,#bests0,#rests0)
+      if score>most then most,range1 = score,range0 end end end
   local bests1, rests1 = {},{}
   for _,rows in pairs{bests0,rests0} do
     for _,row in pairs(rows) do 
-      push(row:selected(range) and bests1 or rests1, row) end end
-  return bests1, rests1,range end
+      push(row:within(range1) and bests1 or rests1, row) end end
+  return bests1, rests1, range1 end
 
 function ROWS.contrast(i,bests0,rests0,    hows,stop)
   stop = stop or #bests0/4
   hows = hows or {}
-  if (#bests0 + #rests0) > stop then
-    bests1, rests1,range = i:splits(bests0,rests0)
-    if #bests1>0 and (#bests1 < #bests0 or #rests1 < #rests0) then
-      push(hows,range)
-      return i:contrast(bests1, rests1, hows, stop) end end 
-  return hows,bests end
+  bests1, rests1,range = i:splits(bests0,rests0)
+  if (#bests0 + #rests0) > stop and (#bests1 < #bests0 or #rests1 < #rests0) then
+    push(hows,range)
+    return i:contrast(bests1, rests1, hows, stop) end 
+  return hows0,bests0 end
 
 --------------------------------------------------------------------------------
 function ranges(col, ...)
-  local function xpand(t) t[1].xlo, t[#tmp].xhi = -big, big; return t end
-  local function merged(i,j,min,      out)
-    out = i:merge(j)
-    if i.n < min or j.n < min then return out end
-    if out:div() <= (i.n*i:div() + j.n*j:div())/out.n then 
-      return out end end
+  local function xpand(t) 
+    for j=2,#t do t[j].xlo = t[j-1].xhi end
+    t[1].xlo, t[#tmp].xhi = -big, big
+    return t end
+  local function merged(i,j,min,      k)
+    k = i:merge(j)
+    if i.n < min or j.n < min or k:div()<=(i.n*i:div() + j.n*j:div())/k.n then 
+      return k end end
   local function merge(b4,min,      t,j,a,b,c)
     t,j = {},1
     while j <= #b4 do 
@@ -218,7 +223,7 @@ function ranges(col, ...)
            a = {xlo=a.xlo, xhi=b.xhi, ys=c} end end
       t[#t+1] = a
       j = j + 1 end
-    return #t < #b4 and merge(t,min) or xpand(b4) 
+    return #b4 == #t and t or merge(t,min) 
   end ------------------
   local known,out,n,v,x = {},{}, 0
   for klass,rows in pairs{...} do
@@ -227,12 +232,12 @@ function ranges(col, ...)
       v = row.cells[col.at] 
       if v ~= "?" then 
         x = col:bin(v)
-        known[x] = known[x] or push(out,{at=c, xlo=v, xhi=v, ys=col:clone()})
-        if v < known[x].xlo then known[x].xlo = x end -- works for string or num
-        if v > known[x].xhi then known[x].xhi = x end -- works for string or num
+        known[x] = known[x] or push(out,{xlo=v, xhi=v, ys=col:clone()})
+        if v < known[x].xlo then known[x].xlo = v end -- works for string or num
+        if v > known[x].xhi then known[x].xhi = v end -- works for string or num
         known[x].ys:add(klass) end end end
   table.sort(out,lt("xlo"))
-  out= col.is=="NUM" and merge(out, n^THE.bins) or out 
+  out= col.is=="NUM" and xpand(merge(out, n^THE.bins)) or out 
   return #out < 2 and {} or out end 
 
 --------------------------------------------------------------------------------
