@@ -1,5 +1,7 @@
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local help=[[  
+local add,big,col,csv,fyi,id,is,klass,lt,map,oo
+local per,push, rand, ranges,read, result, seed, str
+local help=[[
 SAMPLE: while not end of time, look around, see what's what
 (c) 2022 Tim Menzies, timm@ieee.org, BSD2 license    
        
@@ -21,88 +23,231 @@ USAGE: lua sample.lua [OPTIONS]
 OPTIONS (other):   
   -f  --file  csv file with data = ../../etc/data/auto93.csv   
   -g  --go    start up action    = nothing   
-  -h  --help  show help          = false
-]]   
---------------------------------------------------------------------------------
--- Step1: make THE settings by combining help text with any command like flags.
+  -v  --verbose show details     = false
+  -h  --help  show help          = false]]   
+
 function read(str)
   str = str:match"^%s*(.-)%s*$"
   if str=="true" then return true elseif str=="false" then return false end
   return math.tointeger(str) or tonumber(str) or str  end
 
-local THE={}
-help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(k,x) 
+local THE, backup = {}, {}
+help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) 
   for n,flag in ipairs(arg) do 
     if flag==("-"..key:sub(1,1)) or flag==("--"..key) then 
-      x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end
-  THE[k] = read(x) end ) 
-  
-math.random(THE.Seed)
+       x= x=="false" and"true" or x=="true" and"false" or arg[n+1] end end
+  x = read(x) 
+  backup[key] = x
+  THE[key] = x end) 
+ 
+if THE.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;31m%1\27[0m"))) end
+
 --------------------------------------------------------------------------------
 function str(i,       j)
-  if type(i)~="table" or #i> 0 then return tostring(i) end
-  if  #i>0 then return tostring(i) end
+  if type(i)~="table" then return tostring(i) end
+  if #i> 0            then return table.concat(map(i,tostring),", ") end
   j={}; for k,v in pairs(i) do j[1+#j] = string.format(":%s %s",k,v) end
   table.sort(j)
   return (i.is or "").."{"..table.concat(j," ").."}" end 
 
-o   = function(i) print(str(i)) end
-fmt = table.format
-rand= math.random
-seed= math.randomseed
-
---------------------------------------------------------------------------------
---[[
-There are SYMs and NUMs and combinations there of.
---]]
-local _id=0; id=function() _id=_id+1;return _id end
-
-function klass(name,    t,new)
-  function new(kl,...) local x=setmetatable({id=id()},kl); kl.new(x,...); return x end 
-  t = {__tostring=str, is=name}; t.__index=t 
+local _id=0
+function is(name,    t)
+  local function new(kl,...) 
+    _id = _id+1
+    local x=setmetatable({id=_id},kl); kl.new(x,...); return x end 
+  t = {__tostring=str, is=name}; t.__index=t
   return setmetatable(t, {__call=new}) end 
 
-SYM=klass"SYM"
-SOME=klass"SOME"
-NUM=klass"NUM"
+local ROW,ROWS,SYM,NUM,SOME = is"ROW",is"ROWS",is"SYM",is"NUM",is"SOME"
 
+--------------------------------------------------------------------------------
 function col(i,holds,at,txt) 
   i.holds=holds
-  i.n, i.at, i.txt = 0, i.at or 0, i.txt or ""
+  i.n, i.at, i.txt = 0, at or 0, txt or ""
   i.w= i.txt:find"-$" and -1 or 1 end
 
-function SOME.new(i, ...) col(i,{},...);     i.ok=false; end
-function NUM.new( i, ...) col(i,SOME(),...); i.mu,i.lo,i.hi=0,big,-big end
-function SYM.new( i, ...) col(i,{},...);     i.most, i.mode=0,nil end
-
-function add(i,x, inc,fun)
+function add(i,x,inc,fun)
   if x ~= "?" then
     inc = inc or 1
-    i.n=i.n + inc;
+    i.n = i.n + inc
     fun() end
-  return x end
+  return  end
 
-function SOME.add(x)
-  return add(i,x, 1,function(     d)
+function SOME.new(i, ...) col(i,{},...); i.ok=false; end
+function SOME.all(i,  a)  
+  if not i.ok then table.sort(i.holds) end; i.ok=true; return i.holds end
+function SOME.add(i,x)
+  return add(i,x,1,function(     a)
     a = i.holds
-    if     #a     < the.some     then i.ok=false; push(a,x)  
-    elseif rand() < the.some/i.n then i.ok=false; a[rand(#a)]=x end end) end 
+    if     #a     < THE.some     then i.ok=false; push(a,x)  
+    elseif rand() < THE.some/i.n then i.ok=false; a[rand(#a)]=x end end) end 
 
-function NUM.add(x)
-  return add(i,x, 1,function(     d)
-    i.holds:add(x)
-    f = x - i.mu
-    i.mu = i.mu + d/i.mu
-    i.hi=math.max(x, i.hi); i.lo=math.min(x, i.lo) end ) end
+--------------------------------------------------------------------------------
+function NUM.new(i, ...) col(i,SOME(),...); i.mu,i.lo,i.hi=0,big,-big end
+function NUM.add(i,x)
+  return add(i,x,1,function(     d)
+    i.holds:add()
+    d = x - i.mu
+    i.mu = i.mu + d/i.n
+    i.hi = math.max(x, i.hi); i.lo=math.min(x, i.lo) end ) end
 
-function SYM.add(x,inc)
+function NUM.mid(i) return i.mu end
+function NUM.div(i, a) a=i.holds:all(); return (per(a, .9) - per(a, .1))/2.56 end
+
+--------------------------------------------------------------------------------
+function SYM.new( i, ...) col(i,{},...);     i.most, i.mode=0,nil end
+function SYM.add(i,x,inc)
   return add(i,x,inc, function()
     i.holds[x] = (inc or 1) + (i.holds[x] or 0)
     if i.holds[x] > i.most then i.most,i.mode = i.holds[x],x end end) end 
 
-function SYM.merged(i,j,min,   k)
-  k= SYM(i.at, i.txt)
-  for x,n in pairs(i.holds) do k:add(x,n) end
-  for x,n in pairs(j.holds) do k:add(x,n) end
-  if i.n < min or j.n < min then return k end
-  if k:div()*1.01 <= (i:div()*i.n + j:div()*j.n)/k.n  then return k end end
+function SYM.mid(i) return i.mode end
+function SYM.div()
+  e=0;for k,n in pairs(i.holds) do if n>0 then e=e-n/i.n*math.log(n/i.n,2)end end 
+  return e end
+
+function SYM.merged(i,j,      k)
+  local k = SYM(i.at, i.txt)
+  for x,n in pairs(i) do k:add(x,n) end
+  for x,n in pairs(j) do k:add(x,n) end
+  if i.n < min or j.n < min     then return k end
+  if k:div() <= (i.n*i:div() + j.n*j:div())/k.n then return k end end
+
+--------------------------------------------------------------------------------
+function ROW.new(i,of,cells) i.of,i.cells,i.evaluated = of,cells,false end
+function ROW.__lt(i,j,        n,s1,s2,v1,v2)
+  i.evaluated = true
+  j.evaluated = true
+  s1, s2, n = 0, 0, #i.of.ys
+  for _,col in pairs(i.of.ys) do
+    v1,v2 = col:norm(i.cells[col.at]), col:norm(j.cells[col.at])
+    s1    = s1 - 2.7183^(col.w * (v1 - v2) / n)
+    s2    = s2 - 2.7183^(col.w * (v2 - v1) / n) end
+  return s1/n < s2/n end
+
+--------------------------------------------------------------------------------
+function ROWS.new(i,src)
+  i.all={}; i.cols={}; i.xs={}; i.ys={}; i.names={}
+  if type(src)=="string" then for   row in csv(  src) do i:add(row) end 
+                         else for _,row in pairs(src) do i:add(row) end end end
+
+function ROWS.add(i,row) 
+  local function header(   col)
+    i.names = row
+    for at,s in pairs(row) do
+      col = push(i.cols, (s:find"^[A-Z]" and NUM or SYM)(at,s))
+      if not s:find":$" then
+        if s:find"!$" then i.klass = col end
+        push(s:find"[!+-]$" and i.ys or i.xs, col) end end 
+  end -------------------------------
+  if #i.cols==0 then header(row) else
+    row = push(i.all, row.cells and row or ROW(i,row))
+    for _,col in pairs(i.cols) do col:add(row.cells[col.at]) end end end
+
+function ROWS.bestRest(i,  n,m)
+  table.sort(i.all)
+  n = #i.all
+  m = n^the.min  
+  return splice(i.all, 1,  m), splice(i.all, n - m) end
+
+function ROWS.mid(i,    p,t) 
+  t={}; for _,col in pairs(i.ys) do t[col.txt]=col:mid(p) end; return t end
+
+--------------------------------------------------------------------------------
+function ranges(cols, bests,rests)
+  local function bin(col,x,    b)
+    if col.is ~= "NUM" then return x end
+    b = (col.hi - col.lo)/THE.bins 
+    return math.floor(x/b+.5)*b  end
+  local function xpand(t) 
+    t[1].xlo, t[#tmp].xhi= -big, big
+    return #t < 2 and {} or tmp end
+  local function merge(b4, min)
+    local t,j,a,b,c = {},1
+    while j <= #b4 do 
+      a, b = b4[j], b4[j+1]
+      if b then c = a.ys:merge(b.ys, min)
+                if c then j,a = j+1, {xlo=a.xlo, xhi=b.xhi, ys=c} end end
+      t[#t+1] = a
+      j = j + 1  end
+    if #t==#b4 then t[1].xlo, t[#t].xhi= -big, big; return #t<2 and {} or t end
+    return merge(t, min) 
+  end ------------------
+  local out = {}
+  for _,col in pairs(cols) do
+    local index, all = {}, {}
+    for klass,rows in pairs{bests,rests} do
+      for _,row in pairs(rows) do 
+        local x = row.cells[col.at] 
+        if x ~= "?" then 
+          local i = bin(col,x)
+          index[i] = index[i] or push(all, {at=c, xlo=x, xhi=x, ys={}})
+          if x < index[i].xlo then index[i].xlo = x end
+          if x > index[i].xhi then index[i].xhi = x end
+          index[i].ys[klass] = 1 + (index[i].ys[klass] or 0) end end end
+    table.sort(all,lt("xlo"))
+    local enough = (#bests + #rests)^THE.bins
+    out[col.at]  = col.is=="NUM" and merge(all, enough) or all end 
+  return out end
+
+--------------------------------------------------------------------------------
+oo  = function(i) print(str(i)) end
+big = math.huge
+fyi = function(...) if THE.verbose then print(...) end end
+fmt = table.format
+rand= math.random
+
+function push(t,x)    t[1+#t]=x; return x end
+function map(t,f,  u) u={}; for k,v in pairs(t) do u[1+#u]=f(v) end return u end
+function per(t,p)     p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
+function lt()         return function(a,b) return a[x] < b[x] end end
+function csv(csvfile) 
+  csvfile = io.input(csvfile)
+  return function(s, t) 
+    s=io.read()
+    if not s then io.close(csvfile) else
+      t={}; for x in s:gmatch("([^,]+)") do t[1+#t] = read(x) end
+      return t end end end 
+ 
+--------------------------------------------------------------------------------
+local fails,go,no=0,{},{}
+
+function go.the() fyi(str(THE));  str(THE) return true end
+
+function go.some( s)
+  THE.some = 16
+  s=SOME(); for i=1,10000 do s:add(i) end; oo(s:all())
+  oo(s:all())
+  return true end
+
+function go.num( n)
+  n=NUM(); for i=1,10000 do n:add(i) end; oo(n)
+  return true end
+
+function go.sym( s)
+  s=SYM(); for i=1,10000 do s:add(math.random(10)) end; 
+  return s.holds[9]==1045  end
+
+function go.csv()
+  for row in csv(THE.file) do oo(row) end; return true; end
+
+function go.rows( rows)
+  rows = ROWS(THE.file); 
+  map(rows.ys,print); return true; end
+
+--------------------------------------------------------------------------------
+local going={}
+for s,_ in pairs(go) do going[1+#going]=s end
+table.sort(going)
+
+for _,s in pairs(go[THE.go] and {THE.go} or going) do 
+  for k,v in pairs(backup) do THE[k]=v end
+  math.randomseed(THE.Seed)
+  io.write(".")
+  result = go[s]()
+  if result ~= true then 
+    fails = fails + 1
+    print("--Error",s,status) end end
+
+for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end
+os.exit(fails)

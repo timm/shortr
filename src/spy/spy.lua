@@ -220,8 +220,7 @@ function SYM.add(i,x,inc)
   if x~="?" then 
     inc = inc or 1
     i.n = i.n+inc
-    i.all[x]:w
-    = inc + (i.all[x] or 0)
+    i.all[x] = inc + (i.all[x] or 0)
     if i.all[x] > i.most then i.most,i.mode=i.all[x], x end end end
 
 -- **SYM:bin(x:atom)**   
