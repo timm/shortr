@@ -74,7 +74,7 @@ function add(i,x,inc,fun)
   return  end
 
 function SOME.new(i, ...) col(i,{},...); i.ok=false; end
-function SOME.all(i,  a)  
+function SOME.sorted(i,  a)  
   if not i.ok then table.sort(i.holds) end; i.ok=true; return i.holds end
 function SOME.add(i,x)
   return add(i,x,1,function(     a)
@@ -84,34 +84,46 @@ function SOME.add(i,x)
 
 --------------------------------------------------------------------------------
 function NUM.new(i, ...) col(i,SOME(),...); i.mu,i.lo,i.hi=0,big,-big end
+function NUM.clone(i)    return NUM(i.at, i.txt) end
 function NUM.add(i,x)
   return add(i,x,1,function(     d)
-    i.holds:add()
+    i.holds:add(x)
     d = x - i.mu
     i.mu = i.mu + d/i.n
     i.hi = math.max(x, i.hi); i.lo=math.min(x, i.lo) end ) end
 
+function NUM.merge(i,j,      k)
+  local k = NUM(i.at, i.txt)
+  for _,x in pairs(i.holds.holds) do k:add(x) end
+  for _,x in pairs(j.holds.holds) do k:add(x) end
+  return k end
+
 function NUM.mid(i) return i.mu end
 function NUM.div(i, a) a=i.holds:all(); return (per(a, .9) - per(a, .1))/2.56 end
 
+function NUM.bin(i,x,   b)     
+  b = (col.hi - col.lo)/THE.bins; return math.floor(v/b+.5)*b end
+   
 --------------------------------------------------------------------------------
 function SYM.new( i, ...) col(i,{},...);     i.most, i.mode=0,nil end
+function SYM.clone(i) return SYM(i.at, i.txt) end
 function SYM.add(i,x,inc)
   return add(i,x,inc, function()
     i.holds[x] = (inc or 1) + (i.holds[x] or 0)
     if i.holds[x] > i.most then i.most,i.mode = i.holds[x],x end end) end 
+
+function SYM.merged(i,j,      k)
+  local k = SYM(i.at, i.txt)
+  for x,n in pairs(i) do k:add(x,n) end
+  for x,n in pairs(j) do k:add(x,n) end
+  return k end
 
 function SYM.mid(i) return i.mode end
 function SYM.div()
   e=0;for k,n in pairs(i.holds) do if n>0 then e=e-n/i.n*math.log(n/i.n,2)end end 
   return e end
 
-function SYM.merged(i,j,      k)
-  local k = SYM(i.at, i.txt)
-  for x,n in pairs(i) do k:add(x,n) end
-  for x,n in pairs(j) do k:add(x,n) end
-  if i.n < min or j.n < min     then return k end
-  if k:div() <= (i.n*i:div() + j.n*j:div())/k.n then return k end end
+function SYM.bin(i,x) return x end    
 
 --------------------------------------------------------------------------------
 function ROW.new(i,of,cells) i.of,i.cells,i.evaluated = of,cells,false end
@@ -154,41 +166,40 @@ function ROWS.mid(i,    p,t)
   t={}; for _,col in pairs(i.ys) do t[col.txt]=col:mid(p) end; return t end
 
 --------------------------------------------------------------------------------
-function ranges(cols, bests,rests)
-  local function bin(col,x,    b)
-    if col.is ~= "NUM" then return x end
-    b = (col.hi - col.lo)/THE.bins 
-    return math.floor(x/b+.5)*b  end
-  local function xpand(t) 
-    t[1].xlo, t[#tmp].xhi= -big, big
-    return #t < 2 and {} or tmp end
-  local function merge(b4, min)
-    local t,j,a,b,c = {},1
+function ranges(col, ...)
+  local function xpand(t) t[1].xlo, t[#tmp].xhi = -big, big; return t end
+  local function merged(i,j,min,      out)
+    out = i:merge(j)
+    if i.n < min or j.n < min then return out end
+    if out:div() <= (i.n*i:div() + j.n*j:div())/out.n then 
+      return out end end
+  local function merge(b4,min,      t,j,a,b,c)
+    t,j = {},1
     while j <= #b4 do 
       a, b = b4[j], b4[j+1]
-      if b then c = a.ys:merge(b.ys, min)
-                if c then j,a = j+1, {xlo=a.xlo, xhi=b.xhi, ys=c} end end
+      if b then 
+         c = merged(a.ys, b.ys, min)
+         if c then 
+           j = j + 1
+           a = {xlo=a.xlo, xhi=b.xhi, ys=c} end end
       t[#t+1] = a
-      j = j + 1  end
-    if #t==#b4 then t[1].xlo, t[#t].xhi= -big, big; return #t<2 and {} or t end
-    return merge(t, min) 
+      j = j + 1 end
+    return #t < #b4 and merge(t,min) or xpand(b4) 
   end ------------------
-  local out = {}
-  for _,col in pairs(cols) do
-    local index, all = {}, {}
-    for klass,rows in pairs{bests,rests} do
-      for _,row in pairs(rows) do 
-        local x = row.cells[col.at] 
-        if x ~= "?" then 
-          local i = bin(col,x)
-          index[i] = index[i] or push(all, {at=c, xlo=x, xhi=x, ys={}})
-          if x < index[i].xlo then index[i].xlo = x end
-          if x > index[i].xhi then index[i].xhi = x end
-          index[i].ys[klass] = 1 + (index[i].ys[klass] or 0) end end end
-    table.sort(all,lt("xlo"))
-    local enough = (#bests + #rests)^THE.bins
-    out[col.at]  = col.is=="NUM" and merge(all, enough) or all end 
-  return out end
+  local known,out,n,v,x = {},{}, 0
+  for klass,rows in pairs{...} do
+    n = n + #rows
+    for _,row in pairs(rows) do 
+      v = row.cells[col.at] 
+      if v ~= "?" then 
+        x = col:bin(v)
+        known[x] = known[x] or push(out,{at=c, xlo=v, xhi=v, ys=col:clone()})
+        if v < known[x].xlo then known[x].xlo = x end -- works for string or num
+        if v > known[x].xhi then known[x].xhi = x end -- works for string or num
+        known[x].ys:add(klass) end end end
+  table.sort(out,lt("xlo"))
+  out= col.is=="NUM" and merge(out, n^THE.bins) or out 
+  return #out < 2 and {} or out end 
 
 --------------------------------------------------------------------------------
 oo  = function(i) print(str(i)) end
