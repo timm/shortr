@@ -1,6 +1,6 @@
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local add,big,col,csv,fyi,id,is,klass,lt,map,oo
-local per,push, rand, ranges,read, result, seed, str
+local per,push, rand, ranges,read, result, seed, splice, str
 local help=[[
 SAMPLE: while not end of time, look around, see what's what
 (c) 2022 Tim Menzies, timm@ieee.org, BSD2 license    
@@ -201,6 +201,10 @@ function push(t,x)    t[1+#t]=x; return x end
 function map(t,f,  u) u={}; for k,v in pairs(t) do u[1+#u]=f(v) end return u end
 function per(t,p)     p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 function lt()         return function(a,b) return a[x] < b[x] end end
+
+function splice( t, i, j, k,    u) 
+  u={}; for n=(i or 1)//1, (j or #t)//1, (k or 1)//1 do u[1+#u]=t[n] end return u end
+
 function csv(csvfile) 
   csvfile = io.input(csvfile)
   return function(s, t) 
@@ -235,6 +239,10 @@ function go.rows( rows)
   rows = ROWS(THE.file); 
   map(rows.ys,print); return true; end
 
+function go.mid(  r)
+  r= ROWS(THE.file)
+
+end
 --------------------------------------------------------------------------------
 local going={}
 for s,_ in pairs(go) do going[1+#going]=s end
