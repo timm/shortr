@@ -13,8 +13,8 @@
 -- things found in Pass1. __Pass3:__ Report rules that selects for the 
 -- "good" found in Pass2.
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local add,big,col,csv,fyi,id,is,klass,lt,map,oo
-local per,push, rand, ranges,read, result, seed, splice, str
+local add,big,col,csv,fmt,fyi,id,is,klass,lt,map,oo
+local per,push, rand, ranges,read, result, rnd, seed, splice, str
 local help=[[
 SPY: while not end of time, look around, see what's what
 (c) 2022 Tim Menzies, timm@ieee.org, BSD2 license    
@@ -88,7 +88,8 @@ function is(name,    t)
 -- (2) ROWS are containers for ROW. <br>(3) Columns are summarized
 -- as SYMbolics or NUMerics.<br>(4) SOME is a helper class for NUM.   
 -- (5) RANGE is a helper class for EGS.
-local ROW,ROWS,SYM,NUM,SOME = is"ROW",is"ROWS",is"SYM",is"NUM",is"SOME"
+local ROW,ROWS,SYM   = is"ROW",is"ROWS",is"SYM"
+local NUM,RANGE,SOME = is"NUM",is"RANGE",is"SOME"
 
 -- ##  SOME methods
 -- If we keep more than
@@ -154,14 +155,18 @@ function NUM.merge(i,j,      k)
   return k end
 
 -- __NUM:mid():num__ <br>mid is `mu`.   
-function NUM.mid(i) return i.mu end
+function NUM.mid(i,p) return rnd(i.mu,p or 3) end
 -- __NUM:div():num__ <br>div is entropy
 function NUM.div(i, a) 
   a=i.has:sorted(); return (per(a, .9) - per(a, .1))/2.56 end
 
 -- __NUM:bin(x:num):num__<br>NUMs get discretized to bins of size `(hi - lo)/THE.bins`.
 function NUM.bin(i,x,   b)     
-  b = (col.hi - col.lo)/THE.bins; return math.floor(v/b+.5)*b end
+  b = (i.hi - i.lo)/THE.bins; return math.floor(x/b+.5)*b end
+
+-- __NUM:norm(x:num):num__<br>Normalize `x` 0..1 for `lo`..`hi`.
+function NUM.norm(i,x)     
+  return i.hi - i.lo < 1E-9 and 0 or (x-i.lo)/(i.hi - i.lo + 1/big) end 
  
 -- ## SYM methods
 
@@ -186,7 +191,7 @@ function SYM.merged(i,j,      k)
   return k end
 
 -- __SYM:mid():any__ <br>Mode.
-function SYM.mid(i) return i.mode end
+function SYM.mid(i,...) return i.mode end
 -- __SYM:div():float__ <br>Entropy.
 function SYM.div()
   e=0;for k,n in pairs(i.has) do if n>0 then e=e-n/i.n*math.log(n/i.n,2)end end 
@@ -201,8 +206,8 @@ function SYM.score(i,want, wants,donts)
   how.helps= function(b,r) return (b<r or b+r < .05) and 0 or b^2/(b+r) end
   how.hurts= function(b,r) return (r<b or b+r < .05) and 0 or r^2/(b+r) end
   how.tabu = function(b,r) return 1/(b+r+z) end 
-  for v,n in pairs(i.ys.has) do if v==want then b = b+n else r=r+n end end
-  return how[the.How](b/(wants+z), r/(donts+z)) end
+  for v,n in pairs(i.has) do if v==want then b = b+n else r=r+n end end
+  return how[THE.How](b/(wants+z), r/(donts+z)) end
  
 -- ##  ROW methods
 
@@ -269,11 +274,12 @@ function ROWS.add(i,row)
 function ROWS.bestRest(i,  n,m)
   table.sort(i.has)
   n = #i.has
-  m = n^the.min  
+  m = n^THE.min  
   return splice(i.has, 1,  m), splice(i.has, n - m) end
 
--- __ROWS:mid() :tab__<br>Return the `mid` of the goal columns.
-function ROWS.mid(i,    p,t) 
+-- __ROWS:mid(?p:int=3) :tab__<br>Return the `mid` of the goal columns.  
+-- Round numerics to `p` places.
+function ROWS.mid(i,p,    t) 
   t={}; for _,col in pairs(i.ys) do t[col.txt]=col:mid(p) end; return t end
 
 -- __ROWS:splits(best0:[ROW], rests:[ROW]):[ROW],[ROW],RANGE}__     
@@ -309,8 +315,8 @@ function RANGE.new(i, xlo, xhi, ys) i.xlo, i.xhi, i.ys = xlo, xhi, ys end
 
 -- __RANGE:add(x:atom, y:atom)__
 function RANGE.add(i,x,y)
-  if v < i.xlo then i.xlo = v end -- works for string or num
-  if v > i.xhi then i.xhi = v end -- works for string or num
+  if x < i.xlo then i.xlo = x end -- works for string or num
+  if x > i.xhi then i.xhi = x end -- works for string or num
   i.ys:add(y) end
 
 -- **RANGE:__tostring()**<br>Pretty print.
@@ -330,7 +336,7 @@ function ranges(col, ...)
   -- For numerics, **xpand** the ranges to cover the whole number line.
   local function xpand(t)  --  extend ranges to cover whole number line
     for j=2,#t do t[j].xlo = t[j-1].xhi end
-    t[1].xlo, t[#tmp].xhi = -big, big
+    t[1].xlo, t[#t].xhi = -big, big
     return t end
   -- **Merged** returns "nil" if the merge would actually complicate things
   local function merged(i,j,min,      k)
@@ -363,7 +369,7 @@ function ranges(col, ...)
       if v ~= "?" then              -- count how often we see some value
         x = col:bin(v)                -- accumulated into a few bins
         -- The next line idiom means "known[x]" exists, and is stored in "out".
-        known[x] = known[x] or push(out,RANGE(xlo, xhi, col:clone())) 
+        known[x] = known[x] or push(out,RANGE(x, x, col:clone())) 
         known[x]:add(v,klass) end end end   -- do the counting
   table.sort(out,lt("xlo"))
   out= col.is=="NUM" and xpand(merge(out, n^THE.bins)) or out 
@@ -383,7 +389,8 @@ function csv(csvfile)
       t={}; for x in s:gmatch("([^,]+)") do t[1+#t] = read(x) end
       return t end end end 
 -- __fmt(control:str, arg1,arg2...)__<br>sprintf emulation.
-fmt = table.format
+fmt = string.format
+print(fmt("as"))
 -- __fyi(x:str)__ <br> Print things in verbose mode.
 fyi = function(...) if THE.verbose then print(...) end end
 -- __lt(x:str):fun__ <br>Return a sort function on slot `x`.
@@ -400,6 +407,8 @@ function per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 function push(t,x) t[1+#t]=x; return x end
 -- __rand(?x:num=1):num__<br> Generate a random number `1..x`.
 rand= math.random
+-- __rnd(n:num, places:int):num__ <p>Round `n` to `p` places.
+function rnd(n, p)   local m=10^(p or 0); return math.floor(n*m+0.5)/m  end
 -- __split(t, ?lo:float=1, ?j:float=#t, ?k:float=1):tab__  
 -- Return parts of `t` from `i` to `j` by steps `k`.
 function splice( t, i, j, k,    u) 
@@ -433,8 +442,20 @@ function go.rows( rows)
   rows = ROWS(THE.file); 
   map(rows.ys,print); return true; end
 
-function go.mid(  r)
-  r= ROWS(THE.file) end
+function go.mid(  r,bests,rests)
+  r= ROWS(THE.file); 
+  bests,rests = r:bestRest()
+  print("all",  str(r:mid(2)))
+  print("best", str(r:clone(bests):mid(2)))
+  print("rest", str(r:clone(rests):mid(2)))
+  return true end
+
+function go.range(  r,bests,rests)
+  r= ROWS(THE.file); 
+  bests,rests = r:bestRest()
+  for _,range in pairs(ranges(r.xs[1], bests, rests)) do
+    print(range, range.ys:score(1, #bests, #rests)) end --score(1,#bests,#rests)) end
+  return true end
 
 -- ## Starting up
 
