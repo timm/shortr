@@ -1,3 +1,9 @@
+-- <img align=left width=250 src="sample.png">&copy; 2022, Tim Menzies
+--  
+-- __Pass1:__<br> Recursively bi-cluster, sample 1 point per cluster, 
+-- prune cluster with worst point.<p>__Pass2:__<br> Do it again, using the better
+-- things found in Pass1.<p>__Pass3:__<br> Report rules that selects for the 
+-- "good" found in Pass2.
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local add,big,col,csv,fyi,id,is,klass,lt,map,oo
 local per,push, rand, ranges,read, result, seed, splice, str
@@ -27,13 +33,13 @@ OPTIONS (other):
   -h  --help  show help          = false]]   
 -- ## Convert help text to settings
 
--- String to thing.
-function read(str) -- :str --> :bool | int | float | str
+-- __read(str:str) :bool | int | str__ <br> String to thing.
+function read(str) -- read(:str) --> :bool | int | float | str
   str = str:match"^%s*(.-)%s*$"
   if str=="true" then return true elseif str=="false" then return false end
   return math.tointeger(str) or tonumber(str) or str  end
 
--- (1) parse `help`<br>(2) make `THE` settings;<br>(3) also make a `backup`.
+-- (1) parse `help`.<br>(2) make `THE` settings.<br>(3) Also make a `backup`.
 local THE, backup = {}, {}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) 
   for n,flag in ipairs(arg) do 
@@ -48,9 +54,10 @@ if THE.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;31m%1\27[0m"))) en
 
 -- ##  Objects
 
--- Make pretty print string for tables. Print  slots of associative arrays in sorted order.
+-- __str(i:any) :str__  
+-- Make pretty print string from tables. Print  slots of associative arrays in sorted order.
 -- To actually print this string, use `oo(i)` (see below).
-function str(i) -- :any --> :str
+function str(i) 
   local j
   if type(i)~="table" then return tostring(i) end
   if #i> 0            then return table.concat(map(i,tostring),", ") end
@@ -58,24 +65,27 @@ function str(i) -- :any --> :str
   table.sort(j)
   return (i.is or "").."{"..table.concat(j," ").."}" end 
 
+-- __is(name:str) :klass__  
 -- Object creation.<br>(1) Link to pretty print.<br>(2) Assign a unique id.  
 -- (3) Link new object to the class.<br>Map klass(i,...) to klass.new(...).
 local _id=0
-function is(name,    t)
+function is(name,    t)  
   local function new(kl,...) 
     _id = _id+1
     local x=setmetatable({id=_id},kl); kl.new(x,...); return x end 
   t = {__tostring=str, is=name}; t.__index=t
   return setmetatable(t, {__call=new}) end 
 
--- Make our classes.<br>(1) ROWS are containers for ROW. <br>(2) Columns summarizes
--- as SYMbolic or NUMeric.<br>(3) SOME is a helper class for NUM
+-- Make our classes.<br>(1) Data is stored as set of ROW.
+-- (2) ROWS are containers for ROW. <br>(3) Columns summarizes
+-- as SYMbolic or NUMeric.<br>(4) SOME is a helper class for NUM
 local ROW,ROWS,SYM,NUM,SOME = is"ROW",is"ROWS",is"SYM",is"NUM",is"SOME"
 
--- ## SOME
--- if we keep more than
+-- ## class SOME
+-- If we keep more than
 -- `THE.some` items then SOME replaces old items with the new old items.
 
+-- __col(i:column, has:t, ?at:int=1, ?txt:str="")__    
 -- For SOME (and NUM and SYM), new columns have a container `has` and appear in
 -- column `at` and have name `txt`. If a column name ends in `-`, set its weight 
 -- to -1.
@@ -84,6 +94,8 @@ function col(i,has,at,txt)
   i.w= i.txt:find"-$" and -1 or 1 
   i.has = has end
 
+-- __add(i:column, x:any, nil | inc:int=1, fun:function):x)__   
+-- Don't add missing values. When you add something, inc the `i.n` count.
 function add(i,x,inc,fun)
   if x ~= "?" then
     inc = inc or 1
@@ -91,59 +103,88 @@ function add(i,x,inc,fun)
     fun() end
   return  end
 
+-- __SOME(?at:int=1, ?txt:str="") :SOME__   
 function SOME.new(i, ...) col(i,{},...); i.ok=false; end
-function SOME.sorted(i,  a)  
-  if not i.ok then table.sort(i.has) end; i.ok=true; return i.has end
+-- __SOME:add(x:num):x__   
 function SOME.add(i,x)
   return add(i,x,1,function(     a)
     a = i.has
     if     #a     < THE.some     then i.ok=false; push(a,x)  
-    elseif rand() < THE.some/i.n then i.ok=false; a[rand(#a)]=x end end) end 
+  elseif rand() < THE.some/i.n then i.ok=false; a[rand(#a)]=x end end) end 
 
---------------------------------------------------------------------------------
+-- __SOME:sorted(): [num]*__     
+-- Return the contents, sorted.
+function SOME.sorted(i,  a)  
+if not i.ok then table.sort(i.has) end; i.ok=true; return i.has end
+
+-- ## class NUM
+-- (1) Incrementally update a  sample of numbers including its mean `mu`,
+--     min `lo` and max `hi`.  
+-- (2) Knows how to calculate the __div()__ (diversity) of a sample (a.k.a.
+--     standard deviation).
+
+-- __NUM(?at:int=1, ?txt:str="") :NUM__   
 function NUM.new(i, ...) col(i,SOME(),...); i.mu,i.lo,i.hi=0,big,-big end
-function NUM.clone(i)    return NUM(i.at, i.txt) end
+-- __NUM:add(x:num):x__   
 function NUM.add(i,x)
-  return add(i,x,1,function(     d)
-    i.has:add(x)
-    d = x - i.mu
-    i.mu = i.mu + d/i.n
-    i.hi = math.max(x, i.hi); i.lo=math.min(x, i.lo) end ) end
+return add(i,x,1,function(     d)
+  i.has:add(x)
+  d = x - i.mu
+  i.mu = i.mu + d/i.n
+  i.hi = math.max(x, i.hi); i.lo=math.min(x, i.lo) end ) end
 
+-- __NUM:clone():NUM__  <br> Duplicate structure
+function NUM.clone(i)    return NUM(i.at, i.txt) end
+
+-- __NUM:merge(j:num):NUM__ <br> Combine two NUMs.
 function NUM.merge(i,j,      k)
   local k = NUM(i.at, i.txt)
   for _,x in pairs(i.has.has) do k:add(x) end
   for _,x in pairs(j.has.has) do k:add(x) end
   return k end
 
+-- __NUM:mid():num__ <br>mid is `mu`.   
 function NUM.mid(i) return i.mu end
+-- __NUM:div():num__ <br>div is entropy
 function NUM.div(i, a) 
   a=i.has:sorted(); return (per(a, .9) - per(a, .1))/2.56 end
 
+-- __NUM:bin(x:num):num__<br>NUMs get discretized to bins of size `(hi - lo)/THE.bins`.
 function NUM.bin(i,x,   b)     
   b = (col.hi - col.lo)/THE.bins; return math.floor(v/b+.5)*b end
-   
---------------------------------------------------------------------------------
+ 
+-- ## class SYM
+-- Incrementally update a  sample of numbers including its mode
+-- and __div_ersrity (a.k.a. entropy)
 function SYM.new( i, ...) col(i,{},...);     i.most, i.mode=0,nil end
-function SYM.clone(i) return SYM(i.at, i.txt) end
-function SYM.add(i,x,inc)
-  return add(i,x,inc, function()
-    i.has[x] = (inc or 1) + (i.has[x] or 0)
-    if i.has[x] > i.most then i.most,i.mode = i.has[x],x end end) end 
 
+-- __SYM.clone():SYM__<br>
+function SYM.clone(i) return SYM(i.at, i.txt) end
+
+-- __NUM:add(x:any):x__  <br> i
+function SYM.add(i,x,inc)
+return add(i,x,inc, function()
+  i.has[x] = (inc or 1) + (i.has[x] or 0)
+  if i.has[x] > i.most then i.most,i.mode = i.has[x],x end end) end 
+
+-- __SYM:merge(j:num):SYM__ <br> Combine two NUMs.
 function SYM.merged(i,j,      k)
   local k = SYM(i.at, i.txt)
   for x,n in pairs(i) do k:add(x,n) end
   for x,n in pairs(j) do k:add(x,n) end
   return k end
 
+-- __SYM:mid():any__ <br>Mode.
 function SYM.mid(i) return i.mode end
+-- __SYM:div():float__ <br>Entropy.
 function SYM.div()
   e=0;for k,n in pairs(i.has) do if n>0 then e=e-n/i.n*math.log(n/i.n,2)end end 
   return e end
 
+-- __SYM:bin(x:any):x__<br>SYMs get discretized to themselves.
 function SYM.bin(i,x) return x end    
 
+-- __SYM:score(want:any, wants:int, donts:init):float__ <br>SYMs get discretized to themselves.
 function SYM.score(i,want, wants,donts)
   local b, r, z, how = 0, 0, 1/big, {}
   how.helps= function(b,r) return (b<r or b+r < .05) and 0 or b^2/(b+r) end
@@ -152,8 +193,14 @@ function SYM.score(i,want, wants,donts)
   for v,n in pairs(i.ys.has) do if v==want then b = b+n else r=r+n end end
   return how[the.How](b/(wants+z), r/(donts+z)) end
  
---------------------------------------------------------------------------------
+-- ## class ROW
+
+-- The `cells` of one ROW store one record of data (one ROW per record). If ever we read the y-values then that
+-- ROW is `evaluated`. For many tasks, data needs to be __normalized__ in which case
+-- we need to know the space `of` data that holds this data.
 function ROW.new(i,of,cells) i.of,i.cells,i.evaluated = of,cells,false end
+
+-- <b>i:ROW < j:ROW</b> <br>`i` comes before `j` if its y-values are better.
 function ROW.__lt(i,j,        n,s1,s2,v1,v2)
   i.evaluated = true
   j.evaluated = true
@@ -164,16 +211,25 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
     s2    = s2 - 2.7183^(col.w * (v2 - v1) / n) end
   return s1/n < s2/n end
 
+-- __ROW:within(range):bool__
 function ROW.within(i,range,         lo,hi,at,v)
    lo, hi, at = range.xlo, range.xhi, range.ys.at
    v = i.cells[at]
    return  v=="?" or lo==hi and v==lo or lo<=v and v<hi end
- --------------------------------------------------------------------------------
+
+-- ## class ROWS
+-- Sets of ROWs are stored in ROWS. ROWS summarize columns and those summarizes
+-- are stored in `cols`. For convenience, all the columns we are not skipping
+-- are also contained into the goals and non-goals `xs`, `ys`.
+
+-- __ROW(src:string)__ 
 function ROWS.new(i,src)
   i.has={}; i.cols={}; i.xs={}; i.ys={}; i.names={}
   if type(src)=="string" then for   row in csv(  src) do i:add(row) end 
                          else for _,row in pairs(src) do i:add(row) end end end
 
+-- __ROWS:clone(?with:tab):ROWS__
+-- Duplicate structure, then maybe fill it in  `with` some data.
 function ROWS.clone(i,with,    j)
   j=ROWS({i.names}); for _,r in pairs(with or {}) do j:add(r) end; return j end
 
