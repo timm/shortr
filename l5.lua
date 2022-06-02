@@ -14,7 +14,7 @@
 -- __ONE__:<br>LUA supports simple teaching
 -- (less than 2 dozen keywords). Heck, children use it to code up their own games.
 -- 
--- __TWO__:<br>One great secret is that LUA==LISP (ish). LUA supports many advanced programming
+-- __TWO__:<br>LUA supports many advanced programming
 -- techniques (first class
 -- objects, functional programming, etc) without  (**L**ots of (**I**nfuriating (**S**illy
 -- (**P**arenthesis)))).  For example, the entire object system used here is just five lines of code
