@@ -20,7 +20,7 @@
 -- (**P**arenthesis)))).  For example, the entire object system used here is just five lines of code
 -- (see **is()**). 
 -- 
---- __THREE:<br>The other great secret is that, at their core, many of these
+-- __THREE:<br>The other great secret is that, at their core, many of these
 -- learners is essential simple. So by coding up those algorithms, in just a few
 -- lines of LUA, we are teaching students that AI is something they can understand
 -- and improve.
