@@ -1,5 +1,5 @@
 -- <h3>L5 = A Little Light Learner Lab, in LUA</h3>   
--- <img src=l5.png align=left width=300>
+-- <img src=img/l5.png align=left width=300>
 --      
 -- [&copy; 2022](#copyright) Tim Menzies<br>[Contribute](#contribute)<br> 
 --      
