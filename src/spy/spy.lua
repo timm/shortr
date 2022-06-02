@@ -1,13 +1,29 @@
--- <h3>SEMI-SUPERVISED MULTI-OBJECTIVE<br>LANDSCAPE ANALYSIS</h3>   
--- <img src=spy.jpg align=left width=300>
+-- <h3>L5 = A Little Light Learner Lab, in LUA</h3>   
+-- <img src=l5.png align=left width=300>
 --      
 -- [&copy; 2022](#copyright) Tim Menzies<br>[Contribute](#contribute)<br> 
 --      
 -- Here, we write the _most_ learners in the _least_ code.
 -- Each learner is a few lines of code (since they share an 
 -- underlying code base).  
+--      
+-- Why LUA? Three reasons. 
+--
+-- __ONE__:<br>LUA supports simple teaching
+-- (less than 2 dozen keywords). Heck, children use it to code up their own games.
+-- 
+-- __TWO__:<br>The great secret is that LUA==LISP (ish). LUA supports many advanced programming
+-- techniques (first class
+-- objects, functional programming, etc) without  (**L**ots of (**I**nfuriating (**S**illy
+-- (**P**arenthesis)))).  For example, the entire object system used here is just five lines of code
+-- (see **is()**). 
 --    
---  
+-- __THREE__:<br>my standard assignment is "here is  a worked solution,
+-- now code it up in any other language". So with LUA/L5 I can give students an
+-- succinct executable specification that demonstrates numerous recommended coding
+-- practices (for learning and for scripting).
+-- And then they can still code in their language du jour.
+--   
 -- e.g. __Pass1:__ Recursively bi-cluster, sample 1 point per cluster, 
 -- prune cluster with worst point. __Pass2:__ Do it again, using the better
 -- things found in Pass1. __Pass3:__ Report rules that selects for the 
@@ -42,7 +58,7 @@ OPTIONS (other):
 -- ## Convert help text to settings
 
 -- __read(str:str) :bool | int | str__ <br> String to thing.
-function read(str) -- read(:str) --> :bool | int | float | str
+function read(str) 
   str = str:match"^%s*(.-)%s*$"
   if str=="true" then return true elseif str=="false" then return false end
   return math.tointeger(str) or tonumber(str) or str  end
@@ -488,3 +504,31 @@ for _,s in pairs(go[THE.go] and {THE.go} or going) do
 -- Check for rogue locals, then return the error counts (defaults to zero).
 for k,v in pairs(_ENV) do  if not b4[k] then print("?",k,type(v)) end end
 os.exit(fails) 
+
+-- ## Copyright <a name=copyright></a>
+-- BSD 2-Clause License
+--  
+-- Copyright (c) 2022, Tim Menzies
+--  
+-- Redistribution and use in source and binary forms, with or without
+-- modification, are permitted provided that the following conditions are met:
+-- 
+-- 1. Redistributions of source code must retain the above copyright notice,
+--    this list of conditions and the following disclaimer.
+-- 2. Redistributions in binary form must reproduce the above copyright
+--    notice, this list of conditions and the following disclaimer in the
+--    documentation and/or other materials provided with the distribution.
+-- 
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+-- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+-- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+-- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+-- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+-- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+-- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+-- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+-- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+-- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+-- POSSIBILITY OF SUCH DAMAGE.
+
+

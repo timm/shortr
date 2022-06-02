@@ -27,13 +27,26 @@
               <div class="sswrap for-h3">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              <h3>SEMI-SUPERVISED MULTI-OBJECTIVE<br>LANDSCAPE ANALYSIS</h3>   
-<img src=spy.jpg align=left width=300>
+              <h3>L5 = A Little Light Learner Lab, in LUA</h3>   
+<img src=l5.png align=left width=300>
      
 <p><a href="#copyright">&copy; 2022</a> Tim Menzies<br><a href="#contribute">Contribute</a><br> </p>
 <p>Here, we write the <em>most</em> learners in the <em>least</em> code.
 Each learner is a few lines of code (since they share an 
 underlying code base).  </p>
+<p>Why LUA? Three reasons. </p>
+<p><strong>ONE</strong>:<br>LUA supports simple teaching
+(less than 2 dozen keywords). Heck, children use it to code up their own games.</p>
+<p><strong>TWO</strong>:<br>The great secret is that LUA==LISP (ish). LUA supports many advanced programming
+techniques (first class
+objects, functional programming, etc) without  (<strong>L</strong>ots of (<strong>I</strong>nfuriating (<strong>S</strong>illy
+(<strong>P</strong>arenthesis)))).  For example, the entire object system used here is just five lines of code
+(see <strong>is()</strong>). </p>
+<p><strong>THREE</strong>:<br>my standard assignment is “here is  a worked solution,
+now code it up in any other language”. So with LUA/L5 I can give students an
+succinct executable specification that demonstrates numerous recommended coding
+practices (for learning and for scripting).
+And then they can still code in their language du jour.</p>
 <p>e.g. <strong>Pass1:</strong> Recursively bi-cluster, sample 1 point per cluster, 
 prune cluster with worst point. <strong>Pass2:</strong> Do it again, using the better
 things found in Pass1. <strong>Pass3:</strong> Report rules that selects for the 
@@ -95,7 +108,7 @@ OPTIONS (other):
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">read</span><span class="hljs-params">(str)</span></span> <span class="hljs-comment">-- read(:str) --&gt; :bool | int | float | str</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">read</span><span class="hljs-params">(str)</span></span> 
   str = str:<span class="hljs-built_in">match</span><span class="hljs-string">&quot;^%s*(.-)%s*$&quot;</span>
   <span class="hljs-keyword">if</span> str==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">elseif</span> str==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.tointeger(str) <span class="hljs-keyword">or</span> <span class="hljs-built_in">tonumber</span>(str) <span class="hljs-keyword">or</span> str  <span class="hljs-keyword">end</span></pre></div></div>
@@ -550,10 +563,10 @@ and <strong>div</strong>ersity (a.k.a. entropy)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.merged</span><span class="hljs-params">(i,j,      k)</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.merge</span><span class="hljs-params">(i,j,      k)</span></span>
   <span class="hljs-keyword">local</span> k = SYM(i.at, i.txt)
-  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i) <span class="hljs-keyword">do</span> k:add(x,n) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j) <span class="hljs-keyword">do</span> k:add(x,n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.has) <span class="hljs-keyword">do</span> k:add(x,n) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.has) <span class="hljs-keyword">do</span> k:add(x,n) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
@@ -584,7 +597,7 @@ and <strong>div</strong>ersity (a.k.a. entropy)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.div</span><span class="hljs-params">()</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.div</span><span class="hljs-params">(i,      e)</span></span>
   e=<span class="hljs-number">0</span>;<span class="hljs-keyword">for</span> k,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.has) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">then</span> e=e-n/i.n*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(n/i.n,<span class="hljs-number">2</span>)<span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
   <span class="hljs-keyword">return</span> e <span class="hljs-keyword">end</span></pre></div></div>
             
@@ -823,8 +836,10 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.splits</span><span class="hljs-params">(i,bests0,rests0)</span></span>
+ <span class="hljs-built_in">print</span>(#bests0, #rests0)
   most,range,range1,score = <span class="hljs-number">-1</span>
   <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.xs) <span class="hljs-keyword">do</span>
+    <span class="hljs-built_in">print</span>(col)
     <span class="hljs-keyword">for</span> _,range0 <span class="hljs-keyword">in</span> ranges(col,bests0,rests0) <span class="hljs-keyword">do</span>
       score = range0:score(<span class="hljs-number">1</span>,#bests0,#rests0)
       <span class="hljs-keyword">if</span> score&gt;most <span class="hljs-keyword">then</span> most,range1 = score,range0 <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
@@ -850,7 +865,8 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.contrast</span><span class="hljs-params">(i,bests0,rests0,    hows,stop)</span></span>
   stop = stop <span class="hljs-keyword">or</span> #bests0/<span class="hljs-number">4</span>
   hows = hows <span class="hljs-keyword">or</span> {}
-  bests1, rests1,range = i:splits(bests0,rests0)
+  <span class="hljs-built_in">print</span>(<span class="hljs-number">1</span>)
+  bests1, rests1,range = i:splits(bests0, rests0)
   <span class="hljs-keyword">if</span> (#bests0 + #rests0) &gt; stop <span class="hljs-keyword">and</span> (#bests1 &lt; #bests0 <span class="hljs-keyword">or</span> #rests1 &lt; #rests0) <span class="hljs-keyword">then</span>
     push(hows,range)
     <span class="hljs-keyword">return</span> i:contrast(bests1, rests1, hows, stop) <span class="hljs-keyword">end</span> 
@@ -1039,10 +1055,10 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        known[x] = known[x] <span class="hljs-keyword">or</span> push(out,RANGE(x, x, col:clone())) 
+            <div class="content"><div class='highlight'><pre>        known[x] = known[x] <span class="hljs-keyword">or</span> push(out,RANGE(v, v, SYM(col.at,col.txt)))
         known[x]:add(v,klass) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>   <span class="hljs-comment">-- do the counting</span>
   <span class="hljs-built_in">table</span>.<span class="hljs-built_in">sort</span>(out,lt(<span class="hljs-string">&quot;xlo&quot;</span>))
-  out= col.is==<span class="hljs-string">&quot;NUM&quot;</span> <span class="hljs-keyword">and</span> xpand(merge(out, n^THE.bins)) <span class="hljs-keyword">or</span> out 
+  out= col.is==<span class="hljs-string">&quot;NUM&quot;</span> <span class="hljs-keyword">and</span> xpand(merge(out, n^THE.<span class="hljs-built_in">min</span>)) <span class="hljs-keyword">or</span> out 
   <span class="hljs-keyword">return</span> #out &lt; <span class="hljs-number">2</span> <span class="hljs-keyword">and</span> {} <span class="hljs-keyword">or</span> out <span class="hljs-comment">-- less than 2 ranges? then no splits found!</span>
 <span class="hljs-keyword">end</span> <span class="hljs-comment">-- ranges </span></pre></div></div>
             
@@ -1108,8 +1124,7 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">format</span>
-<span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;as&quot;</span>))</pre></div></div>
+            <div class="content"><div class='highlight'><pre>fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">format</span></pre></div></div>
             
         </li>
         
@@ -1309,8 +1324,16 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.range</span><span class="hljs-params">(  r,bests,rests)</span></span>
   r= ROWS(THE.file); 
   bests,rests = r:bestRest()
-  <span class="hljs-keyword">for</span> _,range <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(ranges(r.xs[<span class="hljs-number">1</span>], bests, rests)) <span class="hljs-keyword">do</span>
-    <span class="hljs-built_in">print</span>(range, range.ys:score(<span class="hljs-number">1</span>, #bests, #rests)) <span class="hljs-keyword">end</span> <span class="hljs-comment">--score(1,#bests,#rests)) end</span>
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(r.xs) <span class="hljs-keyword">do</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&quot;</span>)
+    <span class="hljs-keyword">for</span> _,range <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(ranges(col, bests, rests)) <span class="hljs-keyword">do</span>
+       <span class="hljs-built_in">print</span>(range, range.ys:score(<span class="hljs-number">1</span>, #bests, #rests)) <span class="hljs-keyword">end</span>  <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.contrast</span><span class="hljs-params">(  r,bests,rests)</span></span>
+  r= ROWS(THE.file); 
+  bests,rests = r:bestRest()
+  r:contrast(bests, rests)
   <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
@@ -1381,6 +1404,41 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span>  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> b4[k] <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;?&quot;</span>,k,<span class="hljs-built_in">type</span>(v)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 <span class="hljs-built_in">os</span>.<span class="hljs-built_in">exit</span>(fails)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-76">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-76">&#x00a7;</a>
+              </div>
+              <h2 id="copyright-">Copyright <a name=copyright></a></h2>
+<p>BSD 2-Clause License</p>
+<p>Copyright (c) 2022, Tim Menzies</p>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.</li>
+</ol>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS”
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.</p>
+
+            </div>
             
         </li>
         
