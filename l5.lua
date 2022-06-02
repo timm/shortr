@@ -32,14 +32,14 @@ local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local add,big,col,csv,fmt,fyi,id,is,klass,lt,map,oo
 local per,push, rand, ranges,read, result, rnd, seed, splice, str
 local help=[[
-SPY: while not end of time, look around, see what's what
+L5: a little light learner lab in LUA
 (c) 2022 Tim Menzies, timm@ieee.org, BSD2 license    
        
 INSTALL: requires: lua 5.4+   
-         download: spy.lua   
-         test    : lua spy.lua -h   
+         download: l5.lua  and data/* from github.com/timm/l5  
+         test    : lua l5.lua -f data/auto93.csv; echo $? # expect "0"  
          
-USAGE: lua spy.lua [OPTIONS]   
+USAGE: lua l5.lua [OPTIONS]   
                                               defaults   
                                               ~~~~~~~~   
   -S  --Seed  random number seed              = 10019   
@@ -51,7 +51,7 @@ USAGE: lua spy.lua [OPTIONS]
   -s  --some  sample size                     = 512   
           
 OPTIONS (other):   
-  -f  --file  csv file with data = ../../etc/data/auto93.csv   
+  -f  --file  csv file with data = data/auto93.csv   
   -g  --go    start up action    = nothing   
   -v  --verbose show details     = false
   -h  --help  show help          = false]]   
@@ -477,7 +477,7 @@ function go.range(  r,bests,rests)
        print(range, range.ys:score(1, #bests, #rests)) end  end
   return true end
 
-function go.contrast(  r,bests,rests)
+function no.contrast(  r,bests,rests)
   r= ROWS(THE.file); 
   bests,rests = r:bestRest()
   r:contrast(bests, rests)
