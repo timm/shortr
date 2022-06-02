@@ -184,16 +184,16 @@ return add(i,x,inc, function()
   if i.has[x] > i.most then i.most,i.mode = i.has[x],x end end) end 
 
 -- __SYM:merge(j:num):SYM__ <br> Combine two NUMs.
-function SYM.merged(i,j,      k)
+function SYM.merge(i,j,      k)
   local k = SYM(i.at, i.txt)
-  for x,n in pairs(i) do k:add(x,n) end
-  for x,n in pairs(j) do k:add(x,n) end
+  for x,n in pairs(i.has) do k:add(x,n) end
+  for x,n in pairs(j.has) do k:add(x,n) end
   return k end
 
 -- __SYM:mid():any__ <br>Mode.
 function SYM.mid(i,...) return i.mode end
 -- __SYM:div():float__ <br>Entropy.
-function SYM.div()
+function SYM.div(i,      e)
   e=0;for k,n in pairs(i.has) do if n>0 then e=e-n/i.n*math.log(n/i.n,2)end end 
   return e end
 
@@ -285,8 +285,10 @@ function ROWS.mid(i,p,    t)
 -- __ROWS:splits(best0:[ROW], rests:[ROW]):[ROW],[ROW],RANGE}__     
 -- Supervised discretization: return ranges that are most difference in `bests0` and `rests0`.
 function ROWS.splits(i,bests0,rests0)
+ print(#bests0, #rests0)
   most,range,range1,score = -1
   for _,col in pairs(i.xs) do
+    print(col)
     for _,range0 in ranges(col,bests0,rests0) do
       score = range0:score(1,#bests0,#rests0)
       if score>most then most,range1 = score,range0 end end end
@@ -301,7 +303,8 @@ function ROWS.splits(i,bests0,rests0)
 function ROWS.contrast(i,bests0,rests0,    hows,stop)
   stop = stop or #bests0/4
   hows = hows or {}
-  bests1, rests1,range = i:splits(bests0,rests0)
+  print(1)
+  bests1, rests1,range = i:splits(bests0, rests0)
   if (#bests0 + #rests0) > stop and (#bests1 < #bests0 or #rests1 < #rests0) then
     push(hows,range)
     return i:contrast(bests1, rests1, hows, stop) end 
@@ -369,10 +372,10 @@ function ranges(col, ...)
       if v ~= "?" then              -- count how often we see some value
         x = col:bin(v)                -- accumulated into a few bins
         -- The next line idiom means "known[x]" exists, and is stored in "out".
-        known[x] = known[x] or push(out,RANGE(x, x, col:clone())) 
+        known[x] = known[x] or push(out,RANGE(v, v, SYM(col.at,col.txt)))
         known[x]:add(v,klass) end end end   -- do the counting
   table.sort(out,lt("xlo"))
-  out= col.is=="NUM" and xpand(merge(out, n^THE.bins)) or out 
+  out= col.is=="NUM" and xpand(merge(out, n^THE.min)) or out 
   return #out < 2 and {} or out -- less than 2 ranges? then no splits found!
 end -- ranges 
 
@@ -390,7 +393,6 @@ function csv(csvfile)
       return t end end end 
 -- __fmt(control:str, arg1,arg2...)__<br>sprintf emulation.
 fmt = string.format
-print(fmt("as"))
 -- __fyi(x:str)__ <br> Print things in verbose mode.
 fyi = function(...) if THE.verbose then print(...) end end
 -- __lt(x:str):fun__ <br>Return a sort function on slot `x`.
@@ -453,8 +455,16 @@ function go.mid(  r,bests,rests)
 function go.range(  r,bests,rests)
   r= ROWS(THE.file); 
   bests,rests = r:bestRest()
-  for _,range in pairs(ranges(r.xs[1], bests, rests)) do
-    print(range, range.ys:score(1, #bests, #rests)) end --score(1,#bests,#rests)) end
+  for _,col in pairs(r.xs) do
+    print("")
+    for _,range in pairs(ranges(col, bests, rests)) do
+       print(range, range.ys:score(1, #bests, #rests)) end  end
+  return true end
+
+function go.contrast(  r,bests,rests)
+  r= ROWS(THE.file); 
+  bests,rests = r:bestRest()
+  r:contrast(bests, rests)
   return true end
 
 -- ## Starting up

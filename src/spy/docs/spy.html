@@ -42,8 +42,8 @@ things found in Pass1. <strong>Pass3:</strong> Report rules that selects for the
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span> 
-<span class="hljs-keyword">local</span> add,big,col,csv,fyi,id,is,klass,lt,map,oo
-<span class="hljs-keyword">local</span> per,push, rand, ranges,<span class="hljs-built_in">read</span>, result, seed, splice, str
+<span class="hljs-keyword">local</span> add,big,col,csv,fmt,fyi,id,is,klass,lt,map,oo
+<span class="hljs-keyword">local</span> per,push, rand, ranges,<span class="hljs-built_in">read</span>, result, rnd, seed, splice, str
 <span class="hljs-keyword">local</span> help=<span class="hljs-string">[[
 SPY: while not end of time, look around, see what&#x27;s what
 (c) 2022 Tim Menzies, timm@ieee.org, BSD2 license    
@@ -207,7 +207,8 @@ as SYMbolics or NUMerics.<br>(4) SOME is a helper class for NUM.<br>(5) RANGE is
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> ROW,ROWS,SYM,NUM,SOME = is<span class="hljs-string">&quot;ROW&quot;</span>,is<span class="hljs-string">&quot;ROWS&quot;</span>,is<span class="hljs-string">&quot;SYM&quot;</span>,is<span class="hljs-string">&quot;NUM&quot;</span>,is<span class="hljs-string">&quot;SOME&quot;</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> ROW,ROWS,SYM   = is<span class="hljs-string">&quot;ROW&quot;</span>,is<span class="hljs-string">&quot;ROWS&quot;</span>,is<span class="hljs-string">&quot;SYM&quot;</span>
+<span class="hljs-keyword">local</span> NUM,RANGE,SOME = is<span class="hljs-string">&quot;NUM&quot;</span>,is<span class="hljs-string">&quot;RANGE&quot;</span>,is<span class="hljs-string">&quot;SOME&quot;</span></pre></div></div>
             
         </li>
         
@@ -424,7 +425,7 @@ to -1.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.mid</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.mu <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.mid</span><span class="hljs-params">(i,p)</span></span> <span class="hljs-keyword">return</span> rnd(i.mu,p <span class="hljs-keyword">or</span> <span class="hljs-number">3</span>) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -456,7 +457,7 @@ to -1.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.bin</span><span class="hljs-params">(i,x,   b)</span></span>     
-  b = (col.hi - col.lo)/THE.bins; <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">floor</span>(v/b+<span class="hljs-number">.5</span>)*b <span class="hljs-keyword">end</span></pre></div></div>
+  b = (i.hi - i.lo)/THE.bins; <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">floor</span>(x/b+<span class="hljs-number">.5</span>)*b <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -467,9 +468,12 @@ to -1.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
-              <h2 id="sym-methods">SYM methods</h2>
+              <p><strong>NUM:norm(x:num):num</strong><br>Normalize <code>x</code> 0..1 for <code>lo</code>..<code>hi</code>.</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.norm</span><span class="hljs-params">(i,x)</span></span>     
+  <span class="hljs-keyword">return</span> i.hi - i.lo &lt; <span class="hljs-number">1E-9</span> <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> (x-i.lo)/(i.hi - i.lo + <span class="hljs-number">1</span>/big) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -479,6 +483,19 @@ to -1.</p>
               
               <div class="sswrap ">
                 <a class="ss" href="#section-26">&#x00a7;</a>
+              </div>
+              <h2 id="sym-methods">SYM methods</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-27">&#x00a7;</a>
               </div>
               <p>Incrementally update a  sample of numbers including its mode
 and <strong>div</strong>ersity (a.k.a. entropy)</p>
@@ -490,11 +507,11 @@ and <strong>div</strong>ersity (a.k.a. entropy)</p>
         </li>
         
         
-        <li id="section-27">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-27">&#x00a7;</a>
+                <a class="ss" href="#section-28">&#x00a7;</a>
               </div>
               <p><strong>SYM.clone():SYM</strong><br>Duplicate the structure.</p>
 
@@ -505,11 +522,11 @@ and <strong>div</strong>ersity (a.k.a. entropy)</p>
         </li>
         
         
-        <li id="section-28">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-28">&#x00a7;</a>
+                <a class="ss" href="#section-29">&#x00a7;</a>
               </div>
               <p><strong>NUM:add(x:any):x</strong>  </p>
 
@@ -523,11 +540,11 @@ and <strong>div</strong>ersity (a.k.a. entropy)</p>
         </li>
         
         
-        <li id="section-29">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-29">&#x00a7;</a>
+                <a class="ss" href="#section-30">&#x00a7;</a>
               </div>
               <p><strong>SYM:merge(j:num):SYM</strong> <br> Combine two NUMs.</p>
 
@@ -542,26 +559,26 @@ and <strong>div</strong>ersity (a.k.a. entropy)</p>
         </li>
         
         
-        <li id="section-30">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-30">&#x00a7;</a>
-              </div>
-              <p><strong>SYM:mid():any</strong> <br>Mode.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.mid</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.mode <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
         <li id="section-31">
             <div class="annotation">
               
               <div class="sswrap ">
                 <a class="ss" href="#section-31">&#x00a7;</a>
+              </div>
+              <p><strong>SYM:mid():any</strong> <br>Mode.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.mid</span><span class="hljs-params">(i,...)</span></span> <span class="hljs-keyword">return</span> i.mode <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-32">&#x00a7;</a>
               </div>
               <p><strong>SYM:div():float</strong> <br>Entropy.</p>
 
@@ -574,11 +591,11 @@ and <strong>div</strong>ersity (a.k.a. entropy)</p>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-32">&#x00a7;</a>
+                <a class="ss" href="#section-33">&#x00a7;</a>
               </div>
               <p><strong>SYM:bin(x:any):x</strong><br>SYMs get discretized to themselves.</p>
 
@@ -589,11 +606,11 @@ and <strong>div</strong>ersity (a.k.a. entropy)</p>
         </li>
         
         
-        <li id="section-33">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-33">&#x00a7;</a>
+                <a class="ss" href="#section-34">&#x00a7;</a>
               </div>
               <p><strong>SYM:score(want:any, wants:int, donts:init):float</strong> <br>SYMs get discretized to themselves.</p>
 
@@ -604,21 +621,8 @@ and <strong>div</strong>ersity (a.k.a. entropy)</p>
   how.helps= <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(b,r)</span></span> <span class="hljs-keyword">return</span> (b&lt;r <span class="hljs-keyword">or</span> b+r &lt; <span class="hljs-number">.05</span>) <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> b^<span class="hljs-number">2</span>/(b+r) <span class="hljs-keyword">end</span>
   how.hurts= <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(b,r)</span></span> <span class="hljs-keyword">return</span> (r&lt;b <span class="hljs-keyword">or</span> b+r &lt; <span class="hljs-number">.05</span>) <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> r^<span class="hljs-number">2</span>/(b+r) <span class="hljs-keyword">end</span>
   how.tabu = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(b,r)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>/(b+r+z) <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">for</span> v,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.ys.has) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> v==want <span class="hljs-keyword">then</span> b = b+n <span class="hljs-keyword">else</span> r=r+n <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> how[the.How](b/(wants+z), r/(donts+z)) <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-34">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-34">&#x00a7;</a>
-              </div>
-              <h2 id="row-methods">ROW methods</h2>
-
-            </div>
+  <span class="hljs-keyword">for</span> v,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.has) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> v==want <span class="hljs-keyword">then</span> b = b+n <span class="hljs-keyword">else</span> r=r+n <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> how[THE.How](b/(wants+z), r/(donts+z)) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -628,6 +632,19 @@ and <strong>div</strong>ersity (a.k.a. entropy)</p>
               
               <div class="sswrap ">
                 <a class="ss" href="#section-35">&#x00a7;</a>
+              </div>
+              <h2 id="row-methods">ROW methods</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-36">&#x00a7;</a>
               </div>
               <p>The <code>cells</code> of one ROW store one record of data (one ROW per record). If ever we read the y-values then that
 ROW is <code>evaluated</code>. For many tasks, data needs to be <strong>normalized</strong> in which case
@@ -640,11 +657,11 @@ we need to know the space <code>of</code> data that holds this data.</p>
         </li>
         
         
-        <li id="section-36">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-36">&#x00a7;</a>
+                <a class="ss" href="#section-37">&#x00a7;</a>
               </div>
               <p><b>i:ROW &lt; j:ROW</b> <br><code>i</code> comes before <code>j</code> if its y-values are better.
 This is Zitzler’s continuous domination predicate. In summary, it is a small
@@ -666,11 +683,11 @@ example to another. The best row is the one that looses the least.</p>
         </li>
         
         
-        <li id="section-37">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-37">&#x00a7;</a>
+                <a class="ss" href="#section-38">&#x00a7;</a>
               </div>
               <p><strong>ROW:within(range):bool</strong></p>
 
@@ -684,11 +701,11 @@ example to another. The best row is the one that looses the least.</p>
         </li>
         
         
-        <li id="section-38">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-38">&#x00a7;</a>
+                <a class="ss" href="#section-39">&#x00a7;</a>
               </div>
               <h2 id="rows-methods">ROWS methods</h2>
 <p>Sets of ROWs are stored in ROWS. ROWS summarize columns and those summarizes
@@ -700,11 +717,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-39">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-39">&#x00a7;</a>
+                <a class="ss" href="#section-40">&#x00a7;</a>
               </div>
               <p><strong>ROWS(src:str | tab):ROWS</strong><br>Load in examples from a file string, or a list or rows.</p>
 
@@ -718,11 +735,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-40">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-40">&#x00a7;</a>
+                <a class="ss" href="#section-41">&#x00a7;</a>
               </div>
               <p><strong>ROWS:clone(?with:tab):ROWS</strong><br>Duplicate structure, then maybe fill it in  <code>with</code> some data.</p>
 
@@ -734,11 +751,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-41">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-41">&#x00a7;</a>
+                <a class="ss" href="#section-42">&#x00a7;</a>
               </div>
               <p><strong>ROWS:add(row: (tab| ROW))</strong><br>If this is the first row, create the column summaries.<br>Else, if this is not a ROW, then make  one and set its <code>of</code> to <code>i</code>.<br>Else, add this row to <code>ROWS.has</code>.<br>When adding a row, update the column summaries.</p>
 
@@ -760,11 +777,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-42">
+        <li id="section-43">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-42">&#x00a7;</a>
+                <a class="ss" href="#section-43">&#x00a7;</a>
               </div>
               <p><strong>ROWS:bestRest()</strong><br>Return the rows, divided into the best or rest.</p>
 
@@ -773,24 +790,8 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.bestRest</span><span class="hljs-params">(i,  n,m)</span></span>
   <span class="hljs-built_in">table</span>.<span class="hljs-built_in">sort</span>(i.has)
   n = #i.has
-  m = n^the.<span class="hljs-built_in">min</span>  
+  m = n^THE.<span class="hljs-built_in">min</span>  
   <span class="hljs-keyword">return</span> splice(i.has, <span class="hljs-number">1</span>,  m), splice(i.has, n - m) <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-43">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-43">&#x00a7;</a>
-              </div>
-              <p><strong>ROWS:mid() :tab</strong><br>Return the <code>mid</code> of the goal columns.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.mid</span><span class="hljs-params">(i,    p,t)</span></span> 
-  t={}; <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.ys) <span class="hljs-keyword">do</span> t[col.txt]=col:mid(p) <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -800,6 +801,22 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
               
               <div class="sswrap ">
                 <a class="ss" href="#section-44">&#x00a7;</a>
+              </div>
+              <p><strong>ROWS:mid(?p:int=3) :tab</strong><br>Return the <code>mid</code> of the goal columns.<br>Round numerics to <code>p</code> places.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.mid</span><span class="hljs-params">(i,p,    t)</span></span> 
+  t={}; <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.ys) <span class="hljs-keyword">do</span> t[col.txt]=col:mid(p) <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-45">&#x00a7;</a>
               </div>
               <p><strong>ROWS:splits(best0:[ROW], rests:[ROW]):[ROW],[ROW],RANGE}</strong><br>Supervised discretization: return ranges that are most difference in <code>bests0</code> and <code>rests0</code>.</p>
 
@@ -820,11 +837,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-45">
+        <li id="section-46">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-45">&#x00a7;</a>
+                <a class="ss" href="#section-46">&#x00a7;</a>
               </div>
               <p><strong>ROWS:contrast(best0:[row], rests0:[row]):[row]</strong><br>Recursively find ranges that selects for the best rows.</p>
 
@@ -842,11 +859,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-46">
+        <li id="section-47">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-46">&#x00a7;</a>
+                <a class="ss" href="#section-47">&#x00a7;</a>
               </div>
               <h2 id="range-methods">RANGE methods</h2>
 
@@ -855,11 +872,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-47">
+        <li id="section-48">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-47">&#x00a7;</a>
+                <a class="ss" href="#section-48">&#x00a7;</a>
               </div>
               <p>Given some x values running from <code>xlo</code> to <code>xhi</code>, store the
 <code>ys</code>  y values seen </p>
@@ -871,29 +888,29 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-48">
+        <li id="section-49">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-48">&#x00a7;</a>
+                <a class="ss" href="#section-49">&#x00a7;</a>
               </div>
               <p><strong>RANGE:add(x:atom, y:atom)</strong></p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.add</span><span class="hljs-params">(i,x,y)</span></span>
-  <span class="hljs-keyword">if</span> v &lt; i.xlo <span class="hljs-keyword">then</span> i.xlo = v <span class="hljs-keyword">end</span> <span class="hljs-comment">-- works for string or num</span>
-  <span class="hljs-keyword">if</span> v &gt; i.xhi <span class="hljs-keyword">then</span> i.xhi = v <span class="hljs-keyword">end</span> <span class="hljs-comment">-- works for string or num</span>
+  <span class="hljs-keyword">if</span> x &lt; i.xlo <span class="hljs-keyword">then</span> i.xlo = x <span class="hljs-keyword">end</span> <span class="hljs-comment">-- works for string or num</span>
+  <span class="hljs-keyword">if</span> x &gt; i.xhi <span class="hljs-keyword">then</span> i.xhi = x <span class="hljs-keyword">end</span> <span class="hljs-comment">-- works for string or num</span>
   i.ys:add(y) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-49">
+        <li id="section-50">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-49">&#x00a7;</a>
+                <a class="ss" href="#section-50">&#x00a7;</a>
               </div>
               <p><strong>RANGE:__tostring()</strong><br>Pretty print.</p>
 
@@ -909,11 +926,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-50">
+        <li id="section-51">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-50">&#x00a7;</a>
+                <a class="ss" href="#section-51">&#x00a7;</a>
               </div>
               <p><strong>ranges(col: NUM | SYM, rows1:[row], rows2:[row], …):[RANGE]</strong><br>This function generates ranges.
 Return a useful way to divide the values seen in this column, 
@@ -926,11 +943,11 @@ in these different rows.</p>
         </li>
         
         
-        <li id="section-51">
+        <li id="section-52">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-51">&#x00a7;</a>
+                <a class="ss" href="#section-52">&#x00a7;</a>
               </div>
               <p>For numerics, <strong>xpand</strong> the ranges to cover the whole number line.</p>
 
@@ -938,17 +955,17 @@ in these different rows.</p>
             
             <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">xpand</span><span class="hljs-params">(t)</span></span>  <span class="hljs-comment">--  extend ranges to cover whole number line</span>
     <span class="hljs-keyword">for</span> j=<span class="hljs-number">2</span>,#t <span class="hljs-keyword">do</span> t[j].xlo = t[j<span class="hljs-number">-1</span>].xhi <span class="hljs-keyword">end</span>
-    t[<span class="hljs-number">1</span>].xlo, t[#tmp].xhi = -big, big
+    t[<span class="hljs-number">1</span>].xlo, t[#t].xhi = -big, big
     <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-52">
+        <li id="section-53">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-52">&#x00a7;</a>
+                <a class="ss" href="#section-53">&#x00a7;</a>
               </div>
               <p><strong>Merged</strong> returns “nil” if the merge would actually complicate things</p>
 
@@ -962,11 +979,11 @@ in these different rows.</p>
         </li>
         
         
-        <li id="section-53">
+        <li id="section-54">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-53">&#x00a7;</a>
+                <a class="ss" href="#section-54">&#x00a7;</a>
               </div>
               <p><strong>Merge</strong> adjacent ranges if     they have too few examples, or<br>the whole is simpler than that parts. Keep merging, until we 
 can’t find anything else to merge.   </p>
@@ -990,11 +1007,11 @@ can’t find anything else to merge.   </p>
         </li>
         
         
-        <li id="section-54">
+        <li id="section-55">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-54">&#x00a7;</a>
+                <a class="ss" href="#section-55">&#x00a7;</a>
               </div>
               <p> For discretized values at <code>col.at</code>, create ranges that count how
 often those values  appear in a set of rows (sorted 1,… for best…worst).     </p>
@@ -1012,35 +1029,22 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
         </li>
         
         
-        <li id="section-55">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-55">&#x00a7;</a>
-              </div>
-              <p>The next line idiom means “known[x]” exists, and is stored in “out”.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>        known[x] = known[x] <span class="hljs-keyword">or</span> push(out,RANGE(xlo, xhi, col:clone())) 
-        known[x]:add(v,klass) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>   <span class="hljs-comment">-- do the counting</span>
-  <span class="hljs-built_in">table</span>.<span class="hljs-built_in">sort</span>(out,lt(<span class="hljs-string">&quot;xlo&quot;</span>))
-  out= col.is==<span class="hljs-string">&quot;NUM&quot;</span> <span class="hljs-keyword">and</span> xpand(merge(out, n^THE.bins)) <span class="hljs-keyword">or</span> out 
-  <span class="hljs-keyword">return</span> #out &lt; <span class="hljs-number">2</span> <span class="hljs-keyword">and</span> {} <span class="hljs-keyword">or</span> out <span class="hljs-comment">-- less than 2 ranges? then no splits found!</span>
-<span class="hljs-keyword">end</span> <span class="hljs-comment">-- ranges </span></pre></div></div>
-            
-        </li>
-        
-        
         <li id="section-56">
             <div class="annotation">
               
               <div class="sswrap ">
                 <a class="ss" href="#section-56">&#x00a7;</a>
               </div>
-              <h2 id="functions">Functions</h2>
+              <p>The next line idiom means “known[x]” exists, and is stored in “out”.</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>        known[x] = known[x] <span class="hljs-keyword">or</span> push(out,RANGE(x, x, col:clone())) 
+        known[x]:add(v,klass) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>   <span class="hljs-comment">-- do the counting</span>
+  <span class="hljs-built_in">table</span>.<span class="hljs-built_in">sort</span>(out,lt(<span class="hljs-string">&quot;xlo&quot;</span>))
+  out= col.is==<span class="hljs-string">&quot;NUM&quot;</span> <span class="hljs-keyword">and</span> xpand(merge(out, n^THE.bins)) <span class="hljs-keyword">or</span> out 
+  <span class="hljs-keyword">return</span> #out &lt; <span class="hljs-number">2</span> <span class="hljs-keyword">and</span> {} <span class="hljs-keyword">or</span> out <span class="hljs-comment">-- less than 2 ranges? then no splits found!</span>
+<span class="hljs-keyword">end</span> <span class="hljs-comment">-- ranges </span></pre></div></div>
             
         </li>
         
@@ -1051,11 +1055,9 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
               <div class="sswrap ">
                 <a class="ss" href="#section-57">&#x00a7;</a>
               </div>
-              <p>Large number</p>
+              <h2 id="functions">Functions</h2>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre>big = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span></pre></div></div>
             
         </li>
         
@@ -1065,6 +1067,21 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
               
               <div class="sswrap ">
                 <a class="ss" href="#section-58">&#x00a7;</a>
+              </div>
+              <p>Large number</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>big = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-59">&#x00a7;</a>
               </div>
               <p><strong>csv(csvfile:str)</strong> :<br>Iterator. Return one table per line, split on “,”. </p>
 
@@ -1081,32 +1098,18 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
         </li>
         
         
-        <li id="section-59">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-59">&#x00a7;</a>
-              </div>
-              <p><strong>fmt(control:str, arg1,arg2…)</strong><br>sprintf emulation.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>fmt = <span class="hljs-built_in">table</span>.<span class="hljs-built_in">format</span></pre></div></div>
-            
-        </li>
-        
-        
         <li id="section-60">
             <div class="annotation">
               
               <div class="sswrap ">
                 <a class="ss" href="#section-60">&#x00a7;</a>
               </div>
-              <p><strong>fyi(x:str)</strong> <br> Print things in verbose mode.</p>
+              <p><strong>fmt(control:str, arg1,arg2…)</strong><br>sprintf emulation.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>fyi = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(...)</span></span> <span class="hljs-keyword">if</span> THE.verbose <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(...) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>fmt = <span class="hljs-built_in">string</span>.<span class="hljs-built_in">format</span>
+<span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;as&quot;</span>))</pre></div></div>
             
         </li>
         
@@ -1117,11 +1120,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
               <div class="sswrap ">
                 <a class="ss" href="#section-61">&#x00a7;</a>
               </div>
-              <p><strong>lt(x:str):fun</strong> <br>Return a sort function on slot <code>x</code>.</p>
+              <p><strong>fyi(x:str)</strong> <br> Print things in verbose mode.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lt</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> a[x] &lt; b[x] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>fyi = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(...)</span></span> <span class="hljs-keyword">if</span> THE.verbose <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(...) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -1132,11 +1135,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
               <div class="sswrap ">
                 <a class="ss" href="#section-62">&#x00a7;</a>
               </div>
-              <p><strong>map(t:tab, f:fun):tab</strong> <br>Return a list, items filtered through <code>f</code>.<br>If <code>f</code> returns nil, then that item is rejected.</p>
+              <p><strong>lt(x:str):fun</strong> <br>Return a sort function on slot <code>x</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">map</span><span class="hljs-params">(t,f,  u)</span></span> u={}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> u[<span class="hljs-number">1</span>+#u]=f(v) <span class="hljs-keyword">end</span> <span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lt</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> a[x] &lt; b[x] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -1147,11 +1150,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
               <div class="sswrap ">
                 <a class="ss" href="#section-63">&#x00a7;</a>
               </div>
-              <p><strong>oo(i:tab)</strong> : <br>Pretty print <code>i</code>.</p>
+              <p><strong>map(t:tab, f:fun):tab</strong> <br>Return a list, items filtered through <code>f</code>.<br>If <code>f</code> returns nil, then that item is rejected.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>oo  = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span></span> <span class="hljs-built_in">print</span>(str(i)) <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">map</span><span class="hljs-params">(t,f,  u)</span></span> u={}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> u[<span class="hljs-number">1</span>+#u]=f(v) <span class="hljs-keyword">end</span> <span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -1162,11 +1165,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
               <div class="sswrap ">
                 <a class="ss" href="#section-64">&#x00a7;</a>
               </div>
-              <p><strong>per(t:tab, p:float):float</strong><br>Return an item ,p-th way through <code>t</code>. <code>p=0.5</code> means return median.</p>
+              <p><strong>oo(i:tab)</strong> : <br>Pretty print <code>i</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">per</span><span class="hljs-params">(t,p)</span></span> p=p*#t//<span class="hljs-number">1</span>; <span class="hljs-keyword">return</span> t[<span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(<span class="hljs-number">1</span>,<span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(#t,p))] <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>oo  = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span></span> <span class="hljs-built_in">print</span>(str(i)) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -1177,11 +1180,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
               <div class="sswrap ">
                 <a class="ss" href="#section-65">&#x00a7;</a>
               </div>
-              <p><strong>push(t:tab, x:atom):x</strong> <br>Push <code>x</code> onto <code>t</code>, returning <code>x</code>.</p>
+              <p><strong>per(t:tab, p:float):float</strong><br>Return an item ,p-th way through <code>t</code>. <code>p=0.5</code> means return median.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">push</span><span class="hljs-params">(t,x)</span></span> t[<span class="hljs-number">1</span>+#t]=x; <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">per</span><span class="hljs-params">(t,p)</span></span> p=p*#t//<span class="hljs-number">1</span>; <span class="hljs-keyword">return</span> t[<span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(<span class="hljs-number">1</span>,<span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(#t,p))] <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -1192,11 +1195,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
               <div class="sswrap ">
                 <a class="ss" href="#section-66">&#x00a7;</a>
               </div>
-              <p><strong>rand(?x:num=1):num</strong><br> Generate a random number <code>1..x</code>.</p>
+              <p><strong>push(t:tab, x:atom):x</strong> <br>Push <code>x</code> onto <code>t</code>, returning <code>x</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>rand= <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">push</span><span class="hljs-params">(t,x)</span></span> t[<span class="hljs-number">1</span>+#t]=x; <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -1206,6 +1209,36 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
               
               <div class="sswrap ">
                 <a class="ss" href="#section-67">&#x00a7;</a>
+              </div>
+              <p><strong>rand(?x:num=1):num</strong><br> Generate a random number <code>1..x</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>rand= <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-68">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-68">&#x00a7;</a>
+              </div>
+              <p><strong>rnd(n:num, places:int):num</strong> <p>Round <code>n</code> to <code>p</code> places.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rnd</span><span class="hljs-params">(n, p)</span></span>   <span class="hljs-keyword">local</span> m=<span class="hljs-number">10</span>^(p <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>); <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">floor</span>(n*m+<span class="hljs-number">0.5</span>)/m  <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-69">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-69">&#x00a7;</a>
               </div>
               <p><strong>split(t, ?lo:float=1, ?j:float=#t, ?k:float=1):tab</strong><br>Return parts of <code>t</code> from <code>i</code> to <code>j</code> by steps <code>k</code>.</p>
 
@@ -1217,11 +1250,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
         </li>
         
         
-        <li id="section-68">
+        <li id="section-70">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-68">&#x00a7;</a>
+                <a class="ss" href="#section-70">&#x00a7;</a>
               </div>
               <h2 id="demos">Demos</h2>
 
@@ -1230,11 +1263,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
         </li>
         
         
-        <li id="section-69">
+        <li id="section-71">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-69">&#x00a7;</a>
+                <a class="ss" href="#section-71">&#x00a7;</a>
               </div>
               <p>Place to store tests. To disable a test, rename <code>go.xx</code> to <code>no.xx</code>.</p>
 
@@ -1265,17 +1298,29 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
   rows = ROWS(THE.file); 
   map(rows.ys,<span class="hljs-built_in">print</span>); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>; <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.mid</span><span class="hljs-params">(  r)</span></span>
-  r= ROWS(THE.file) <span class="hljs-keyword">end</span></pre></div></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.mid</span><span class="hljs-params">(  r,bests,rests)</span></span>
+  r= ROWS(THE.file); 
+  bests,rests = r:bestRest()
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;all&quot;</span>,  str(r:mid(<span class="hljs-number">2</span>)))
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;best&quot;</span>, str(r:clone(bests):mid(<span class="hljs-number">2</span>)))
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;rest&quot;</span>, str(r:clone(rests):mid(<span class="hljs-number">2</span>)))
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.range</span><span class="hljs-params">(  r,bests,rests)</span></span>
+  r= ROWS(THE.file); 
+  bests,rests = r:bestRest()
+  <span class="hljs-keyword">for</span> _,range <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(ranges(r.xs[<span class="hljs-number">1</span>], bests, rests)) <span class="hljs-keyword">do</span>
+    <span class="hljs-built_in">print</span>(range, range.ys:score(<span class="hljs-number">1</span>, #bests, #rests)) <span class="hljs-keyword">end</span> <span class="hljs-comment">--score(1,#bests,#rests)) end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-70">
+        <li id="section-72">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-70">&#x00a7;</a>
+                <a class="ss" href="#section-72">&#x00a7;</a>
               </div>
               <h2 id="starting-up">Starting up</h2>
 
@@ -1284,11 +1329,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
         </li>
         
         
-        <li id="section-71">
+        <li id="section-73">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-71">&#x00a7;</a>
+                <a class="ss" href="#section-73">&#x00a7;</a>
               </div>
               <p>Get a list of sorted demo names.</p>
 
@@ -1301,11 +1346,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
         </li>
         
         
-        <li id="section-72">
+        <li id="section-74">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-72">&#x00a7;</a>
+                <a class="ss" href="#section-74">&#x00a7;</a>
               </div>
               <p>Run the demos (or just <code>THE.go</code></p>
 
@@ -1324,11 +1369,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
         </li>
         
         
-        <li id="section-73">
+        <li id="section-75">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-73">&#x00a7;</a>
+                <a class="ss" href="#section-75">&#x00a7;</a>
               </div>
               <p>Check for rogue locals, then return the error counts (defaults to zero).</p>
 
