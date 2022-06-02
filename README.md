@@ -1,7 +1,10 @@
 <h3>L5 = A Little Light Learner Lab, in LUA</h3>   
 <img src=/docs/img/l5.png align=right width=500>
      
-[&copy; 2022](#copyright) Tim Menzies
+<a
+href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a> <a 
+href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a><br>
+<b> <a href="https://github.com/timm/l5/blob/master/LICENSE.md">&copy;2022</a> </b>, Tim Menzies, <timm@ieee.org>
  
 [Contribute](CONTRIBUTE.md) | [Github](http://github.com/timm/l5)<br> 
      
