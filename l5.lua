@@ -9,22 +9,27 @@
 -- Each learner should be few lines of code (since they share an 
 -- underlying code base).  
 --      
--- Why LUA? Three reasons. 
+-- Why LUA? Four reasons. 
 --
 -- __ONE__:<br>LUA supports simple teaching
 -- (less than 2 dozen keywords). Heck, children use it to code up their own games.
 -- 
--- __TWO__:<br>The great secret is that LUA==LISP (ish). LUA supports many advanced programming
+-- __TWO__:<br>One great secret is that LUA==LISP (ish). LUA supports many advanced programming
 -- techniques (first class
 -- objects, functional programming, etc) without  (**L**ots of (**I**nfuriating (**S**illy
 -- (**P**arenthesis)))).  For example, the entire object system used here is just five lines of code
 -- (see **is()**). 
+-- 
+--- __THREE:<br>The other great secret is that, at their core, many of these
+-- learners is essential simple. So by coding up those algorithms, in just a few
+-- lines of LUA, we are teaching students that AI is something they can understand
+-- and improve.
 --    
--- __THREE__:<br>my standard assignment is "here is  a worked solution,
--- now code it up in any other language". So with LUA/L5 I can give students an
--- succinct executable specification that demonstrates numerous recommended coding
--- practices (for learning and for scripting).
--- And then they can still code in their language du jour.
+-- __FOUR__:<br>This code is a succinct executable specification that demonstrates 
+-- numerous recommended coding practices (for learning and for scripting).
+-- It supports my standard assignment is "here is  a worked solution,
+-- now code it up in any other language". So I can give students a worked solution,
+-- and then can still code in their language du jour.
 --   
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local add,big,col,csv,fmt,fyi,id,is,klass,lt,map,oo
