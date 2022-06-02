@@ -1,3 +1,6 @@
+literature programming
+- self dcumenting code (make file help, code comment#1
+
 +iterative diconphmzation: discretization, sctott-knot, decision tree
 +
  self-documentating code:
