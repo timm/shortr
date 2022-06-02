@@ -1,35 +1,39 @@
 -- <h3>L5 = A Little Light Learner Lab, in LUA</h3>   
 -- <img src=img/l5.png align=left width=300>
 --      
--- [&copy; 2022](/LICENSE.md) Tim Menzies timm@ieee.org
+-- [&copy; 2022](https://github.com/timm/l5/blob/master/LICENSE.md#top) 
+-- Tim Menzies, timm@ieee.org
 --  
--- [Contribute](#contribute) | [Github](http://github.com/timm/l5)<br> 
+-- [Contribute](https://github.com/timm/l5/blob/master/CONTRIBUTE.md#top) 
+-- | [Github](http://github.com/timm/l5) 
+-- | [Issues](https://github.com/timm/l5/issues)<br> 
 --      
--- Write the _most_ learners in the _least_ code.
--- Each learner should be few lines of code (since they share an 
+-- Goal: write the _most_ learners in the _least_ code.
+-- Each learner should be few lines of code (based on  a shared
 -- underlying code base).  
 --      
 -- Why LUA? Four reasons. 
 --
--- __ONE__:<br>LUA supports simple teaching
+-- __ONE__:<br>It's simple. LUA supports simple teaching
 -- (less than 2 dozen keywords). Heck, children use it to code up their own games.
 -- 
--- __TWO__:<br>LUA supports many advanced programming
+-- __TWO__:<br>It's powerful. LUA supports many advanced programming
 -- techniques (first class
--- objects, functional programming, etc) without  (**L**ots of (**I**nfuriating (**S**illy
+-- objects, functional programming, etc) without, e.g.  (**L**ots of (**I**nfuriating (**S**illy
 -- (**P**arenthesis)))).  For example, the entire object system used here is just five lines of code
 -- (see **is()**). 
 -- 
--- __THREE__:<br>The other great secret is that, at their core, many of these
+-- __THREE__:<br>It's succinct. The other great secret is that, at their core, many of these
 -- learners is essential simple. So by coding up those algorithms, in just a few
 -- lines of LUA, we are teaching students that AI is something they can understand
 -- and improve.
 --    
--- __FOUR__:<br>This code is a succinct executable specification that demonstrates 
--- numerous recommended coding practices (for learning and for scripting).
--- It supports my standard assignment is "here is  a worked solution,
--- now code it up in any other language". So I can give students a worked solution,
--- and then can still code in their language du jour.
+-- __FOUR__:<br>Paradoxically, it is useful since not many
+-- people code in this language.
+-- This means it supports the following kind of assignment, which  is "here is  a worked solution,
+-- now code it up in any other language". With this code, students can get
+-- a fully worked solution, yet still have the learning experience of
+-- working it out for themselves in their language du jour.
 --   
 -- <a
 -- href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a> <a 
@@ -224,11 +228,12 @@ function SYM.bin(i,x) return x end
 
 -- __SYM:score(want:any, wants:int, donts:init):float__ <br>SYMs get discretized to themselves.
 function SYM.score(i,want, wants,donts)
-  local b, r, z, how = 0, 0, 1/big, {}
-  how.helps= function(b,r) return (b<r or b+r < .05) and 0 or b^2/(b+r) end
-  how.hurts= function(b,r) return (r<b or b+r < .05) and 0 or r^2/(b+r) end
+  local b, r, z, how = 0, 0, 1E-10, {}
+  how.helps= function(b,r) oo{b=b,r=r}; return (b<r or b+r < .05) and 0 or b^2/(b+r+z) end
+  how.hurts= function(b,r) return (r<b or b+r < .05) and 0 or r^2/(b+r+z) end
   how.tabu = function(b,r) return 1/(b+r+z) end 
   for v,n in pairs(i.has) do if v==want then b = b+n else r=r+n end end
+  oo{b=b,wants=wants}
   return how[THE.How](b/(wants+z), r/(donts+z)) end
  
 -- ##  ROW methods
@@ -254,6 +259,7 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
 
 -- __ROW:within(range):bool__
 function ROW.within(i,range,         lo,hi,at,v)
+   print("r",range)
    lo, hi, at = range.xlo, range.xhi, range.ys.at
    v = i.cells[at]
    return  v=="?" or lo==hi and v==lo or lo<=v and v<hi end
@@ -311,10 +317,12 @@ function ROWS.splits(i,bests0,rests0)
   most,range,range1,score = -1
   for _,col in pairs(i.xs) do
     print(col)
-    for _,range0 in ranges(col,bests0,rests0) do
-      score = range0:score(1,#bests0,#rests0)
+    for _,range0 in pairs(ranges(col,bests0,rests0)) do
+      score = range0.ys:score(1,#bests0,#rests0)
+      print("score",score,#bests0, #rests0)
       if score>most then most,range1 = score,range0 end end end
   local bests1, rests1 = {},{}
+  print("==> ",range1)
   for _,rows in pairs{bests0,rests0} do
     for _,row in pairs(rows) do 
       push(row:within(range1) and bests1 or rests1, row) end end
@@ -483,7 +491,7 @@ function go.range(  r,bests,rests)
        print(range, range.ys:score(1, #bests, #rests)) end  end
   return true end
 
-function no.contrast(  r,bests,rests)
+function go.contrast(  r,bests,rests)
   r= ROWS(THE.file); 
   bests,rests = r:bestRest()
   r:contrast(bests, rests)
@@ -510,37 +518,4 @@ for _,s in pairs(go[THE.go] and {THE.go} or going) do
 -- Check for rogue locals, then return the error counts (defaults to zero).
 for k,v in pairs(_ENV) do  if not b4[k] then print("?",k,type(v)) end end
 os.exit(fails) 
-
--- ## Copyright <a name=copyright></a>
--- BSD 2-Clause License
---  
--- Copyright (c) 2022, Tim Menzies
---  
--- Redistribution and use in source and binary forms, with or without
--- modification, are permitted provided that the following conditions are met:
--- 
--- 1. Redistributions of source code must retain the above copyright notice,
---    this list of conditions and the following disclaimer.
--- 2. Redistributions in binary form must reproduce the above copyright
---    notice, this list of conditions and the following disclaimer in the
---    documentation and/or other materials provided with the distribution.
--- 
--- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
--- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
--- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
--- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
--- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
--- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
--- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
--- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
--- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
--- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
--- POSSIBILITY OF SUCH DAMAGE.
-
--- ## Ignore this
--- e.g. __Pass1:__ Recursively bi-cluster, sample 1 point per cluster, 
--- prune cluster with worst point. __Pass2:__ Do it again, using the better
--- things found in Pass1. __Pass3:__ Report rules that selects for the 
--- "good" found in Pass2.
-
 
