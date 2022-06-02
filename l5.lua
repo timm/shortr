@@ -5,8 +5,8 @@
 --  
 -- [Contribute](#contribute) | [Github](http://github.com/timm/l5)<br> 
 --      
--- Here, we write the _most_ learners in the _least_ code.
--- Each learner is a few lines of code (since they share an 
+-- Write the _most_ learners in the _least_ code.
+-- Each learner should be few lines of code (since they share an 
 -- underlying code base).  
 --      
 -- Why LUA? Three reasons. 
@@ -26,10 +26,6 @@
 -- practices (for learning and for scripting).
 -- And then they can still code in their language du jour.
 --   
--- e.g. __Pass1:__ Recursively bi-cluster, sample 1 point per cluster, 
--- prune cluster with worst point. __Pass2:__ Do it again, using the better
--- things found in Pass1. __Pass3:__ Report rules that selects for the 
--- "good" found in Pass2.
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local add,big,col,csv,fmt,fyi,id,is,klass,lt,map,oo
 local per,push, rand, ranges,read, result, rnd, seed, splice, str
@@ -532,5 +528,11 @@ os.exit(fails)
 -- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 -- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 -- POSSIBILITY OF SUCH DAMAGE.
+
+-- ## Ignore this
+-- e.g. __Pass1:__ Recursively bi-cluster, sample 1 point per cluster, 
+-- prune cluster with worst point. __Pass2:__ Do it again, using the better
+-- things found in Pass1. __Pass3:__ Report rules that selects for the 
+-- "good" found in Pass2.
 
 

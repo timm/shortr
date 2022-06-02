@@ -9,7 +9,7 @@ help : Makefile
            "  \033[36m%-25s\033[0m %s\n","make " $$1,$$2}'  $< \
 	| grep -v gawk
 
-ready: ##  commit to main
+ready: docs/index.html ##  commit to main
 	git add *;git commit -am save;git push;git status
 
 docs/index.html: docs/l5.html ## make home page
