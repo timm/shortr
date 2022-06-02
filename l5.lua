@@ -1,7 +1,7 @@
 -- <h3>L5 = A Little Light Learner Lab, in LUA</h3>   
 -- <img src=img/l5.png align=left width=300>
 --      
--- [&copy; 2022](#copyright) Tim Menzies
+-- [&copy; 2022](#copyright) Tim Menzies timm@ieee.org
 --  
 -- [Contribute](#contribute) | [Github](http://github.com/timm/l5)<br> 
 --      
@@ -31,6 +31,10 @@
 -- now code it up in any other language". So I can give students a worked solution,
 -- and then can still code in their language du jour.
 --   
+-- <a
+-- href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a> <a 
+-- href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a><br>
+-- <b> <a href="https://github.com/timm/l5/blob/master/LICENSE.md">
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local add,big,col,csv,fmt,fyi,id,is,klass,lt,map,oo
 local per,push, rand, ranges,read, result, rnd, seed, splice, str

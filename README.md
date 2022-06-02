@@ -1,5 +1,5 @@
 <h3>L5 = A Little Light Learner Lab, in LUA</h3>   
-<img src=/docs/img/l5.png align=right width=500>
+<img src=/docs/img/l5.png align=right width=400>
      
 <a
 href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a> <a 
