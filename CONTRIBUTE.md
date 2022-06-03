@@ -52,6 +52,6 @@ Beware missing values (marked in "?") and avoid them
 
 ## Linting 
 
---  1st line: traps list of pre-existing globals  
--- 2nd last line: look for "rogue" globals (by comparing with data trapped on line1)
--- Last line: exit to operating system with number of failures seen in tests
+-  1st line: traps list of pre-existing globals  
+- 2nd last line: look for "rogue" globals (by comparing with data trapped on line1)
+- Last line: exit to operating system with number of failures seen in tests
