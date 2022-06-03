@@ -367,6 +367,7 @@ function ranges(col,klass, ...)
   for label,rows in pairs{...} do -- for each set..
     n = n + #rows
     for _,row in pairs(rows) do    -- for each row...
+      oo(row)
       v = row.cells[col.at] 
       if v ~= "?" then              -- count how often we see some value
         x = col:bin(v)                -- accumulated into a few bins
@@ -495,7 +496,7 @@ function go.range(  r,bests,rests)
 function go.contrast(  r,bests,rests)
   r= ROWS(THE.file); 
   bests,rests = r:bestRest()
-  local _,bests1 = r:contrast(SYM, rests, bests)
+  local _,bests1 = r:contrast(SYM, bests, rests)
   print("all",   str(r:mid(2)))
   print("best",  str(r:clone(bests):mid(2)))
   print("rest",  str(r:clone(rests):mid(2)))
