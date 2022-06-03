@@ -1,45 +1,45 @@
 -- <h3>L5 = A Little Light Learner Lab, in LUA</h3>   
--- <img src=img/l5.png align=left width=300>
---      
+-- <img src=img/l5.png align=left width=260>    
+--
 -- [&copy; 2022](https://github.com/timm/l5/blob/master/LICENSE.md#top) 
 -- Tim Menzies, timm@ieee.org
---  
+--   
 -- [Contribute](https://github.com/timm/l5/blob/master/CONTRIBUTE.md#top) 
 -- | [Github](http://github.com/timm/l5) 
--- | [Issues](https://github.com/timm/l5/issues)<br> 
---      
--- Goal: write the _most_ learners in the _least_ code.
+-- | [Issues](https://github.com/timm/l5/issues) 
+--        
+-- <a href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a>
+-- <a href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
+--  
+-- This is an experiment in  writing 
+-- the _most_ learners using the _least_ code.
 -- Each learner should be few lines of code (based on  a shared
--- underlying code base).  
---      
--- Why LUA? Four reasons. 
---
--- __ONE__:<br>It's simple. LUA supports simple teaching
+-- underlying code base).
+--   
+-- Why LUA? Well,
+-- it's a simple langauge. LUA supports simple teaching
 -- (less than 2 dozen keywords). Heck, children use it to code up their own games.
 -- 
--- __TWO__:<br>It's powerful. LUA supports many advanced programming
+-- While simple, LUA is also very powerful. LUA supports many advanced programming
 -- techniques (first class
 -- objects, functional programming, etc) without, e.g.  (**L**ots of (**I**nfuriating (**S**illy
 -- (**P**arenthesis)))).  For example, the entire object system used here is just five lines of code
 -- (see **is()**). 
 -- 
--- __THREE__:<br>It's succinct. The other great secret is that, at their core, many of these
+-- Further, LUA code can be really succinct. The other great secret is that, at their core, many of these
 -- learners is essential simple. So by coding up those algorithms, in just a few
 -- lines of LUA, we are teaching students that AI is something they can understand
 -- and improve.
 --    
--- __FOUR__:<br>Paradoxically, it is useful since not many
--- people code in this language.
+-- Lastly,  LUA is actually useful _because_ not many
+-- people code in that language.
 -- This means it supports the following kind of assignment, which  is "here is  a worked solution,
 -- now code it up in any other language". With this code, students can get
 -- a fully worked solution, yet still have the learning experience of
 -- working it out for themselves in their language du jour.
 --   
--- <a
--- href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a> <a 
--- href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local add,big,col,csv,fmt,fyi,id,is,klass,lt,map,oo
+local add,big,col,csv,fmt,fyi,gt,id,is,klass,lt,map,oo
 local per,push, rand, read, result, rnd, seed, splice, str
 local rangesMerged, ranges, rangesMerge, rangesXpand
 local help=[[
@@ -262,7 +262,7 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
 function ROW.within(i,range,         lo,hi,at,v)
    lo, hi, at = range.xlo, range.xhi, range.ys.at
    v = i.cells[at]
-   return  v=="?" or lo==hi and v==lo or lo<=v and v<hi end
+   return  v=="?" or (lo==hi and v==lo) or (lo<=v and v<hi) end
 
 -- ## ROWS methods
 -- Sets of ROWs are stored in ROWS. ROWS summarize columns and those summarizes
@@ -312,12 +312,15 @@ function ROWS.mid(i,p,    t)
 
 -- __ROWS:splits(best0:[ROW], rests:[ROW]):[ROW],[ROW],RANGE}__     
 -- Supervised discretization: return ranges that are most difference in `bests0` and `rests0`.
-function ROWS.splits(i,bests0,rests0)
-  local most,range,range1,score = -1
-  for _,col in pairs(i.xs) do
-    for _,range0 in pairs(ranges(col,bests0,rests0)) do
+function ROWS.splits(i,klass,bests0,rests0)
+  local most,range1,score = -1
+  for m,col in pairs(i.xs) do
+    for n,range0 in pairs(ranges(col,klass,bests0,rests0)) do
       score = range0.ys:score(1,#bests0,#rests0)
-      if score>most then most,range1 = score,range0 end end end
+      if score > most then 
+         most,range1 = score,range0 
+         print("most",m,n,col.at, most)
+         end end end
   local bests1, rests1 = {},{}
   for _,rows in pairs{bests0,rests0} do
     for _,row in pairs(rows) do 
@@ -326,14 +329,14 @@ function ROWS.splits(i,bests0,rests0)
 
 -- __ROWS:contrast(best0:[row], rests0:[row]):[row]__   
 -- Recursively find ranges that selects for the best rows.
-function ROWS.contrast(i,bests0,rests0,    hows,stop)
+function ROWS.contrast(i,klass, bests0,rests0,    hows,stop)
   stop = stop or #bests0/4
   hows = hows or {}
-  local  bests1, rests1,range = i:splits(bests0, rests0)
+  local  bests1, rests1,range = i:splits(klass,bests0, rests0)
   if (#bests0 + #rests0) > stop and (#bests1 < #bests0 or #rests1 < #rests0) then
     push(hows,range)
     return i:contrast(bests1, rests1, hows, stop) end 
-  return hows0,bests0 end
+  return hows,bests0 end
 
 -- ## RANGE methods
 
@@ -355,22 +358,21 @@ function RANGE.__tostring(i)
   elseif lo == -big then return fmt("%s < %s", x, hi)  
   else                   return fmt("%s <= %s < %s",lo,x,hi) end end
 
-
 -- **ranges(col: NUM | SYM, rows1:[row], rows2:[row], ...):[RANGE]**    
 -- This function generates ranges.
 -- Return a useful way to divide the values seen in this column, 
 -- in these different rows.
-function ranges(col, ...)
+function ranges(col,klass, ...)
   local known,out,n,v,x = {},{}, 0
-  for klass,rows in pairs{...} do -- for each set..
+  for label,rows in pairs{...} do -- for each set..
     n = n + #rows
     for _,row in pairs(rows) do    -- for each row...
       v = row.cells[col.at] 
       if v ~= "?" then              -- count how often we see some value
         x = col:bin(v)                -- accumulated into a few bins
         known[x] = -- This idiom means "known[x]" exists, and is stored in "out".
-          known[x] or push(out,RANGE(v, v, SYM(col.at,col.txt)))
-        known[x]:add(v,klass) end end end   -- do the counting
+          known[x] or push(out,RANGE(v, v, klass(col.at,col.txt)))
+        known[x]:add(v,label) end end end   -- do the counting
   table.sort(out,lt("xlo"))
   out= col.is=="NUM" and rangesXpand(rangesMerge(out, n^THE.min)) or out 
   return #out < 2 and {} or out end -- less than 2 ranges? then no splits found!
@@ -422,6 +424,8 @@ function csv(csvfile)
 fmt = string.format
 -- __fyi(x:str)__ <br> Print things in verbose mode.
 fyi = function(...) if THE.verbose then print(...) end end
+-- __gt(x:str):fun__ <br>Return a sort down function on slot `x`.
+function gt(x) return function(a,b) return a[x] > b[x] end end
 -- __lt(x:str):fun__ <br>Return a sort function on slot `x`.
 function lt(x) return function(a,b) return a[x] < b[x] end end
 -- __map(t:tab, f:fun):tab__ <br>Return a list, items filtered through `f`.  
@@ -484,14 +488,18 @@ function go.range(  r,bests,rests)
   bests,rests = r:bestRest()
   for _,col in pairs(r.xs) do
     print("")
-    for _,range in pairs(ranges(col, bests, rests)) do
+    for _,range in pairs(ranges(col, SYM, bests, rests)) do
        print(range, range.ys:score(1, #bests, #rests)) end  end
   return true end
 
 function go.contrast(  r,bests,rests)
   r= ROWS(THE.file); 
   bests,rests = r:bestRest()
-  r:contrast(bests, rests)
+  local _,bests1 = r:contrast(SYM, bests, rests)
+  print("all",   str(r:mid(2)))
+  print("best",  str(r:clone(bests):mid(2)))
+  print("rest",  str(r:clone(rests):mid(2)))
+  print("found", str(r:clone(bests1):mid(2)))
   return true end
 
 -- ## Starting up
