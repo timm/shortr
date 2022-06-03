@@ -31,7 +31,7 @@
 <img src=img/l5.png align=left width=260>    
 
 <p><a href="https://github.com/timm/l5/blob/master/LICENSE.md#top">&copy; 2022</a> 
-Tim Menzies, <a href="mailto:&#x74;&#x69;&#109;&#109;&#x40;&#105;&#101;&#101;&#x65;&#46;&#111;&#114;&#103;">&#x74;&#x69;&#109;&#109;&#x40;&#105;&#101;&#101;&#x65;&#46;&#111;&#114;&#103;</a></p>
+Tim Menzies, <a href="mailto:&#x74;&#105;&#x6d;&#x6d;&#64;&#x69;&#101;&#x65;&#101;&#46;&#x6f;&#x72;&#103;">&#x74;&#105;&#x6d;&#x6d;&#64;&#x69;&#101;&#x65;&#101;&#46;&#x6f;&#x72;&#103;</a></p>
 <p><a href="https://github.com/timm/l5/blob/master/CONTRIBUTE.md#top">Contribute</a> 
 | <a href="http://github.com/timm/l5">Github</a> 
 | <a href="https://github.com/timm/l5/issues">Issues</a> </p>
@@ -1329,7 +1329,7 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.contrast</span><span class="hljs-params">(  r,bests,rests)</span></span>
   r= ROWS(THE.file); 
   bests,rests = r:bestRest()
-  <span class="hljs-keyword">local</span> _,bests1 = r:contrast(SYM, bests, rests)
+  <span class="hljs-keyword">local</span> _,bests1 = r:contrast(SYM, rests, bests)
   <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;all&quot;</span>,   str(r:mid(<span class="hljs-number">2</span>)))
   <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;best&quot;</span>,  str(r:clone(bests):mid(<span class="hljs-number">2</span>)))
   <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;rest&quot;</span>,  str(r:clone(rests):mid(<span class="hljs-number">2</span>)))

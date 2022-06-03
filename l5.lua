@@ -495,7 +495,7 @@ function go.range(  r,bests,rests)
 function go.contrast(  r,bests,rests)
   r= ROWS(THE.file); 
   bests,rests = r:bestRest()
-  local _,bests1 = r:contrast(SYM, bests, rests)
+  local _,bests1 = r:contrast(SYM, rests, bests)
   print("all",   str(r:mid(2)))
   print("best",  str(r:clone(bests):mid(2)))
   print("rest",  str(r:clone(rests):mid(2)))
