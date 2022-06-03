@@ -40,7 +40,8 @@
 -- href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local add,big,col,csv,fmt,fyi,id,is,klass,lt,map,oo
-local per,push, rand, ranges,read, result, rnd, seed, splice, str
+local per,push, rand, read, result, rnd, seed, splice, str
+local rangesMerged, ranges, rangesMerge, rangesXpand
 local help=[[
 L5: a little light learner lab in LUA
 (c) 2022 Tim Menzies, timm@ieee.org, BSD2 license    
@@ -173,13 +174,6 @@ return add(i,x,1,function(     d)
 -- __NUM:clone():NUM__  <br> Duplicate structure
 function NUM.clone(i)    return NUM(i.at, i.txt) end
 
--- __NUM:merge(j:num):NUM__ <br> Combine two NUMs.
-function NUM.merge(i,j,      k)
-  local k = NUM(i.at, i.txt)
-  for _,x in pairs(i.has.has) do k:add(x) end
-  for _,x in pairs(j.has.has) do k:add(x) end
-  return k end
-
 -- __NUM:mid():num__ <br>mid is `mu`.   
 function NUM.mid(i,p) return rnd(i.mu,p or 3) end
 -- __NUM:div():num__ <br>div is entropy
@@ -193,7 +187,15 @@ function NUM.bin(i,x,   b)
 -- __NUM:norm(x:num):num__<br>Normalize `x` 0..1 for `lo`..`hi`.
 function NUM.norm(i,x)     
   return i.hi - i.lo < 1E-9 and 0 or (x-i.lo)/(i.hi - i.lo + 1/big) end 
- 
+
+-- __NUM:merge(j:num):NUM__ <br> Combine two NUMs.
+function NUM.merge(i,j,      k)
+  local k = NUM(i.at, i.txt)
+  for _,x in pairs(i.has.has) do k:add(x) end
+  for _,x in pairs(j.has.has) do k:add(x) end
+  return k end
+
+
 -- ## SYM methods
 
 -- Incrementally update a  sample of numbers including its mode
@@ -229,11 +231,10 @@ function SYM.bin(i,x) return x end
 -- __SYM:score(want:any, wants:int, donts:init):float__ <br>SYMs get discretized to themselves.
 function SYM.score(i,want, wants,donts)
   local b, r, z, how = 0, 0, 1E-10, {}
-  how.helps= function(b,r) oo{b=b,r=r}; return (b<r or b+r < .05) and 0 or b^2/(b+r+z) end
+  how.helps= function(b,r) return (b<r or b+r < .05) and 0 or b^2/(b+r+z) end
   how.hurts= function(b,r) return (r<b or b+r < .05) and 0 or r^2/(b+r+z) end
   how.tabu = function(b,r) return 1/(b+r+z) end 
   for v,n in pairs(i.has) do if v==want then b = b+n else r=r+n end end
-  oo{b=b,wants=wants}
   return how[THE.How](b/(wants+z), r/(donts+z)) end
  
 -- ##  ROW methods
@@ -259,7 +260,6 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
 
 -- __ROW:within(range):bool__
 function ROW.within(i,range,         lo,hi,at,v)
-   print("r",range)
    lo, hi, at = range.xlo, range.xhi, range.ys.at
    v = i.cells[at]
    return  v=="?" or lo==hi and v==lo or lo<=v and v<hi end
@@ -313,16 +313,12 @@ function ROWS.mid(i,p,    t)
 -- __ROWS:splits(best0:[ROW], rests:[ROW]):[ROW],[ROW],RANGE}__     
 -- Supervised discretization: return ranges that are most difference in `bests0` and `rests0`.
 function ROWS.splits(i,bests0,rests0)
- print(#bests0, #rests0)
-  most,range,range1,score = -1
+  local most,range,range1,score = -1
   for _,col in pairs(i.xs) do
-    print(col)
     for _,range0 in pairs(ranges(col,bests0,rests0)) do
       score = range0.ys:score(1,#bests0,#rests0)
-      print("score",score,#bests0, #rests0)
       if score>most then most,range1 = score,range0 end end end
   local bests1, rests1 = {},{}
-  print("==> ",range1)
   for _,rows in pairs{bests0,rests0} do
     for _,row in pairs(rows) do 
       push(row:within(range1) and bests1 or rests1, row) end end
@@ -333,8 +329,7 @@ function ROWS.splits(i,bests0,rests0)
 function ROWS.contrast(i,bests0,rests0,    hows,stop)
   stop = stop or #bests0/4
   hows = hows or {}
-  print(1)
-  bests1, rests1,range = i:splits(bests0, rests0)
+  local  bests1, rests1,range = i:splits(bests0, rests0)
   if (#bests0 + #rests0) > stop and (#bests1 < #bests0 or #rests1 < #rests0) then
     push(hows,range)
     return i:contrast(bests1, rests1, hows, stop) end 
@@ -366,34 +361,6 @@ function RANGE.__tostring(i)
 -- Return a useful way to divide the values seen in this column, 
 -- in these different rows.
 function ranges(col, ...)
-  -- For numerics, **xpand** the ranges to cover the whole number line.
-  local function xpand(t)  --  extend ranges to cover whole number line
-    for j=2,#t do t[j].xlo = t[j-1].xhi end
-    t[1].xlo, t[#t].xhi = -big, big
-    return t end
-  -- **Merged** returns "nil" if the merge would actually complicate things
-  local function merged(i,j,min,      k)
-    k = i:merge(j)
-    if i.n < min or j.n < min or k:div()<=(i.n*i:div() + j.n*j:div())/k.n then 
-      return k end end
-   -- **Merge** adjacent ranges if     they have too few examples, or    
-   -- the whole is simpler than that parts. Keep merging, until we 
-   -- can't find anything else to merge.   
-  local function merge(b4,min,      t,j,a,b,c)
-    t,j = {},1
-    while j <= #b4 do 
-      a, b = b4[j], b4[j+1]
-      if b then 
-         c = merged(a.ys, b.ys, min) -- merge small bins that are to complex
-         if c then 
-           j = j + 1
-           a = RANGE(a.xlo, b.xhi, c) end end
-      t[#t+1] = a
-      j = j + 1 end
-    return #b4 == #t and t or merge(t,min)  -- (3)
-  end ----------------------------
-  --  For discretized values at `col.at`, create ranges that count how
-  -- often those values  appear in a set of rows (sorted 1,... for best...worst).     
   local known,out,n,v,x = {},{}, 0
   for klass,rows in pairs{...} do -- for each set..
     n = n + #rows
@@ -401,14 +368,44 @@ function ranges(col, ...)
       v = row.cells[col.at] 
       if v ~= "?" then              -- count how often we see some value
         x = col:bin(v)                -- accumulated into a few bins
-        -- The next line idiom means "known[x]" exists, and is stored in "out".
-        known[x] = known[x] or push(out,RANGE(v, v, SYM(col.at,col.txt)))
+        known[x] = -- This idiom means "known[x]" exists, and is stored in "out".
+          known[x] or push(out,RANGE(v, v, SYM(col.at,col.txt)))
         known[x]:add(v,klass) end end end   -- do the counting
   table.sort(out,lt("xlo"))
-  out= col.is=="NUM" and xpand(merge(out, n^THE.min)) or out 
-  return #out < 2 and {} or out -- less than 2 ranges? then no splits found!
-end -- ranges 
+  out= col.is=="NUM" and rangesXpand(rangesMerge(out, n^THE.min)) or out 
+  return #out < 2 and {} or out end -- less than 2 ranges? then no splits found!
 
+-- For numerics, **xpand** the ranges to cover the whole number line.
+function rangesXpand(t)  
+  for j=2,#t do t[j].xlo = t[j-1].xhi end
+  t[1].xlo, t[#t].xhi = -big, big
+  return t end
+
+-- **Merge** adjacent ranges if   they have too few examples, or    
+-- the whole is simpler than that parts. Keep merging, until we 
+-- can't find anything else to merge.   
+function rangesMerge(b4,min,      t,j,a,b,c)
+  t,j = {},1
+  while j <= #b4 do 
+    a, b = b4[j], b4[j+1]
+    if b then 
+       c = rangesMerged(a.ys, b.ys, min) -- merge small and/or complex bins
+       if c then 
+         j = j + 1
+         a = RANGE(a.xlo, b.xhi, c) end end
+    t[#t+1] = a
+    j = j + 1 end
+  return #b4 == #t and t or rangesMerge(t,min) end -- and maybe loop
+
+-- __rangesMerged(i:col,  j:com, min:num): (col | nil)__   
+-- Returns "nil" if the merge would actually complicate things
+--  For discretized values at `col.at`, create ranges that count how
+-- often those values  appear in a set of rows (sorted 1,... for best...worst).     
+function rangesMerged(i,j,min,      k)
+  k = i:merge(j)
+  if i.n < min or j.n < min or k:div()<=(i.n*i:div() + j.n*j:div())/k.n then 
+    return k end end
+ 
 -- ## Functions
 
 -- Large number
@@ -504,7 +501,7 @@ local going={}
 for s,_ in pairs(go) do going[1+#going]=s end
 table.sort(going)
 
--- Run the demos (or just `THE.go`
+-- Run the demos (or just `THE.go`).
 local fails=0
 for _,s in pairs(go[THE.go] and {THE.go} or going) do 
   for k,v in pairs(backup) do THE[k]=v end -- reset THE settings to the backup
