@@ -1,5 +1,7 @@
 <a name=top>
 
+<img align=right width=450 src=/docs/img/license.png>
+
 # BSD 2-Clause License
 
 Copyright (c) 2022 Tim Menzies   
