@@ -1,3 +1,13 @@
+--  __                                      ___                         
+-- /\ \__    __                            /\_ \                        
+-- \ \ ,_\  /\_\     ___     __  __        \//\ \     __  __     __     
+--  \ \ \/  \/\ \  /' _ `\  /\ \/\ \         \ \ \   /\ \/\ \  /'__`\   
+--   \ \ \_  \ \ \ /\ \/\ \ \ \ \_\ \   __    \_\ \_ \ \ \_\ \/\ \L\.\_ 
+--    \ \__\  \ \_\\ \_\ \_\ \/`____ \ /\_\   /\____\ \ \____/\ \__/.\_\
+--     \/__/   \/_/ \/_/\/_/  `/___/> \\/_/   \/____/  \/___/  \/__/\/_/
+--                               /\___/                                 
+--                               \/__/                                  
+--
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local THE,help= {},[[
 TINY:  
@@ -15,8 +25,8 @@ OPTIONS (other):
   --seed  -s  seed          = 10019
   --file  -f  file          = ../../data/auto93.csv]]
 
-local big,copy,csv,fmt,fmtp,map,normpdf,oo
-local push,rand,read,rnd,shuffle,splice,str
+local big,cli,copy,csv,demos, fmt,fmtp,map,normpdf
+local oo,pop,push,rand,read,rnd,shuffle,splice,str
 local function is(name,    t,new,x)  
   function new(kl,...) x=setmetatable({},kl); kl.new(x,...); return x end 
   t = {__tostring=str, is=name}; t.__index=t
@@ -25,6 +35,11 @@ local function is(name,    t,new,x)
 local ROW, ROWS, NUM, SYM = is"ROW", is"ROWS", is"NUM", is"SYM"
 
 --------------------------------------------------------------------------------
+--        _                             
+--   __  | |  __ _   ___  ___  ___   ___
+--  / _| | | / _` | (_-< (_-< / -_) (_-<
+--  \__| |_| \__,_| /__/ /__/ \___| /__/
+--                                      
 function SYM.new( i, at,txt) 
   i.n, i.at, i.txt = 0, at or 0, txt or ""
   i.has, i.most, i.mode = {}, 0, nil end
@@ -129,15 +144,24 @@ function ROWS.mid(i,p,   u)
   u={}; for _,col in pairs(i.ys) do u[col.txt] = col:mid() end; return u end
 
 ---------------------------------------------------------------------------
+--    __                      _     _                   
+--   / _|  _  _   _ _    __  | |_  (_)  ___   _ _    ___
+--  |  _| | || | | ' \  / _| |  _| | | / _ \ | ' \  (_-<
+--  |_|    \_,_| |_||_| \__|  \__| |_| \___/ |_||_| /__/
+--                                                      
 big  = math.huge
 fmt  = string.format
 fmtp = function(...) print(fmt(...)) end 
 rand = math.random
 
-function copy(t,   u)
-  if type(t) ~= "table" then return t end
-  u={};for k,v in pairs(t) do u[copy(k)]=copy(v) end
-  return setmetatable(u, getmetatable(t)) end
+function cli(t)
+  for key,x in pairs(t) do
+    x=str(x)
+    for n,flag in ipairs(arg) do 
+      if flag==("-"..key:sub(1,1)) or flag==("--"..key) then 
+         x= x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
+    t[key] = read(x) end 
+  return t end
 
 function csv(csvfile) 
   csvfile = io.input(csvfile)
@@ -145,16 +169,37 @@ function csv(csvfile)
     s=io.read()
     if not s then io.close(csvfile) else
       t={}; for x in s:gmatch("([^,]+)") do t[1+#t] = read(x) end
-      return t end end end 
+      return t end end end 
+
+function demos(THE,go)
+  local fails,backup = 0,{}
+  for k,v in pairs(THE) do backup[k]=v end 
+  for txt,fun in pairs(go[THE.go] and {go[THE.go]} or go) do 
+    for k,v in pairs(backup) do THE[k]=v end 
+    math.randomseed(THE.seed)               
+    io.write(".")
+    local result = fun()
+    if result ~= true then         
+      fails = fails + 1
+      print("--Error",s,status) end end
+  for k,v in pairs(_ENV) do  if not b4[k] then print("?",k,type(v)) end end
+  os.exit(fails)  end
+
+function copy(t,   u)
+  if type(t) ~= "table" then return t end
+  u={};for k,v in pairs(t) do u[copy(k)]=copy(v) end
+  return setmetatable(u, getmetatable(t)) end
 
 function map(t,f,  u) 
-  u={}; for k,v in pairs(t) do u[1+#u]=f(v) end return u end
+  u={}; for k,v in pairs(t) do u[1+#u]=(f and f(v) or v) end return u end
 
 function normpdf(x, mu, sd,      denom,nom)
- return  sd==0 and  (x==mu and 1 or 0 ) 
-         or  math.exp(-1*(x - mu)^2/(2*sd^2)) * 1 / (sd * ((2*math.pi)^0.5)) end
+ return sd==0 and (x==mu and 1 or 0 ) or
+   math.exp(-1*(x - mu)^2/(2*sd^2)) * 1 / (sd * ((2*math.pi)^0.5)) end
 
 oo = function(i) print(str(i)) end
+
+function pop(t)  return table.remove(t) end
 
 function push(t,x) t[1+#t] = x ; return x end
 
@@ -180,6 +225,11 @@ function str(i,    j)
   return (i.is or "").."{"..table.concat(j," ").."}" end 
 
 ---------------------------------------------------------------------------------
+--      _                          
+--   __| |  ___   _ __    ___   ___
+--  / _` | / -_) | '  \  / _ \ (_-<
+--  \__,_| \___| |_|_|_| \___/ /__/
+--                                 
 local go,no = {},{}
 
 function go.num(  n)
@@ -197,49 +247,47 @@ function go.read(  rows,n)
   print("rest", str(rows:clone(splice(rows.has,n-30)):mid()))
   return true end
 
-function go.diabetes(rows,n,    all,kl,it,most,tmp)
-  rows = ROWS("../../data/diabetes.csv") 
-  rows.has = shuffle(rows.has)
-  local one, two = rows.has[1], rows.has[2]
-  if two < one then one,two=two,one end
-  best,rest={}
-  for 
-
-  all  = {}
-  for _,row in pairs(rows.has) do 
-    kl = row:klass() 
-    all[kl] = all[kl] or rows:clone()
-    all[kl]:add(row)
-  end
-  for _,row in pairs(rows.has) do
-    most,it = -big,nil
-    for kl,rows1 in pairs(all) do 
-      tmp = rows1:like(row,2,#rows.has) 
-      if tmp > most then most,it = tmp,kl end end
-    print(row:klass(),it) end 
-  return true end
-
+function go.smo(rows,n,    all,kl,it,most,tmp)
+  rows = ROWS("../../data/auto93.csv") 
+  table.sort(rows.has)
+  for n,row in pairs(rows.has) do row.rank = 100*n/#rows.has//1 end
+  all  = shuffle(map(rows.has))
+  local seen = {pop(all), pop(all), pop(all)} 
+  while #seen < 20 and #all > 10 do
+    local n,bests,rests,maybe
+    table.sort(seen)
+    print""
+    for _,row in pairs(seen) do io.write(row.rank," ") end; print("")
+    n     = math.floor(.5 + math.log(#seen,2))
+    bests = rows:clone(splice(seen,1,n))
+    rests = rows:clone(splice(seen,n+1))
+    print(#seen, n,      "all", str(rows:mid(2)))
+    print(#seen, n,      "bests", str(bests:mid(2)))
+    print(#seen, #seen-n,"rests", str(rests:mid(2)))
+    good = function(row1,row2)
+             return bests:like(row1,2,#all) >  bests:like(row2,2,#all) end
+    maybe = function(row1,row2,  b1,b2,r1,r2)
+              b1= bests:like(row1,2,#all); r1= rests:like(row1,2,#all)
+              b2= bests:like(row2,2,#all); r2= rests:like(row2,2,#all)
+              --return b1^2/(b1+r1) > b2^2/(b2+r2) end
+              return b1/math.abs(b1-r1)/b1 < b2/math.abs(b2-r2) end
+    table.sort(all, maybe)
+    push(seen,pop(all))
+    table.sort(all, good)
+    all = splice(all,1,.66*#all//1)
+  end end
+ 
 ---------------------------------------------------------------------------------
-help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) 
-  for n,flag in ipairs(arg) do 
-    if flag==("-"..key:sub(1,1)) or flag==("--"..key) then 
-       x= x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
-  THE[key] = read(x) end)
+--                  _        
+--   _ __    __ _  (_)  _ _  
+--  | '  \  / _` | | | | ' \ 
+--  |_|_|_| \__,_| |_| |_||_|
+                          
+help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key]=read(x) end)
 
-if THE.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;31m%1\27[0m"))) end
-
-local fails,backup = 0,{}
-for k,v in pairs(THE) do backup[k]=v end 
-
-for txt,fun in pairs(go[THE.go] and {go[THE.go]} or go) do 
-  print(txt)
-  for k,v in pairs(backup) do THE[k]=v end 
-  math.randomseed(THE.seed)               
-  io.write(".")
-  local result = fun()
-  if result ~= true then         
-    fails = fails + 1
-    print("--Error",s,status) end end
-
-for k,v in pairs(_ENV) do  if not b4[k] then print("?",k,type(v)) end end
-os.exit(fails) 
+if   pcall(debug.getlocal, 4, 1) then 
+  return {ROW=ROW, ROWS=ROWS, NUM=NUM, SYM=SYM, THE=THE} 
+else 
+  THE = cli(THE)
+  if THE.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;31m%1\27[0m"))) end
+  demos(THE,go) end
