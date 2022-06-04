@@ -13,8 +13,8 @@ hi: docs/index.html ##  update from  main
 	git pull
 
 m?="save"
-bye: docs/index.html ##  commit to main
-	git add *;git commit -am $m;git push;git status
+bye: docs/index.html ##  commit to main  
+	git add *;git commit -am "$m" ;git push;git status
 
 docs/index.html: docs/l5.html ## make home page
 	cp $< $@
