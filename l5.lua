@@ -39,9 +39,6 @@
 -- working it out for themselves in their language du jour.
 --   
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local add,big,col,csv,fmt,fyi,gt,id,is,klass,lt,map,oo
-local per,push, rand, read, result, rnd, seed, splice, str
-local rangesMerged, ranges, rangesMerge, rangesXpand
 local help=[[
 L5: a little light learner lab in LUA
 (c) 2022 Tim Menzies, timm@ieee.org, BSD2 license    
@@ -66,59 +63,118 @@ OPTIONS (other):
   -g  --go    start up action    = nothing   
   -v  --verbose show details     = false
   -h  --help  show help          = false]]   
--- ## Convert help text to settings
 
--- __read(str:str) :bool | int | str__ <br> String to thing.
-function read(str) 
-  str = str:match"^%s*(.-)%s*$"
-  if str=="true" then return true elseif str=="false" then return false end
-  return math.tointeger(str) or tonumber(str) or str  end
+-- ## Functions
 
--- (1) parse `help`.<br>(2) make `THE` settings.<br>(3) Also make a `backup`.
-local THE, backup = {}, {}
-help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) 
-  for n,flag in ipairs(arg) do 
-    if flag==("-"..key:sub(1,1)) or flag==("--"..key) then 
-       x= x=="false" and"true" or x=="true" and"false" or arg[n+1] end end
-  x = read(x) 
-  backup[key] = x
-  THE[key] = x end) 
+local lib={}
+-- ### Convert help text to settings
 
--- If `-h` was used on command line, pretty print help text (then exit).
-if THE.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;31m%1\27[0m"))) end
+-- Large number
+lib.big = math.huge
 
--- ##  Define Classes
+-- __csv(csvfile:str)__ :<br>Iterator. Return one table per line, split on ",". 
+function lib.csv(csvfile) 
+  csvfile = io.input(csvfile)
+  return function(s, t) 
+    s=io.read()
+    if not s then io.close(csvfile) else
+      t={}; for x in s:gmatch("([^,]+)") do t[1+#t] = lib.read(x) end
+      return t end end end 
 
--- __str(i:any) :str__  
--- Make pretty print string from tables. Print  slots of associative arrays in sorted order.
--- To actually print this string, use `oo(i)` (see below).
-function str(i) 
-  local j
-  if type(i)~="table" then return tostring(i) end
-  if #i> 0            then return table.concat(map(i,tostring),", ") end
-  j={}; for k,v in pairs(i) do j[1+#j] = string.format(":%s %s",k,v) end
-  table.sort(j)
-  return (i.is or "").."{"..table.concat(j," ").."}" end 
+-- __cli(t:tab):tab<br>Check the command line for updates to keys in `t`
+function lib.cli(t, help)
+  for key,x in pairs(t) do
+    x = lib.str(x)
+    for n,flag in ipairs(arg) do 
+     if flag==("-"..key:sub(1,1)) or flag==("--"..key) then 
+        x= x=="false" and"true" or x=="true" and"false" or arg[n+1] end end
+    t[key] = lib.read(x) end
+  if t.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;31m%1\27[0m"))) end
+  return t end
+
+-- __fmt(control:str, arg1,arg2...)__<br>sprintf emulation.
+lib.fmt = string.format
+
+-- __gt(x:str):fun__ <br>Return a sort down function on slot `x`.
+function lib.gt(x) return function(a,b) return a[x] > b[x] end end
 
 -- __is(name:str) :klass__  
 -- Object creation.<br>(1) Link to pretty print.<br>(2) Assign a unique id.  
 -- (3) Link new object to the class.<br>Map klass(i,...) to klass.new(...).
 local _id=0
-function is(name,    t)  
+function lib.is(name,    t)  
   local function new(kl,...) 
     _id = _id+1
     local x=setmetatable({id=_id},kl); kl.new(x,...); return x end 
-  t = {__tostring=str, is=name}; t.__index=t
+  t = {__tostring=lib.str, is=name}; t.__index=t
   return setmetatable(t, {__call=new}) end 
 
--- Make our classes.<br>(1) Data is stored as set of ROW.    
--- (2) ROWS are containers for ROW. <br>(3) Columns are summarized
--- as SYMbolics or NUMerics.<br>(4) SOME is a helper class for NUM.   
+-- __lt(x:str):fun__ <br>Return a sort function on slot `x`.
+function lib.lt(x) return function(a,b) return a[x] < b[x] end end
+
+-- __map(t:tab, f:fun):tab__ <br>Return a list, items filtered through `f`.  
+-- If `f` returns nil, then that item is rejected.
+function lib.map(t,f,  u) u={}; for k,v in pairs(t) do u[1+#u]=f(v) end return u end
+
+-- __oo(i:tab)__ : <br>Pretty print `i`.
+function lib.oo(i) print(str(i)) end
+
+-- __per(t:tab, p:float):float__<br>Return the `p`-th item (e.g. `p=.5` means return the medium).
+function lib.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
+
+-- __push(t:tab, x:atom):x__ <br>Push `x` onto `t`, returning `x`.
+function lib.push(t,x) t[1+#t]=x; return x end
+
+-- __rand(?x:num=1):num__<br> Generate a random number `1..x`.
+lib.rand= math.random
+
+-- __rnd(n:num, places:int):num__ <p>Round `n` to `p` places.
+function lib.rnd(n, p)   local m=10^(p or 0); return math.floor(n*m+0.5)/m  end
+-- __split(t, ?lo:float=1, ?j:float=#t, ?k:float=1):tab__  
+
+-- Return parts of `t` from `i` to `j` by steps `k`.
+function lib.splice( t, i, j, k,    u) 
+  u={}; for n=(i or 1)//1, (j or #t)//1, (k or 1)//1 do u[1+#u]=t[n] end return u end
+
+-- __read(str:str) :bool | int | str__ <br> String to thing.
+function lib.read(str) 
+  str = str:match"^%s*(.-)%s*$"
+  if str=="true" then return true elseif str=="false" then return false end
+  return math.tointeger(str) or tonumber(str) or str  end
+
+-- __str(i:any) :str__  
+-- Make pretty print string from tables. Print  slots of associative arrays in sorted order.
+-- To actually print this string, use `oo(i)` (see below).
+function lib.str(i,       j) 
+  if type(i)~="table" then return tostring(i) end
+  if #i> 0  then j = lib.map(i,tostring) else 
+    j={}; for k,v in pairs(i) do j[1+#j] = string.format(":%s %s",k,v) end
+    table.sort(j) end
+  return (i.is or "").."{"..table.concat(j," ").."}" end 
+
+
+-- ## Names
+
+local add,big,col,csv,fmt,fyi  = lib.add,lib.big,lib.col,lib.csv,lib.fmt
+local gt,id,is,klass,lt        = lib.gt,lib.id,lib.is,lib.klass, lib.lt
+local map,oo, per,push         = lib.map, lib.oo, lib.per, lib.push
+local rand,  read, result, rnd = lib.rand, lib.read, lib.result, lib.rnd
+local seed, splice, str        =  lib.seed, lib.splice, lib.str
+
+local THE = {}
+help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
+
+-- Make our classes    
+-- (1) Data is stored as set of ROW.      
+-- (2) ROWS are containers for ROW.    
+-- (3) Columns are summarized as SYMbolics or NUMerics.      
+-- (4) SOME is a helper class for NUM.     
 -- (5) RANGE is a helper class for EGS.
 local ROW,ROWS,SYM   = is"ROW",is"ROWS",is"SYM"
 local NUM,RANGE,SOME = is"NUM",is"RANGE",is"SOME"
 
--- ##  SOME methods
+-- ## Methods
+-- ###  SOME 
 -- If we keep more than
 -- `THE.some` items then SOME replaces old items with the new old items.
 
@@ -154,7 +210,7 @@ function SOME.add(i,x)
 function SOME.sorted(i,  a)  
 if not i.ok then table.sort(i.has) end; i.ok=true; return i.has end
 
--- ##  NUM methods
+-- ###  NUM methods
 
 -- (1) Incrementally update a  sample of numbers including its mean `mu`,
 --     min `lo` and max `hi`.  
@@ -196,7 +252,7 @@ function NUM.merge(i,j,      k)
   return k end
 
 
--- ## SYM methods
+-- ### SYM methods
 
 -- Incrementally update a  sample of numbers including its mode
 -- and **div**ersity (a.k.a. entropy)
@@ -409,49 +465,12 @@ function rangesMerged(i,j,min,      k)
   if i.n < min or j.n < min or k:div()<=(i.n*i:div() + j.n*j:div())/k.n then 
     return k end end
  
--- ## Functions
-
--- Large number
-big = math.huge
--- __csv(csvfile:str)__ :<br>Iterator. Return one table per line, split on ",". 
-function csv(csvfile) 
-  csvfile = io.input(csvfile)
-  return function(s, t) 
-    s=io.read()
-    if not s then io.close(csvfile) else
-      t={}; for x in s:gmatch("([^,]+)") do t[1+#t] = read(x) end
-      return t end end end 
--- __fmt(control:str, arg1,arg2...)__<br>sprintf emulation.
-fmt = string.format
--- __fyi(x:str)__ <br> Print things in verbose mode.
-fyi = function(...) if THE.verbose then print(...) end end
--- __gt(x:str):fun__ <br>Return a sort down function on slot `x`.
-function gt(x) return function(a,b) return a[x] > b[x] end end
--- __lt(x:str):fun__ <br>Return a sort function on slot `x`.
-function lt(x) return function(a,b) return a[x] < b[x] end end
--- __map(t:tab, f:fun):tab__ <br>Return a list, items filtered through `f`.  
--- If `f` returns nil, then that item is rejected.
-function map(t,f,  u) u={}; for k,v in pairs(t) do u[1+#u]=f(v) end return u end
--- __oo(i:tab)__ : <br>Pretty print `i`.
-oo  = function(i) print(str(i)) end
--- __per(t:tab, p:float):float__  
--- Return an item ,p-th way through `t`. `p=0.5` means return median.
-function per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
--- __push(t:tab, x:atom):x__ <br>Push `x` onto `t`, returning `x`.
-function push(t,x) t[1+#t]=x; return x end
--- __rand(?x:num=1):num__<br> Generate a random number `1..x`.
-rand= math.random
--- __rnd(n:num, places:int):num__ <p>Round `n` to `p` places.
-function rnd(n, p)   local m=10^(p or 0); return math.floor(n*m+0.5)/m  end
--- __split(t, ?lo:float=1, ?j:float=#t, ?k:float=1):tab__  
--- Return parts of `t` from `i` to `j` by steps `k`.
-function splice( t, i, j, k,    u) 
-  u={}; for n=(i or 1)//1, (j or #t)//1, (k or 1)//1 do u[1+#u]=t[n] end return u end
-
 -- ## Demos
 
 -- Place to store tests. To disable a test, rename `go.xx` to `no.xx`.
 local go,no={},{}
+
+local function fyi(...) if THE.verbose then print(...) end end
 
 function go.the() fyi(str(THE));  str(THE) return true end
 

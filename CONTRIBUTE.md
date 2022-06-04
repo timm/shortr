@@ -7,7 +7,6 @@ Hello :wave:
 
 Contributions welcome :kiss: :heart:
 
-
 If you offer pull requests to this code, please follow the following conventions.
 
 ## LUA conventions
@@ -15,15 +14,30 @@ If you offer pull requests to this code, please follow the following conventions
 - Minimize use of local
   -  Define all local names at top of file (so code can be defined in any order).
 - Use `i` instead of `self`. 
-- When definining methods:
+- When defining methods:
   - Don't use `function FRED:method() return self.n + 1 end`;
   - Do use `function FRED.method(i) return i.n+1 end`.
-- Suggestions for variable names
+- Here are suggestions for variable names
   - Use `col` for instances of NUM and SYM class
   - Use `v` for cells in rows
 - Layout lines 80 chars side (max,ish). Use 2 spaces for "tab".
 - Do functions as one-liners (if possible). Multi-line functions need a trailing
+- Annotate functions/methods with at least a one-line prefix comment that includes
+  type annotations and defaults for optional arguments.
+- Write code in five sections
+  - an initial comment string defining the options
+  - a `lib` section defining all the suport.
+  - a `names` section that, using the support code, builds
+    (a) the objects; and
+    (b) the settings (which are parsed from the original strings)
+  - a   `methods` section that defines what the classes can do;
+  - a   `demos` section with examples/ test suite / demos 
+  - a `start` section that either 
+    (a) returns all the classes and settings;  or
+    (b) actually runs (*) the code in this file
 
+(*) Looks for updates to the settings on the 
+    command-line, then runs some of the demos.
 
 ## Objects
 
