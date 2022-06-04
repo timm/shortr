@@ -10,6 +10,8 @@ help : Makefile
 	| grep -v gawk
 
 hi: docs/index.html ##  update from  main
+	git pull
+
 bye: docs/index.html ##  commit to main
 	git add *;git commit -am save;git push;git status
 
