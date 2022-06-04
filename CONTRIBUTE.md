@@ -25,16 +25,16 @@ If you offer pull requests to this code, please follow the following conventions
 - Annotate functions/methods with at least a one-line prefix comment that includes
   type annotations and defaults for optional arguments.
 - Write code in five sections
-  - an initial comment string defining the options
-  - a `lib` section defining all the suport.
-  - a `names` section that, using the support code, builds
-    (a) the objects; and
-    (b) the settings (which are parsed from the original strings)
-  - a   `methods` section that defines what the classes can do;
-  - a   `demos` section with examples/ test suite / demos 
-  - a `start` section that either 
-    (a) returns all the classes and settings;  or
-    (b) actually runs (*) the code in this file
+  1. an initial comment string defining the options
+  2. a `lib` section defining all the suport.
+  3. a `names` section that, using the support code, builds
+     (a) the objects; and
+     (b) the settings (which are parsed from the original strings)
+  4. a   `methods` section that defines what the classes can do;
+  5. a   `demos` section with examples/ test suite / demos 
+  6. a `start` section that either 
+     (a) returns all the classes and settings;  or
+     (b) actually runs (*) the code in this file
 
 (*) Looks for updates to the settings on the 
     command-line, then runs some of the demos.
