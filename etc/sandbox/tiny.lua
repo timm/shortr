@@ -6,7 +6,7 @@
 --                     |___/                         
 
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local THE,help= {},[[
+local help= [[
 TINY:  
 (c)2022 Tim Menzies, timm@ieee.org
 
@@ -33,13 +33,14 @@ lib.fmt  = string.format
 lib.fmtp = function(...) print(fmt(...)) end 
 lib.rand = math.random
 
-function lib.cli(t)
+function lib.cli(t,help)
   for key,x in pairs(t) do
     x = lib.str(x)
     for n,flag in ipairs(arg) do 
       if flag==("-"..key:sub(1,1)) or flag==("--"..key) then 
          x= x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
     t[key] = lib.read(x) end 
+  if t.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;31m%1\27[0m"))) end
   return t end
 
 function lib.csv(csvfile) 
@@ -117,6 +118,9 @@ local fmt,is,map,normpdf,oo   = lib.fmt,  lib.is,lib.map, lib.normpdf,lib.oo
 local normpdf,pop,push,rand   = lib.normpdf, lib.pop,lib.push,lib.rand
 local read,rnd,shuffle,splice = lib.read, lib.rnd, lib.shuffle, lib.splice
 local str                     = lib.str
+
+local THE={}
+help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key]=read(x) end)
 
 local ROW, ROWS, NUM, SYM = is"ROW", is"ROWS", is"NUM", is"SYM"
 --------------------------------------------------------------------------------
@@ -280,11 +284,8 @@ function go.smo(rows,n,    all,kl,it,most,tmp)
 -- |\/| |__| | |\ | 
 -- |  | |  | | | \| 
 
-help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key]=read(x) end)
 
-if   pcall(debug.getlocal, 4, 1) then 
-  return {ROW=ROW, ROWS=ROWS, NUM=NUM, SYM=SYM, THE=THE,lib=lib} 
-else 
-  THE = cli(THE)
-  if THE.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;31m%1\27[0m"))) end
-  demos(THE,go) end
+if    pcall(debug.getlocal, 4, 1)
+then  return {ROW=ROW, ROWS=ROWS, NUM=NUM, SYM=SYM, THE=THE,lib=lib} 
+else  THE = cli(THE,help)
+      demos(THE,go) end
