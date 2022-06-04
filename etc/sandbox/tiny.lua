@@ -1,12 +1,13 @@
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local THE,help= {},[[
-TINY: 
+TINY:  
 (c)2022 Tim Menzies, timm@ieee.org
 
 OPTIONS:
   --bins  -b  bins                   = 10
   --k     -k  handle rare classes    = 1  
   --m     -m  handle rare attributes = 2
+  --p     -p  distance coefficient   = 2
 
 OPTIONS (other):
   --help  -h  show help     = false
@@ -14,13 +15,15 @@ OPTIONS (other):
   --seed  -s  seed          = 10019
   --file  -f  file          = ../../data/auto93.csv]]
 
-local big,copy,csv,fmt,fmtp,map,normpdf,oo,push,rand,read,rnd,splice,str
+local big,copy,csv,fmt,fmtp,map,normpdf,oo
+local push,rand,read,rnd,shuffle,splice,str
 local function is(name,    t,new,x)  
   function new(kl,...) x=setmetatable({},kl); kl.new(x,...); return x end 
   t = {__tostring=str, is=name}; t.__index=t
   return setmetatable(t, {__call=new}) end 
 
 local ROW, ROWS, NUM, SYM = is"ROW", is"ROWS", is"NUM", is"SYM"
+
 --------------------------------------------------------------------------------
 function SYM.new( i, at,txt) 
   i.n, i.at, i.txt = 0, at or 0, txt or ""
@@ -36,6 +39,7 @@ function SYM.like(i,x,prior)
   return ((i.has[x] or 0) + THE.m*prior) / (i.n + THE.m) end
 
 function SYM.mid(i) return i.mode end
+function SYM.dist(i,x,y) return x=="?" and y=="?" and 1 or x==y and 0 or 1 end
 
 -------------------------------------------------------------------------------
 function ROW.new(i,of,cells) i.of, i.cells, i.evaluated = of, cells, true end
@@ -51,6 +55,14 @@ function ROW.__lt(i,j,        n,s1,s2,v1,v2)
   return s1/n < s2/n end
 
 function ROW.klass(i) return i.cells[i.of.klass.at] end
+
+function ROW:__sub(other,    cols,d,inc)
+  d, cols = 0, self.of.xs
+  for _,col in pairs(cols) do
+    inc = col:dist(self.cells[col.pos], other.cells[col.pos]) 
+    d   = d + inc^THE.p end
+  return (d / #cols) ^ (1/THE.p) end
+
 -------------------------------------------------------------------------------
 function NUM.new(i, at,txt) 
   i.n, i.at, i.txt = 0, at or 0, txt or ""
@@ -73,6 +85,13 @@ function NUM.mid(i,p) return rnd(i.mu,p) end
 
 function NUM.norm(i,x)     
   return i.hi - i.lo < 1E-9 and 0 or (x-i.lo)/(i.hi - i.lo + 1/big) end 
+
+function NUM.dist(i,x,y)
+  if     x=="?" and y=="?" then return 1 end
+  if     x=="?"            then y = self:norm(y); x = y<.5 and 1 or 0 
+  elseif y=="?"            then x = self:norm(x); y = x<.5 and 1 or 0
+  else x,y = self:norm(x), self:norm(y) end
+  return math.abs(x - y) end
 
 -------------------------------------------------------------------------------
 function ROWS.new(i,src)
@@ -103,9 +122,7 @@ function ROWS.like(i,t,klasses, all,     prior,like,x)
   t     = t.cells and t.cells or t
   for _,col in pairs(i.xs) do
     x = t[col.at]
-    if x and x ~= "?" then 
-       --print("::",x,col.at, col.is,col:mid(),prior,col:like(x,prior))
-       like = like + math.log(col:like(x,prior)) end end
+    if x and x ~= "?" then like = like + math.log(col:like(x,prior)) end end
   return like end
 
 function ROWS.mid(i,p,   u) 
@@ -148,6 +165,10 @@ function read(str)
 
 function rnd(n, p) local m=10^(p or 2); return math.floor(n*m+0.5)/m  end
 
+function shuffle(t,    j)
+  for i = #t, 2, -1 do j=math.random(i); t[i], t[j] = t[j], t[i]; end;
+  return t end
+
 function splice( t, i, j, k,    u) 
   u={};for n=(i or 1)//1,(j or #t)//1,(k or 1)//1 do u[1+#u]=t[n] end;return u end
 
@@ -168,7 +189,7 @@ function go.sym(  s)
   s=SYM(); for i=1,100 do s:add(i) end; oo(s); return true end
 
 function go.read(  rows,n)
-  rows = ROWS(THE.file); map(rows.ys,oo) 
+  rows = ROWS(THE.file)
   table.sort(rows.has)
   n= #rows.has
   print("all",  str(rows:mid()))
@@ -178,6 +199,12 @@ function go.read(  rows,n)
 
 function go.diabetes(rows,n,    all,kl,it,most,tmp)
   rows = ROWS("../../data/diabetes.csv") 
+  rows.has = shuffle(rows.has)
+  local one, two = rows.has[1], rows.has[2]
+  if two < one then one,two=two,one end
+  best,rest={}
+  for 
+
   all  = {}
   for _,row in pairs(rows.has) do 
     kl = row:klass() 
@@ -216,15 +243,3 @@ for txt,fun in pairs(go[THE.go] and {go[THE.go]} or go) do
 
 for k,v in pairs(_ENV) do  if not b4[k] then print("?",k,type(v)) end end
 os.exit(fails) 
-
--- NUM.z={}
--- for x = -3,3,6/THE.bins do
---   p = p + normpdf(x,0,1); NUM.z[1+#NUM.z]=p*6/THE.bins end end 
---    
--- function NUM.zbin(i,x) 
---   cdf = normpdf(x,i.mu, i.sd) 
---   cdf = x<=i.mu and cdf or 1 - cdf
---   if cdf==0 then return 1 end
---   if cdf==1 then return THE.bins end
---   for k,cdf1 in pairs(NUM.z) do if cdf1>cdf then return k-1 end end 
---   return THE.bins end
