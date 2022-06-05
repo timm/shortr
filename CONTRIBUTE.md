@@ -28,12 +28,13 @@ If you offer pull requests to this code, please use these conventions.
 Please write code in five section:
 1. an initial help string defining the options
 2. a `lib` section defining all the support.
-3. a `names` section that, using the support code, builds   
+   - There `lib` section should not perform start-up actions nor reference `THE` settings.
+4. a `names` section that, using the support code, builds   
    (a) the objects; and    
    (b) the settings (which are parsed from the help string)
-4. a   `methods` section that defines what the classes can do;
-5. a   `demos` section with examples/ test suite / demos 
-6. a `start` section that either    
+5. a   `methods` section that defines what the classes can do;
+6. a   `demos` section with examples/ test suite / demos 
+7. a `start` section that either    
    (a) returns all the classes and settings;  or   
    (b) actually runs (*) the code in this file
 

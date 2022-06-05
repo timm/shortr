@@ -65,8 +65,7 @@ OPTIONS (other):
   -f  --file  csv file with data  = data/auto93.csv   
   -g  --go    start up action     = nothing   
   -v  --verbose show details      = false
-  -h  --help  show help           = false]]   
---------------------------------------------------------------------------------
+  -h  --help  show help           = false]]
 --       _                                     
 --     _|_       ._    _  _|_  o   _   ._    _ 
 --      |   |_|  | |  (_   |_  |  (_)  | |  _> 
@@ -174,8 +173,7 @@ function lib.str(i,       j)
   if #i> 0  then j = lib.map(i,tostring) else 
     j={}; for k,v in pairs(i) do j[1+#j] = string.format(":%s %s",k,v) end
     table.sort(j) end
-  return (i.is or "").."{"..table.concat(j," ").."}" end 
---------------------------------------------------------------------------------
+  return (i.is or "").."{"..table.concat(j," ").."}" end 
 --     ._    _.  ._ _    _    _ 
 --     | |  (_|  | | |  (/_  _> 
 
@@ -198,11 +196,11 @@ local rand,read,result,rnd = lib.rand,  lib.read,   lib.result, lib.rnd
 local seed,splice,str      = lib.seed,  lib.splice, lib.str
 
 local THE = {}
-help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
---------------------------------------------------------------------------------
+help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
 --     ._ _    _   _|_  |_    _    _|   _ 
 --     | | |  (/_   |_  | |  (_)  (_|  _> 
 
+--------------------------------------------------------------------------------
 -- ##  SOME 
 -- If we keep more than
 -- `THE.some` items then SOME replaces old items with the new old items.
@@ -237,7 +235,7 @@ function SOME.add(i,x)
 -- __SOME:sorted(): [num]*__ <br>Return the contents, sorted.
 function SOME.sorted(i,  a)  
 if not i.ok then table.sort(i.has) end; i.ok=true; return i.has end
-
+-------------------------------------------------------------------------------
 -- ##  NUM
 
 -- (1) Incrementally update a  sample of numbers including its mean `mu`,
@@ -281,6 +279,7 @@ function NUM.merge(i,j,      k)
   for _,x in pairs(j.has.has) do k:add(x) end
   return k end
 
+-------------------------------------------------------------------------------
 -- ## SYM
 
 -- Incrementally update a  sample of numbers including its mode
@@ -322,7 +321,7 @@ function SYM.score(i,want, wants,donts)
   how.tabu = function(b,r) return 1/(b+r+z) end 
   for v,n in pairs(i.has) do if v==want then b=b+n else r=r+n end end
   return how[THE.How](b/(wants+z), r/(donts+z)) end
- 
+-------------------------------------------------------------------------------
 -- ##  ROW
 
 -- The `cells` of one ROW store one record of data (one ROW per record).
@@ -350,7 +349,7 @@ function ROW.within(i,range,         lo,hi,at,v)
    lo, hi, at = range.xlo, range.xhi, range.ys.at
    v = i.cells[at]
    return  v=="?" or (lo==hi and v==lo) or (lo<v and v<=hi) end
-
+-------------------------------------------------------------------------------
 -- ## ROWS
 -- Sets of ROWs are stored in ROWS. ROWS summarize columns and those summarizes
 -- are stored in `cols`. For convenience, all the columns we are not skipping
@@ -423,7 +422,7 @@ function ROWS.contrast(i,klass, bests0,rests0,    hows,stop)
   if (#bests1 + #rests1) > stop and (#bests1 < #bests0 or #rests1 < #rests0) then
     return i:contrast(klass,bests1, rests1, hows, stop) end 
   return hows,bests0 end
-
+-------------------------------------------------------------------------------
 -- ## RANGE
 
 -- Given some x values running from `xlo` to `xhi`, store the
@@ -443,7 +442,7 @@ function RANGE.__tostring(i)
   elseif hi ==  big then return fmt("%s > %s",x, lo)  
   elseif lo == -big then return fmt("%s <= %s", x, hi)  
   else                   return fmt("%s < %s <= %s",lo,x,hi) end end
-
+-------------------------------------------------------------------------------
 -- ## RANGES
 -- This function generates ranges.
 -- Return a useful way to divide the values seen in this column, 

@@ -29,7 +29,7 @@
               </div>
               <p><strong>L5 = A Little Light Learner Lab, in LUA</strong><br><img src=img/l5.png align=left width=220>    </p>
 <p><a href="https://github.com/timm/l5/blob/master/LICENSE.md#top">&copy; 2022</a> 
-Tim Menzies, <a href="mailto:&#x74;&#105;&#x6d;&#x6d;&#64;&#105;&#x65;&#101;&#x65;&#46;&#111;&#114;&#x67;">&#x74;&#105;&#x6d;&#x6d;&#64;&#105;&#x65;&#101;&#x65;&#46;&#111;&#114;&#x67;</a></p>
+Tim Menzies, <a href="mailto:&#x74;&#x69;&#x6d;&#109;&#x40;&#x69;&#101;&#x65;&#101;&#46;&#x6f;&#x72;&#103;">&#x74;&#x69;&#x6d;&#109;&#x40;&#x69;&#101;&#x65;&#101;&#46;&#x6f;&#x72;&#103;</a></p>
 <p><a href="https://github.com/timm/l5/blob/master/CONTRIBUTE.md#top">Contribute</a> 
 | <a href="http://github.com/timm/l5">Github</a> 
 | <a href="https://github.com/timm/l5/issues">Issues</a> </p>
@@ -99,7 +99,10 @@ OPTIONS (other):
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
               </div>
-              <hr>
+              <pre><code>  _                                     
+_|_       ._    _  _|_  o   _   ._    _ 
+ |   |_|  | |  (_   |_  |  (_)  | |  _&gt; 
+</code></pre>
 
             </div>
             
@@ -112,12 +115,11 @@ OPTIONS (other):
               <div class="sswrap ">
                 <a class="ss" href="#section-3">&#x00a7;</a>
               </div>
-              <pre><code>  _                                     
-_|_       ._    _  _|_  o   _   ._    _ 
- |   |_|  | |  (_   |_  |  (_)  | |  _&gt; 
-</code></pre>
+              <p>Define library</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> lib={}</pre></div></div>
             
         </li>
         
@@ -128,11 +130,11 @@ _|_       ._    _  _|_  o   _   ._    _
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <p>Define library</p>
+              <p>Trap info needed for finding rogue variables</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> lib={}</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -143,21 +145,6 @@ _|_       ._    _  _|_  o   _   ._    _
               <div class="sswrap ">
                 <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
-              <p>Trap info needed for finding rogue variables</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-6">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-6">&#x00a7;</a>
-              </div>
               <p>Large number</p>
 
             </div>
@@ -167,11 +154,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-7">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-7">&#x00a7;</a>
+                <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
               <p><strong>csv(csvfile:str)</strong> :<br>Iterator. Return one table per line, split on “,”. </p>
 
@@ -188,11 +175,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-8">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-8">&#x00a7;</a>
+                <a class="ss" href="#section-7">&#x00a7;</a>
               </div>
               <p><strong>cli(t:tab):tab</strong><br>Check the command line for updates to keys in <code>t</code></p>
 
@@ -211,11 +198,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-9">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-9">&#x00a7;</a>
+                <a class="ss" href="#section-8">&#x00a7;</a>
               </div>
               <p><strong>demo(THE:tab,go:tab)</strong><br>Run the demos (or just <code>THE.go</code>).</p>
 
@@ -239,11 +226,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-10">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-10">&#x00a7;</a>
+                <a class="ss" href="#section-9">&#x00a7;</a>
               </div>
               <p><strong>fmt(control:str, arg1,arg2…)</strong><br>sprintf emulation.</p>
 
@@ -254,11 +241,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-11">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-11">&#x00a7;</a>
+                <a class="ss" href="#section-10">&#x00a7;</a>
               </div>
               <p><strong>gt(x:str):fun</strong> <br>Return a sort down function on slot <code>x</code>.</p>
 
@@ -269,11 +256,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-12">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-12">&#x00a7;</a>
+                <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
               <p><strong>is(name:str) :klass</strong><br>Object creation.<br>(1) Link to pretty print.<br>(2) Assign a unique id.<br>(3) Link new object to the class.<br>(4) Map klass(i,…) to klass.new(…).</p>
 
@@ -290,11 +277,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-13">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-13">&#x00a7;</a>
+                <a class="ss" href="#section-12">&#x00a7;</a>
               </div>
               <p><strong>lt(x:str):fun</strong> <br>Return a sort function on slot <code>x</code>.</p>
 
@@ -305,11 +292,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-14">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-14">&#x00a7;</a>
+                <a class="ss" href="#section-13">&#x00a7;</a>
               </div>
               <p><strong>map(t:tab, f:fun):tab</strong> <br>Return a list, items filtered through <code>f</code>.<br>If <code>f</code> returns nil, then that item is rejected.</p>
 
@@ -320,11 +307,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-15">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-15">&#x00a7;</a>
+                <a class="ss" href="#section-14">&#x00a7;</a>
               </div>
               <p><strong>oo(i:tab)</strong> : <br>Pretty print <code>i</code>.</p>
 
@@ -335,11 +322,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-16">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-16">&#x00a7;</a>
+                <a class="ss" href="#section-15">&#x00a7;</a>
               </div>
               <p><strong>per(t:tab, p:float):float</strong><br>Return <code>p</code>-th item (e.g. <code>p=.5</code> means return the medium).</p>
 
@@ -350,11 +337,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-17">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-17">&#x00a7;</a>
+                <a class="ss" href="#section-16">&#x00a7;</a>
               </div>
               <p><strong>push(t:tab, x:atom):x</strong> <br>Push <code>x</code> onto <code>t</code>, returning <code>x</code>.</p>
 
@@ -365,11 +352,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-18">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-18">&#x00a7;</a>
+                <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
               <p><strong>rand(?x:num=1):num</strong><br> Generate a random number <code>1..x</code>.</p>
 
@@ -380,11 +367,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-19">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
               <p><strong>rnd(n:num, places:int):num</strong><br>Round <code>n</code> to <code>p</code> places.</p>
 
@@ -395,11 +382,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-20">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
               <p><strong>split(t, ?lo:float=1, ?j:float=#t, ?k:float=1):tab</strong><br>Return parts of <code>t</code> from <code>i</code> to <code>j</code> by steps <code>k</code>.</p>
 
@@ -411,11 +398,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-21">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-21">&#x00a7;</a>
+                <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
               <p><strong>read(str:str) :bool | int | str</strong> <br> String to thing.</p>
 
@@ -429,11 +416,11 @@ _|_       ._    _  _|_  o   _   ._    _
         </li>
         
         
-        <li id="section-22">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-22">&#x00a7;</a>
+                <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
               <p><strong>str(i:any) :str</strong><br>Make pretty print string from tables. Print  slots of associative arrays 
 in sorted order. To actually print this string, use <code>oo(i)</code> (see below).</p>
@@ -450,24 +437,11 @@ in sorted order. To actually print this string, use <code>oo(i)</code> (see belo
         </li>
         
         
-        <li id="section-23">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-23">&#x00a7;</a>
-              </div>
-              <hr>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-24">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
+                <a class="ss" href="#section-22">&#x00a7;</a>
               </div>
               <pre><code>._    _.  ._ _    _    _ 
 | |  (_|  | | |  (/_  _&gt; 
@@ -478,11 +452,11 @@ in sorted order. To actually print this string, use <code>oo(i)</code> (see belo
         </li>
         
         
-        <li id="section-25">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-25">&#x00a7;</a>
+                <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
               <p>Make our classes<br>(1) Data is stored as set of ROW.<br>(2) ROWS are containers for ROW.<br>(3) Columns are summarized as SYMbolics or NUMerics.<br>(4) SOME is a helper class for NUM.<br>(5) RANGE is a helper class for EGS.<br>(6) RANGES is a set of factory functions for making RANGES</p>
 
@@ -505,13 +479,43 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
         </li>
         
         
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-24">&#x00a7;</a>
+              </div>
+              <pre><code>._ _    _   _|_  |_    _    _|   _ 
+| | |  (/_   |_  | |  (_)  (_|  _&gt; 
+</code></pre>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-25">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
         <li id="section-26">
             <div class="annotation">
               
               <div class="sswrap ">
                 <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
-              <hr>
+              <h2 id="some">SOME</h2>
+<p>If we keep more than
+<code>THE.some</code> items then SOME replaces old items with the new old items.</p>
 
             </div>
             
@@ -523,36 +527,6 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
               
               <div class="sswrap ">
                 <a class="ss" href="#section-27">&#x00a7;</a>
-              </div>
-              <pre><code>._ _    _   _|_  |_    _    _|   _ 
-| | |  (/_   |_  | |  (_)  (_|  _&gt; 
-</code></pre>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-28">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-28">&#x00a7;</a>
-              </div>
-              <h2 id="some">SOME</h2>
-<p>If we keep more than
-<code>THE.some</code> items then SOME replaces old items with the new old items.</p>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-29">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-29">&#x00a7;</a>
               </div>
               <p><strong>col(i:column, has:t, ?at:int=1, ?txt:str=””)</strong><br>For SOME (and NUM and SYM), new columns have a container <code>has</code> and appear in
 column <code>at</code> and have name <code>txt</code>. If a column name ends in <code>-</code>, set its weight 
@@ -568,11 +542,11 @@ to -1.</p>
         </li>
         
         
-        <li id="section-30">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-30">&#x00a7;</a>
+                <a class="ss" href="#section-28">&#x00a7;</a>
               </div>
               <p><strong>add(i:column, x:any, nil | inc:int=1, fun:function):x)</strong><br>Don’t add missing values. When you add something, inc the <code>i.n</code> count.</p>
 
@@ -588,11 +562,11 @@ to -1.</p>
         </li>
         
         
-        <li id="section-31">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-31">&#x00a7;</a>
+                <a class="ss" href="#section-29">&#x00a7;</a>
               </div>
               <p><strong>SOME(?at:int=1, ?txt:str=””) :SOME</strong>   </p>
 
@@ -603,11 +577,11 @@ to -1.</p>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-32">&#x00a7;</a>
+                <a class="ss" href="#section-30">&#x00a7;</a>
               </div>
               <p><strong>SOME:add(x:num):x</strong>   </p>
 
@@ -622,11 +596,11 @@ to -1.</p>
         </li>
         
         
-        <li id="section-33">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-33">&#x00a7;</a>
+                <a class="ss" href="#section-31">&#x00a7;</a>
               </div>
               <p><strong>SOME:sorted(): [num]*</strong> <br>Return the contents, sorted.</p>
 
@@ -638,13 +612,41 @@ to -1.</p>
         </li>
         
         
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-32">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-33">&#x00a7;</a>
+              </div>
+              <h2 id="num">NUM</h2>
+
+            </div>
+            
+        </li>
+        
+        
         <li id="section-34">
             <div class="annotation">
               
               <div class="sswrap ">
                 <a class="ss" href="#section-34">&#x00a7;</a>
               </div>
-              <h2 id="num">NUM</h2>
+              <p>(1) Incrementally update a  sample of numbers including its mean <code>mu</code>,
+    min <code>lo</code> and max <code>hi</code>.<br>(2) Knows how to calculate the <strong>div</strong> ersity of a sample (a.k.a.
+    standard deviation).</p>
 
             </div>
             
@@ -657,21 +659,6 @@ to -1.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-35">&#x00a7;</a>
               </div>
-              <p>(1) Incrementally update a  sample of numbers including its mean <code>mu</code>,
-    min <code>lo</code> and max <code>hi</code>.<br>(2) Knows how to calculate the <strong>div</strong> ersity of a sample (a.k.a.
-    standard deviation).</p>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-36">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-36">&#x00a7;</a>
-              </div>
               <p><strong>NUM(?at:int=1, ?txt:str=””) :NUM</strong>   </p>
 
             </div>
@@ -681,11 +668,11 @@ to -1.</p>
         </li>
         
         
-        <li id="section-37">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-37">&#x00a7;</a>
+                <a class="ss" href="#section-36">&#x00a7;</a>
               </div>
               <p><strong>NUM:add(x:num):x</strong>   </p>
 
@@ -701,11 +688,11 @@ to -1.</p>
         </li>
         
         
-        <li id="section-38">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-38">&#x00a7;</a>
+                <a class="ss" href="#section-37">&#x00a7;</a>
               </div>
               <p><strong>NUM:clone():NUM</strong>  <br> Duplicate structure</p>
 
@@ -716,11 +703,11 @@ to -1.</p>
         </li>
         
         
-        <li id="section-39">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-39">&#x00a7;</a>
+                <a class="ss" href="#section-38">&#x00a7;</a>
               </div>
               <p><strong>NUM:mid():num</strong> <br>mid is <code>mu</code>.   </p>
 
@@ -731,11 +718,11 @@ to -1.</p>
         </li>
         
         
-        <li id="section-40">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-40">&#x00a7;</a>
+                <a class="ss" href="#section-39">&#x00a7;</a>
               </div>
               <p><strong>NUM:div():num</strong> <br>div is entropy</p>
 
@@ -747,11 +734,11 @@ to -1.</p>
         </li>
         
         
-        <li id="section-41">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-41">&#x00a7;</a>
+                <a class="ss" href="#section-40">&#x00a7;</a>
               </div>
               <p><strong>NUM:bin(x:num):num</strong><br>NUMs get discretized to bins of size <code>(hi - lo)/THE.bins</code>.</p>
 
@@ -764,11 +751,11 @@ to -1.</p>
         </li>
         
         
-        <li id="section-42">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-42">&#x00a7;</a>
+                <a class="ss" href="#section-41">&#x00a7;</a>
               </div>
               <p><strong>NUM:norm(x:num):num</strong><br>Normalize <code>x</code> 0..1 for <code>lo</code>..<code>hi</code>.</p>
 
@@ -780,11 +767,11 @@ to -1.</p>
         </li>
         
         
-        <li id="section-43">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-43">&#x00a7;</a>
+                <a class="ss" href="#section-42">&#x00a7;</a>
               </div>
               <p><strong>NUM:merge(j:num):NUM</strong> <br> Combine two NUMs.</p>
 
@@ -795,6 +782,19 @@ to -1.</p>
   <span class="hljs-keyword">for</span> _,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.has.has) <span class="hljs-keyword">do</span> k:add(x) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">for</span> _,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(j.has.has) <span class="hljs-keyword">do</span> k:add(x) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-43">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
             
         </li>
         
@@ -954,7 +954,7 @@ and <strong>div</strong>ersity (a.k.a. entropy)</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-53">&#x00a7;</a>
               </div>
-              <h2 id="row">ROW</h2>
+              <hr>
 
             </div>
             
@@ -966,6 +966,19 @@ and <strong>div</strong>ersity (a.k.a. entropy)</p>
               
               <div class="sswrap ">
                 <a class="ss" href="#section-54">&#x00a7;</a>
+              </div>
+              <h2 id="row">ROW</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-55">&#x00a7;</a>
               </div>
               <p>The <code>cells</code> of one ROW store one record of data (one ROW per record).
 If ever we read the y-values then that ROW is <code>evaluated</code>. For many
@@ -979,11 +992,11 @@ know the space <code>of</code> data that holds this data.</p>
         </li>
         
         
-        <li id="section-55">
+        <li id="section-56">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-55">&#x00a7;</a>
+                <a class="ss" href="#section-56">&#x00a7;</a>
               </div>
               <p><b>i:ROW &lt; j:ROW</b> <br><code>i</code> comes before <code>j</code> if its y-values are better.
 This is Zitzler’s continuous domination predicate. In summary, it is a small
@@ -1005,11 +1018,11 @@ example to another. The best row is the one that looses the least.</p>
         </li>
         
         
-        <li id="section-56">
+        <li id="section-57">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-56">&#x00a7;</a>
+                <a class="ss" href="#section-57">&#x00a7;</a>
               </div>
               <p><strong>ROW:within(range):bool</strong></p>
 
@@ -1023,11 +1036,24 @@ example to another. The best row is the one that looses the least.</p>
         </li>
         
         
-        <li id="section-57">
+        <li id="section-58">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-57">&#x00a7;</a>
+                <a class="ss" href="#section-58">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-59">&#x00a7;</a>
               </div>
               <h2 id="rows">ROWS</h2>
 <p>Sets of ROWs are stored in ROWS. ROWS summarize columns and those summarizes
@@ -1039,11 +1065,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-58">
+        <li id="section-60">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-58">&#x00a7;</a>
+                <a class="ss" href="#section-60">&#x00a7;</a>
               </div>
               <p><strong>ROWS(src:str | tab):ROWS</strong><br>Load in examples from a file string, or a list or rows.</p>
 
@@ -1057,11 +1083,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-59">
+        <li id="section-61">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-59">&#x00a7;</a>
+                <a class="ss" href="#section-61">&#x00a7;</a>
               </div>
               <p><strong>ROWS:clone(?with:tab):ROWS</strong><br>Duplicate structure, then maybe fill it in  <code>with</code> some data.</p>
 
@@ -1073,11 +1099,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-60">
+        <li id="section-62">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-60">&#x00a7;</a>
+                <a class="ss" href="#section-62">&#x00a7;</a>
               </div>
               <p><strong>ROWS:add(row: (tab| ROW))</strong><br>If this is the first row, create the column summaries.<br>Else, if this is not a ROW, then make  one and set its <code>of</code> to <code>i</code>.<br>Else, add this row to <code>ROWS.has</code>.<br>When adding a row, update the column summaries.</p>
 
@@ -1099,11 +1125,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-61">
+        <li id="section-63">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-61">&#x00a7;</a>
+                <a class="ss" href="#section-63">&#x00a7;</a>
               </div>
               <p><strong>ROWS:bestRest()</strong><br>Return the rows, divided into the best or rest.</p>
 
@@ -1118,11 +1144,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-62">
+        <li id="section-64">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-62">&#x00a7;</a>
+                <a class="ss" href="#section-64">&#x00a7;</a>
               </div>
               <p><strong>ROWS:mid(?p:int=3) :tab</strong><br>Return the <code>mid</code> of the goal columns.<br>Round numerics to <code>p</code> places.</p>
 
@@ -1134,11 +1160,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-63">
+        <li id="section-65">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-63">&#x00a7;</a>
+                <a class="ss" href="#section-65">&#x00a7;</a>
               </div>
               <p><strong>ROWS:splits(best0:[ROW], rests:[ROW]):[ROW],[ROW],RANGE}</strong><br>Supervised discretization: get ranges most different between rows.</p>
 
@@ -1160,11 +1186,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-64">
+        <li id="section-66">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-64">&#x00a7;</a>
+                <a class="ss" href="#section-66">&#x00a7;</a>
               </div>
               <p><strong>ROWS:contrast(best0:[row], rests0:[row]):[row]</strong><br>Recursively find ranges that selects for the best rows.</p>
 
@@ -1182,11 +1208,24 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-65">
+        <li id="section-67">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-65">&#x00a7;</a>
+                <a class="ss" href="#section-67">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-68">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-68">&#x00a7;</a>
               </div>
               <h2 id="range">RANGE</h2>
 
@@ -1195,11 +1234,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-66">
+        <li id="section-69">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-66">&#x00a7;</a>
+                <a class="ss" href="#section-69">&#x00a7;</a>
               </div>
               <p>Given some x values running from <code>xlo</code> to <code>xhi</code>, store the
 <code>ys</code>  y values seen </p>
@@ -1211,11 +1250,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-67">
+        <li id="section-70">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-67">&#x00a7;</a>
+                <a class="ss" href="#section-70">&#x00a7;</a>
               </div>
               <p><strong>RANGE:add(x:atom, y:atom)</strong></p>
 
@@ -1229,11 +1268,11 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-68">
+        <li id="section-71">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-68">&#x00a7;</a>
+                <a class="ss" href="#section-71">&#x00a7;</a>
               </div>
               <p><strong>RANGE:__tostring()</strong><br>Pretty print.</p>
 
@@ -1249,11 +1288,24 @@ are also contained into the goals and non-goals <code>xs</code>, <code>ys</code>
         </li>
         
         
-        <li id="section-69">
+        <li id="section-72">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-69">&#x00a7;</a>
+                <a class="ss" href="#section-72">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-73">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-73">&#x00a7;</a>
               </div>
               <h2 id="ranges">RANGES</h2>
 <p>This function generates ranges.
@@ -1265,11 +1317,11 @@ in these different rows.</p>
         </li>
         
         
-        <li id="section-70">
+        <li id="section-74">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-70">&#x00a7;</a>
+                <a class="ss" href="#section-74">&#x00a7;</a>
               </div>
               <p><strong>RANGES(col: NUM | SYM, rows1:[row], rows2:[row], …):[RANGE]</strong>    </p>
 
@@ -1294,11 +1346,11 @@ in these different rows.</p>
         </li>
         
         
-        <li id="section-71">
+        <li id="section-75">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-71">&#x00a7;</a>
+                <a class="ss" href="#section-75">&#x00a7;</a>
               </div>
               <p>For numerics, <strong>xpand</strong> the ranges to cover the whole number line.</p>
 
@@ -1312,11 +1364,11 @@ in these different rows.</p>
         </li>
         
         
-        <li id="section-72">
+        <li id="section-76">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-72">&#x00a7;</a>
+                <a class="ss" href="#section-76">&#x00a7;</a>
               </div>
               <p><strong>Merge</strong> adjacent ranges if   they have too few examples, or<br>the whole is simpler than that parts. Keep merging, until we 
 can’t find anything else to merge.   </p>
@@ -1339,11 +1391,11 @@ can’t find anything else to merge.   </p>
         </li>
         
         
-        <li id="section-73">
+        <li id="section-77">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-73">&#x00a7;</a>
+                <a class="ss" href="#section-77">&#x00a7;</a>
               </div>
               <p><strong>rangesMerged(i:col,  j:com, min:num): (col | nil)</strong><br>Returns “nil” if the merge would actually complicate things
  For discretized values at <code>col.at</code>, create ranges that count how
@@ -1359,11 +1411,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
         </li>
         
         
-        <li id="section-74">
+        <li id="section-78">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-74">&#x00a7;</a>
+                <a class="ss" href="#section-78">&#x00a7;</a>
               </div>
               <hr>
 
@@ -1372,11 +1424,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
         </li>
         
         
-        <li id="section-75">
+        <li id="section-79">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-75">&#x00a7;</a>
+                <a class="ss" href="#section-79">&#x00a7;</a>
               </div>
               <pre><code> _|   _   ._ _    _    _ 
 (_|  (/_  | | |  (_)  _&gt; 
@@ -1387,11 +1439,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
         </li>
         
         
-        <li id="section-76">
+        <li id="section-80">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-76">&#x00a7;</a>
+                <a class="ss" href="#section-80">&#x00a7;</a>
               </div>
               <p>Place to store tests. To disable a test, rename <code>go.xx</code> to <code>no.xx</code>.</p>
 
@@ -1455,11 +1507,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
         </li>
         
         
-        <li id="section-77">
+        <li id="section-81">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-77">&#x00a7;</a>
+                <a class="ss" href="#section-81">&#x00a7;</a>
               </div>
               <hr>
 
@@ -1468,11 +1520,11 @@ often those values  appear in a set of rows (sorted 1,… for best…worst).    
         </li>
         
         
-        <li id="section-78">
+        <li id="section-82">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-78">&#x00a7;</a>
+                <a class="ss" href="#section-82">&#x00a7;</a>
               </div>
               <pre><code> _  _|_   _.  ._  _|_ 
 _&gt;   |_  (_|  |    |_ 
