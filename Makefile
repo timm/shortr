@@ -20,12 +20,14 @@ docs/index.html: docs/l5.html ## make home page
 	cp $< $@
 
 docs/%.html:  %.lua ## make doc
+	mkdir -p docs 
 	docco -l classic $<
 	cp $R/etc/docco.css docs/
 
 docs/%.pdf : %.lua  ## make pdf
-	@echo "pdf-ing $@ ... "
-	@a2ps -Bjr    -q                        \
+	mkdir -p docs 
+	echo "pdf-ing $@ ... "
+	a2ps -Bjr    -q                        \
 		-L 125 \
 		--line-numbers=1                    \
 		--highlight-level=normal  \
