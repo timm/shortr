@@ -37,3 +37,4 @@ docs/%.pdf : %.lua  ## make pdf
 		--footer="page %p."                     \
 		-M letter -o $@.ps $<
 	@ps2pdf $@.ps $@; rm $@.ps; git add $@
+	open $@

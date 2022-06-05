@@ -38,9 +38,8 @@
 -- kind of assignment:  "here is  a worked solution, now code it up in
 -- any other language". In that approach, students can get a fully worked
 -- solution, yet still have the learning experience of working it out for
--- themselves in their language du jour.
+-- themselves in their own language du jour.
 
-local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 local help=[[
 L5: a little light learner lab in LUA
 (c) 2022 Tim Menzies, timm@ieee.org, BSD2 license    
@@ -67,12 +66,15 @@ OPTIONS (other):
   -g  --go    start up action     = nothing   
   -v  --verbose show details      = false
   -h  --help  show help           = false]]   
-
 --------------------------------------------------------------------------------
--- ## Functions
+--       _                                     
+--     _|_       ._    _  _|_  o   _   ._    _ 
+--      |   |_|  | |  (_   |_  |  (_)  | |  _> 
 
+-- Define library
 local lib={}
-
+-- Trap info needed for finding rogue variables
+local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
 -- Large number
 lib.big = math.huge
 
@@ -121,7 +123,7 @@ function lib.gt(x) return function(a,b) return a[x] > b[x] end end
 
 -- __is(name:str) :klass__  
 -- Object creation.<br>(1) Link to pretty print.<br>(2) Assign a unique id.  
--- (3) Link new object to the class.<br>Map klass(i,...) to klass.new(...).
+-- (3) Link new object to the class.<br>(4) Map klass(i,...) to klass.new(...).
 local _id=0
 function lib.is(name,    t)  
   local function new(kl,...) 
@@ -173,9 +175,9 @@ function lib.str(i,       j)
     j={}; for k,v in pairs(i) do j[1+#j] = string.format(":%s %s",k,v) end
     table.sort(j) end
   return (i.is or "").."{"..table.concat(j," ").."}" end 
-
 --------------------------------------------------------------------------------
--- ## Names
+--     ._    _.  ._ _    _    _ 
+--     | |  (_|  | | |  (/_  _> 
 
 -- Make our classes    
 -- (1) Data is stored as set of ROW.      
@@ -197,10 +199,11 @@ local seed,splice,str      = lib.seed,  lib.splice, lib.str
 
 local THE = {}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
+--------------------------------------------------------------------------------
+--     ._ _    _   _|_  |_    _    _|   _ 
+--     | | |  (/_   |_  | |  (_)  (_|  _> 
 
---------------------------------------------------------------------------------
--- ## Methods
--- ###  SOME methods
+-- ##  SOME 
 -- If we keep more than
 -- `THE.some` items then SOME replaces old items with the new old items.
 
@@ -235,7 +238,7 @@ function SOME.add(i,x)
 function SOME.sorted(i,  a)  
 if not i.ok then table.sort(i.has) end; i.ok=true; return i.has end
 
--- ###  NUM methods
+-- ##  NUM
 
 -- (1) Incrementally update a  sample of numbers including its mean `mu`,
 --     min `lo` and max `hi`.  
@@ -278,8 +281,7 @@ function NUM.merge(i,j,      k)
   for _,x in pairs(j.has.has) do k:add(x) end
   return k end
 
-
--- ### SYM methods
+-- ## SYM
 
 -- Incrementally update a  sample of numbers including its mode
 -- and **div**ersity (a.k.a. entropy)
@@ -321,7 +323,7 @@ function SYM.score(i,want, wants,donts)
   for v,n in pairs(i.has) do if v==want then b=b+n else r=r+n end end
   return how[THE.How](b/(wants+z), r/(donts+z)) end
  
--- ###  ROW methods
+-- ##  ROW
 
 -- The `cells` of one ROW store one record of data (one ROW per record).
 -- If ever we read the y-values then that ROW is `evaluated`. For many
@@ -349,7 +351,7 @@ function ROW.within(i,range,         lo,hi,at,v)
    v = i.cells[at]
    return  v=="?" or (lo==hi and v==lo) or (lo<v and v<=hi) end
 
--- ### ROWS methods
+-- ## ROWS
 -- Sets of ROWs are stored in ROWS. ROWS summarize columns and those summarizes
 -- are stored in `cols`. For convenience, all the columns we are not skipping
 -- are also contained into the goals and non-goals `xs`, `ys`.
@@ -422,7 +424,7 @@ function ROWS.contrast(i,klass, bests0,rests0,    hows,stop)
     return i:contrast(klass,bests1, rests1, hows, stop) end 
   return hows,bests0 end
 
--- ### RANGE methods
+-- ## RANGE
 
 -- Given some x values running from `xlo` to `xhi`, store the
 -- `ys`  y values seen 
@@ -442,7 +444,7 @@ function RANGE.__tostring(i)
   elseif lo == -big then return fmt("%s <= %s", x, hi)  
   else                   return fmt("%s < %s <= %s",lo,x,hi) end end
 
--- ### RANGES methods
+-- ## RANGES
 -- This function generates ranges.
 -- Return a useful way to divide the values seen in this column, 
 -- in these different rows.
@@ -494,9 +496,9 @@ function RANGES:merged(x,y,min,      z)
   z = x:merge(y)
   if x.n < min or y.n < min or z:div()<=(x.n*x:div() + y.n*y:div())/z.n then 
     return z end end
- 
 --------------------------------------------------------------------------------
--- ## Demos
+--      _|   _   ._ _    _    _ 
+--     (_|  (/_  | | |  (_)  _> 
 
 -- Place to store tests. To disable a test, rename `go.xx` to `no.xx`.
 local go,no={},{}
@@ -553,9 +555,9 @@ function go.contrast(  r,bests,rests)
   print("found", str(r:clone(bests1):mid(2)))
   print(#how,str(how))
   return true end
-
---------------------------------------------------------------------------------
--- ## Starting up
+--------------------------------------------------------------------------------
+--      _  _|_   _.  ._  _|_ 
+--     _>   |_  (_|  |    |_ 
 
 if    pcall(debug.getlocal, 4, 1)
 then  return {ROW=ROW,     ROWS=ROWS,     SYM=SYM,   NUM=NUM,
