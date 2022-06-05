@@ -82,11 +82,12 @@ h1 {
 h2 {
   font-size: 2.1em;
   margin: 10px 0 15px 0;
-  border-top: 2px solid #ccc;
+  xborder-top: 2px solid #ccc;
 }
 h3 { color: #954121;
-  font-size: 1.4em;
-  xtext-decoration: underline; }
+     font-size: 2em;
+}
+
 h4 {
   text-decoration: italic;
 }

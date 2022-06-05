@@ -7,11 +7,11 @@ Hello :wave:
 
 Contributions welcome :kiss: :heart:
 
-If you offer pull requests to this code, please follow the following conventions.
+If you offer pull requests to this code, please use these conventions.
 
 ## LUA conventions
 
-- Minimize use of local
+- Minimize use of `local`
   -  Define all local names at top of file (so code can be defined in any order).
 - Use `i` instead of `self`. 
 - When defining methods:
@@ -21,7 +21,7 @@ If you offer pull requests to this code, please follow the following conventions
   - Use `col` for instances of NUM and SYM class
   - Use `v` for cells in rows
 - Layout lines 80 chars side (max,ish). Use 2 spaces for "tab".
-- Do functions as one-liners (if possible). Multi-line functions need a trailing
+- Try doing functions as one-liners. Multi-line functions need a trailing line.
 - Annotate functions/methods with at least a one-line prefix comment that includes
   type annotations and defaults for optional arguments.
 
@@ -30,7 +30,7 @@ Please write code in five section:
 2. a `lib` section defining all the support.
 3. a `names` section that, using the support code, builds   
    (a) the objects; and    
-   (b) the settings (which are parsed from the halp string)
+   (b) the settings (which are parsed from the help string)
 4. a   `methods` section that defines what the classes can do;
 5. a   `demos` section with examples/ test suite / demos 
 6. a `start` section that either    
@@ -39,11 +39,6 @@ Please write code in five section:
 
 (*) Looks for updates to the settings on the 
     command-line, then runs some of the demos.
-
-## Shell Conventions
-
-If there is repeated useful processing that calls this code from the shell, as it as a rule
-to the [Makefile](Makefile).
 
 ## Objects
 

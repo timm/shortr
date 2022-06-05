@@ -26,7 +26,7 @@ docs/%.html:  %.lua ## make doc
 docs/%.pdf : %.lua  ## make pdf
 	@echo "pdf-ing $@ ... "
 	@a2ps -Bjr    -q                        \
-		-L 120 \
+		-L 125 \
 		--line-numbers=1                    \
 		--highlight-level=normal  \
 		--borders=no --pro=color --columns 3 \
