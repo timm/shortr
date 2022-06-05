@@ -102,10 +102,10 @@ function lib.cli(t, help)
 function lib.demos(THE,go)
   local fails,backup = 0,{}
   for k,v in pairs(THE) do backup[k]=v end
-  for _,todo in pairs(go[THE.go] and {go[THE.go]} or go) do 
+  for what,todo in pairs(go[THE.go] and {go[THE.go]} or go) do 
     for k,v in pairs(backup) do THE[k]=v end -- reset THE settings to the backup
     math.randomseed(THE.Seed)                -- reset the randomseed
-    io.write(".")
+    io.stderr:write(lib.fmt("-- %s\n",what))
     local result = todo()
     if result ~= true then         -- report errors if demo does not return "true"
       fails = fails + 1

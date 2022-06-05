@@ -1,13 +1,13 @@
 MAKEFLAGS += --silent
 SHELL:= /bin/bash#
 R=$(shell git rev-parse --show-toplevel)
+            #"  " say("make "$$1,31) " " say($$2,38) "  \033[36m%-25s\033[0m %s\n","make " $$1,$$2}'  $< \
 
 help : Makefile
-	echo ""; printf "usage: make [OPTIONS]\n\n"
-	@gawk 'BEGIN {FS="[ \t]*:.*##[ \t]*"}  \
-	  NF==2 { printf \
-           "  \033[36m%-25s\033[0m %s\n","make " $$1,$$2}'  $< \
-	| grep -v gawk
+	@gawk 'function hue(x,c)   { return "\033[" c "m" x "\033[0m"  }       \
+         BEGIN               { print(hue("\nusage: make[OPTIONS]\n",35)); \
+                               FS="[ \t]*:.*##[ \t]*"}                     \
+	       NF==2 &&/^[A-Za-z]/ { printf "  %-35s %s\n",hue("make "$$1,31),$$2}' $< 
 
 hi: docs/index.html ##  update from  main
 	git pull
