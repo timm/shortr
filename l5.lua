@@ -349,16 +349,12 @@ function ROW.within(i,range,         lo,hi,at,v)
    lo, hi, at = range.xlo, range.xhi, range.ys.at
    v = i.cells[at]
    return  v=="?" or (lo==hi and v==lo) or (lo<v and v<=hi) end
-<<<<<<< HEAD
 
 -- __ROW:klass():any__<br>Return class of this row.
 function ROW.klass(i) return i.cells[i.of.klass.at] end
 
--- ### ROWS methods
-=======
 -------------------------------------------------------------------------------
 -- ## ROWS
->>>>>>> b181917462512eee2cc685090a91fb91587e4e3b
 -- Sets of ROWs are stored in ROWS. ROWS summarize columns and those summarizes
 -- are stored in `cols`. For convenience, all the columns we are not skipping
 -- are also contained into the goals and non-goals `xs`, `ys`.
@@ -467,15 +463,8 @@ function ROWS.contrast(i,klass, bests0,rests0,    hows,stop,key)
 --     push(rule[at],range) end
 --   return _ors(ranges,rule)  end
 --
--- ### RANGE methods
-=======
-  push(hows,range)
-  if (#bests1 + #rests1) > stop and (#bests1 < #bests0 or #rests1 < #rests0) then
-    return i:contrast(klass,bests1, rests1, hows, stop) end 
-  return hows,bests0 end
 -------------------------------------------------------------------------------
 -- ## RANGE
->>>>>>> b181917462512eee2cc685090a91fb91587e4e3b
 
 -- Given some x values running from `xlo` to `xhi`, store the
 -- `ys`  y values seen 
