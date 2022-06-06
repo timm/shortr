@@ -37,3 +37,10 @@ docs/%.pdf : %.lua  ## make pdf
 		--footer="page %p."                     \
 		-M letter -o $@.ps $<
 	@ps2pdf $@.ps $@; rm $@.ps; git add $@
+
+c= SSM auto2 auto93 china coc1000 coc10000 \
+   healthCloseIsses12mths0001-hard healthCloseIsses12mths0011-easy \
+   nasa93dem pom
+
+contrasts: 
+	$(foreach d,$c, (echo "";echo $d;lua l5.lua -f data/$d.csv -g contrast);)

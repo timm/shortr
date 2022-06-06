@@ -349,6 +349,9 @@ function ROW.within(i,range,         lo,hi,at,v)
    v = i.cells[at]
    return  v=="?" or (lo==hi and v==lo) or (lo<v and v<=hi) end
 
+-- __ROW:klass():any__<br>Return class of this row.
+function ROW.klass(i) return i.cells[i.of.klass.at] end
+
 -- ### ROWS methods
 -- Sets of ROWs are stored in ROWS. ROWS summarize columns and those summarizes
 -- are stored in `cols`. For convenience, all the columns we are not skipping
@@ -400,12 +403,16 @@ function ROWS.mid(i,p,    t)
 -- Supervised discretization: get ranges most different between rows.
 function ROWS.splits(i,klass,bests0,rests0)
   local most,range1,score = -1
+  print""
   for m,col in pairs(i.xs) do
     for n,range0 in pairs(RANGES(col,klass,bests0,rests0).out) do
       score = range0.ys:score(1,#bests0,#rests0)
       if score > most then 
-         most,range1 = score,range0 end end end
+         most,range1 = score,range0 
+         print(rnd(score,3),range1.ys.txt,range1.xlo, range1.xhi)
+         end end end
   local bests1, rests1 = {},{}
+  print("==>",rnd(score,3),range1.ys.txt,range1.xlo, range1.xhi)
   for _,rows in pairs{bests0,rests0} do
     for _,row in pairs(rows) do 
       push(row:within(range1) and bests1 or rests1, row) end end
@@ -413,15 +420,46 @@ function ROWS.splits(i,klass,bests0,rests0)
 
 -- __ROWS:contrast(best0:[row], rests0:[row]):[row]__   
 -- Recursively find ranges that selects for the best rows.
-function ROWS.contrast(i,klass, bests0,rests0,    hows,stop)
-  stop = stop or #bests0/8
+function ROWS.contrast(i,klass, bests0,rests0,    hows,stop,key)
+  stop = stop or #bests0/4
   hows = hows or {}
   local  bests1, rests1,range = i:splits(klass,bests0, rests0)
-  push(hows,range)
-  if (#bests1 + #rests1) > stop and (#bests1 < #bests0 or #rests1 < #rests0) then
-    return i:contrast(klass,bests1, rests1, hows, stop) end 
-  return hows,bests0 end
+  key= {range.xlo, range.xhi, range.ys.txt}
+  hows[str(key)] = key
+  print("b0",stop,#bests0,"r0",#rests0)
+  print("b1",stop,#bests1,"r1",#rests1)
+  if #bests1 <= stop                         then return hows,bests1 end
+  if #bests0 == #bests1 and #rests0==#rests1 then return hows,bests1 end
+  return i:contrast(klass,bests1, rests1, hows, stop) end 
 
+-- __ROWS:rukles(best0:[ROW], rests:[ROW]):[ROW],[ROW],RANGE}__     
+-- local _rules
+-- function ROWS.splits(i,klass,bests0,rests0)
+--   all={}
+--   for m,col in pairs(i.xs) do
+--     for n,range in pairs(RANGES(col,klass,bests0,rests0).out) do
+--       score = range.ys:score(1,#bests0,#rests0)
+--       if score>0 then push(all,{score=score, range=range}) end end end
+--   table.sort(all,gt"score")
+--   some = {}
+--   for _,range in pairs(all) do 
+--     push(some, range) end
+--
+-- function _rules(ranges,rows,   at)
+--   function ands(rules,row) do
+--     for _,ors in pairs(rules) do if not _ors(ors,row) then return false end end
+--     return true end
+--   function _ors(ranges,row) do
+--     for _,r in pairs(ranges) do if row:within(r) then return true end end
+--     return false 
+--   end ----------
+--   local rule={}
+--   for _,range in pairs(ranges) do
+--     at = range.ys.at
+--     rule[at] = rule[at] or {}
+--     push(rule[at],range) end
+--   return _ors(ranges,rule)  end
+--
 -- ### RANGE methods
 
 -- Given some x values running from `xlo` to `xhi`, store the
@@ -551,7 +589,18 @@ function go.contrast(  r,bests,rests)
   print("best",  str(r:clone(bests):mid(2)))
   print("rest",  str(r:clone(rests):mid(2)))
   print("found", str(r:clone(bests1):mid(2)))
-  print(#how,str(how))
+  for k,_ in pairs(how) do
+     print("\t",str(k)) end
+  return true end
+
+function go.diabetes(  r,pos,neg)
+  r= ROWS("data/diabetes.csv")
+  print(#r.has)
+  pos,neg = {},{}
+  for _,row in pairs(r.has) do push(row:klass()=="positive" and pos or neg,row) end
+  print(#pos, #neg)
+  local how,bests1 = r:contrast(SYM, pos, neg)
+  -- for _,row in pairs(bests1) do print(row:klass()) end
   return true end
 
 --------------------------------------------------------------------------------
