@@ -81,11 +81,9 @@ h1 {
 }
 h2 {
   font-size: 2.1em;
+  color: #954121;
   margin: 10px 0 15px 0;
   xborder-top: 2px solid #ccc;
-}
-h3 { color: #954121;
-     font-size: 2em;
 }
 
 h4 {
