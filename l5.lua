@@ -426,7 +426,6 @@ function ROWS.contrast(i,klass, bests0,rests0,    hows,stop,key)
   stop = stop or #bests0/4
   hows = hows or {}
   local  bests1, rests1,range = i:splits(klass,bests0, rests0)
-<<<<<<< HEAD
   key= {range.xlo, range.xhi, range.ys.txt}
   hows[str(key)] = key
   print("b0",stop,#bests0,"r0",#rests0)
