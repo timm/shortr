@@ -21,9 +21,8 @@ local cli,csv,demos,is,normpdf = lib.cli, lib.csv, lib.demos, lib.is, lib.normpd
 local oo,read,str      = lib.oo, lib.read, lib.str
 
 local THE={}
-help:gsub("  [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) print(key,x); THE[key] = read(x) end)
+help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
 
-oo(THE)
 
 local NUM,SYM,COLS,ROWS = is"NUM", is"SYM", is"COLS", is"ROWS"
 --------------------------------------------------------------------------------
