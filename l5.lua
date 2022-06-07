@@ -66,9 +66,12 @@ OPTIONS (other):
   -g  --go    start up action     = nothing   
   -v  --verbose show details      = false
   -h  --help  show help           = false]]
---       _                                     
---     _|_       ._    _  _|_  o   _   ._    _ 
---      |   |_|  | |  (_   |_  |  (_)  | |  _> 
+--       __                   _   _                 
+--      / _|                 | | (_)                
+--     | |_ _   _ _ __   ___ | |_ _  ___  _ __   ___ 
+--     |  _| | | | '_ \ / __ | __| |/ _ \| '_ \ / __|
+--     | | | |_| | | | | (__ | |_| | (_) | | | \ __ \
+--     |_|  \__,_|_| |_|\___ |\__|_|\___/|_| |_| ___/
 
 -- Define library
 local lib={}
@@ -174,8 +177,10 @@ function lib.str(i,       j)
     j={}; for k,v in pairs(i) do j[1+#j] = string.format(":%s %s",k,v) end
     table.sort(j) end
   return (i.is or "").."{"..table.concat(j," ").."}" end 
---     ._    _.  ._ _    _    _ 
---     | |  (_|  | | |  (/_  _> 
+--       _ __     __ _   _ __ ___     ___   ___ 
+--      | '_ \   / _` | | '_ ` _ \   / _ \ / __|
+--      | | | | | (_| | | | | | | | |  __/ \__ \
+--      |_| |_|  \__,_| |_| |_| |_|  \___| |___/
 
 -- Make our classes    
 -- (1) Data is stored as set of ROW.      
@@ -197,9 +202,12 @@ local seed,splice,str      = lib.seed,  lib.splice, lib.str
 
 local THE = {}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
---     ._ _    _   _|_  |_    _    _|   _ 
---     | | |  (/_   |_  | |  (_)  (_|  _> 
-
+--                          _     _                   _       
+--                         | |   | |                 | |      
+--       _ __ ___     ___  | |_  | |__     ___     __| |  ___ 
+--      | '_ ` _ \   / _ \ | __| | '_ \   / _ \   / _` | / __|
+--      | | | | | | |  __/ | |_  | | | | | (_) | | (_| | \__ \
+--      |_| |_| |_|  \___|  \__| |_| |_|  \___/   \__,_| |___/
 --------------------------------------------------------------------------------
 -- ##  SOME 
 -- If we keep more than
@@ -536,8 +544,12 @@ function RANGES:merged(x,y,min,      z)
   if x.n < min or y.n < min or z:div()<=(x.n*x:div() + y.n*y:div())/z.n then 
     return z end end
 --------------------------------------------------------------------------------
---      _|   _   ._ _    _    _ 
---     (_|  (/_  | | |  (_)  _> 
+--           _                                  
+--          | |                                 
+--        __| |   ___   _ __ ___     ___    ___ 
+--       / _` |  / _ \ | '_ ` _ \   / _ \  / __|
+--      | (_| | |  __/ | | | | | | | (_) | \__ \
+--       \__,_|  \___| |_| |_| |_|  \___/  |___/
 
 -- Place to store tests. To disable a test, rename `go.xx` to `no.xx`.
 local go,no={},{}
@@ -606,8 +618,12 @@ function go.diabetes(  r,pos,neg)
   -- for _,row in pairs(bests1) do print(row:klass()) end
   return true end
 --------------------------------------------------------------------------------
---      _  _|_   _.  ._  _|_ 
---     _>   |_  (_|  |    |_ 
+--             _                    _   
+--            | |                  | |  
+--       ___  | |_    __ _   _ __  | |_ 
+--      / __| | __|  / _` | | '__| | __|
+--      \__ \ | |_  | (_| | | |    | |_ 
+--      |___/  \__|  \__,_| |_|     \__|
 
 if    pcall(debug.getlocal, 4, 1)
 then  return {ROW=ROW,     ROWS=ROWS,     SYM=SYM,   NUM=NUM,
