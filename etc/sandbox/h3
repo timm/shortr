@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+figlet -W -f mini $* |
+gawk 'NR==1{ next } {print "--    ",$0}'
