@@ -13,8 +13,7 @@ OPTIONS (other):
   -g  --go    start-up goal = nothing
   -s  --seed  seed          = 10019
   -f  --file  file          = ../../data/auto93.csv]]
----------------------------------------------------------------------
---      ._    _.  ._ _    _    _ 
+--      ._    _.  ._ _    _    _ -----------------------------------------------
 --      | |  (_|  | | |  (/_  _> 
 
 local lib = require"lib"
@@ -25,8 +24,7 @@ local THE={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
 
 local NB,NUM,SYM,COLS,ROW,ROWS= is"NB",is"NUM",is"SYM",is"COLS",is"ROW",is"ROWS"
---------------------------------------------------------------------------------
---       _   _   |       ._ _   ._  
+--       _   _   |       ._ _   ._  --------------------------------------------
 --      (_  (_)  |  |_|  | | |  | | 
 
 function NUM.new(i)        i.n,i.mu,i.m2,i.mu = 0,0,0,0 end
@@ -48,8 +46,7 @@ function SYM.add(i,v)
   i.n = i.n + 1
   i.syms[v] = (inc or 1) + (i.syms[v] or 0)
   if i.syms[v] > i.most then i.most,i.mode = i.syms[v],v end end
---------------------------------------------------------------------------------
---       _   _   |       ._ _   ._    _ 
+--       _   _   |       ._ _   ._    _  ---------------------------------------
 --      (_  (_)  |  |_|  | | |  | |  _> 
 
 local function usep(x)   return not x:find":$" end
@@ -75,14 +72,12 @@ function COLS.new(i,t,     col)
    for _,cols in pairs{i.xs,i.ys} do
      for _,col in pairs(cols) do col:add(t[col.at]) end end
    return t end
---------------------------------------------------------------------------------
---      ._   _         
+--      ._   _         ---------------------------------------------------------
 --      |   (_)  \/\/  
 
 function ROW.new(i,of,cells) i.of,i.cells,i.evaled=of,cells,false end
 function ROW.klass(i)        return i.cells[i.of.cols.klass.at] end
---------------------------------------------------------------------------------
---      ._   _          _ 
+--      ._   _          _ ------------------------------------------------------
 --      |   (_)  \/\/  _> 
 
 local function load(src, fun)
@@ -95,7 +90,7 @@ function ROWS.add(i,t)
   i.cols:add(t.cells)
   return push(i.rows, t) end
 function ROWS.mid(i, cols, p,     t)
-  t={}; for _,col in pairs(cols or i.cols.ys) do t[col.txt]=col:mid(p) end; return t end
+  t={};for _,col in pairs(cols or i.cols.ys) do t[col.txt]=col:mid(p) end;return t end
 
 function ROWS.clone(i,t,  j) 
   j= ROWS(i.cols.names);for _,row in pairs(t or {}) do j:add(row) end; return j end
@@ -116,8 +111,7 @@ function NB.new(i,src,   all,one,kl)
                              i.one[kl] = i.one[kl] or i.all:clone()
                              i.one[kl]:add(t)
                         else i.all = ROWS(t) end end) end
---------------------------------------------------------------------------------
---      _|_   _    _  _|_   _ 
+--      _|_   _    _  _|_   _  -------------------------------------------------
 --       |_  (/_  _>   |_  _> 
 
 local no,go = {},{}
@@ -137,8 +131,7 @@ function go.rows(    rows)
 
 function go.nb() 
   return 268 == #NB("../../data/diabetes.csv").one.positive.rows  end
---------------------------------------------------------------------------------
---       _  _|_   _.  ._  _|_ 
+--       _  _|_   _.  ._  _|_ --------------------------------------------------
 --      _>   |_  (_|  |    |_  
 
 if    pcall(debug.getlocal, 4, 1)
