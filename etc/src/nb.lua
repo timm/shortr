@@ -12,7 +12,8 @@ OPTIONS (other):
   -h  --help  show help     = false
   -g  --go    start-up goal = nothing
   -s  --seed  seed          = 10019
-  -f  --file  file          = ../../data/auto93.csv]]
+  -f  --file  file          = ../../data/auto93.csv]]
+
 --      ._    _.  ._ _    _    _ ------------
 --      | |  (_|  | | |  (/_  _> 
 
@@ -24,7 +25,7 @@ local oo,push,read,rnd,str     = lib.oo, lib.push, lib.read, lib.rnd, lib.str
 local THE={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
 
-local NB,NUM,SYM,COLS,ROW,ROWS= is"NB",is"NUM",is"SYM",is"COLS",is"ROW",is"ROWS"
+local NB,NUM,SYM,COLS,ROW,ROWS= is"NB",is"NUM",is"SYM",is"COLS",is"ROW",is"ROWS"
 --       _   _   |       ._ _   ._  ---------
 --      (_  (_)  |  |_|  | | |  | | 
 
@@ -42,10 +43,12 @@ function NUM.add(i,v,   d)
 function SYM.new(i)          i.n,i.syms,i.most,i.mode = 0,{},0,nil end
 function SYM.mid(i,...)      return i.mode end
 function SYM.like(i,x,prior) return ((i.syms[x] or 0)+THE.m*prior)/(i.n+THE.m) end
-function SYM.add(i,v)
+function SYM.sub(i,v)        return i:add(v, -1) end
+function SYM.add(i,v,inc)
   if v=="?" then return v end
-  i.n = i.n + 1
-  i.syms[v] = (inc or 1) + (i.syms[v] or 0)
+  inc=inc or 1
+  i.n = i.n + inc
+  i.syms[v] = inc + (i.syms[v] or 0)
   if i.syms[v] > i.most then i.most,i.mode = i.syms[v],v end end
 --       _   _   |   _  ---------------------
 --      (_  (_)  |  _> 
@@ -54,9 +57,9 @@ local function usep(x)   return not x:find":$" end
 local function nump(x)   return x:find"^[A-Z]" end
 local function goalp(x)  return x:find"[!+-]$" end
 local function klassp(x) return x:find"!$"     end
-local function new(at,txt)
+local function new(at,txt,          i)
   txt = txt or ""
-  local i = (nump(txt) and NUM or SYM)()
+  i = (nump(txt) and NUM or SYM)()
   i.txt, i.usep, i.at, i.w = txt, usep(txt), at or 0, txt:find"-$" and -1 or 1
   return i  end
 
@@ -111,20 +114,22 @@ function ROWS.like(i,t, nklasses, nrows,    prior,like,inc,x)
 -- (0) Use row1 to initial our `overall` knowledge of all rows.   
 -- After that (1) add row to `overall` and (2) ROWS about this row's klass.       
 -- (3) After `wait` rows, classify row BEFORE updating training knowledge
-function NB.new(i,src,   all,one,kl)
-  i.overall, i.set, i.list  = nil, {}, {}
-  local function guess(row)
-    return argmax(i.set, 
-                  function(x) return x:like(row,#i.list,#i.overall.rows) end)end
+function NB.new(i,src,       guess)
+  i.overall, i.dict, i.list  = nil, {}, {}
   load(src, function(row,   k) 
     if not i.overall then i.overall = ROWS(row) else  -- (0) eat row1
       row = i.overall:add(row)                    -- (1) add to overall 
       if #i.overall.rows > THE.wait then 
-         print(row:klass(), guess(row)) end       -- (3) classify before updating
+         print(row:klass(), i:guess(row)) end       -- (3) classify before updating
       k = row:klass()                             -- what klass is this?
-      i.set[k] = i.set[k] or push(i.list,  i.overall:clone()) -- klass is known
-      i.set[k].txt = k                            -- each klass knows its name
-      i.set[k]:add(row) end end) end              -- (2) add to this row's klass
+      i.dict[k] = i.dict[k] or push(i.list,  i.overall:clone()) -- klass is known
+      i.dict[k].txt = k                            -- each klass knows its name
+      i.dict[k]:add(row) end end) end              -- (2) add to this row's klass
+
+function NB.guess(i,row) 
+    return argmax(i.dict, 
+      function(klass) return klass:like(row,#i.list,#i.overall.rows) end) end
+
 --      _|_   _    _  _|_   _  --------------
 --       |_  (/_  _>   |_  _> 
 
@@ -132,7 +137,7 @@ local no,go = {},{}
 function go.the()  return type(THE.p)=="number" and THE.p==2 end
 
 function go.argmax(  t,fun)
-  local fun=function(x) return -x end
+  fun=function(x) return -x end
   t={50,40,0,40,50}
   return 3 == argmax(t,fun) end
 
@@ -151,7 +156,7 @@ function go.rows(    rows)
   return rnd(rows.cols.ys[1].sd,0)==847 end
 
 function go.nb() 
-  return 268 == #NB("../../data/diabetes.csv").set["positive"].rows  end
+  return 268 == #NB("../../data/diabetes.csv").dict["positive"].rows  end
 
 --       _  _|_   _.  ._  _|_ ---------------
 --      _>   |_  (_|  |    |_  
