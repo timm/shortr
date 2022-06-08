@@ -6,6 +6,11 @@ lib.fmt  = string.format
 lib.fmtp = function(...) print(fmt(...)) end 
 lib.rand = math.random
 
+function lib.argmax(t,f,  max,n,tmp)
+  arg, max = nil, -lib.big
+  for key,x in pairs(t) do tmp=f(x); if tmp>max then arg,max = key,tmp end end
+  return arg end
+
 function lib.cli(t,help)
   for key,x in pairs(t) do
     x = lib.str(x)
@@ -43,6 +48,8 @@ function lib.copy(t,   u)
   u={};for k,v in pairs(t) do u[lib.copy(k)]=lib.copy(v) end
   return setmetatable(u, getmetatable(t)) end
 
+function lib.gt(x) return function(a,b) return a[x] > b[x] end end
+
 function lib.is(name,    t,new,x)  
   function new(kl,...) x=setmetatable({},kl); kl.new(x,...); return x end 
   t = {__tostring=lib.str, is=name}; t.__index=t
@@ -74,6 +81,8 @@ function lib.shuffle(t,    j)
 
 function lib.splice( t, i, j, k,    u) 
   u={};for n=(i or 1)//1,(j or #t)//1,(k or 1)//1 do u[1+#u]=t[n] end;return u end
+
+function lib.sort(t,f) table.sort(t,f); return t end
 
 function lib.str(i,    j) 
   if type(i)~="table" then return tostring(i) end
