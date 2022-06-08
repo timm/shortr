@@ -110,14 +110,12 @@ function ROWS.like(i,t, nklasses, nrows,    prior,like,inc,has)
   return like end
 
 function NB.new(i,src,   all,one,kl)
-  i.all=nil
-  i.one={}
-  load(src, function(t) 
-    if   i.all 
-    then kl         = i.all:add(t):klass() 
-         i.one[kl] = i.one[kl] or i.all:clone()
-         i.one[kl]:add(t)
-    else i.all = ROWS(t) end end) end
+  i.all, i.one  = nil, {}
+  load(src, function(t) if   i.all 
+                        then kl        = i.all:add(t):klass() 
+                             i.one[kl] = i.one[kl] or i.all:clone()
+                             i.one[kl]:add(t)
+                        else i.all = ROWS(t) end end) end
 --------------------------------------------------------------------------------
 --      _|_   _    _  _|_   _ 
 --       |_  (/_  _>   |_  _> 
