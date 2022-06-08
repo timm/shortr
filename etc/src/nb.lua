@@ -18,11 +18,10 @@ OPTIONS (other):
 --                               
 local lib = require"lib"
 local cli,csv,demos,is,normpdf = lib.cli, lib.csv, lib.demos, lib.is, lib.normpdf
-local oo,read,str      = lib.oo, lib.read, lib.str
+local oo,push,read,rnd,str     = lib.oo, lib.push, lib.read, lib.rnd, lib.str
 
 local THE={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
-
 
 local NUM,SYM,COLS,ROWS = is"NUM", is"SYM", is"COLS", is"ROWS"
 --------------------------------------------------------------------------------
@@ -39,7 +38,7 @@ local function add(i, x)
 function NUM.new(i)        i.n,i.mu,i.m2,i.mu = 0,0,0,0 end
 function NUM.mid(i,p)      return rnd(i.mu,p) end
 function NUM.like(i,x,...) return normpdf(x, i.mu, i.sd) end
-function NUM.add(i,v)
+function NUM.add(i,v,   d)
   d    = v - i.mu
   i.mu = i.mu + d/i.n
   i.m2 = i.m2 + d*(v - i.mu)
@@ -50,7 +49,7 @@ function SYM.mid(i,...)      return i.mode end
 function SYM.like(i,x,prior) return ((i.syms[x] or 0)+THE.m*prior)/(i.n+THE.m) end
 function SYM.add(i,v)
   i.syms[v] = (inc or 1) + (i.syms[v] or 0)
-  if i.syms[x] > i.most then i.most,i.mode = i.syms[v],v end end
+  if i.syms[v] > i.most then i.most,i.mode = i.syms[v],v end end
 --------------------------------------------------------------------------------
 --       _   _   |       ._ _   ._    _ 
 --      (_  (_)  |  |_|  | | |  | |  _> 
@@ -107,9 +106,19 @@ function ROWS.like(i,t, nklasses, nrows,    prior,like,inc,has)
 --       |_  (/_  _>   |_  _> 
 --                            
 local no,go = {},{}
-function go.the() oo(THE); return true end
-function go.csv() print(THE.file); for row in csv(THE.file)  do oo(row) end; return true end
+function go.the()  return type(THE.p)=="number" and THE.p==2 end
+function go.num(n) n=NUM(); for i=1,100 do add(n,i) end; return n.mu==50.5 end
 
+function go.sym(s) 
+  s=SYM(); add(s,{"a","a","a","a","b","b","c"}); return s.mode=="a" end
+
+function go.csv(    n,s) 
+  n,s=0,0; for row in csv(THE.file)  do n=n+1; if n>1 then s=s+row[1] end end
+  return rnd(s/n,3) == 5.441  end
+
+function go.rows(    rows)
+  load(THE.file,
+    function(t) if rows then rows:add(t) else rows=ROWS(t) end end) end
 --------------------------------------------------------------------------------
 --       _  _|_   _.  ._  _|_ 
 --      _>   |_  (_|  |    |_ 
@@ -117,5 +126,4 @@ function go.csv() print(THE.file); for row in csv(THE.file)  do oo(row) end; ret
 if    pcall(debug.getlocal, 4, 1)
 then  return {ROW=ROW, ROWS=ROWS, NUM=NUM, SYM=SYM, THE=THE,lib=lib} 
 else  THE = cli(THE,help)
-      oo(THE)
       demos(THE,go) end
