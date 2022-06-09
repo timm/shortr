@@ -252,7 +252,6 @@ local function _classify(file)
 
 function go.soybean() return _classify("../../data/soybean.csv") end 
 function go.diabetes() return _classify("../../data/diabetes.csv") end 
-
 --       _  _|_   _.  ._  _|_ ---------------
 --      _>   |_  (_|  |    |_  
 
