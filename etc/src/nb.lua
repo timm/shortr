@@ -178,11 +178,14 @@ function RANGE.__tostring(i)
 --                  function(col) i:bins(col,listOfRows) end),lt"div")[1] 
 --   i.kids = map(best.ranges, function(range) 
 --             listOfRows1 = {}
---             for label,rows in pairs(listOfRows) do
---                for _,row in pairs(rows) do
---                  if row:selects(range) then push(listOfRows[label], 
--- end
---
+    -- local function within(row)       return row:within(best) end 
+    -- local function withins(rows)     return map(rows, within) end
+    -- map(listOrRanges, function(rows,   tmp) 
+    --   tmp= map(rows,withins) 
+    --
+    --    end)
+    --
+
 function TREE.bins(i,col,listOfRows)
   local function merge(b4,min)
     local t,j, a,b,c,A,B,C = {},1
@@ -201,20 +204,20 @@ function TREE.bins(i,col,listOfRows)
     t[1].xlo, t[#t].xhi = -big, big
     return t 
   end ---------------------------------- 
-  local out, ranges, n = {}, {}, 0
+  local n,list, dict = 0,{}, {}
   for label,rows in pairs(listOfRows) do
     for _,row in pairs(rows) do
       local v = row.cells[col.at]
       if v ~= "?" then
         n = n + 1
-        local  r  = col:bin(v)
-        ranges[r] = ranges[r] or push(out, RANGE(v,v, SYM(col.at, col.txt)))
-        ranges[r]:add(v,label) end end end 
-  out = sort(out, lt"xlo")
-  out = col.is=="NUM" and merge(out, n^THE.min) or out
-  return {col    = col,
-          ranges = #out<2 and {} or out,
-          div    = sum(out, function(one) return one.n/n*one:div() end)} end
+        local pos = col:bin(v)
+        dict[pos] = dict[pos] or push(list, RANGE(v,v, SYM(col.at, col.txt)))
+        dict[pos]:add(v,label) end end end
+  list = sort(list, lt"xlo")
+  list = col.is=="NUM" and merge(list, n^THE.min) or list
+  list = #list<2 and {} or list
+  return {ranges = list,
+          div    = sum(list, function(z) return z.ys:div()*z.ys.n/n end)} end
 --      _|_   _    _  _|_   _  --------------
 --       |_  (/_  _>   |_  _> 
 
