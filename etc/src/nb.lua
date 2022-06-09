@@ -44,8 +44,8 @@ function NUM.add(i,v,   d)
   i.mu = i.mu + d/i.n
   i.m2 = i.m2 + d*(v - i.mu)
   i.sd = i.n<2 and 0 or (i.m2/(i.n-1))^0.5 
-  i.lo = math.min(x, i.lo) 
-  i.hi = math.max(x, i.hi) end 
+  i.lo = math.min(v, i.lo) 
+  i.hi = math.max(v, i.hi) end 
 
 function SYM.new(i)          i.n,i.syms,i.most,i.mode = 0,{},0,nil end
 function SYM.mid(i,...)      return i.mode end
@@ -222,14 +222,14 @@ function TREE.bins(i,col,listOfRows)
 --       |_  (/_  _>   |_  _> 
 
 local no,go = {},{}
-function go.the()  return type(THE.p)=="number" and THE.p==2 end
+function go.the()  print(1); print(THE); return type(THE.p)=="number" and THE.p==2 end
 
 function go.argmax(  t,fun)
   fun=function(x) return -x end
   t={50,40,0,40,50}
   return 3 == argmax(t,fun) end
 
-function go.num(n) n=NUM(); for i=1,100 do n:add(i) end; return n.mu==50.5 end
+function go.num(n) n=NUM(); for x=1,100 do n:add(x) end; return n.mu==50.5 end
 
 function go.sym(s) 
   s=SYM(); for _,x in pairs{"a","a","a","a","b","b","c"} do s:add(x) end
