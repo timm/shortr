@@ -155,7 +155,7 @@ function ROW.b4(i,j,at,   x,y)
 --      ._   _          _ -------------------
 --      |   (_)  \/\/  _> 
 
-local function load(src, fun)
+local function data(src, fun)
   if type(src)~="string" then for _,t in pairs(src) do fun(t) end
                          else for   t in csv(src)   do fun(t) end end end
 
@@ -189,7 +189,7 @@ function ROWS.like(i,t, nklasses, nrows,    prior,like,inc,x)
 function NB.new(i,src,report,             row)
   report = report or print
   i.overall, i.dict, i.list  = nil, {}, {}
-  load(src, function(row,   k) 
+  data(src, function(row,   k) 
     if not i.overall then i.overall = ROWS(row) else  -- (0) eat row1
       row = i.overall:add(row)                  -- add to overall 
       if #i.overall.rows > THE.wait then report(row:klass(), i:guess(row)) end
@@ -219,7 +219,17 @@ function NB.guess(i,row)
     --    end)
     --
 
-function TREE.bins(i,xcol,yklass,y, rows)
+function Tree.new(i,rowss,gaurd)
+  i.gaurd, i.kids, labels = gaurd, {},{}
+  xcols,rows = nil,{}
+  for label,rows0 in pairs(rowss) do
+    for _,row in pairs(rows0) do 
+      labels[row.id] = label 
+      xcols = push(rows,row).of.cols.xs end end
+  for _,xcol in pairs(of.cols.xs) do
+    i:bins(rows, xcol, SYM, function(row) return labels[row.id] end) end end
+
+function TREE.bins(i,rows,xcol,yklass,y)
   local n,list, dict = 0,{}, {}
   for _,row in pairs(rows) do
     local v = row.cells[xcol.at]
@@ -253,7 +263,7 @@ function go.csv(    n,s)
   return rnd(s/n,3) == 5.441  end
 
 function go.rows(    rows)
-  load(THE.file,function(t) if rows then rows:add(t)  else rows=ROWS(t) end end) 
+  data(THE.file,function(t) if rows then rows:add(t)  else rows=ROWS(t) end end) 
   return rnd(rows.cols.ys[1].sd,0)==847 end
 
 function go.nb() 
