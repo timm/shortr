@@ -29,24 +29,25 @@ function lib.csv(csvfile)
       t={}; for x in s:gmatch("([^,]+)") do t[1+#t] = lib.read(x) end
       return t end end end 
 
-function lib.demos(THE,go)
-  local fails,backup = 0,{}
-  for k,v in pairs(THE) do backup[k]=v end 
-  for txt,todo in pairs(go[THE.go] and {go[THE.go]} or go) do 
-    for k,v in pairs(backup) do THE[k]=v end 
-    math.randomseed(THE.seed)               
-    io.write(".")
-    local result = todo()
-    if result ~= true then         
-      fails = fails + 1
-      print("--Error",txt,status) end end
-  for k,v in pairs(_ENV) do  if not b4[k] then print("?",k,type(v)) end end
-  os.exit(fails)  end
-
 function lib.copy(t,   u)
   if type(t) ~= "table" then return t end
   u={};for k,v in pairs(t) do u[lib.copy(k)]=lib.copy(v) end
   return setmetatable(u, getmetatable(t)) end
+
+function lib.demos(THE,go)
+  local fails,backup = 0,{}
+  for k,v in pairs(THE) do backup[k]=v end 
+  for txt,todo in pairs(THE.go=="all" and go or {go[THE.go]}) do
+    if type(todo)=="function"  then 
+      for k,v in pairs(backup) do THE[k]=v end 
+      math.randomseed(THE.seed)               
+      io.write(".")
+      local result = todo()
+      if result ~= true then         
+        fails = fails + 1
+        print("--Error",txt,status) end end end
+  for k,v in pairs(_ENV) do  if not b4[k] then print("?",k,type(v)) end end 
+  os.exit(fails)  end
 
 function lib.gt(x) return function(a,b) return a[x] > b[x] end end
 
@@ -79,6 +80,8 @@ function lib.shuffle(t,    j)
   for i = #t, 2, -1 do j=math.random(i); t[i], t[j] = t[j], t[i]; end;
   return t end
 
+function lib.same(x) return x end
+
 function lib.splice( t, i, j, k,    u) 
   u={};for n=(i or 1)//1,(j or #t)//1,(k or 1)//1 do u[1+#u]=t[n] end;return u end
 
@@ -90,5 +93,7 @@ function lib.str(i,    j)
   else j={}; for k,v in pairs(i) do j[1+#j] = string.format(":%s %s",k,v) end
        table.sort(j) end
   return (i.is or "").."{"..table.concat(j," ").."}" end 
+
+function lib.sum(t,f,   n) n=0; for _,v in pairs(t) do n=n+f(v) end; return n end
 
 return lib
