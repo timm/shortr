@@ -180,9 +180,9 @@ function RANGE.__tostring(i)
 --             listOfRows1 = {}
     -- local function within(row)       return row:within(best) end 
     -- local function withins(rows)     return map(rows, within) end
-    -- map(listOrRanges, function(rows,   tmp) 
+    -- map(listOrRanges, function(rows) return withins(rows) end) end
     --   tmp= map(rows,withins) 
-    --
+    --   if #tmp > stop then 
     --    end)
     --
 
