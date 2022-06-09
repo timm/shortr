@@ -3,6 +3,7 @@ NB:
 (c)2022 Tim Menzies, timm@ieee.org
    
 OPTIONS:
+  -b  --Bins   max number of bins      = 16
   -k  --k      handle rare classes     =  1  
   -m  --m      handle rare attributes  =  2
   -p  --p      distance coefficient    =  2
@@ -17,42 +18,86 @@ OPTIONS (other):
 --      ._    _.  ._ _    _    _ ------------
 --      | |  (_|  | | |  (/_  _> 
 
-local lib = require"lib"
-local argmax,big               = lib.argmax, lib.big
-local cli,csv,demos,is,normpdf = lib.cli, lib.csv, lib.demos, lib.is, lib.normpdf
-local oo,push,read,rnd         = lib.oo, lib.push, lib.read, lib.rnd
-local same,str                 = lib.same,lib.str
+local _ = require"lib"
+local argmax,big               = _.argmax, _.big
+local cli,csv,demos,is,normpdf = _.cli, _.csv, _.demos, _.is, _.normpdf
+local oo,push,read,rnd,same,str= _.oo, _.push, _.read, _.rnd,_same,_.str
 
 local THE={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
 
 local NB,NUM,SYM,COLS,ROW,ROWS= is"NB",is"NUM",is"SYM",is"COLS",is"ROW",is"ROWS"
-local RANGE, TREE = is"RANGE", is"TREE"
+local FEW,RANGE, TREE = is"FEW", is"RANGE", is"TREE"
+---      ._   _.  ._    _    _  -------------
+--      |   (_|  | |  (_|  (/_ 
+--                     _|      
+function RANGE.new(i, xlo, xhi, ys) i.xlo, i.xhi, i.ys = xlo, xhi, ys end
+function RANGE.add(i,x,y)
+  if x < i.xlo then i.xlo = x end -- works for string or num
+  if x > i.xhi then i.xhi = x end -- works for string or num
+  i.ys:add(y) end
+
+function RANGE.__tostring(i)
+  local x, lo, hi = i.ys.txt, i.xlo, i.xhi
+  if     lo ==  hi  then return fmt("%s == %s",x, lo)  
+  elseif hi ==  big then return fmt("%s > %s",x, lo)  
+  elseif lo == -big then return fmt("%s <= %s", x, hi)  
+  else                   return fmt("%s < %s <= %s",lo,x,hi) end end
 --       _   _   |       ._ _   ._  ---------
 --      (_  (_)  |  |_|  | | |  | | 
 
-function NUM.new(i)        i.n,i.mu,i.m2,i.mu,i.lo,i.hi = 0,0,0,0,big,-big end
+function FEW.new(i) i.n,i.t,i.ok=0,{},true end
+function FEW.has(i) i.t=i.ok and i.t or sort(i.t); i.ok=true; return i.t end
+function FEW.add(i,x)
+  if x=="?" then return x end
+  i.n=i.n+1 
+  if     #i.t   < THE.some     then i.ok=false; push(i.t,x)  
+  elseif rand() < THE.some/i.n then i.ok=false; i.t[rand(#i.t)]=x end end 
+--------------------------------------------------------------------------------
+function NUM.new(i) i.n,i.mu,i.m2,i.mu,i.lo,i.hi,i.few=0,0,0,0,big,-big,FEW() end
 function NUM.mid(i,p)      return rnd(i.mu,p) end
 function NUM.like(i,x,...) return normpdf(x, i.mu, i.sd) end
-function NUM.bin(x)          
+function NUM.bin(x) 
   b=(i.hi - i.lo)/THE.bins; return i.lo==i.hi and 1 or math.floor(x/b+.5)*b end
 
-function NUM.add(i,v,   d)
+function NUM.add(i_NUM, v_number)
   if v=="?" then return v end
+  i.few:add(v)
   i.n  = i.n + 1
-  d    = v - i.mu
+  local d    = v - i.mu
   i.mu = i.mu + d/i.n
   i.m2 = i.m2 + d*(v - i.mu)
   i.sd = i.n<2 and 0 or (i.m2/(i.n-1))^0.5 
   i.lo = math.min(v, i.lo) 
   i.hi = math.max(v, i.hi) end 
 
+function NUM.merge(i,j,      k)
+  local k = NUM(i.at, i.txt)
+  for _,n in pairs(i.few.t) do k:add(x) end
+  for _,n in pairs(j.few.t) do k:add(x) end
+  return k end
+
+function NUM.mergeRanges(i,b4,min)
+  local t,j, a,b,c,A,B,C = {},1
+  while j <= #b4 do 
+    a, b = b4[j], b4[j+1]
+    if b then 
+      A,B = a.ys, b.ys
+      C   = A:merge(B)
+      if A.n<min or B.n<min or C:div() <= (A.n*A:div() + B.n*B:div())/C.n then
+        j = j + 1
+        a = RANGE(a.xlo, b.xhi, C) end end
+    t[#t+1] = a
+    j = j + 1 end
+  if #t < #b4 then return i:mergeRanges(t,min) end
+  for j=2,#t do t[j].xlo = t[j-1].xhi end
+  t[1].xlo, t[#t].xhi = -big, big
+  return t end
+--------------------------------------------------------------------------------
 function SYM.new(i)          i.n,i.syms,i.most,i.mode = 0,{},0,nil end
 function SYM.mid(i,...)      return i.mode end
 function SYM.like(i,x,prior) return ((i.syms[x] or 0)+THE.m*prior)/(i.n+THE.m) end
 function SYM.bin(x)          return x end
-
-function SYM.sub(i,v) return i:add(v, -1) end
 function SYM.add(i,v,inc)
   if v=="?" then return v end
   inc=inc or 1
@@ -65,9 +110,11 @@ function SYM.merge(i,j,      k)
   for x,n in pairs(i.has) do k:add(x,n) end
   for x,n in pairs(j.has) do k:add(x,n) end
   return k end
+
+function SYM.mergeRanges(i,t,...) return t end
 --       _   _   |   _  ---------------------
 --      (_  (_)  |  _> 
---                     
+
 local function usep(x)   return not x:find":$" end
 local function nump(x)   return x:find"^[A-Z]" end
 local function goalp(x)  return x:find"[!+-]$" end
@@ -139,38 +186,24 @@ function ROWS.like(i,t, nklasses, nrows,    prior,like,inc,x)
 -- (0) Use row1 to initial our `overall` knowledge of all rows.   
 -- After that (1) add row to `overall` and (2) ROWS about this row's klass.       
 -- (3) After `wait` rows, classify row BEFORE updating training knowledge
-function NB.new(i,src,report,      guess)
+function NB.new(i,src,report,             row)
   report = report or print
   i.overall, i.dict, i.list  = nil, {}, {}
   load(src, function(row,   k) 
     if not i.overall then i.overall = ROWS(row) else  -- (0) eat row1
-      row = i.overall:add(row)                    -- (1) add to overall 
-      if #i.overall.rows > THE.wait then 
-         report(row:klass(), i:guess(row)) end       -- (3) classify before updating
-      k = row:klass()                             -- what klass is this?
-      i.dict[k] = i.dict[k] or push(i.list,  i.overall:clone()) -- klass is known
-      i.dict[k].txt = k                            -- each klass knows its name
-      i.dict[k]:add(row) end end) end              -- (2) add to this row's klass
+      row = i.overall:add(row)                  -- add to overall 
+      if #i.overall.rows > THE.wait then report(row:klass(), i:guess(row)) end
+      i:train(row) end end) end                 -- add tp rows's klass
+
+function NB.train(i,row) i:_known(row:klass()):add(row) end
+function NB._known(i,k)
+  i.dict[k] = i.dict[k] or push(i.list,  i.overall:clone()) -- klass is known
+  i.dict[k].txt = k                            -- each klass knows its name
+  return i.dict[k] end
 
 function NB.guess(i,row) 
     return argmax(i.dict, 
-      function(klass) return klass:like(row,#i.list,#i.overall.rows) end) end
---      ._   _.  ._    _    _  -------------
---      |   (_|  | |  (_|  (/_ 
---                     _|      
-function RANGE.new(i, xlo, xhi, ys) i.xlo, i.xhi, i.ys = xlo, xhi, ys end
-function RANGE.add(i,x,y)
-  if x < i.xlo then i.xlo = x end -- works for string or num
-  if x > i.xhi then i.xhi = x end -- works for string or num
-  i.ys:add(y) end
-
-function RANGE.__tostring(i)
-  local x, lo, hi = i.ys.txt, i.xlo, i.xhi
-  if     lo ==  hi  then return fmt("%s == %s",x, lo)  
-  elseif hi ==  big then return fmt("%s > %s",x, lo)  
-  elseif lo == -big then return fmt("%s <= %s", x, hi)  
-  else                   return fmt("%s < %s <= %s",lo,x,hi) end end
-
+      function(klass) return klass:like(row,#i.list,#i.overall.rows) end) end
 -- function TREE.new(i,listOfRows,gaurd)
 --   i.gaurd, i.kids = gaurd, {}
 --   of   = listOfRows[1][1].of
@@ -186,38 +219,18 @@ function RANGE.__tostring(i)
     --    end)
     --
 
-function TREE.bins(i,col,listOfRows)
-  local function merge(b4,min)
-    local t,j, a,b,c,A,B,C = {},1
-    while j <= #b4 do 
-      a, b = b4[j], b4[j+1]
-      if b then 
-        A,B = a.ys, b.ys
-        C   = A:merge(B)
-        if A.n<min or B.n<min or C:div() <= (A.n*A:div() + B.n*B:div())/C.n then
-          j = j + 1
-          a = RANGE(a.xlo, b.xhi, C) end end
-      t[#t+1] = a
-      j = j + 1 end
-    if #t < #b4 then return merge(t,min) end
-    for j=2,#t do t[j].xlo = t[j-1].xhi end
-    t[1].xlo, t[#t].xhi = -big, big
-    return t 
-  end ---------------------------------- 
+function TREE.bins(i,xcol,yklass,y, rows)
   local n,list, dict = 0,{}, {}
-  for label,rows in pairs(listOfRows) do
-    for _,row in pairs(rows) do
-      local v = row.cells[col.at]
-      if v ~= "?" then
-        n = n + 1
-        local pos = col:bin(v)
-        dict[pos] = dict[pos] or push(list, RANGE(v,v, SYM(col.at, col.txt)))
-        dict[pos]:add(v,label) end end end
-  list = sort(list, lt"xlo")
-  list = col.is=="NUM" and merge(list, n^THE.min) or list
-  list = #list<2 and {} or list
-  return {ranges = list,
-          div    = sum(list, function(z) return z.ys:div()*z.ys.n/n end)} end
+  for _,row in pairs(rows) do
+    local v = row.cells[xcol.at]
+    if v ~= "?" then
+      n = n + 1
+      local pos = xcol:bin(v)
+      dict[pos] = dict[pos] or push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
+      dict[pos]:add(v, y(row)) end end 
+  list = xcol:mergeRanges(sort(list, lt"xlo"),n^THE.min)
+  return {ranges=list,
+          div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
 --      _|_   _    _  _|_   _  --------------
 --       |_  (/_  _>   |_  _> 
 
