@@ -26,7 +26,7 @@ local same,str                 = lib.same,lib.str
 local THE={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
 
-local NB,NUM,SYM,COLS,ROW,ROWS= is"NB",is"NUM",is"SYM",is"COLS",is"ROW",is"ROWS"
+local NB,NUM,SYM,COLS,ROW,ROWS= is"NB",is"NUM",is"SYM",is"COLS",is"ROW",is"ROWS"
 local RANGE, TREE = is"RANGE", is"TREE"
 --       _   _   |       ._ _   ._  ---------
 --      (_  (_)  |  |_|  | | |  | | 
