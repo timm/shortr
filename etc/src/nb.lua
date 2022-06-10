@@ -4,14 +4,13 @@
 -- -- William Of Occam<p>
 -- The more you have, the more you are occupied.    
 -- The less you have, the more free you are.  <br>-- Mother Teresa<p>
+-- <img width=200 align=left src=cup.png>
 -- Simplicity is the ultimate sophistication. <br>-- Leonardo da Vinci<p>
 -- Simplicity is prerequisite for reliability.<br>-- Edsger W. Dijkstra<p>
 -- Less is more.                              <br>-- Dieter Rams<p>
--- less, plz                                  <br>-- timm   
--- <img width=100 align=right  src="flower.png"><br clear=all><p>
--- My heros: [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
+-- less, plz                                  <br>-- timm <p>  
+-- My heroes: [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
 -- | [Hilary Mason](https://boingboing.net/2017/06/30/next-level-regexp.html)<p>   
--- <img width=200 src=cup.png>
 local help= [[
 NB:  
 (c)2022 Tim Menzies, timm@ieee.org
