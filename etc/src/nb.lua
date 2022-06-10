@@ -1,25 +1,13 @@
 -- The more you have, the more you are occupied.    
--- The less you have, the more free you are.  
--- -- Mother Teresa
--- 
+-- The less you have, the more free you are.<br>-- Mother Teresa<p>
 -- The art of being wise is the art of knowing what to overlook.   
--- -- William James
--- 
--- It is vain to do with more what can be done with less.   
--- -- William Of Occam
--- 
--- Simplicity is the ultimate sophistication.  
--- -- Leonardo da Vinci
--- 
--- Simplicity is prerequisite for reliability.  
--- — Edsger W. Dijkstra
--- 
--- Less is more.   
--- -- Dieter Rams
--- 
--- less, plz   
--- -- timm  
--- <img width=100 align=right  src="flower.png"><br>   
+-- -- William James<p>
+-- It is vain to do with more what can be done with less.  
+-- -- William Of Occam<p>
+-- Simplicity is the ultimate sophistication.<br>-- Leonardo da Vinci<p>
+-- Simplicity is prerequisite for reliability.<br> — Edsger W. Dijkstra<p>
+-- Less is more.<br>-- Dieter Rams<p>
+-- less, plz<br>-- timm<br><img width=100 align=right  src="flower.png"><br>   
 local help= [[
 NB:  
 (c)2022 Tim Menzies, timm@ieee.org
@@ -241,30 +229,31 @@ function NB.guess(i,row)
     --    end)
     --
 
--- function Tree.new(i,rowss,gaurd)
---   i.gaurd, i.kids, labels = gaurd, {},{}
---   xcols,rows = nil,{}
---   local function labeller(row) return labels[row.id] end) end end
---   local function ranges
---   for label,rows0 in pairs(rowss) do
---     for _,row in pairs(rows0) do 
---       labels[row.id] = label 
---       xcols = push(rows,row).of.cols.xs end end
---   ranges= sort(map(of.cols.xs, function(xcol) return i:bins(rows, xcol, SYM, labeller) end),
---                lt"div")[1].ranges end end
---
--- function TREE.bins(i,rows,xcol,yklass,y)
---   local n,list, dict = 0,{}, {}
---   for _,row in pairs(rows) do
---     local v = row.cells[xcol.at]
---     if v ~= "?" then
---       n = n + 1
---       local pos = xcol:bin(v)
---       dict[pos] = dict[pos] or push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
---       dict[pos]:add(v, y(row)) end end 
---   list = xcol:mergeRanges(sort(list, lt"xlo"),n^THE.min)
---   return {ranges=list,
---           div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
+function Tree.new(i,setsOfRows,gaurd)
+  i.gaurd, i.kids, labels = gaurd, {},{}
+  xcols,all = nil,{}
+  local function labeller(row) return labels[row.id] end 
+  local function xcolRanges(xcol)  return i:bins(all, xcol, SYM, labeller) end
+  for label,rows in pairs(setsOfRows) do
+    for _,row in pairs(rows) do 
+      labels[row.id] = label 
+      push(all,row)
+      xcols = row.of.cols.xs end end
+  ranges= sort(map(xcols, xcolRanges),lt"div")[1].ranges end
+  
+
+function TREE.bins(i,rows,xcol,yklass,y)
+  local n,list, dict = 0,{}, {}
+  for _,row in pairs(rows) do
+    local v = row.cells[xcol.at]
+    if v ~= "?" then
+      n = n + 1
+      local pos = xcol:bin(v)
+      dict[pos] = dict[pos] or push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
+      dict[pos]:add(v, y(row)) end end 
+  list = xcol:mergeRanges(sort(list, lt"xlo"),n^THE.min)
+  return {ranges=list,
+          div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
 --      _|_   _    _  _|_   _  --------------
 --       |_  (/_  _>   |_  _> 
 
