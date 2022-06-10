@@ -219,28 +219,30 @@ function NB.guess(i,row)
     --    end)
     --
 
-function Tree.new(i,rowss,gaurd)
-  i.gaurd, i.kids, labels = gaurd, {},{}
-  xcols,rows = nil,{}
-  for label,rows0 in pairs(rowss) do
-    for _,row in pairs(rows0) do 
-      labels[row.id] = label 
-      xcols = push(rows,row).of.cols.xs end end
-  for _,xcol in pairs(of.cols.xs) do
-    i:bins(rows, xcol, SYM, function(row) return labels[row.id] end) end end
-
-function TREE.bins(i,rows,xcol,yklass,y)
-  local n,list, dict = 0,{}, {}
-  for _,row in pairs(rows) do
-    local v = row.cells[xcol.at]
-    if v ~= "?" then
-      n = n + 1
-      local pos = xcol:bin(v)
-      dict[pos] = dict[pos] or push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
-      dict[pos]:add(v, y(row)) end end 
-  list = xcol:mergeRanges(sort(list, lt"xlo"),n^THE.min)
-  return {ranges=list,
-          div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
+-- function Tree.new(i,rowss,gaurd)
+--   i.gaurd, i.kids, labels = gaurd, {},{}
+--   xcols,rows = nil,{}
+--   local function labeller(row) return labels[row.id] end) end end
+--   local function ranges
+--   for label,rows0 in pairs(rowss) do
+--     for _,row in pairs(rows0) do 
+--       labels[row.id] = label 
+--       xcols = push(rows,row).of.cols.xs end end
+--   ranges= sort(map(of.cols.xs, function(xcol) return i:bins(rows, xcol, SYM, labeller) end),
+--                lt"div")[1].ranges end end
+--
+-- function TREE.bins(i,rows,xcol,yklass,y)
+--   local n,list, dict = 0,{}, {}
+--   for _,row in pairs(rows) do
+--     local v = row.cells[xcol.at]
+--     if v ~= "?" then
+--       n = n + 1
+--       local pos = xcol:bin(v)
+--       dict[pos] = dict[pos] or push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
+--       dict[pos]:add(v, y(row)) end end 
+--   list = xcol:mergeRanges(sort(list, lt"xlo"),n^THE.min)
+--   return {ranges=list,
+--           div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
 --      _|_   _    _  _|_   _  --------------
 --       |_  (/_  _>   |_  _> 
 
