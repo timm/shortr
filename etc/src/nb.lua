@@ -229,7 +229,7 @@ function NB.guess(i,row)
     --    end)
     --
 
-function Tree.new(i,setsOfRows,gaurd)
+function TREE.new(i,setsOfRows,gaurd)
   i.gaurd, i.kids, labels = gaurd, {},{}
   xcols,all = nil,{}
   local function labeller(row) return labels[row.id] end 
