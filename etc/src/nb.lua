@@ -1,9 +1,7 @@
--- The more you have, the more you are occupied.    
--- The less you have, the more free you are.<br>-- Mother Teresa<p>
--- The art of being wise is the art of knowing what to overlook.   
--- -- William James<p>
 -- It is vain to do with more what can be done with less.  
 -- -- William Of Occam<p>
+-- The more you have, the more you are occupied.    
+-- The less you have, the more free you are.<br>-- Mother Teresa<p>
 -- Simplicity is the ultimate sophistication.<br>-- Leonardo da Vinci<p>
 -- Simplicity is prerequisite for reliability.<br> — Edsger W. Dijkstra<p>
 -- Less is more.<br>-- Dieter Rams<p>
@@ -25,9 +23,8 @@ OPTIONS (other):
   -g  --go     start-up goal  = nothing
   -h  --help   show help      = false
   -s  --seed   seed           = 10019]]
---      ._    _.  ._ _    _    _ ------------
---      | |  (_|  | | |  (/_  _> 
-
+--------------------------------------------------------------------------------
+-- ## Names
 local _ = require"lib"
 local argmax,big               = _.argmax, _.big
 local cli,csv,demos,is,normpdf = _.cli, _.csv, _.demos, _.is, _.normpdf
@@ -38,9 +35,8 @@ help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) e
 
 local NB,NUM,SYM,COLS,ROW,ROWS= is"NB",is"NUM",is"SYM",is"COLS",is"ROW",is"ROWS"
 local FEW,RANGE, TREE = is"FEW", is"RANGE", is"TREE"
----      ._   _.  ._    _    _  -------------
---      |   (_|  | |  (_|  (/_ 
---                     _|      
+--------------------------------------------------------------------------------
+-- ## class RANGE
 function RANGE.new(i, xlo, xhi, ys) i.xlo, i.xhi, i.ys = xlo, xhi, ys end
 function RANGE.add(i,x,y)
   if x < i.xlo then i.xlo = x end -- works for string or num
@@ -53,26 +49,26 @@ function RANGE.__tostring(i)
   elseif hi ==  big then return fmt("%s > %s",x, lo)  
   elseif lo == -big then return fmt("%s <= %s", x, hi)  
   else                   return fmt("%s < %s <= %s",lo,x,hi) end end
---       _   _   |       ._ _   ._  ---------
---      (_  (_)  |  |_|  | | |  | | 
-
-function FEW.new(i) i.n,i.t,i.ok=0,{},true end
-function FEW.has(i) i.t=i.ok and i.t or sort(i.t); i.ok=true; return i.t end
-function FEW.add(i,x)
+--------------------------------------------------------------------------------
+-- ## class SOME
+function SOME.new(i) i.n,i.t,i.ok=0,{},true end
+function SOME.has(i) i.t=i.ok and i.t or sort(i.t); i.ok=true; return i.t end
+function SOME.add(i,x)
   if x=="?" then return x end
   i.n=i.n+1 
   if     #i.t   < THE.some     then i.ok=false; push(i.t,x)  
   elseif rand() < THE.some/i.n then i.ok=false; i.t[rand(#i.t)]=x end end 
 --------------------------------------------------------------------------------
-function NUM.new(i) i.n,i.mu,i.m2,i.mu,i.lo,i.hi,i.few=0,0,0,0,big,-big,FEW() end
+-- ## class NUM
+function NUM.new(i) i.n,i.mu,i.m2,i.mu,i.lo,i.hi,i.some=0,0,0,0,big,-big,SOME() end
 function NUM.mid(i,p)      return rnd(i.mu,p) end
 function NUM.like(i,x,...) return normpdf(x, i.mu, i.sd) end
 function NUM.bin(x) 
   b=(i.hi - i.lo)/THE.bins; return i.lo==i.hi and 1 or math.floor(x/b+.5)*b end
-
+    
 function NUM.add(i_NUM, v_number)
   if v=="?" then return v end
-  i.few:add(v)
+  i.some:add(v)
   i.n  = i.n + 1
   local d    = v - i.mu
   i.mu = i.mu + d/i.n
@@ -80,14 +76,14 @@ function NUM.add(i_NUM, v_number)
   i.sd = i.n<2 and 0 or (i.m2/(i.n-1))^0.5 
   i.lo = math.min(v, i.lo) 
   i.hi = math.max(v, i.hi) end 
-
+   
 function NUM.merge(i,j,      k)
   local k = NUM(i.at, i.txt)
-  for _,n in pairs(i.few.t) do k:add(x) end
-  for _,n in pairs(j.few.t) do k:add(x) end
+  for _,n in pairs(i.some.t) do k:add(x) end
+  for _,n in pairs(j.some.t) do k:add(x) end
   return k end
-
 --------------------------------------------------------------------------------
+-- ## iclass SYM
 function SYM.new(i)          i.n,i.syms,i.most,i.mode = 0,{},0,nil end
 function SYM.mid(i,...)      return i.mode end
 function SYM.like(i,x,prior) return ((i.syms[x] or 0)+THE.m*prior)/(i.n+THE.m) end
@@ -104,17 +100,19 @@ function SYM.merge(i,j,      k)
   for x,n in pairs(i.has) do k:add(x,n) end
   for x,n in pairs(j.has) do k:add(x,n) end
   return k end
---       _   _   |   _  ---------------------
---      (_  (_)  |  _> 
+--------------------------------------------------------------------------------
+-- ## COLS
+local is={}
+function is.use(x)    return not x:find":$" end
+function is.num(x)    return x:find"^[A-Z]" end
+function is.goal(x)   return x:find"[!+-]$" end
+function is.klass(x)  return x:find"!$"     end
+function is.weight(x) return x:find"-$" and -1 or 1 end
 
-local function usep(x)   return not x:find":$" end
-local function nump(x)   return x:find"^[A-Z]" end
-local function goalp(x)  return x:find"[!+-]$" end
-local function klassp(x) return x:find"!$"     end
-local function new(at,txt,          i)
+function new(at,txt,          i)
   txt = txt or ""
-  i = (nump(txt) and NUM or SYM)()
-  i.txt, i.usep, i.at, i.w = txt, usep(txt), at or 0, txt:find"-$" and -1 or 1
+  i = (is.nump(txt) and NUM or SYM)()
+  i.txt, i.usep, i.at, i.w = txt, is.use(txt), at or 0, is.weight(txt)
   return i  end
 
 function COLS.new(i,t,     col)
@@ -122,32 +120,24 @@ function COLS.new(i,t,     col)
   for at,x in pairs(t) do
     col = push(i.all, new(at,x))
     if col.usep  then 
-      if klassp(col.txt) then i.klass=col end
-      push(goalp(col.txt) and i.ys or i.xs, col) end end end
+      if is.klass(col.txt) then i.klass=col end
+      push(is.goal(col.txt) and i.ys or i.xs, col) end end end
 
 function COLS.add(i,t)
   for _,cols in pairs{i.xs,i.ys} do
     for _,col in pairs(cols) do col:add(t[col.at]) end end
   return t end
---      ._   _         ----------------------
---      |   (_)  \/\/  
-
+--------------------------------------------------------------------------------
+-- ## ROW
 function ROW.new(i,of,cells) i.of,i.cells,i.evaled=of,cells,false end
 function ROW.klass(i) return i.cells[i.of.cols.klass.at] end
 function ROW.within(i,range,         lo,hi,at,v)
    lo, hi, at = range.xlo, range.xhi, range.ys.at
    v = i.cells[at]
    return  v=="?" or (lo==hi and v==lo) or (lo<v and v<=hi) end
-
-function ROW.b4(i,j,at,   x,y)
-  x, y = i.cells[at], j.cells[at]
-  x    = x=="?" and -big or x
-  y    = y=="?" and -big or y
-  return x < y end
---      ._   _          _ -------------------
---      |   (_)  \/\/  _> 
-
-local function data(src, fun)
+--------------------------------------------------------------------------------
+-- ## ROWS
+local function doRows(src, fun)
   if type(src)~="string" then for _,t in pairs(src) do fun(t) end
                          else for   t in csv(src)   do fun(t) end end end
 
@@ -172,16 +162,15 @@ function ROWS.like(i,t, nklasses, nrows,    prior,like,inc,x)
       inc  = col:like(x,prior)
       like = like + math.log(inc) end end
   return like end
---      ._   |_  ---------------------------
---      | |  |_) 
---               
+--------------------------------------------------------------------------------
+-- ## NB
 -- (0) Use row1 to initial our `overall` knowledge of all rows.   
 -- After that (1) add row to `overall` and (2) ROWS about this row's klass.       
 -- (3) After `wait` rows, classify row BEFORE updating training knowledge
 function NB.new(i,src,report,             row)
   report = report or print
   i.overall, i.dict, i.list  = nil, {}, {}
-  data(src, function(row,   k) 
+  doRows(src, function(row,   k) 
     if not i.overall then i.overall = ROWS(row) else  -- (0) eat row1
       row = i.overall:add(row)                  -- add to overall 
       if #i.overall.rows > THE.wait then report(row:klass(), i:guess(row)) end
@@ -210,7 +199,8 @@ function NB.guess(i,row)
     --   if #tmp > stop then 
     --    end)
     --
-
+--------------------------------------------------------------------------------
+-- ## TREE
 function TREE.new(i,setsOfRows,gaurd)
   i.gaurd, i.kids, labels = gaurd, {},{}
   xcols,all = nil,{}
@@ -233,11 +223,11 @@ function TREE.bins(i,rows,xcol,yklass,y)
       dict[pos] = dict[pos] or push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
       dict[pos]:add(v, y(row)) end end 
   list = sort(list, lt"xlo")
-  list = xcol.is=="NUM" and i:merges(list, n^THE.min) or list
+  list = xcol.is=="NUM" and i:_merge(list, n^THE.min) or list
   return {ranges=list,
           div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
 
-function TREE.merges(i,b4,min)
+function TREE._merge(i,b4,min)
   local j,t a,b,c,ay,by,cy = 1,{}
   while j <= #b4 do 
     a, b = b4[j], b4[j+1]
@@ -248,13 +238,12 @@ function TREE.merges(i,b4,min)
            j = j + 1 end end -- skip one, since it has just been merged
     t[#t+1] = a
     j = j + 1 end
-  if #t < #b4 then return i:merges(t,min) end
+  if #t < #b4 then return i:_merge(t,min) end
   for j=2,#t do t[j].xlo = t[j-1].xhi end
   t[1].xlo, t[#t].xhi = -big, big
   return t end
---      _|_   _    _  _|_   _  --------------
---       |_  (/_  _>   |_  _> 
-
+--------------------------------------------------------------------------------
+-- ## TESTS
 local no,go = {},{}
 function go.the()  print(1); print(THE); return type(THE.p)=="number" and THE.p==2 end
 
@@ -274,7 +263,7 @@ function go.csv(    n,s)
   return rnd(s/n,3) == 5.441  end
 
 function go.rows(    rows)
-  data(THE.file,function(t) if rows then rows:add(t)  else rows=ROWS(t) end end) 
+  doRows(THE.file,function(t) if rows then rows:add(t)  else rows=ROWS(t) end end) 
   return rnd(rows.cols.ys[1].sd,0)==847 end
 
 function go.nb() 
@@ -289,9 +278,8 @@ local function _classify(file)
 
 function go.soybean() return _classify("../../data/soybean.csv") end 
 function go.diabetes() return _classify("../../data/diabetes.csv") end 
---       _  _|_   _.  ._  _|_ ---------------
---      _>   |_  (_|  |    |_  
-
+--------------------------------------------------------------------------------
+-- ## START
 if    pcall(debug.getlocal, 4, 1)
 then  return {ROW=ROW, ROWS=ROWS, NUM=NUM, SYM=SYM, THE=THE,lib=lib} 
 else  THE = cli(THE,help)
