@@ -1,11 +1,17 @@
+-- One of my most productive days was throwing away 1,000 lines of code.    
+-- -- Ken Thompson<p>
 -- It is vain to do with more what can be done with less.  
 -- -- William Of Occam<p>
 -- The more you have, the more you are occupied.    
--- The less you have, the more free you are.<br>-- Mother Teresa<p>
--- Simplicity is the ultimate sophistication.<br>-- Leonardo da Vinci<p>
--- Simplicity is prerequisite for reliability.<br> — Edsger W. Dijkstra<p>
--- Less is more.<br>-- Dieter Rams<p>
--- less, plz<br>-- timm<br><img width=100 align=right  src="flower.png"><br>   
+-- The less you have, the more free you are.  <br>-- Mother Teresa<p>
+-- Simplicity is the ultimate sophistication. <br>-- Leonardo da Vinci<p>
+-- Simplicity is prerequisite for reliability.<br>-- Edsger W. Dijkstra<p>
+-- Less is more.                              <br>-- Dieter Rams<p>
+-- less, plz                                  <br>-- timm   
+-- <img width=100 align=right  src="flower.png"><br clear=all><p>
+-- My heros: [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
+-- | [Hilary Mason](https://boingboing.net/2017/06/30/next-level-regexp.html)<p>   
+-- <img width=200 src=cup.png>
 local help= [[
 NB:  
 (c)2022 Tim Menzies, timm@ieee.org
@@ -26,9 +32,9 @@ OPTIONS (other):
 --------------------------------------------------------------------------------
 -- ## Names
 local _ = require"lib"
-local argmax,big               = _.argmax, _.big
-local cli,csv,demos,klass,normpdf = _.cli, _.csv, _.demos,_.klass,  _.normpdf
-local oo,push,read,rnd,same,str= _.oo, _.push, _.read, _.rnd,_same,_.str
+local argmax,big                  = _.argmax, _.big
+local cli,csv,demos,klass,normpdf = _.cli,    _.csv,  _.demos,_.klass, _.normpdf
+local oo,push,read,rnd,same,str   = _.oo,     _.push, _.read, _.rnd,_same,_.str
 
 local THE={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
