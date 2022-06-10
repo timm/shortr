@@ -1,3 +1,4 @@
+-- <img width=400 src=trash.png><b5>
 local help= [[
 NB:  
 (c)2022 Tim Menzies, timm@ieee.org

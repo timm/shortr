@@ -27,7 +27,8 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              
+              <p><img width=400 src=trash.png><b5></p>
+
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> help= <span class="hljs-string">[[
@@ -323,7 +324,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
             </div>
             
             <div class="content"><div class='highlight'><pre>
-<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">load</span><span class="hljs-params">(src, fun)</span></span>
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">data</span><span class="hljs-params">(src, fun)</span></span>
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">type</span>(src)~=<span class="hljs-string">&quot;string&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span> _,t <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(src) <span class="hljs-keyword">do</span> fun(t) <span class="hljs-keyword">end</span>
                          <span class="hljs-keyword">else</span> <span class="hljs-keyword">for</span>   t <span class="hljs-keyword">in</span> csv(src)   <span class="hljs-keyword">do</span> fun(t) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
@@ -369,7 +370,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.new</span><span class="hljs-params">(i,src,report,             row)</span></span>
   report = report <span class="hljs-keyword">or</span> <span class="hljs-built_in">print</span>
   i.overall, i.dict, i.list  = <span class="hljs-literal">nil</span>, {}, {}
-  <span class="hljs-built_in">load</span>(src, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row,   k)</span></span> 
+  data(src, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row,   k)</span></span> 
     <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.overall <span class="hljs-keyword">then</span> i.overall = ROWS(row) <span class="hljs-keyword">else</span>  <span class="hljs-comment">-- (0) eat row1</span>
       row = i.overall:add(row)                  <span class="hljs-comment">-- add to overall </span>
       <span class="hljs-keyword">if</span> #i.overall.rows &gt; THE.wait <span class="hljs-keyword">then</span> report(row:klass(), i:guess(row)) <span class="hljs-keyword">end</span>
@@ -411,7 +412,17 @@ map(listOrRanges, function(rows) return withins(rows) end) end
             </div>
             
             <div class="content"><div class='highlight'><pre>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">TREE.bins</span><span class="hljs-params">(i,xcol,yklass,y, rows)</span></span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Tree.new</span><span class="hljs-params">(i,rowss,gaurd)</span></span>
+  i.gaurd, i.kids, labels = gaurd, {},{}
+  xcols,rows = <span class="hljs-literal">nil</span>,{}
+  <span class="hljs-keyword">for</span> label,rows0 <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rowss) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows0) <span class="hljs-keyword">do</span> 
+      labels[row.id] = label 
+      xcols = push(rows,row).of.cols.xs <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> _,xcol <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(of.cols.xs) <span class="hljs-keyword">do</span>
+    i:bins(rows, xcol, SYM, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">return</span> labels[row.id] <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">TREE.bins</span><span class="hljs-params">(i,rows,xcol,yklass,y)</span></span>
   <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
   <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span>
     <span class="hljs-keyword">local</span> v = row.cells[xcol.at]
@@ -459,7 +470,7 @@ map(listOrRanges, function(rows) return withins(rows) end) end
   <span class="hljs-keyword">return</span> rnd(s/n,<span class="hljs-number">3</span>) == <span class="hljs-number">5.441</span>  <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.rows</span><span class="hljs-params">(    rows)</span></span>
-  <span class="hljs-built_in">load</span>(THE.file,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(t)</span></span> <span class="hljs-keyword">if</span> rows <span class="hljs-keyword">then</span> rows:add(t)  <span class="hljs-keyword">else</span> rows=ROWS(t) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>) 
+  data(THE.file,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(t)</span></span> <span class="hljs-keyword">if</span> rows <span class="hljs-keyword">then</span> rows:add(t)  <span class="hljs-keyword">else</span> rows=ROWS(t) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>) 
   <span class="hljs-keyword">return</span> rnd(rows.cols.ys[<span class="hljs-number">1</span>].sd,<span class="hljs-number">0</span>)==<span class="hljs-number">847</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.nb</span><span class="hljs-params">()</span></span> 
