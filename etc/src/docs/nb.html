@@ -27,7 +27,13 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              <p><img width=400 src=trash.png><b5></p>
+              <p>The more you have, the more you are occupied.<br>The less you have, the more free you are.<br>– Mother Teresa</p>
+<p>The art of being wise is the art of knowing what to overlook.<br>– William James</p>
+<p>It is vain to do with more what can be done with less.<br>– William Of Occam</p>
+<p>Simplicity is the ultimate sophistication.<br>– Leonardo da Vinci</p>
+<p>Simplicity is prerequisite for reliability.<br>— Edsger W. Dijkstra</p>
+<p>Less is more.<br>– Dieter Rams</p>
+<p>less, plz<br>– timm<br><img width=100 align=right  src="flower.png"><br>   </p>
 
             </div>
             
@@ -411,30 +417,6 @@ map(listOrRanges, function(rows) return withins(rows) end) end
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Tree.new</span><span class="hljs-params">(i,rowss,gaurd)</span></span>
-  i.gaurd, i.kids, labels = gaurd, {},{}
-  xcols,rows = <span class="hljs-literal">nil</span>,{}
-  <span class="hljs-keyword">for</span> label,rows0 <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rowss) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows0) <span class="hljs-keyword">do</span> 
-      labels[row.id] = label 
-      xcols = push(rows,row).of.cols.xs <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> _,xcol <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(of.cols.xs) <span class="hljs-keyword">do</span>
-    i:bins(rows, xcol, SYM, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">return</span> labels[row.id] <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">TREE.bins</span><span class="hljs-params">(i,rows,xcol,yklass,y)</span></span>
-  <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
-  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">local</span> v = row.cells[xcol.at]
-    <span class="hljs-keyword">if</span> v ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
-      n = n + <span class="hljs-number">1</span>
-      <span class="hljs-keyword">local</span> pos = xcol:bin(v)
-      dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
-      dict[pos]:add(v, y(row)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-  list = xcol:mergeRanges(<span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;xlo&quot;</span>),n^THE.<span class="hljs-built_in">min</span>)
-  <span class="hljs-keyword">return</span> {ranges=list,
-          div   = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> z.ys:div()*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span></pre></div></div>
-            
         </li>
         
         
@@ -444,9 +426,31 @@ map(listOrRanges, function(rows) return withins(rows) end) end
               <div class="sswrap ">
                 <a class="ss" href="#section-14">&#x00a7;</a>
               </div>
-              <pre><code> _|_   _    _  _|_   _  <span class="hljs-comment">--------------</span>
-  |_  (/_  _&gt;   |_  _&gt; 
-</code></pre>
+              <p>function Tree.new(i,rowss,gaurd)
+  i.gaurd, i.kids, labels = gaurd, {},{}
+  xcols,rows = nil,{}
+  local function labeller(row) return labels[row.id] end) end end
+  local function ranges
+  for label,rows0 in pairs(rowss) do
+    for _,row in pairs(rows0) do 
+      labels[row.id] = label 
+      xcols = push(rows,row).of.cols.xs end end
+  ranges= sort(map(of.cols.xs, function(xcol) return i:bins(rows, xcol, SYM, labeller) end),
+               lt”div”)[1].ranges end end</p>
+<p>function TREE.bins(i,rows,xcol,yklass,y)
+  local n,list, dict = 0,{}, {}
+  for <em>,row in pairs(rows) do
+    local v = row.cells[xcol.at]
+    if v ~= “?” then
+      n = n + 1
+      local pos = xcol:bin(v)
+      dict[pos] = dict[pos] or push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
+      dict[pos]:add(v, y(row)) end end 
+  list = xcol:mergeRanges(sort(list, lt”xlo”),n^THE.min)
+  return {ranges=list,
+          div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
+     <em>|</em>   _    _  <em>|</em>   _  ————–
+      |</em>  (/_  <em>&gt;   |</em>  _&gt; </p>
 
             </div>
             

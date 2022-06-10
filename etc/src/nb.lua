@@ -1,4 +1,25 @@
--- <img width=400 src=trash.png><b5>
+-- The more you have, the more you are occupied.    
+-- The less you have, the more free you are.  
+-- -- Mother Teresa
+-- 
+-- The art of being wise is the art of knowing what to overlook.   
+-- -- William James
+-- 
+-- It is vain to do with more what can be done with less.   
+-- -- William Of Occam
+-- 
+-- Simplicity is the ultimate sophistication.  
+-- -- Leonardo da Vinci
+-- 
+-- Simplicity is prerequisite for reliability.  
+-- — Edsger W. Dijkstra
+-- 
+-- Less is more.   
+-- -- Dieter Rams
+-- 
+-- less, plz   
+-- -- timm  
+-- <img width=100 align=right  src="flower.png"><br>   
 local help= [[
 NB:  
 (c)2022 Tim Menzies, timm@ieee.org
