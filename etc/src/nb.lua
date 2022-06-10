@@ -87,22 +87,6 @@ function NUM.merge(i,j,      k)
   for _,n in pairs(j.few.t) do k:add(x) end
   return k end
 
-function NUM.mergeRanges(i,b4,min)
-  local t,j, a,b,c,A,B,C = {},1
-  while j <= #b4 do 
-    a, b = b4[j], b4[j+1]
-    if b then 
-      A,B = a.ys, b.ys
-      C   = A:merge(B)
-      if A.n<min or B.n<min or C:div() <= (A.n*A:div() + B.n*B:div())/C.n then
-        j = j + 1
-        a = RANGE(a.xlo, b.xhi, C) end end
-    t[#t+1] = a
-    j = j + 1 end
-  if #t < #b4 then return i:mergeRanges(t,min) end
-  for j=2,#t do t[j].xlo = t[j-1].xhi end
-  t[1].xlo, t[#t].xhi = -big, big
-  return t end
 --------------------------------------------------------------------------------
 function SYM.new(i)          i.n,i.syms,i.most,i.mode = 0,{},0,nil end
 function SYM.mid(i,...)      return i.mode end
@@ -120,8 +104,6 @@ function SYM.merge(i,j,      k)
   for x,n in pairs(i.has) do k:add(x,n) end
   for x,n in pairs(j.has) do k:add(x,n) end
   return k end
-
-function SYM.mergeRanges(i,t,...) return t end
 --       _   _   |   _  ---------------------
 --      (_  (_)  |  _> 
 
@@ -241,7 +223,6 @@ function TREE.new(i,setsOfRows,gaurd)
       xcols = row.of.cols.xs end end
   ranges= sort(map(xcols, xcolRanges),lt"div")[1].ranges end
   
-
 function TREE.bins(i,rows,xcol,yklass,y)
   local n,list, dict = 0,{}, {}
   for _,row in pairs(rows) do
@@ -251,9 +232,26 @@ function TREE.bins(i,rows,xcol,yklass,y)
       local pos = xcol:bin(v)
       dict[pos] = dict[pos] or push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
       dict[pos]:add(v, y(row)) end end 
-  list = xcol:mergeRanges(sort(list, lt"xlo"),n^THE.min)
+  list = sort(list, lt"xlo")
+  list = xcol.is=="NUM" and i:merges(list, n^THE.min) or list
   return {ranges=list,
           div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
+
+function TREE.merges(i,b4,min)
+  local j,t a,b,c,ay,by,cy = 1,{}
+  while j <= #b4 do 
+    a, b = b4[j], b4[j+1]
+    if b then 
+      ay,by,cy = a.ys, b.ys, a.ys:merge(b.ys)
+      if ay.n<min or by.n<min or cy:div() <= (ay.n*ay:div()+by.n*by:div())/cy.n 
+      then a = raNGE(a.xlo, b.xhi, cy) 
+           j = j + 1 end end -- skip one, since it has just been merged
+    t[#t+1] = a
+    j = j + 1 end
+  if #t < #b4 then return i:merges(t,min) end
+  for j=2,#t do t[j].xlo = t[j-1].xhi end
+  t[1].xlo, t[#t].xhi = -big, big
+  return t end
 --      _|_   _    _  _|_   _  --------------
 --       |_  (/_  _>   |_  _> 
 
