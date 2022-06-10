@@ -46,7 +46,7 @@ OPTIONS:
   -m  --m      handle rare attributes  =  2
   -p  --p      distance coefficient    =  2
   -S  --small  small leaf size         = .5
-  -w  --wait   wait before classifying =  5
+  -w  --wait   wait before classifying =  
 
 OPTIONS (other):
   -f  --file   file           = ../../data/auto93.csv
@@ -82,14 +82,15 @@ OPTIONS (other):
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _ = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
 <span class="hljs-keyword">local</span> argmax,big               = _.argmax, _.big
-<span class="hljs-keyword">local</span> cli,csv,demos,is,normpdf = _.cli, _.csv, _.demos, _.is, _.normpdf
+<span class="hljs-keyword">local</span> cli,csv,demos,klass,normpdf = _.cli, _.csv, _.demos,_.klass,  _.normpdf
 <span class="hljs-keyword">local</span> oo,push,<span class="hljs-built_in">read</span>,rnd,same,str= _.oo, _.push, _.<span class="hljs-built_in">read</span>, _.rnd,_same,_.str
 
 <span class="hljs-keyword">local</span> THE={}
 help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-][-]([^%s]+)[^\n]*%s([^%s]+)&quot;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(key,x)</span></span> THE[key] = <span class="hljs-built_in">read</span>(x) <span class="hljs-keyword">end</span>)
 
-<span class="hljs-keyword">local</span> NB,NUM,SYM,COLS,ROW,ROWS= is<span class="hljs-string">&quot;NB&quot;</span>,is<span class="hljs-string">&quot;NUM&quot;</span>,is<span class="hljs-string">&quot;SYM&quot;</span>,is<span class="hljs-string">&quot;COLS&quot;</span>,is<span class="hljs-string">&quot;ROW&quot;</span>,is<span class="hljs-string">&quot;ROWS&quot;</span>
-<span class="hljs-keyword">local</span> FEW,RANGE, TREE = is<span class="hljs-string">&quot;FEW&quot;</span>, is<span class="hljs-string">&quot;RANGE&quot;</span>, is<span class="hljs-string">&quot;TREE&quot;</span></pre></div></div>
+<span class="hljs-keyword">local</span> COLS, NB,NUM     = klass<span class="hljs-string">&quot;COLS&quot;</span>,  klass<span class="hljs-string">&quot;NB&quot;</span>,  klass<span class="hljs-string">&quot;NUM&quot;</span>
+<span class="hljs-keyword">local</span> RANGE, ROW, ROWS = klass<span class="hljs-string">&quot;RANGE&quot;</span>, klass<span class="hljs-string">&quot;ROW&quot;</span>, klass<span class="hljs-string">&quot;ROWS&quot;</span>
+<span class="hljs-keyword">local</span> SOME, SYM TREE   = klass<span class="hljs-string">&quot;SOME&quot;</span>,  klass<span class="hljs-string">&quot;SYM&quot;</span>, klass<span class="hljs-string">&quot;TREE&quot;</span></pre></div></div>
             
         </li>
         
@@ -117,7 +118,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.new</span><span class="hljs-params">(i, xlo, xhi, ys)</span></span> i.xlo, i.xhi, i.ys = xlo, xhi, ys <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.new</span><span class="hljs-params">(i, xlo, xhi, ys)</span></span> i.xlo,i.xhi,i.ys,i.rows = xlo,xhi,ys,{} <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.add</span><span class="hljs-params">(i,x,y)</span></span>
   <span class="hljs-keyword">if</span> x &lt; i.xlo <span class="hljs-keyword">then</span> i.xlo = x <span class="hljs-keyword">end</span> <span class="hljs-comment">-- works for string or num</span>
   <span class="hljs-keyword">if</span> x &gt; i.xhi <span class="hljs-keyword">then</span> i.xhi = x <span class="hljs-keyword">end</span> <span class="hljs-comment">-- works for string or num</span>
@@ -235,7 +236,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
               <div class="sswrap ">
                 <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
-              <h2 id="iclass-sym">iclass SYM</h2>
+              <h2 id="class-sym">class SYM</h2>
 
             </div>
             
@@ -278,7 +279,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
               <div class="sswrap ">
                 <a class="ss" href="#section-13">&#x00a7;</a>
               </div>
-              <h2 id="cols">COLS</h2>
+              <h2 id="class-cols">class COLS</h2>
 
             </div>
             
@@ -289,7 +290,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.klass</span><span class="hljs-params">(x)</span></span>  <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;!$&quot;</span>     <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.weight</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">new</span><span class="hljs-params">(at,txt,          i)</span></span>
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">col</span><span class="hljs-params">(at,txt,          i)</span></span>
   txt = txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
   i = (is.nump(txt) <span class="hljs-keyword">and</span> NUM <span class="hljs-keyword">or</span> SYM)()
   i.txt, i.usep, i.at, i.w = txt, is.use(txt), at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, is.weight(txt)
@@ -298,10 +299,10 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">COLS.new</span><span class="hljs-params">(i,t,     col)</span></span>
   i.all, i.xs, i.ys, i.names = {},{},{},t
   <span class="hljs-keyword">for</span> at,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span>
-    col = push(i.all, new(at,x))
-    <span class="hljs-keyword">if</span> col.usep  <span class="hljs-keyword">then</span> 
-      <span class="hljs-keyword">if</span> is.klass(col.txt) <span class="hljs-keyword">then</span> i.klass=col <span class="hljs-keyword">end</span>
-      push(is.goal(col.txt) <span class="hljs-keyword">and</span> i.ys <span class="hljs-keyword">or</span> i.xs, col) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    new = push(i.all, col(at,x))
+    <span class="hljs-keyword">if</span> new.usep  <span class="hljs-keyword">then</span> 
+      <span class="hljs-keyword">if</span> is.klass(new.txt) <span class="hljs-keyword">then</span> i.klass=new <span class="hljs-keyword">end</span>
+      push(is.goal(new.txt) <span class="hljs-keyword">and</span> i.ys <span class="hljs-keyword">or</span> i.xs, new) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">COLS.add</span><span class="hljs-params">(i,t)</span></span>
   <span class="hljs-keyword">for</span> _,cols <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{i.xs,i.ys} <span class="hljs-keyword">do</span>
@@ -330,7 +331,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
               <div class="sswrap ">
                 <a class="ss" href="#section-15">&#x00a7;</a>
               </div>
-              <h2 id="row">ROW</h2>
+              <h2 id="class-row">class ROW</h2>
 
             </div>
             
@@ -363,7 +364,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
               <div class="sswrap ">
                 <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
-              <h2 id="rows">ROWS</h2>
+              <h2 id="class-rows">class ROWS</h2>
 
             </div>
             
@@ -415,7 +416,7 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
               <div class="sswrap ">
                 <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
-              <h2 id="nb">NB</h2>
+              <h2 id="class-nb">class NB</h2>
 <p>(0) Use row1 to initial our <code>overall</code> knowledge of all rows.<br>After that (1) add row to <code>overall</code> and (2) ROWS about this row’s klass.<br>(3) After <code>wait</code> rows, classify row BEFORE updating training knowledge</p>
 
             </div>
@@ -474,23 +475,29 @@ map(listOrRanges, function(rows) return withins(rows) end) end
               <div class="sswrap ">
                 <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
-              <h2 id="tree">TREE</h2>
+              <h2 id="class-tree">class TREE</h2>
+<p>function decisionTree(listOfRows)
+– function tree(rows, xols, yklass,y, gaurd)
+–   local function xranges(xcol) return i:ranges(rows,xcol,yklass,y) end
+–   i.gaurd = gaurd
+–   ranges = sort(map(xcols, xranges),lt”div”)[1].ranges
+–   for _,row in pairs(rows) do
+–     for _,range in pairs(ranges) do 
+–       if row:within(range) then push(range.rows,row) end; break end end
+–   i.kids = map(ranges, 
+–                function(range) return TREE(range.rows,xcols,yklass,y,range) end) end
+– 
+  labels , all, xcols = {},{}
+  for label,rows in pairs(listofRows) do
+    for _,row in pairs(rows) do 
+      xcols = row.of.cols.xs
+      labels[ push(all,row).id ] = label end end
+  return TREE(all, xcols, SYM, function(row) return labels[row.id] end) end</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">TREE.new</span><span class="hljs-params">(i,setsOfRows,gaurd)</span></span>
-  i.gaurd, i.kids, labels = gaurd, {},{}
-  xcols,all = <span class="hljs-literal">nil</span>,{}
-  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">labeller</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">return</span> labels[row.id] <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">xcolRanges</span><span class="hljs-params">(xcol)</span></span>  <span class="hljs-keyword">return</span> i:bins(all, xcol, SYM, labeller) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> label,rows <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(setsOfRows) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span> 
-      labels[row.id] = label 
-      push(all,row)
-      xcols = row.of.cols.xs <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  ranges= <span class="hljs-built_in">sort</span>(map(xcols, xcolRanges),lt<span class="hljs-string">&quot;div&quot;</span>)[<span class="hljs-number">1</span>].ranges <span class="hljs-keyword">end</span>
-  
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">TREE.bins</span><span class="hljs-params">(i,rows,xcol,yklass,y)</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _ranges, _merge
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_ranges</span><span class="hljs-params">(i,rows,xcol,yklass,y)</span></span>
   <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
   <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span>
     <span class="hljs-keyword">local</span> v = row.cells[xcol.at]
@@ -500,11 +507,11 @@ map(listOrRanges, function(rows) return withins(rows) end) end
       dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
       dict[pos]:add(v, y(row)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
   list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;xlo&quot;</span>)
-  list = xcol.is==<span class="hljs-string">&quot;NUM&quot;</span> <span class="hljs-keyword">and</span> i:_merge(list, n^THE.<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> list
-  <span class="hljs-keyword">return</span> {ranges=list,
+  list = xcol.is==<span class="hljs-string">&quot;NUM&quot;</span> <span class="hljs-keyword">and</span> _merge(list, n^THE.<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> list
+  <span class="hljs-keyword">return</span> {ranges  = list,
           div   = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> z.ys:div()*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">TREE._merge</span><span class="hljs-params">(i,b4,min)</span></span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_merge</span><span class="hljs-params">(b4,min)</span></span>
   <span class="hljs-keyword">local</span> j,t a,b,c,ay,by,cy = <span class="hljs-number">1</span>,{}
   <span class="hljs-keyword">while</span> j &lt;= #b4 <span class="hljs-keyword">do</span> 
     a, b = b4[j], b4[j+<span class="hljs-number">1</span>]
@@ -515,7 +522,7 @@ map(listOrRanges, function(rows) return withins(rows) end) end
            j = j + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-comment">-- skip one, since it has just been merged</span>
     t[#t+<span class="hljs-number">1</span>] = a
     j = j + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">if</span> #t &lt; #b4 <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> i:_merge(t,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> #t &lt; #b4 <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> _merge(t,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">for</span> j=<span class="hljs-number">2</span>,#t <span class="hljs-keyword">do</span> t[j].xlo = t[j<span class="hljs-number">-1</span>].xhi <span class="hljs-keyword">end</span>
   t[<span class="hljs-number">1</span>].xlo, t[#t].xhi = -big, big
   <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>

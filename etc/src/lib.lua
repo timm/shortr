@@ -52,7 +52,7 @@ function lib.demos(THE,go)
 function lib.gt(x) return function(a,b) return a[x] > b[x] end end
 
 local _id=0
-function lib.is(name,    t,new,x)  
+function lib.klass(name,    t,new,x)  
   function new(kl,...) 
     _id=_id+1; x=setmetatable({id=_id},kl);kl.new(x,...); return x end 
   t = {__tostring=lib.str,  is=name}; t.__index=t

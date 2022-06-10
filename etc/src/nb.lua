@@ -16,7 +16,7 @@ OPTIONS:
   -m  --m      handle rare attributes  =  2
   -p  --p      distance coefficient    =  2
   -S  --small  small leaf size         = .5
-  -w  --wait   wait before classifying =  5
+  -w  --wait   wait before classifying =  
 
 OPTIONS (other):
   -f  --file   file           = ../../data/auto93.csv
@@ -27,17 +27,18 @@ OPTIONS (other):
 -- ## Names
 local _ = require"lib"
 local argmax,big               = _.argmax, _.big
-local cli,csv,demos,is,normpdf = _.cli, _.csv, _.demos, _.is, _.normpdf
+local cli,csv,demos,klass,normpdf = _.cli, _.csv, _.demos,_.klass,  _.normpdf
 local oo,push,read,rnd,same,str= _.oo, _.push, _.read, _.rnd,_same,_.str
 
 local THE={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) end)
 
-local NB,NUM,SYM,COLS,ROW,ROWS= is"NB",is"NUM",is"SYM",is"COLS",is"ROW",is"ROWS"
-local FEW,RANGE, TREE = is"FEW", is"RANGE", is"TREE"
+local COLS, NB,NUM     = klass"COLS",  klass"NB",  klass"NUM"
+local RANGE, ROW, ROWS = klass"RANGE", klass"ROW", klass"ROWS"
+local SOME, SYM TREE   = klass"SOME",  klass"SYM", klass"TREE"
 --------------------------------------------------------------------------------
 -- ## class RANGE
-function RANGE.new(i, xlo, xhi, ys) i.xlo, i.xhi, i.ys = xlo, xhi, ys end
+function RANGE.new(i, xlo, xhi, ys) i.xlo,i.xhi,i.ys,i.rows = xlo,xhi,ys,{} end
 function RANGE.add(i,x,y)
   if x < i.xlo then i.xlo = x end -- works for string or num
   if x > i.xhi then i.xhi = x end -- works for string or num
@@ -60,7 +61,7 @@ function SOME.add(i,x)
   elseif rand() < THE.some/i.n then i.ok=false; i.t[rand(#i.t)]=x end end 
 --------------------------------------------------------------------------------
 -- ## class NUM
-function NUM.new(i) i.n,i.mu,i.m2,i.mu,i.lo,i.hi,i.some=0,0,0,0,big,-big,SOME() end
+function NUM.new(i) i.n,i.mu,i.m2,i.w,i.lo,i.hi,i.some=0,0,0,1,big,-big,SOME() end
 function NUM.mid(i,p)      return rnd(i.mu,p) end
 function NUM.like(i,x,...) return normpdf(x, i.mu, i.sd) end
 function NUM.bin(x) 
@@ -83,7 +84,7 @@ function NUM.merge(i,j,      k)
   for _,n in pairs(j.some.t) do k:add(x) end
   return k end
 --------------------------------------------------------------------------------
--- ## iclass SYM
+-- ## class SYM
 function SYM.new(i)          i.n,i.syms,i.most,i.mode = 0,{},0,nil end
 function SYM.mid(i,...)      return i.mode end
 function SYM.like(i,x,prior) return ((i.syms[x] or 0)+THE.m*prior)/(i.n+THE.m) end
@@ -101,51 +102,42 @@ function SYM.merge(i,j,      k)
   for x,n in pairs(j.has) do k:add(x,n) end
   return k end
 --------------------------------------------------------------------------------
--- ## COLS
-local is={}
-function is.use(x)    return not x:find":$" end
-function is.num(x)    return x:find"^[A-Z]" end
-function is.goal(x)   return x:find"[!+-]$" end
-function is.klass(x)  return x:find"!$"     end
-function is.weight(x) return x:find"-$" and -1 or 1 end
-
-function new(at,txt,          i)
-  txt = txt or ""
-  i = (is.nump(txt) and NUM or SYM)()
-  i.txt, i.usep, i.at, i.w = txt, is.use(txt), at or 0, is.weight(txt)
-  return i  end
-
-function COLS.new(i,t,     col)
-  i.all, i.xs, i.ys, i.names = {},{},{},t
-  for at,x in pairs(t) do
-    col = push(i.all, new(at,x))
-    if col.usep  then 
-      if is.klass(col.txt) then i.klass=col end
-      push(is.goal(col.txt) and i.ys or i.xs, col) end end end
+-- ## class COLS
+function COLS.new(i,t,     new,is)
+  is={}
+  function is.use(x)    return not x:find":$" end
+  function is.num(x)    return x:find"^[A-Z]" end
+  function is.goal(x)   return x:find"[!+-]$" end
+  function is.klass(x)  return x:find"!$"     end
+  function is.weight(x) return x:find"-$" and -1 or 1 end
+  i.xs, i.ys, i.names = {},{},{},t
+  for at,txt in pairs(t) do
+    new = (is.nump(txt) and NUM or SYM)(at,txt)
+    new.usep,  new.w = is.use(txt), is.weight(txt)
+    if new.usep  then 
+      if is.klass(new.txt) then i.klass=new end
+      push(is.goal(new.txt) and i.ys or i.xs, new) end end end
 
 function COLS.add(i,t)
   for _,cols in pairs{i.xs,i.ys} do
-    for _,col in pairs(cols) do col:add(t[col.at]) end end
+    for _,col in pairs(cols) do col:add(t.cells[col.at]) end end
   return t end
 --------------------------------------------------------------------------------
--- ## ROW
-function ROW.new(i,of,cells) i.of,i.cells,i.evaled=of,cells,false end
-function ROW.klass(i) return i.cells[i.of.cols.klass.at] end
-function ROW.within(i,range,         lo,hi,at,v)
-   lo, hi, at = range.xlo, range.xhi, range.ys.at
-   v = i.cells[at]
+-- ## class ROW
+function ROW.new(i,of,t) i.of,i.cells,i.evaled = of,t,false end
+function ROW.klass(i)    return i.cells[i.of.cols.klass.at] end
+function ROW.within(i,range)
+   local lo, hi, at = range.xlo, range.xhi, range.ys.at
+   local v = i.cells[at]
    return  v=="?" or (lo==hi and v==lo) or (lo<v and v<=hi) end
 --------------------------------------------------------------------------------
--- ## ROWS
+-- ## class ROWS
 local function doRows(src, fun)
   if type(src)~="string" then for _,t in pairs(src) do fun(t) end
                          else for   t in csv(src)   do fun(t) end end end
 
 function ROWS.new(i,t) i.cols=COLS(t); i.rows={} end
-function ROWS.add(i,t) 
-  t=t.cells and t or ROW(i,t)
-  i.cols:add(t.cells)
-  return push(i.rows, t) end
+function ROWS.add(i,t) return push(i.rows, i.cols:add(t.cells and t or ROW(i,t))) end
 
 function ROWS.mid(i, cols, p,     t)
   t={};for _,col in pairs(cols or i.cols.ys) do t[col.txt]=col:mid(p) end;return t end
@@ -163,7 +155,7 @@ function ROWS.like(i,t, nklasses, nrows,    prior,like,inc,x)
       like = like + math.log(inc) end end
   return like end
 --------------------------------------------------------------------------------
--- ## NB
+-- ## class NB
 -- (0) Use row1 to initial our `overall` knowledge of all rows.   
 -- After that (1) add row to `overall` and (2) ROWS about this row's klass.       
 -- (3) After `wait` rows, classify row BEFORE updating training knowledge
@@ -200,20 +192,27 @@ function NB.guess(i,row)
     --    end)
     --
 --------------------------------------------------------------------------------
--- ## TREE
-function TREE.new(i,setsOfRows,gaurd)
-  i.gaurd, i.kids, labels = gaurd, {},{}
-  xcols,all = nil,{}
-  local function labeller(row) return labels[row.id] end 
-  local function xcolRanges(xcol)  return i:bins(all, xcol, SYM, labeller) end
-  for label,rows in pairs(setsOfRows) do
-    for _,row in pairs(rows) do 
-      labels[row.id] = label 
-      push(all,row)
-      xcols = row.of.cols.xs end end
-  ranges= sort(map(xcols, xcolRanges),lt"div")[1].ranges end
-  
-function TREE.bins(i,rows,xcol,yklass,y)
+-- ## class TREE
+-- function decisionTree(listOfRows)
+-- -- function tree(rows, xols, yklass,y, gaurd)
+-- --   local function xranges(xcol) return i:ranges(rows,xcol,yklass,y) end
+-- --   i.gaurd = gaurd
+-- --   ranges = sort(map(xcols, xranges),lt"div")[1].ranges
+-- --   for _,row in pairs(rows) do
+-- --     for _,range in pairs(ranges) do 
+-- --       if row:within(range) then push(range.rows,row) end; break end end
+-- --   i.kids = map(ranges, 
+-- --                function(range) return TREE(range.rows,xcols,yklass,y,range) end) end
+-- -- 
+--   labels , all, xcols = {},{}
+--   for label,rows in pairs(listofRows) do
+--     for _,row in pairs(rows) do 
+--       xcols = row.of.cols.xs
+--       labels[ push(all,row).id ] = label end end
+--   return TREE(all, xcols, SYM, function(row) return labels[row.id] end) end
+-- 
+local _ranges, _merge
+function _ranges(i,rows,xcol,yklass,y)
   local n,list, dict = 0,{}, {}
   for _,row in pairs(rows) do
     local v = row.cells[xcol.at]
@@ -223,11 +222,11 @@ function TREE.bins(i,rows,xcol,yklass,y)
       dict[pos] = dict[pos] or push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
       dict[pos]:add(v, y(row)) end end 
   list = sort(list, lt"xlo")
-  list = xcol.is=="NUM" and i:_merge(list, n^THE.min) or list
-  return {ranges=list,
+  list = xcol.is=="NUM" and _merge(list, n^THE.min) or list
+  return {ranges  = list,
           div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
 
-function TREE._merge(i,b4,min)
+function _merge(b4,min)
   local j,t a,b,c,ay,by,cy = 1,{}
   while j <= #b4 do 
     a, b = b4[j], b4[j+1]
@@ -238,7 +237,7 @@ function TREE._merge(i,b4,min)
            j = j + 1 end end -- skip one, since it has just been merged
     t[#t+1] = a
     j = j + 1 end
-  if #t < #b4 then return i:_merge(t,min) end
+  if #t < #b4 then return _merge(t,min) end
   for j=2,#t do t[j].xlo = t[j-1].xhi end
   t[1].xlo, t[#t].xhi = -big, big
   return t end
