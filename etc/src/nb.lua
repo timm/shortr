@@ -103,17 +103,18 @@ function SYM.merge(i,j,      k)
   return k end
 --------------------------------------------------------------------------------
 -- ## class COLS
+local  is={}
+function is.use(x)     return not x:find":$" end
+function is.num(x)     return x:find"^[A-Z]" end
+function is.goal(x)    return x:find"[!+-]$" end
+function is.klass(x)   return x:find"!$"     end
+function is.dislike(x) return x:find"-$"     end
+
 function COLS.new(i,t,     new,is)
-  is={}
-  function is.use(x)    return not x:find":$" end
-  function is.num(x)    return x:find"^[A-Z]" end
-  function is.goal(x)   return x:find"[!+-]$" end
-  function is.klass(x)  return x:find"!$"     end
-  function is.weight(x) return x:find"-$" and -1 or 1 end
   i.xs, i.ys, i.names = {},{},{},t
   for at,txt in pairs(t) do
     new = (is.nump(txt) and NUM or SYM)(at,txt)
-    new.usep,  new.w = is.use(txt), is.weight(txt)
+    new.usep,  new.w = is.use(txt), is.dislike(txt) and -1 or 1
     if new.usep  then 
       if is.klass(new.txt) then i.klass=new end
       push(is.goal(new.txt) and i.ys or i.xs, new) end end end
@@ -124,7 +125,7 @@ function COLS.add(i,t)
   return t end
 --------------------------------------------------------------------------------
 -- ## class ROW
-function ROW.new(i,of,t) i.of,i.cells,i.evaled = of,t,false end
+function ROW.new(i,of,t) i.of,i.cells,i.evaled  = of,t,false end
 function ROW.klass(i)    return i.cells[i.of.cols.klass.at] end
 function ROW.within(i,range)
    local lo, hi, at = range.xlo, range.xhi, range.ys.at
@@ -132,28 +133,39 @@ function ROW.within(i,range)
    return  v=="?" or (lo==hi and v==lo) or (lo<v and v<=hi) end
 --------------------------------------------------------------------------------
 -- ## class ROWS
-local function doRows(src, fun)
-  if type(src)~="string" then for _,t in pairs(src) do fun(t) end
-                         else for   t in csv(src)   do fun(t) end end end
 
+-- __ROWS( t:{string} )__<br>constructor.
 function ROWS.new(i,t) i.cols=COLS(t); i.rows={} end
+-- __.add( t:(table|ROW) ) :ROW__<br>update with a table or ROW.
 function ROWS.add(i,t) return push(i.rows, i.cols:add(t.cells and t or ROW(i,t))) end
-
+-- __.mid( cols:{NUM|SYM}, p=2) :table__   
+-- returns `mid`s of some columns; round numerics to `p` decimal places.
 function ROWS.mid(i, cols, p,     t)
   t={};for _,col in pairs(cols or i.cols.ys) do t[col.txt]=col:mid(p) end;return t end
-
-function ROWS.clone(i,t,  j) 
-  j= ROWS(i.cols.names);for _,row in pairs(t or {}) do j:add(row) end; return j end
-
-function ROWS.like(i,t, nklasses, nrows,    prior,like,inc,x)
+-- __.clone( ?data:(table|{ROW}) ) :ROWS__<br>copy this structure, maybe add data.
+function ROWS.clone(i,data,  j) 
+  j= ROWS(i.cols.names);for _,row in pairs(data or {}) do j:add(row) end; return j end
+-- __.like( row:ROWS, nklasses:int; nrows:int): float__  
+-- how likely is it that `row` could live here?
+function ROWS.like(i,row, nklasses, nrows,    prior,like,inc,x)
   prior = (#i.rows + THE.k) / (nrows + THE.k * nklasses)
   like  = math.log(prior)
   for _,col in pairs(i.cols.xs) do
-    x = t.cells[col.at] 
+    x = row.cells[col.at] 
     if x and x ~= "?" then
       inc  = col:like(x,prior)
       like = like + math.log(inc) end end
   return like end
+
+-- __doRows( ?src:(string|table), fun:function( table|ROW ) )__   
+-- helper function for reading from tables or files. Case arg1 of ...     
+-- ... _table_  : call  function for all items in table.  
+-- ... _string_ :  call function on all rows from a file.     
+-- ... _nil_    :  call function of all rows from standard input.
+local function doRows(src, fun)
+  if type(src)=="table" then for  _,t in pairs(src) do fun(t) end
+                         else for   t in csv(src)   do fun(t) end end end
+
 --------------------------------------------------------------------------------
 -- ## class NB
 -- (0) Use row1 to initial our `overall` knowledge of all rows.   
@@ -162,17 +174,17 @@ function ROWS.like(i,t, nklasses, nrows,    prior,like,inc,x)
 function NB.new(i,src,report,             row)
   report = report or print
   i.overall, i.dict, i.list  = nil, {}, {}
-  doRows(src, function(row,   k) 
+  doRows(src,  function(row,   k) 
     if not i.overall then i.overall = ROWS(row) else  -- (0) eat row1
       row = i.overall:add(row)                  -- add to overall 
       if #i.overall.rows > THE.wait then report(row:klass(), i:guess(row)) end
       i:train(row) end end) end                 -- add tp rows's klass
 
-function NB.train(i,row) i:_known(row:klass()):add(row) end
-function NB._known(i,k)
-  i.dict[k] = i.dict[k] or push(i.list,  i.overall:clone()) -- klass is known
+function NB.train(i,row,      k) 
+  k=row:klass()
+  i.dict[k] = i.dict[k] or push(i.list,i.overall:clone()) -- klass is known
   i.dict[k].txt = k                            -- each klass knows its name
-  return i.dict[k] end
+  i.dict[k]:add(row) end                       -- update klass with row
 
 function NB.guess(i,row) 
     return argmax(i.dict, 
