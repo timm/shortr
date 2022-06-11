@@ -535,7 +535,7 @@ tr,p { line-height: 14px; }
                   color:#fff;text-decoration:none;font-family:arial,sans-serif;
                   text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;
                   line-height:2rem;position:relative;transition:0.5s;}
-#forkongithub a:hover { background:#c11;color:#fff;}
+#forkongithub a:hover { background:#954121;color:#fff;}
 #forkongithub a::before,#forkongithub a::after { content:"";width:100%;display:block;position:absolute;
                                                  top:1px;left:0;height:1px;background:#fff;}
 #forkongithub a::after { bottom:1px;top:auto;}

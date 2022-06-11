@@ -1,4 +1,10 @@
 -- <span id="forkongithub"><a href="https://github.com/timm/l5">Fork me on GitHub</a></span>
+-- Do I understand "it"? Let's check.<p>
+-- Can I code "it" succinctly? Does "it" do the minimum work
+-- (so "it" runs faster)? Can I explain "it" to you, quickly
+-- and successfully?  And if I did all that, can you do "it"
+-- easier and adapt "it", as required, for different purposes?<hr>
+--
 -- __Mother Teresa:__   
 -- <img width=150 align=left src=cup.png>
 -- The more you have, the more you are occupied.
@@ -21,10 +27,12 @@
 -- | [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
 -- | [Peter Norvig](http://norvig.com/lispy.html)<p>   
 local help= [[
-shortr.lua : If you understand "it", you can write "it" shorter. 
-Lets check. Do I grok semi-supervised multi-objective optimization?
-(c)2022 Tim Menzies, timm@ieee.org
-      
+SHORTR: semi-supervised multi-objective optimization
+(c) 2022 Tim Menzies <timm@ieee.org> BSD2 license
+
+USAGE:
+  lua shortr.lua [OPTIONS]
+
 OPTIONS:
   -b  --Bins   max number of bins        = 16
   -F  --Few    only keep a "Few" numbers = 256
@@ -54,32 +62,36 @@ help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) e
 
 -- - ROWS use COLS to make either NUMs or SYMs.  
 -- - ROWS holds data in ROWs, and summarizes columns in NUMs and SYMs.  
--- - NUMs use SOMEs to store at most `THE.Few` samples per numeric columns.   
--- - RANGE objects track what `y` values are seen between `xlo` and `xhi`.
+-- - There are two helper classes:
+--   - NUMs use SOMEs to store at most `THE.Few` samples per numeric columns.   
+--   - RANGE objects track what `y` values are seen between `xlo` and `xhi`.
+-- - NB is a bayes classifier built from these sub-routunes.
 local ROWS, COLS, NUM, SYM = klass"ROWS",  klass"COLS",  klass"NUM", klass"SYM"
 local ROW = klass"ROW"
-local SOME = klass"SOME"
-local RANGE = klass"RANGE"
+local SOME,RANGE = klass"SOME", klass"RANGE"
+local NB = klass"NB"
 --------------------------------------------------------------------------------
 -- ## class COLS
 
 -- The system uses COLS to make lists of NUMs or SYMs.
--- Independent and dependent columns are stored in `xs` or `ys` lists.<p>
+--    
+--  Independent and dependent columns are stored in `xs` or `ys` lists.<p>
 -- This code reads data from csv files or lists of tables.
 -- The first row of data is a list of column names. 
+--  
 -- Those can contain some special symbols.
-local  is={}
--- For example, we want to ignore columns whose name ends with "`:`".  
--- Number columns start with an upper case letter.  
--- Dependent variables end in "`!`", "`+`", or "`-`" 
+-- For example, we want to ignore columns whose name ends with "`:`".
+-- Also, number columns start with an upper case letter.
+-- Further, dependent variables end in "`!`", "`+`", or "`-`" 
 -- for klasses or goals to be minimized or maximized.
+local  is={}
 function is.use(x)     return not x:find":$" end
 function is.num(x)     return x:find"^[A-Z]" end
 function is.goal(x)    return x:find"[!+-]$" end
 function is.klass(x)   return x:find"!$"     end
 function is.dislike(x) return x:find"-$"     end
 
--- For example, `COLS` would read line1 of this data, skipping column #2, making
+-- For example, `COLS` would read line1 of the following data, skipping column #2, making
 -- NUMerics out of columns #1,#2, and a SYMbolic out of columni #4. Further,
 -- any goal columns (in this case, "`Lbs-`")  get stored in a `ys` list
 -- and all other columns are stored in `xs`.
@@ -111,7 +123,7 @@ function COLS.add(i,t)
 
 -- __SOME()__<br>constructor.
 function SOME.new(i) i.n,i.t,i.ok=0,{},true end
--- __.add(  x:any  )__<br>
+-- __.add(  `x`:any  )__<br>
 -- Technically, this is a reservoir sampler; i.e. given a small cache,
 -- sample at an equal (but low) probability across  a much larger  space.
 -- Note one trick: If we full, make space by replacing anything at all.
