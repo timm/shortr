@@ -1,19 +1,28 @@
--- If you understand "it", can you write "it" shorter?  Lets try.   
--- E.G. how short can we write a multi-objective semi-supervised learner?<hr>
+-- If you understand "it", can you write "it" shorter? Lets try. E.G. do we 
+--  understand semi-supervised learning, and multi-objective optimization?<hr>
 -- <span id="forkongithub"><a href="https://github.com/timm/l5">Fork me on GitHub</a></span>
 --   
--- _Mother Teresa:_  The more you have, the more you are occupied.
+-- _Mother Teresa:_   
+-- <img width=150 align=left src=cup.png>
+-- The more you have, the more you are occupied.
 -- The less you have, the more free you are.<p>
--- _Ken Thompson:_  One of my most productive days was throwing 
+-- _Ken Thompson:_     
+-- One of my most productive days was throwing 
 -- away 1,000 lines of code.<p>
--- _William of Occam:_  It is vain to do with more what can be done with less.  <p>
--- <img width=200 align=left src=cup.png>
--- _Leonardo da Vinci:_  Simplicity is the ultimate sophistication.<p>
--- _Edsger D. Dijkstra:_  Simplicity is prerequisite for reliability.<p>
--- _Dieter Ram:_  Less, but better.<p>
--- _timm:_  less, plz <p>
--- My heroes: [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
--- | [Hilary Mason](https://boingboing.net/2017/06/30/next-level-regexp.html)<p>   
+-- _William of Occam:_   
+-- It is vain to do with more what can be done with less.  <p>
+-- _Leonardo da Vinci:_    
+-- Simplicity is the ultimate sophistication.<p>
+-- _Edsger D. Dijkstra:_    
+-- Simplicity is prerequisite for reliability.<p>
+-- _Dieter Ram:_    
+-- Less, but better.<p>
+-- _timm:_    
+-- plz, less<p>
+-- A few "write-less-code" heroes:<br>[Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
+-- | [Hilary Mason](https://boingboing.net/2017/06/30/next-level-regexp.html)
+-- | [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
+-- | [Peter Norvig](http://norvig.com/lispy.html)<p>   
 local help= [[
 shorter.lua : a multi-objective semi-supervised learner. 
 (c)2022 Tim Menzies, timm@ieee.org
