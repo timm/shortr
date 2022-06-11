@@ -957,7 +957,7 @@ map(listOrRanges, function(rows) return withins(rows) end) end
   list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;xlo&quot;</span>)
   list = xcol.is==<span class="hljs-string">&quot;NUM&quot;</span> <span class="hljs-keyword">and</span> _merge(list, n^THE.<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> list
   <span class="hljs-keyword">return</span> {ranges  = list,
-          div   = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> z.ys:div()*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span>
+          div   = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> z.ys:div()*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_merge</span><span class="hljs-params">(b4,min)</span></span>
   <span class="hljs-keyword">local</span> j,t a,b,c,ay,by,cy = <span class="hljs-number">1</span>,{}

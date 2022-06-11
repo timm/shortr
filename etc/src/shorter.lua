@@ -295,7 +295,7 @@ function _ranges(i,rows,xcol,yklass,y)
   list = sort(list, lt"xlo")
   list = xcol.is=="NUM" and _merge(list, n^THE.min) or list
   return {ranges  = list,
-          div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
+          div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
 
 function _merge(b4,min)
   local j,t a,b,c,ay,by,cy = 1,{}
@@ -325,7 +325,7 @@ function RANGE.__tostring(i)
   if     lo ==  hi  then return fmt("%s == %s",x, lo)  
   elseif hi ==  big then return fmt("%s > %s",x, lo)  
   elseif lo == -big then return fmt("%s <= %s", x, hi)  
-  else                   return fmt("%s < %s <= %s",lo,x,hi) end end
+  else                   return fmt("%s < %s <= %s",lo,x,hi) end end
 --------------------------------------------------------------------------------
 -- ## Tests
 local no,go = {},{}
