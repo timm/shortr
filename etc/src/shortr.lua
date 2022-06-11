@@ -1,32 +1,30 @@
--- If you understand "it", can you write "it" shorter? Lets try. E.G. do we 
---  understand semi-supervised learning, and multi-objective optimization?<hr>
 -- <span id="forkongithub"><a href="https://github.com/timm/l5">Fork me on GitHub</a></span>
---   
--- _Mother Teresa:_   
+-- __Mother Teresa:__   
 -- <img width=150 align=left src=cup.png>
 -- The more you have, the more you are occupied.
 -- The less you have, the more free you are.<p>
--- _Ken Thompson:_     
+-- __Ken Thompson:__     
 -- One of my most productive days was throwing 
 -- away 1,000 lines of code.<p>
--- _William of Occam:_   
+-- __William of Occam:__   
 -- It is vain to do with more what can be done with less.  <p>
--- _Leonardo da Vinci:_    
+-- __Leonardo da Vinci:__    
 -- Simplicity is the ultimate sophistication.<p>
--- _Edsger D. Dijkstra:_    
+-- __Edsger D. Dijkstra:__    
 -- Simplicity is prerequisite for reliability.<p>
--- _Dieter Ram:_    
+-- __Dieter Ram:__    
 -- Less, but better.<p>
--- _timm:_    
+-- __timm:__    
 -- plz, less<p>
--- A few "write-less-code" heroes:<br>[Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
+-- Other examples of "write-less-code":<br>[Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
 -- | [Hilary Mason](https://boingboing.net/2017/06/30/next-level-regexp.html)
 -- | [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
 -- | [Peter Norvig](http://norvig.com/lispy.html)<p>   
 local help= [[
-shorter.lua : a multi-objective semi-supervised learner. 
+shortr.lua : If you understand "it", you can write "it" shorter. 
+Lets check. Do I grok semi-supervised multi-objective optimization?
 (c)2022 Tim Menzies, timm@ieee.org
-   
+      
 OPTIONS:
   -b  --Bins   max number of bins        = 16
   -F  --Few    only keep a "Few" numbers = 256
@@ -102,7 +100,7 @@ function COLS.new(i,t,     new,is)
       if is.klass(new.txt) then i.klass=new end
       push(is.goal(new.txt) and i.ys or i.xs, new) end end end
 
--- __.add(  `t`  :ROW  )  :S__<br>update column summaries.
+-- __.add(  `t`  :ROW  )  :ROW__<br>update column summaries.
 function COLS.add(i,t)
   for _,cols in pairs{i.xs,i.ys} do
     for _,col in pairs(cols) do col:add(t.cells[col.at]) end end
@@ -161,7 +159,7 @@ function NUM.mid(i,p) return rnd(i.mu,p) end
 -- of symbols seen so far.
 
 -- __SYM()__<br>constructor.  
-function SYM.new(i)          i.n,i.syms,i.most,i.mode = 0,{},0,nil end
+function SYM.new(i)  i.n,i.syms,i.most,i.mode = 0,{},0,nil end
 --  __.add(  `v`  :any,  ?`inc`=1   )__<br>add `v`, `inc` number of times.
 function SYM.add(i,v,inc)
   if v=="?" then return v end

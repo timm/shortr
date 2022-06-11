@@ -81,7 +81,6 @@ h1 {
 }
 h2 {
   font-size: 2.1em;
-  color: #954121;
   margin: 10px 0 15px 0;
   xborder-top: 2px solid #ccc;
 }
@@ -532,7 +531,8 @@ pre .hljs-tex .hljs-formula {
 }
 tr,p { line-height: 14px; }
 
-#forkongithub a { background:#000;color:#fff;text-decoration:none;font-family:arial,sans-serif;
+#forkongithub a { background:rgb(15,25,68);
+                  color:#fff;text-decoration:none;font-family:arial,sans-serif;
                   text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;
                   line-height:2rem;position:relative;transition:0.5s;}
 #forkongithub a:hover { background:#c11;color:#fff;}
@@ -548,3 +548,8 @@ tr,p { line-height: 14px; }
                      -webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);
                      -o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8); }
 }
+
+h1,h2 { color: rgb(15,25,68); }
+b, strong {
+  color: #954121;
+   }
