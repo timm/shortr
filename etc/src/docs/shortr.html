@@ -28,17 +28,22 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/l5">Fork me on GitHub</a></span>
-<img width=175 align=left src=cup.png>
-Do I understand “it”?
+<a
+href="https://github.com/timm/l5/actions/workflows/tests.yml"><img 
+src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a 
+href="https://zenodo.org/badge/latestdoi/206205826">
+<img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a></p>
+<p>Do I understand “it”?
 Can I code “it” succinctly? Using simple tools and a minimal set of data 
 structure and algorithms? Does “it” do the minimum work  (so”it” runs fast)?
  Can I explain “it” to you, quickly and successfully? And does “it” generalize
 (so “it” is not a one-off hack)?<p>Let’s check. Please review my code.<br>This is  a multi-objective semi-supervised explanation tool,
 all in under 400 lines of code
  (most of which is background stuff that could be used for other learners).    </p>
-<p><code>awk &#39;! /^(--|[ \t]*$)/ {n++}</code><br><code>END {print n}&#39; *.lua =&gt; 355</code></p>
-<p>Share and enjoy!<hr></p>
-<p><strong>Mother Teresa:</strong><br>The more you have, the more you are occupied.
+<p><code>awk &#39;!/^(--|[ \t]*$)/{n++} END{print n &quot; lines&quot;}&#39; *.lua</code><br>=&gt; 364 lines</p>
+<p>Share and enjoy!<hr>  </p>
+<p><strong>Mother Teresa:</strong><br><img width=175 align=left src=cup.png> 
+The more you have, the more you are occupied.
 The less you have, the more free you are.<p>
 <strong>Ken Thompson:</strong><br>One of my most productive days was throwing 
 away 1,000 lines of code.<p>
@@ -47,10 +52,10 @@ away 1,000 lines of code.<p>
 <strong>Edsger D. Dijkstra:</strong><br>Simplicity is prerequisite for reliability.<p>
 <strong>Dieter Ram:</strong><br>Less, but better.<p>
 <strong>timm:</strong><br>plz, less<p>
-Other proponents of “write-less-code”:<br><a href="https://www.youtube.com/watch?v=o9pEzgHorH0">Jack Diederich</a> 
+Other proponents of “write-less-code”:   </p>
+<p><a href="https://www.youtube.com/watch?v=o9pEzgHorH0">Jack Diederich</a> 
 | <a href="https://boingboing.net/2017/06/30/next-level-regexp.html">Hilary Mason</a>
-| <a href="https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html">Brian Kernighan</a>
-| <a href="http://norvig.com/lispy.html">Peter Norvig</a>
+| <a href="https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html">Brian Kernighan</a><br>  <a href="http://norvig.com/lispy.html">Peter Norvig</a>
 | <a href="https://github.com/joelgrus/data-science-from-scratch">Joel Grus</a>
 | <a href="http://www.paulgraham.com/onlisp.html">Paul Graham</a></p>
 <p>   
@@ -62,8 +67,9 @@ Other proponents of “write-less-code”:<br><a href="https://www.youtube.com/w
 SHORTR: semi-supervised multi-objective optimization
 (c) 2022 Tim Menzies &lt;timm@ieee.org&gt; BSD2 license
 
-Explore N points via  O(log2(N)) evaluations. In pass1, find
-and eval  two distant points using multi-objective criteria.
+Explore N points via  O(log2(N)) evaluations. Generate a
+human-readable summary of that space.  In pass1, find and
+eval  two distant points using multi-objective criteria.
 Everything nearest the  worst is pruned and we recurse on
 the rest.  This algorithm is only approximate so, in pass2,
 we do it all again, starting with the better items seen in
@@ -681,11 +687,11 @@ weightings).</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-37">&#x00a7;</a>
               </div>
-              <p><strong>ROW()</strong><br>constructor.  </p>
+              <p><strong>ROW(  <code>of</code>  :ROWS,  <code>cells</code>   :table)</strong><br>constructor.  </p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROW.new</span><span class="hljs-params">(i,of,t)</span></span> i.of,i.cells,i.evaled  = of,t,<span class="hljs-literal">false</span> <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROW.new</span><span class="hljs-params">(i,of,cells)</span></span> i.of,i.cells,i.evaled  = of,cells,<span class="hljs-literal">false</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -884,7 +890,7 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
               <div class="sswrap ">
                 <a class="ss" href="#section-50">&#x00a7;</a>
               </div>
-              <p><strong>.tree(  <code>listOrRows</code>  :{{ROW}}  )  :ROW</strong><br>return root of decision or regression tree;</p>
+              <p><strong>.tree(  <code>listOrRows</code>  :[[ROW]] )  :ROW</strong><br>return root of decision or regression tree;</p>
 
             </div>
             
@@ -903,7 +909,7 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
               <div class="sswrap ">
                 <a class="ss" href="#section-51">&#x00a7;</a>
               </div>
-              <p><strong>.treeGrow(  <code>xcols</code>  :{NUM|SYM},  <code>y</code>  :function  )  :ROW</strong><br>return root of decision or regression tree;</p>
+              <p><strong>.treeGrow(  <code>xcols</code>  :[NUM|SYM],  <code>y</code>  :function  )  :ROW</strong><br>return root of decision or regression tree;</p>
 
             </div>
             
@@ -912,7 +918,7 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
   stop = stop <span class="hljs-keyword">or</span> (#i.rows)^THE.small
   rows.kids = {}
   <span class="hljs-keyword">if</span> #i.rows &gt;= <span class="hljs-number">2</span>*stop <span class="hljs-keyword">then</span>
-    all = map(xcols, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xcol)</span></span> <span class="hljs-keyword">return</span> _ranges(i.rows,xcol,SYM,y) <span class="hljs-keyword">end</span>)
+    all = map(xcols, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xcol)</span></span> <span class="hljs-keyword">return</span> RANGE.make(i.rows,xcol,SYM,y) <span class="hljs-keyword">end</span>)
     <span class="hljs-keyword">for</span> j,range <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(all, lt<span class="hljs-string">&quot;div&quot;</span>)[<span class="hljs-number">1</span>].ranges) <span class="hljs-keyword">do</span> 
       some = i:clone()
       <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.rows) <span class="hljs-keyword">do</span>
@@ -1074,14 +1080,17 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
                 <a class="ss" href="#section-60">&#x00a7;</a>
               </div>
               <p><strong>.merge(  <code>i</code>  :RANGE,  <code>j</code>  :RANGE,  <code>min</code>  :integer)  :(RANGE|nil)</strong><br>Merge ranges that are too small (less than <code>min</code>), or are more complex
-than their combination. Return nil otherwise</p>
+than their combination. Return nil otherwise. Note: should only be applied
+to <em>adjacent</em> ranges.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.merge</span><span class="hljs-params">(i,j,min,        a,b,c)</span></span>
-  a,b,c = i.ys, j.ys, i.ys:merge(j.ys)
-  <span class="hljs-keyword">if</span> a.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> b.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> c:div() &lt;= (a.n*a:div()+b.n*b:div())/c.n <span class="hljs-keyword">then</span> 
-    <span class="hljs-keyword">return</span> RANGE(a.xlo, b.xhi, c)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.merge</span><span class="hljs-params">(i,j,min)</span></span>
+  <span class="hljs-keyword">local</span> lo,hi       = i.xlo, j.xhi
+  <span class="hljs-keyword">local</span> y1, y2, y12 = i.ys, j.ys, i.ys:merge(j.ys)
+  <span class="hljs-keyword">local</span> n1, n2, n12 = y1.n, y2.n, y12.n
+  <span class="hljs-keyword">if</span> n1&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> n2&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> y12:div() &lt;= (n1*y1:div() + n2*y2:div()) / n12 <span class="hljs-keyword">then</span> 
+    <span class="hljs-keyword">return</span> RANGE(lo, hi, y12)  <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -1105,11 +1114,31 @@ than their combination. Return nil otherwise</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-62">&#x00a7;</a>
               </div>
-              <p>RANGES are generated by two class methods kept in <code>RANGE.fun</code>.</p>
+              <p><strong>RANGE.make(  <code>rows</code>  :[ROW],  <code>xcol</code>  :(NUM|SYM),<br><code>yclass</code>:KLASS,  <code>y</code>  :function  )  :table</strong><br>Class method. Returns a list <code>{ranges={RANGE},  div=number}</code> that scores each range.<br>Numeric ranges are first divided into groups of size <code>(hi-lo)/THE.bins</code> 
+then subsequently, adjacent ranges are merged (see <code>_merges</code>). 
+Finally, each range is score by the weighted sum of its diversity.</p>
+<p><em>Low-level detail:</em> About the idiom:<br><code>dict[pos]=dict[pos] or push(list,RANGE(...))</code><br>The <code>map</code> and <code>sort</code> functions used in this code
+do funny things when sorting associative arrays
+with discontinuous keys. 
+To have something that can reliably sorted, while at the same time, have a fast way to access one item,
+this code maintains<br>(1) a “fast-find” index (<code>dict</code>)<br>(2) something with continuous indexes (<code>list</code>).</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>RANGE.fun = {}</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _merges, _xpand
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.make</span><span class="hljs-params">(rows,xcol,yklass,y)</span></span>
+  <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
+  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">local</span> v = row.cells[xcol.at]
+    <span class="hljs-keyword">if</span> v ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
+      n = n + <span class="hljs-number">1</span>
+      <span class="hljs-keyword">local</span> pos = xcol:bin(v)
+      dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
+      dict[pos]:add(v, y(row)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;xlo&quot;</span>)
+  list = xcol.is==<span class="hljs-string">&quot;NUM&quot;</span> <span class="hljs-keyword">and</span> _xpand(_merges(list, n^THE.<span class="hljs-built_in">min</span>)) <span class="hljs-keyword">or</span> list
+  <span class="hljs-keyword">return</span> {ranges= list,
+          div   = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> z.ys:div()*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -1120,26 +1149,18 @@ than their combination. Return nil otherwise</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-63">&#x00a7;</a>
               </div>
-              <p><strong>.fun.ranges(  <code>rows</code>  :{ROW},  <code>xcol</code>  :(NUM|SYM),<br><code>yclass</code>:KLASS,  <code>y</code>  :function  )  :table</strong><br>Returns a list <code>{ranges={RANGE},  div=number}</code> that scores each range.<br>Numeric ranges are first divided into groups of size <code>(hi-lo)/THE.bins</code> 
-then subsequently, adjacent ranges are merged (see <code>.fun.merge</code>). 
-Finally, each range is score by the weighted sum of its diversity.</p>
-<p>FYI,  the idiom <code>dict[pos]=dict[pos] or push(list,y)</code> maintains:<br>(a) a set of RANGEs, indexed by <code>pos</code> (so we can find them quick);  and<br>(b) a list of known things, indexed one to max size (so we can sort such a list).</p>
+              <p><strong>_merge( <code>b4</code>  :[RANGE],   <code>min</code>:number  )  :[RANGE]</strong><br>Try to merge adjacent ranges. If successful, then loop looking for other merges.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.fun.ranges</span><span class="hljs-params">(rows,xcol,yklass,y)</span></span>
-  <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
-  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">local</span> v = row.cells[xcol.at]
-    <span class="hljs-keyword">if</span> v ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
-      n = n + <span class="hljs-number">1</span>
-      <span class="hljs-keyword">local</span> pos = xcol:bin(v)
-      dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
-      dict[pos]:add(v, y(row)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-  list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;xlo&quot;</span>)
-  list = xcol.is==<span class="hljs-string">&quot;NUM&quot;</span> <span class="hljs-keyword">and</span> RANGE.fun.merge(list, n^THE.<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> list
-  <span class="hljs-keyword">return</span> {ranges= list,
-          div   = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> z.ys:div()*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_merges</span><span class="hljs-params">(b4, min)</span></span>
+  <span class="hljs-keyword">local</span> j,now = <span class="hljs-number">1</span>,{}
+  <span class="hljs-keyword">while</span> j &lt;= #b4 <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">local</span> merged
+    <span class="hljs-keyword">if</span> j&lt;#b4 <span class="hljs-keyword">then</span> merged = b4[j]:merge(b4[j+<span class="hljs-number">1</span>], <span class="hljs-built_in">min</span>) <span class="hljs-keyword">end</span>
+    now[#now+<span class="hljs-number">1</span>] = merged <span class="hljs-keyword">and</span> merged <span class="hljs-keyword">or</span> b4[j] 
+    j           = j + (merged <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>) <span class="hljs-keyword">end</span><span class="hljs-comment">-- skip to next and next if we found a merge</span>
+  <span class="hljs-keyword">return</span>  #now == #b4 <span class="hljs-keyword">and</span> now <span class="hljs-keyword">or</span> _merges(now,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">end</span> <span class="hljs-comment">-- hunt for more merges</span></pre></div></div>
             
         </li>
         
@@ -1150,24 +1171,14 @@ Finally, each range is score by the weighted sum of its diversity.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-64">&#x00a7;</a>
               </div>
-              <p><strong>.fun.merge( <code>b4</code>  :{RANGE},   <code>min</code>:number  )  :{RANGE)</strong><br>Try to merge adjacent ranges. If successful, then loop looking for other merges.
-Finally, for numerics, expand the ranges to cover everything from minus to plus
-infinity.</p>
+              <p><strong>_xpand(  <code>ranges</code>  :[RANGE]  )  :[RANGE]</strong><br>Expand the ranges to cover everything from minus to plus infinity.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.fun.merge</span><span class="hljs-params">(b4,min)</span></span>
-  <span class="hljs-keyword">local</span> j,t a,b,c = <span class="hljs-number">1</span>,{}
-  <span class="hljs-keyword">while</span> j &lt;= #b4 <span class="hljs-keyword">do</span> 
-    a, b = b4[j], b4[j+<span class="hljs-number">1</span>]
-    <span class="hljs-keyword">if</span> b <span class="hljs-keyword">then</span> c = a:merge(b,<span class="hljs-built_in">min</span>)
-              <span class="hljs-keyword">if</span> c <span class="hljs-keyword">then</span> a,j = c,j+<span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-comment">-- skip one, since it has been merged</span>
-    t[#t+<span class="hljs-number">1</span>] = a
-    j = j + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">if</span> #t &lt; #b4 <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> RANGE.fun.merge(t,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> j=<span class="hljs-number">2</span>,#t <span class="hljs-keyword">do</span> t[j].xlo = t[j<span class="hljs-number">-1</span>].xhi <span class="hljs-keyword">end</span>
-  t[<span class="hljs-number">1</span>].xlo, t[#t].xhi = -big, big
-  <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_xpand</span><span class="hljs-params">(ranges)</span></span>
+  <span class="hljs-keyword">for</span> j=<span class="hljs-number">2</span>,#ranges <span class="hljs-keyword">do</span> ranges[j].xlo = ranges[j<span class="hljs-number">-1</span>].xhi <span class="hljs-keyword">end</span>
+  ranges[<span class="hljs-number">1</span>].xlo, ranges[#t].xhi = -big, big
+  <span class="hljs-keyword">return</span> ranges <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -1254,7 +1265,7 @@ infinity.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span>    <span class="hljs-built_in">pcall</span>(<span class="hljs-built_in">debug</span>.<span class="hljs-built_in">getlocal</span>, <span class="hljs-number">4</span>, <span class="hljs-number">1</span>)
-<span class="hljs-keyword">then</span>  <span class="hljs-keyword">return</span> {ROW=ROW, ROWS=ROWS, NUM=NUM, SYM=SYM, THE=THE,lib=lib} 
+<span class="hljs-keyword">then</span>  <span class="hljs-keyword">return</span> {doRows=doRows,ROW=ROW, ROWS=ROWS, NUM=NUM, SYM=SYM, THE=THE,lib=lib} 
 <span class="hljs-keyword">else</span>  THE = cli(THE,help)
       demos(THE,go) <span class="hljs-keyword">end</span></pre></div></div>
             
