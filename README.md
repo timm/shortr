@@ -1,7 +1,7 @@
 
 <img width=300 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
-# SHORTR.lus
+# SHORTR.lua
 
 [code](https://menzies.us/shortr)
 
