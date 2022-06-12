@@ -42,7 +42,7 @@ all in under 400 lines of code
  (most of which is background stuff that could be used for other learners).    </p>
 <p><code>awk &#39;!/^(--|[ \t]*$)/{n++} END{print n&quot; lines&quot;}&#39; *.lua</code><br>=&gt; 367 lines</p>
 <p>Share and enjoy!<hr>  </p>
-<p><strong>Mother Teresa:</strong><br><img width=175 align=left src=img/cup.png> 
+<p><strong>Mother Teresa:</strong><br><img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 “The more you have, the more you are occupied.
 The less you have, the more free you are.”<p>
 <strong>Ken Thompson:</strong><br>“One of my most productive days was throwing 
@@ -90,7 +90,7 @@ OPTIONS:
   -w  --wait   wait before classifying    =  10
 
 OPTIONS (other):
-  -f  --file   file           =  ../../data/auto93.csv
+  -f  --file   file           =  data/auto93.csv
   -g  --go     start-up goal  =  nothing
   -h  --help   show help      =  false
   -s  --seed   seed           =  10019]]</span></pre></div></div>
@@ -1235,8 +1235,8 @@ this code maintains<br>(1) a “fast-find” index (<code>dict</code>)<br>(2) so
   abcd:pretty(abcd:report())
   <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.soybean</span><span class="hljs-params">()</span></span>  <span class="hljs-keyword">return</span> _classify(<span class="hljs-string">&quot;../../data/soybean.csv&quot;</span>) <span class="hljs-keyword">end</span> 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.diabetes</span><span class="hljs-params">()</span></span> <span class="hljs-keyword">return</span> _classify(<span class="hljs-string">&quot;../../data/diabetes.csv&quot;</span>) <span class="hljs-keyword">end</span></pre></div></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.soybean</span><span class="hljs-params">()</span></span>  <span class="hljs-keyword">return</span> _classify(<span class="hljs-string">&quot;data/soybean.csv&quot;</span>) <span class="hljs-keyword">end</span> 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.diabetes</span><span class="hljs-params">()</span></span> <span class="hljs-keyword">return</span> _classify(<span class="hljs-string">&quot;data/diabetes.csv&quot;</span>) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
