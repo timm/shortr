@@ -14,30 +14,31 @@
 -- all in under 400 lines of code
 --  (most of which is background stuff that could be used for other learners).    
 -- 
--- `awk '!/^(--|[ \t]*$)/{n++} END{print n " lines"}' *.lua`  
--- => 364 lines
+-- `awk '!/^(--|[ \t]*$)/{n++} END{print n" lines"}' *.lua`  
+-- => 367 lines
 --
 -- Share and enjoy!<hr>  
 --  
 -- __Mother Teresa:__   
 -- <img width=175 align=left src=cup.png> 
--- The more you have, the more you are occupied.
--- The less you have, the more free you are.<p>
+-- "The more you have, the more you are occupied.
+-- The less you have, the more free you are."<p>
 -- __Ken Thompson:__     
--- One of my most productive days was throwing 
--- away 1,000 lines of code.<p>
+-- "One of my most productive days was throwing 
+-- away 1,000 lines of code."<p>
 -- __William of Occam:__   
--- It is vain to do with more what can be done with less.  <p>
+-- "It is vain to do with more what can be done with less."  <p>
+-- __Donald Knuth:__  
+-- "It is much more rewarding to do more with less." <p>
 -- __Leonardo da Vinci:__    
--- Simplicity is the ultimate sophistication.<p>
+-- "Simplicity is the ultimate sophistication."<p>
 -- __Edsger D. Dijkstra:__    
--- Simplicity is prerequisite for reliability.<p>
+-- "Simplicity is prerequisite for reliability."<p>
 -- __Dieter Ram:__    
--- Less, but better.<p>
+-- "Less, but better."<p>
 -- __timm:__    
--- plz, less<p>
--- I hope these people don't mind when I say they are all proponents of "write-less-code":   
--- 
+-- "plz, less"<p>
+-- Hall of fame (whose code challenges us to write less, but better):   
 -- [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
 -- | [Hilary Mason](https://boingboing.net/2017/06/30/next-level-regexp.html)
 -- | [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)  
@@ -115,11 +116,11 @@ local NB = klass"NB"
 -- Further, dependent variables end in "`!`", "`+`", or "`-`" 
 -- for klasses or goals to be minimized or maximized.
 local  is={}
-function is.use(x)     return not x:find":$" end
-function is.num(x)     return x:find"^[A-Z]" end
-function is.goal(x)    return x:find"[!+-]$" end
-function is.klass(x)   return x:find"!$"     end
-function is.dislike(x) return x:find"-$"     end
+function is.use(x)      return not x:find":$" end
+function is.num(x)      return x:find"^[A-Z]" end
+function is.goal(x)     return x:find"[!+-]$" end
+function is.klass(x)    return x:find"!$"     end
+function is.minimize(x) return x:find"-$"     end
 
 -- For example, `COLS` would read line1 of the following data, skipping column #2, making
 -- NUMerics out of columns #1,#2, and a SYMbolic out of columni #4. Further,
@@ -138,7 +139,7 @@ function COLS.new(i,t,     new)
   for at,txt in pairs(t) do
     new = (is.num(txt) and NUM or SYM)()
     new.txt,  new.at = txt, at
-    new.usep, new.w  = is.use(txt), (is.dislike(txt) and -1 or 1)
+    new.usep, new.w  = is.use(txt), (is.minimize(txt) and -1 or 1)
     if new.usep  then 
       if is.klass(new.txt) then i.klass=new end
       push(is.goal(new.txt) and i.ys or i.xs, new) end end end

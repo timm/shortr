@@ -40,20 +40,20 @@ structure and algorithms? Does “it” do the minimum work  (so”it” runs fa
 (so “it” is not a one-off hack)?<p>Let’s check. Please review my code.<br>This is  a multi-objective semi-supervised explanation tool,
 all in under 400 lines of code
  (most of which is background stuff that could be used for other learners).    </p>
-<p><code>awk &#39;!/^(--|[ \t]*$)/{n++} END{print n &quot; lines&quot;}&#39; *.lua</code><br>=&gt; 364 lines</p>
+<p><code>awk &#39;!/^(--|[ \t]*$)/{n++} END{print n&quot; lines&quot;}&#39; *.lua</code><br>=&gt; 364 lines</p>
 <p>Share and enjoy!<hr>  </p>
 <p><strong>Mother Teresa:</strong><br><img width=175 align=left src=cup.png> 
-The more you have, the more you are occupied.
-The less you have, the more free you are.<p>
-<strong>Ken Thompson:</strong><br>One of my most productive days was throwing 
-away 1,000 lines of code.<p>
-<strong>William of Occam:</strong><br>It is vain to do with more what can be done with less.  <p>
-<strong>Leonardo da Vinci:</strong><br>Simplicity is the ultimate sophistication.<p>
-<strong>Edsger D. Dijkstra:</strong><br>Simplicity is prerequisite for reliability.<p>
-<strong>Dieter Ram:</strong><br>Less, but better.<p>
-<strong>timm:</strong><br>plz, less<p>
-Other proponents of “write-less-code”:   </p>
-<p><a href="https://www.youtube.com/watch?v=o9pEzgHorH0">Jack Diederich</a> 
+“The more you have, the more you are occupied.
+The less you have, the more free you are.”<p>
+<strong>Ken Thompson:</strong><br>“One of my most productive days was throwing 
+away 1,000 lines of code.”<p>
+<strong>William of Occam:</strong><br>“It is vain to do with more what can be done with less.”  <p>
+<strong>Donald Knuth:</strong><br>“It is much more rewarding to do more with less.” <p>
+<strong>Leonardo da Vinci:</strong><br>“Simplicity is the ultimate sophistication.”<p>
+<strong>Edsger D. Dijkstra:</strong><br>“Simplicity is prerequisite for reliability.”<p>
+<strong>Dieter Ram:</strong><br>“Less, but better.”<p>
+<strong>timm:</strong><br>“plz, less”<p>
+Hall of fame (whose code challenges us to write less, but better):<br><a href="https://www.youtube.com/watch?v=o9pEzgHorH0">Jack Diederich</a> 
 | <a href="https://boingboing.net/2017/06/30/next-level-regexp.html">Hilary Mason</a>
 | <a href="https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html">Brian Kernighan</a><br>  <a href="http://norvig.com/lispy.html">Peter Norvig</a>
 | <a href="https://github.com/joelgrus/data-science-from-scratch">Joel Grus</a>
@@ -231,11 +231,11 @@ for klasses or goals to be minimized or maximized.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span>  is={}
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.use</span><span class="hljs-params">(x)</span></span>     <span class="hljs-keyword">return</span> <span class="hljs-keyword">not</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.num</span><span class="hljs-params">(x)</span></span>     <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.goal</span><span class="hljs-params">(x)</span></span>    <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;[!+-]$&quot;</span> <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.klass</span><span class="hljs-params">(x)</span></span>   <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;!$&quot;</span>     <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.dislike</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span>     <span class="hljs-keyword">end</span></pre></div></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.use</span><span class="hljs-params">(x)</span></span>      <span class="hljs-keyword">return</span> <span class="hljs-keyword">not</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.num</span><span class="hljs-params">(x)</span></span>      <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.goal</span><span class="hljs-params">(x)</span></span>     <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;[!+-]$&quot;</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.klass</span><span class="hljs-params">(x)</span></span>    <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;!$&quot;</span>     <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is.minimize</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span>     <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -277,7 +277,7 @@ and all other columns are stored in <code>xs</code>.</p>
   <span class="hljs-keyword">for</span> at,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span>
     new = (is.num(txt) <span class="hljs-keyword">and</span> NUM <span class="hljs-keyword">or</span> SYM)()
     new.txt,  new.at = txt, at
-    new.usep, new.w  = is.use(txt), (is.dislike(txt) <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)
+    new.usep, new.w  = is.use(txt), (is.minimize(txt) <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)
     <span class="hljs-keyword">if</span> new.usep  <span class="hljs-keyword">then</span> 
       <span class="hljs-keyword">if</span> is.klass(new.txt) <span class="hljs-keyword">then</span> i.klass=new <span class="hljs-keyword">end</span>
       push(is.goal(new.txt) <span class="hljs-keyword">and</span> i.ys <span class="hljs-keyword">or</span> i.xs, new) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
