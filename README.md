@@ -1,35 +1,58 @@
-<h3>L5 = A Little Light Learner Lab, in LUA</h3>   
+# SHORTR
+
 <img src=/docs/img/l5.png align=right width=400>
      
 <a
-href="https://github.com/timm/l5/actions/workflows/tests.yml"><img src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a> <a 
-href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a><br>
-<b> <a href="https://github.com/timm/l5/blob/master/LICENSE.md">&copy;2022</a> </b>, Tim Menzies, <timm@ieee.org>
+href="https://github.com/timm/l5/actions/workflows/tests.yml"><img 
+src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a 
+href="https://zenodo.org/badge/latestdoi/206205826">
+<img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
+
+Do I understand "it"?
+Can I code "it" succinctly? Using simple tools and a minimal set of data 
+structure and algorithms? Does "it" do the minimum work  (so"it" runs fast)?
+ Can I explain "it" to you, quickly and successfully? And does "it" generalize
+(so "it" is not a one-off hack)?<p>Let's check. Please review my code.   
+This is  a multi-objective semi-supervised explanation tool,
+all in under 400 lines of code
+ (most of which is background stuff that could be used for other learners).    
+
+
+Share and enjoy!<hr>  
  
-[Contribute](CONTRIBUTE.md) | [Github](http://github.com/timm/l5)<br> 
-     
-Write the _most_ learners in the _least_ code.
-Each learner should be few lines of code (since they share an 
-underlying code base).  
-     
-Why LUA? Four reasons. 
+__Mother Teresa:__   
+<img width=175 align=left src=docs/img/cup.png> 
+"The more you have, the more you are occupied.
+The less you have, the more free you are.
 
-__ONE__:<br>LUA supports simple teaching
-(less than 2 dozen keywords). Heck, children use it to code up their own games.
+__Ken Thompson:__        
+"One of my most productive days was throwing 
+away 1,000 lines of code."
 
-__TWO__:<br>LUA supports many advanced programming
-techniques (first class
-objects, functional programming, etc) without  (**L**ots of (**I**nfuriating (**S**illy
-(**P**arenthesis)))).  For example, the entire object system used here is just five lines of code
-(see **is()**). 
+__William of Occam:__      
+"It is vain to do with more what can be done with less."
 
-__THREE__:<br>The other great secret is that, at their core, many of these
-learners is essential simple. So by coding up those algorithms, in just a few
-lines of LUA, we are teaching students that AI is something they can understand
-and improve.
-   
-__FOUR__:<br>This code is a succinct executable specification that demonstrates 
-numerous recommended coding practices (for learning and for scripting).
-It supports my standard assignment is "here is  a worked solution,
-now code it up in any other language". So I can give students a worked solution,
-and then can still code in their language du jour.
+__Donald Knuth:__     
+"It is much more rewarding to do more with less."
+
+__Leonardo da Vinci:__       
+"Simplicity is the ultimate sophistication."
+
+__Edsger Dijkstra:__        
+"Simplicity is prerequisite for reliability."
+
+__Dieter Ram:__       
+"Less, but better."
+
+__timm:__     
+"plz, less"
+
+<hr> 
+
+Role models  (whose code challenges me to write less, but better):   
+[Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
+| [Hilary Mason](https://boingboing.net/2017/06/30/next-level-regexp.html)
+| [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)  
+  [Peter Norvig](http://norvig.com/lispy.html)
+| [Joel Grus](https://github.com/joelgrus/data-science-from-scratch)
+| [Paul Graham](http://www.paulgraham.com/onlisp.html)
