@@ -18,7 +18,7 @@ function lib.cli(t,help)
       if flag==("-"..key:sub(1,1)) or flag==("--"..key) then 
          x= x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
     t[key] = lib.read(x) end 
-  if t.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;31m%1\27[0m"))) end
+  if t.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;31m%1\27[0m"),"")) end
   return t end
 
 function lib.csv(csvfile) 
@@ -65,7 +65,7 @@ function lib.normpdf(x, mu, sd,      denom,nom)
  return sd==0 and (x==mu and 1 or 0) or
    math.exp(-1*(x - mu)^2/(2*sd^2)) * 1 / (sd * ((2*math.pi)^0.5)) end
 
-function lib.oo(i) print(lib.str(i)) end
+function lib.oo(i) print(lib.str(i)); return i end
 
 function lib.pop(t)  return table.remove(t) end
 

@@ -92,10 +92,10 @@ h3,h4,h5,h6 {text-align:right;}
 
 hr {
   border: 0;
-  background: 1px #ddd;
+  background: 1px rgb(15,25,68);
   height: 1px;
-  margin: 20px 0;
-  margin-color: #000080;
+  xmargin: 20px 0;
+  margin-color: rgb(15,25,68); 
 }
 
 pre, tt, code {

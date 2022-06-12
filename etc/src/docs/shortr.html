@@ -28,12 +28,12 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/l5">Fork me on GitHub</a></span>
-Do I understand “it”? Let’s check.<p>
-Can I code “it” succinctly? Does “it” do the minimum work
-(so “it” runs faster)? Can I explain “it” to you, quickly
-and successfully?  And if I did all that, can you do “it”
-easier and adapt “it”, as required, for different purposes?<hr></p>
-<p><strong>Mother Teresa:</strong><br><img width=150 align=left src=cup.png>
+Do I understand “it”?
+Can I code “it” succinctly? Using simple tools and a minimal set of data 
+structure and algorithms? Does “it” do the minimum work  (so”it” runs fast)?
+ Can I explain “it” to you, quickly and successfully? And does “it” generalize
+(so “it” is not a one-off hack)?<p>Let’s check …<hr></p>
+<p><strong>Mother Teresa:</strong><br><img width=175 align=left src=cup.png>
 The more you have, the more you are occupied.
 The less you have, the more free you are.<p>
 <strong>Ken Thompson:</strong><br>One of my most productive days was throwing 
@@ -43,14 +43,18 @@ away 1,000 lines of code.<p>
 <strong>Edsger D. Dijkstra:</strong><br>Simplicity is prerequisite for reliability.<p>
 <strong>Dieter Ram:</strong><br>Less, but better.<p>
 <strong>timm:</strong><br>plz, less<p>
-Other examples of “write-less-code”:<br><a href="https://www.youtube.com/watch?v=o9pEzgHorH0">Jack Diederich</a> 
+Other proponents of “write-less-code”:<br><a href="https://www.youtube.com/watch?v=o9pEzgHorH0">Jack Diederich</a> 
 | <a href="https://boingboing.net/2017/06/30/next-level-regexp.html">Hilary Mason</a>
-| <a href="https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html">Brian Kernighan</a>
-| <a href="http://norvig.com/lispy.html">Peter Norvig</a><p>   </p>
+| <a href="https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html">Brian Kernighan</a><br>
+<a href="http://norvig.com/lispy.html">Peter Norvig</a>
+| <a href="https://github.com/joelgrus/data-science-from-scratch">Joel Grus</a>
+| <a href="http://www.paulgraham.com/onlisp.html">Paul Graham</a></p>
+<p>   
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> help= <span class="hljs-string">[[
+
 SHORTR: semi-supervised multi-objective optimization
 (c) 2022 Tim Menzies &lt;timm@ieee.org&gt; BSD2 license
 
@@ -58,19 +62,19 @@ USAGE:
   lua shortr.lua [OPTIONS]
 
 OPTIONS:
-  -b  --Bins   max number of bins        = 16
-  -F  --Few    only keep a &quot;Few&quot; numbers = 256
-  -k  --k      handle rare classes       =  1  
-  -m  --m      handle rare attributes    =  2
-  -p  --p      distance coefficient      =  2
-  -S  --small  small leaf size           = .5
-  -w  --wait   wait before classifying   =  
+  -F  --Few    only keep a &quot;Few&quot; numbers  =  256
+  -S  --small  small leaf size            =  .5
+  -b  --Bins   max number of bins         =  16
+  -k  --k      handle rare classes        =   1
+  -m  --m      handle rare attributes     =   2
+  -p  --p      distance coefficient       =   2
+  -w  --wait   wait before classifying    =  10
 
 OPTIONS (other):
-  -f  --file   file           = ../../data/auto93.csv
-  -g  --go     start-up goal  = nothing
-  -h  --help   show help      = false
-  -s  --seed   seed           = 10019]]</span></pre></div></div>
+  -f  --file   file           =  ../../data/auto93.csv
+  -g  --go     start-up goal  =  nothing
+  -h  --help   show help      =  false
+  -s  --seed   seed           =  10019]]</span></pre></div></div>
             
         </li>
         
@@ -99,9 +103,9 @@ OPTIONS (other):
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _ = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
-<span class="hljs-keyword">local</span> argmax,big                  = _.argmax, _.big
-<span class="hljs-keyword">local</span> cli,csv,demos,klass,normpdf = _.cli,    _.csv,  _.demos,_.klass, _.normpdf
-<span class="hljs-keyword">local</span> oo,push,<span class="hljs-built_in">read</span>,rnd,same,str   = _.oo,     _.push, _.<span class="hljs-built_in">read</span>, _.rnd,_same,_.str</pre></div></div>
+<span class="hljs-keyword">local</span> argmax,big                     = _.argmax,_.big
+<span class="hljs-keyword">local</span> cli,csv,demos,klass,normpdf    = _.cli,_.csv,_.demos,_.klass, _.normpdf
+<span class="hljs-keyword">local</span> oo,push,rand,<span class="hljs-built_in">read</span>,rnd,same,str = _.oo,_.push,_.rand,_.<span class="hljs-built_in">read</span>,_.rnd,_same,_.str</pre></div></div>
             
         </li>
         
@@ -146,8 +150,8 @@ help:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot; [-
 <li>ROWS use COLS to make either NUMs or SYMs.  </li>
 <li>ROWS holds data in ROWs, and summarizes columns in NUMs and SYMs.  </li>
 <li>There are two helper classes:<ul>
-<li>NUMs use SOMEs to store at most <code>THE.Few</code> samples per numeric columns.   </li>
-<li>RANGE objects track what <code>y</code> values are seen between <code>xlo</code> and <code>xhi</code>.</li>
+<li>NUMs use SOMEs to keep up to <code>THE.Few</code> nums per columns.   </li>
+<li>RANGE objects track what <code>y</code> was seen from <code>xlo</code> to <code>xhi</code>.</li>
 </ul>
 </li>
 <li>NB is a bayes classifier built from these sub-routunes.</li>
@@ -249,11 +253,12 @@ and all other columns are stored in <code>xs</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">COLS.new</span><span class="hljs-params">(i,t,     new,is)</span></span>
-  i.xs, i.ys, i.names = {},{},{},t
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">COLS.new</span><span class="hljs-params">(i,t,     new)</span></span>
+  i.xs, i.ys, i.names = {},{},t
   <span class="hljs-keyword">for</span> at,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span>
-    new = (is.nump(txt) <span class="hljs-keyword">and</span> NUM <span class="hljs-keyword">or</span> SYM)(at,txt)
-    new.usep,  new.w = is.use(txt), is.dislike(txt) <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>
+    new = (is.num(txt) <span class="hljs-keyword">and</span> NUM <span class="hljs-keyword">or</span> SYM)()
+    new.txt,  new.at = txt, at
+    new.usep, new.w  = is.use(txt), (is.dislike(txt) <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)
     <span class="hljs-keyword">if</span> new.usep  <span class="hljs-keyword">then</span> 
       <span class="hljs-keyword">if</span> is.klass(new.txt) <span class="hljs-keyword">then</span> i.klass=new <span class="hljs-keyword">end</span>
       push(is.goal(new.txt) <span class="hljs-keyword">and</span> i.ys <span class="hljs-keyword">or</span> i.xs, new) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
@@ -316,7 +321,7 @@ and all other columns are stored in <code>xs</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SOME.new</span><span class="hljs-params">(i)</span></span> i.n,i.t,i.ok=<span class="hljs-number">0</span>,{},<span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SOME.new</span><span class="hljs-params">(i)</span></span> i.n,i.t,i.ok = <span class="hljs-number">0</span>,{},<span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -327,7 +332,7 @@ and all other columns are stored in <code>xs</code>.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-16">&#x00a7;</a>
               </div>
-              <p><strong>.add(  x:any  )</strong><br>
+              <p><strong>.add(  <code>x</code>:any  )</strong><br>
 Technically, this is a reservoir sampler; i.e. given a small cache,
 sample at an equal (but low) probability across  a much larger  space.
 Note one trick: If we full, make space by replacing anything at all.</p>
@@ -336,9 +341,9 @@ Note one trick: If we full, make space by replacing anything at all.</p>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SOME.add</span><span class="hljs-params">(i,x)</span></span>
   <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
-  i.n=i.n+<span class="hljs-number">1</span> 
-  <span class="hljs-keyword">if</span>     #i.t   &lt; THE.some     <span class="hljs-keyword">then</span> i.ok=<span class="hljs-literal">false</span>; push(i.t,x)  
-  <span class="hljs-keyword">elseif</span> rand() &lt; THE.some/i.n <span class="hljs-keyword">then</span> i.ok=<span class="hljs-literal">false</span>; i.t[rand(#i.t)]=x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+  i.n = i.n + <span class="hljs-number">1</span> 
+  <span class="hljs-keyword">if</span>     #i.t   &lt; THE.Few     <span class="hljs-keyword">then</span> i.ok=<span class="hljs-literal">false</span>; push(i.t,x)  
+  <span class="hljs-keyword">elseif</span> rand() &lt; THE.Few/i.n <span class="hljs-keyword">then</span> i.ok=<span class="hljs-literal">false</span>; i.t[rand(#i.t)]=x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -872,16 +877,15 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.new</span><span class="hljs-params">(i,src,report,             row)</span></span>
-  report = report <span class="hljs-keyword">or</span> <span class="hljs-built_in">print</span>
   i.overall, i.dict, i.list  = <span class="hljs-literal">nil</span>, {}, {}
-  doRows(src,  <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row,   k)</span></span> 
-    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.overall <span class="hljs-keyword">then</span> i.overall = ROWS(row) <span class="hljs-keyword">else</span>  <span class="hljs-comment">-- (0) eat row1</span>
-      row = i.overall:add(row)                  <span class="hljs-comment">-- add to overall </span>
+  doRows(src, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row,   k)</span></span> 
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.overall <span class="hljs-keyword">then</span> i.overall = ROWS(row) <span class="hljs-keyword">else</span> <span class="hljs-comment">-- (0) eat row1</span>
+      row = i.overall:add(row)                       <span class="hljs-comment">-- add to overall </span>
       <span class="hljs-keyword">if</span> #i.overall.rows &gt; THE.wait <span class="hljs-keyword">then</span> report(row:klass(), i:guess(row)) <span class="hljs-keyword">end</span>
-      i:train(row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>                 <span class="hljs-comment">-- add tp rows&#x27;s klass</span>
+      i:train(row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>                      <span class="hljs-comment">-- add tp rows&#x27;s klass</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.train</span><span class="hljs-params">(i,row,      k)</span></span> 
-  k=row:klass()
+  k = row:klass()
   i.dict[k] = i.dict[k] <span class="hljs-keyword">or</span> push(i.list,i.overall:clone()) <span class="hljs-comment">-- klass is known</span>
   i.dict[k].txt = k                            <span class="hljs-comment">-- each klass knows its name</span>
   i.dict[k]:add(row) <span class="hljs-keyword">end</span>                       <span class="hljs-comment">-- update klass with row</span>
@@ -1000,21 +1004,9 @@ map(listOrRanges, function(rows) return withins(rows) end) end
                 <a class="ss" href="#section-54">&#x00a7;</a>
               </div>
               <h2 id="class-range">class RANGE</h2>
+<p> RANGE objects track what <code>y</code> was seen from <code>xlo</code> to <code>xhi</code>.</p>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.new</span><span class="hljs-params">(i, xlo, xhi, ys)</span></span> i.xlo,i.xhi,i.ys,i.rows = xlo,xhi,ys,{} <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.add</span><span class="hljs-params">(i,x,y)</span></span>
-  <span class="hljs-keyword">if</span> x &lt; i.xlo <span class="hljs-keyword">then</span> i.xlo = x <span class="hljs-keyword">end</span> <span class="hljs-comment">-- works for string or num</span>
-  <span class="hljs-keyword">if</span> x &gt; i.xhi <span class="hljs-keyword">then</span> i.xhi = x <span class="hljs-keyword">end</span> <span class="hljs-comment">-- works for string or num</span>
-  i.ys:add(y) <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.__tostring</span><span class="hljs-params">(i)</span></span>
-  <span class="hljs-keyword">local</span> x, lo, hi = i.ys.txt, i.xlo, i.xhi
-  <span class="hljs-keyword">if</span>     lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x, lo)  
-  <span class="hljs-keyword">elseif</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt; %s&quot;</span>,x, lo)  
-  <span class="hljs-keyword">elseif</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s&quot;</span>, x, hi)  
-  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s &lt;= %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -1025,9 +1017,11 @@ map(listOrRanges, function(rows) return withins(rows) end) end
               <div class="sswrap ">
                 <a class="ss" href="#section-55">&#x00a7;</a>
               </div>
-              <hr>
+              <p><strong>RANGE(  <code>xlo</code>  :number,  <code>xhi</code>  :number,  <code>yes</code>  :(NUM|SYM)  )</strong><br>constructor;</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.new</span><span class="hljs-params">(i, xlo, xhi, ys)</span></span> i.xlo,i.xhi,i.ys,i.rows = xlo,xhi,ys,{} <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -1037,6 +1031,57 @@ map(listOrRanges, function(rows) return withins(rows) end) end
               
               <div class="sswrap ">
                 <a class="ss" href="#section-56">&#x00a7;</a>
+              </div>
+              <p><strong>RANGE(  <code>x</code>  :number,  <code>y</code>  :number  )</strong><br>extend range to cover <code>x</code>;<br>and add <code>y</code> to the y-values seen so far.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.add</span><span class="hljs-params">(i,x,y)</span></span>
+  <span class="hljs-keyword">if</span> x &lt; i.xlo <span class="hljs-keyword">then</span> i.xlo = x <span class="hljs-keyword">end</span> <span class="hljs-comment">-- works for string or num</span>
+  <span class="hljs-keyword">if</span> x &gt; i.xhi <span class="hljs-keyword">then</span> i.xhi = x <span class="hljs-keyword">end</span> <span class="hljs-comment">-- works for string or num</span>
+  i.ys:add(y) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-57">&#x00a7;</a>
+              </div>
+              <p><strong>.__tostring()  :string</strong><br>pretty print;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.__tostring</span><span class="hljs-params">(i)</span></span>
+  <span class="hljs-keyword">local</span> x, lo, hi = i.ys.txt, i.xlo, i.xhi
+  <span class="hljs-keyword">if</span>     lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x, lo)  
+  <span class="hljs-keyword">elseif</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt; %s&quot;</span>,x, lo)  
+  <span class="hljs-keyword">elseif</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s&quot;</span>, x, hi)  
+  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s &lt;= %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-58">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-59">&#x00a7;</a>
               </div>
               <h2 id="tests">Tests</h2>
 
@@ -1064,9 +1109,6 @@ map(listOrRanges, function(rows) return withins(rows) end) end
   doRows(THE.file,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(t)</span></span> <span class="hljs-keyword">if</span> rows <span class="hljs-keyword">then</span> rows:add(t)  <span class="hljs-keyword">else</span> rows=ROWS(t) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>) 
   <span class="hljs-keyword">return</span> rnd(rows.cols.ys[<span class="hljs-number">1</span>].sd,<span class="hljs-number">0</span>)==<span class="hljs-number">847</span> <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.nb</span><span class="hljs-params">()</span></span> 
-  <span class="hljs-keyword">return</span> <span class="hljs-number">268</span> == #NB(<span class="hljs-string">&quot;../../data/diabetes.csv&quot;</span>).dict[<span class="hljs-string">&quot;positive&quot;</span>].rows  <span class="hljs-keyword">end</span>
-
 <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_classify</span><span class="hljs-params">(file)</span></span> 
   <span class="hljs-keyword">local</span> Abcd=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;abcd&quot;</span>
   <span class="hljs-keyword">local</span> abcd=Abcd()
@@ -1074,17 +1116,17 @@ map(listOrRanges, function(rows) return withins(rows) end) end
   abcd:pretty(abcd:report())
   <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.soybean</span><span class="hljs-params">()</span></span> <span class="hljs-keyword">return</span> _classify(<span class="hljs-string">&quot;../../data/soybean.csv&quot;</span>) <span class="hljs-keyword">end</span> 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.soybean</span><span class="hljs-params">()</span></span>  <span class="hljs-keyword">return</span> _classify(<span class="hljs-string">&quot;../../data/soybean.csv&quot;</span>) <span class="hljs-keyword">end</span> 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.diabetes</span><span class="hljs-params">()</span></span> <span class="hljs-keyword">return</span> _classify(<span class="hljs-string">&quot;../../data/diabetes.csv&quot;</span>) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-57">
+        <li id="section-60">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-57">&#x00a7;</a>
+                <a class="ss" href="#section-60">&#x00a7;</a>
               </div>
               <hr>
 
@@ -1093,11 +1135,11 @@ map(listOrRanges, function(rows) return withins(rows) end) end
         </li>
         
         
-        <li id="section-58">
+        <li id="section-61">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-58">&#x00a7;</a>
+                <a class="ss" href="#section-61">&#x00a7;</a>
               </div>
               <h2 id="start">Start</h2>
 

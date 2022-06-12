@@ -1,12 +1,12 @@
 local lib=require"lib"
-local is  = lib.is
+local klass  = lib.klass
 
 local fmt = string.format
 local function inc(f,a,n) f=f or {};f[a]=(f[a] or 0) + (n or 1) return f end
 local function slots(t, u)
   u={}; for k,v in pairs(t) do u[1+#u]=k end; return lib.sort(u) end
 
-local ABCD = is"ABCD"
+local ABCD = klass"ABCD"
 function ABCD.new(i,data,rx) 
   i.data, i.rx = data or "", rx or ""
   i.yes, i.no  = 0,0

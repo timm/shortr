@@ -1,12 +1,12 @@
 -- <span id="forkongithub"><a href="https://github.com/timm/l5">Fork me on GitHub</a></span>
--- Do I understand "it"? Let's check.<p>
--- Can I code "it" succinctly? Does "it" do the minimum work
--- (so "it" runs faster)? Can I explain "it" to you, quickly
--- and successfully?  And if I did all that, can you do "it"
--- easier and adapt "it", as required, for different purposes?<hr>
---
+-- Do I understand "it"?
+-- Can I code "it" succinctly? Using simple tools and a minimal set of data 
+-- structure and algorithms? Does "it" do the minimum work  (so"it" runs fast)?
+--  Can I explain "it" to you, quickly and successfully? And does "it" generalize
+-- (so "it" is not a one-off hack)?<p>Let's check ...<hr>
+--  
 -- __Mother Teresa:__   
--- <img width=150 align=left src=cup.png>
+-- <img width=175 align=left src=cup.png>
 -- The more you have, the more you are occupied.
 -- The less you have, the more free you are.<p>
 -- __Ken Thompson:__     
@@ -22,11 +22,16 @@
 -- Less, but better.<p>
 -- __timm:__    
 -- plz, less<p>
--- Other examples of "write-less-code":<br>[Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
+-- Other proponents of "write-less-code":   
+-- [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
 -- | [Hilary Mason](https://boingboing.net/2017/06/30/next-level-regexp.html)
--- | [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
--- | [Peter Norvig](http://norvig.com/lispy.html)<p>   
+-- | [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)<br>
+-- [Peter Norvig](http://norvig.com/lispy.html)
+-- | [Joel Grus](https://github.com/joelgrus/data-science-from-scratch)
+-- | [Paul Graham](http://www.paulgraham.com/onlisp.html)
+--<p>   
 local help= [[
+
 SHORTR: semi-supervised multi-objective optimization
 (c) 2022 Tim Menzies <timm@ieee.org> BSD2 license
 
@@ -34,25 +39,25 @@ USAGE:
   lua shortr.lua [OPTIONS]
 
 OPTIONS:
-  -b  --Bins   max number of bins        = 16
-  -F  --Few    only keep a "Few" numbers = 256
-  -k  --k      handle rare classes       =  1  
-  -m  --m      handle rare attributes    =  2
-  -p  --p      distance coefficient      =  2
-  -S  --small  small leaf size           = .5
-  -w  --wait   wait before classifying   =  
+  -F  --Few    only keep a "Few" numbers  =  256
+  -S  --small  small leaf size            =  .5
+  -b  --Bins   max number of bins         =  16
+  -k  --k      handle rare classes        =   1
+  -m  --m      handle rare attributes     =   2
+  -p  --p      distance coefficient       =   2
+  -w  --wait   wait before classifying    =  10
 
 OPTIONS (other):
-  -f  --file   file           = ../../data/auto93.csv
-  -g  --go     start-up goal  = nothing
-  -h  --help   show help      = false
-  -s  --seed   seed           = 10019]]
+  -f  --file   file           =  ../../data/auto93.csv
+  -g  --go     start-up goal  =  nothing
+  -h  --help   show help      =  false
+  -s  --seed   seed           =  10019]]
 --------------------------------------------------------------------------------
 -- ## Names
 local _ = require"lib"
-local argmax,big                  = _.argmax, _.big
-local cli,csv,demos,klass,normpdf = _.cli,    _.csv,  _.demos,_.klass, _.normpdf
-local oo,push,read,rnd,same,str   = _.oo,     _.push, _.read, _.rnd,_same,_.str
+local argmax,big                     = _.argmax,_.big
+local cli,csv,demos,klass,normpdf    = _.cli,_.csv,_.demos,_.klass, _.normpdf
+local oo,push,rand,read,rnd,same,str = _.oo,_.push,_.rand,_.read,_.rnd,_same,_.str
 
 -- `THE` settings is parsed from `help` 
 -- string lines that contain two dashes&nbsp;"`--`".
@@ -63,8 +68,8 @@ help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) THE[key] = read(x) e
 -- - ROWS use COLS to make either NUMs or SYMs.  
 -- - ROWS holds data in ROWs, and summarizes columns in NUMs and SYMs.  
 -- - There are two helper classes:
---   - NUMs use SOMEs to store at most `THE.Few` samples per numeric columns.   
---   - RANGE objects track what `y` values are seen between `xlo` and `xhi`.
+--   - NUMs use SOMEs to keep up to `THE.Few` nums per columns.   
+--   - RANGE objects track what `y` was seen from `xlo` to `xhi`.
 -- - NB is a bayes classifier built from these sub-routunes.
 local ROWS, COLS, NUM, SYM = klass"ROWS",  klass"COLS",  klass"NUM", klass"SYM"
 local ROW = klass"ROW"
@@ -103,11 +108,12 @@ function is.dislike(x) return x:find"-$"     end
 --     ...
 
 -- __COLS(  `t`  :[string] )__<br>constructor.
-function COLS.new(i,t,     new,is)
-  i.xs, i.ys, i.names = {},{},{},t
+function COLS.new(i,t,     new)
+  i.xs, i.ys, i.names = {},{},t
   for at,txt in pairs(t) do
-    new = (is.nump(txt) and NUM or SYM)(at,txt)
-    new.usep,  new.w = is.use(txt), is.dislike(txt) and -1 or 1
+    new = (is.num(txt) and NUM or SYM)()
+    new.txt,  new.at = txt, at
+    new.usep, new.w  = is.use(txt), (is.dislike(txt) and -1 or 1)
     if new.usep  then 
       if is.klass(new.txt) then i.klass=new end
       push(is.goal(new.txt) and i.ys or i.xs, new) end end end
@@ -122,16 +128,16 @@ function COLS.add(i,t)
 -- NUMs use SOMEs to store at most `THE.Few` samples per numeric columns. 
 
 -- __SOME()__<br>constructor.
-function SOME.new(i) i.n,i.t,i.ok=0,{},true end
+function SOME.new(i) i.n,i.t,i.ok = 0,{},true end
 -- __.add(  `x`:any  )__<br>
 -- Technically, this is a reservoir sampler; i.e. given a small cache,
 -- sample at an equal (but low) probability across  a much larger  space.
 -- Note one trick: If we full, make space by replacing anything at all.
 function SOME.add(i,x)
   if x=="?" then return x end
-  i.n=i.n+1 
-  if     #i.t   < THE.some     then i.ok=false; push(i.t,x)  
-  elseif rand() < THE.some/i.n then i.ok=false; i.t[rand(#i.t)]=x end end 
+  i.n = i.n + 1 
+  if     #i.t   < THE.Few     then i.ok=false; push(i.t,x)  
+  elseif rand() < THE.Few/i.n then i.ok=false; i.t[rand(#i.t)]=x end end 
 -- __.all()  :table__<br>If we ask for `.all()`, then make sure they are sorted.
 function SOME.all(i) i.t=i.ok and i.t or sort(i.t); i.ok=true; return i.t end
 --------------------------------------------------------------------------------
@@ -250,16 +256,15 @@ local function doRows(src, fun)
 -- After that (1) add row to `overall` and (2) ROWS about this row's klass.       
 -- (3) After `wait` rows, classify row BEFORE updating training knowledge
 function NB.new(i,src,report,             row)
-  report = report or print
   i.overall, i.dict, i.list  = nil, {}, {}
-  doRows(src,  function(row,   k) 
-    if not i.overall then i.overall = ROWS(row) else  -- (0) eat row1
-      row = i.overall:add(row)                  -- add to overall 
+  doRows(src, function(row,   k) 
+    if not i.overall then i.overall = ROWS(row) else -- (0) eat row1
+      row = i.overall:add(row)                       -- add to overall 
       if #i.overall.rows > THE.wait then report(row:klass(), i:guess(row)) end
-      i:train(row) end end) end                 -- add tp rows's klass
+      i:train(row) end end) end                      -- add tp rows's klass
 
 function NB.train(i,row,      k) 
-  k=row:klass()
+  k = row:klass()
   i.dict[k] = i.dict[k] or push(i.list,i.overall:clone()) -- klass is known
   i.dict[k].txt = k                            -- each klass knows its name
   i.dict[k]:add(row) end                       -- update klass with row
@@ -333,12 +338,19 @@ function _merge(b4,min)
   return t end
 --------------------------------------------------------------------------------
 -- ## class RANGE
+--  RANGE objects track what `y` was seen from `xlo` to `xhi`.
+
+-- __RANGE(  `xlo`  :number,  `xhi`  :number,  `yes`  :(NUM|SYM)  )__<br>constructor;
 function RANGE.new(i, xlo, xhi, ys) i.xlo,i.xhi,i.ys,i.rows = xlo,xhi,ys,{} end
+
+-- __RANGE(  `x`  :number,  `y`  :number  )__<br>extend range to cover `x`;   
+-- and add `y` to the y-values seen so far.
 function RANGE.add(i,x,y)
   if x < i.xlo then i.xlo = x end -- works for string or num
   if x > i.xhi then i.xhi = x end -- works for string or num
   i.ys:add(y) end
 
+-- __.\_\_tostring()  :string__<br>pretty print;
 function RANGE.__tostring(i)
   local x, lo, hi = i.ys.txt, i.xlo, i.xhi
   if     lo ==  hi  then return fmt("%s == %s",x, lo)  
@@ -369,9 +381,6 @@ function go.rows(    rows)
   doRows(THE.file,function(t) if rows then rows:add(t)  else rows=ROWS(t) end end) 
   return rnd(rows.cols.ys[1].sd,0)==847 end
 
-function go.nb() 
-  return 268 == #NB("../../data/diabetes.csv").dict["positive"].rows  end
-
 local function _classify(file) 
   local Abcd=require"abcd"
   local abcd=Abcd()
@@ -379,7 +388,7 @@ local function _classify(file)
   abcd:pretty(abcd:report())
   return true end
 
-function go.soybean() return _classify("../../data/soybean.csv") end 
+function go.soybean()  return _classify("../../data/soybean.csv") end 
 function go.diabetes() return _classify("../../data/diabetes.csv") end 
 --------------------------------------------------------------------------------
 -- ## Start
