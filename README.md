@@ -1,5 +1,5 @@
-<img src="/docs/img/l5.png" align=right width=400>
 
+<img width=300 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 # SHORTR
 
 
@@ -21,7 +21,6 @@ all in under 400 lines of code
 
 Share and enjoy!<hr>  
  
-<img width=175 align=right src=docs/img/cup.png> 
 
 __Mother Teresa:__   
 "The more you have, the more you are occupied.
