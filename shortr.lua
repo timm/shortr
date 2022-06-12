@@ -1,7 +1,7 @@
--- <span id="forkongithub"><a href="https://github.com/timm/l5">Fork me on GitHub</a></span>
+-- <span id="forkongithub"><a href="https://github.com/timm/shortr">Fork me on GitHub</a></span>
 -- <a
--- href="https://github.com/timm/l5/actions/workflows/tests.yml"><img 
--- src="https://github.com/timm/l5/actions/workflows/tests.yml/badge.svg"></a><br><a 
+-- href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img 
+-- src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br><a 
 -- href="https://zenodo.org/badge/latestdoi/206205826">
 -- <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 -- 
