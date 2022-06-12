@@ -32,7 +32,7 @@
 -- "It is much more rewarding to do more with less." <p>
 -- __Leonardo da Vinci:__    
 -- "Simplicity is the ultimate sophistication."<p>
--- __Edsger D. Dijkstra:__    
+-- __Edsger Dijkstra:__    
 -- "Simplicity is prerequisite for reliability."<p>
 -- __Dieter Ram:__    
 -- "Less, but better."<p>
