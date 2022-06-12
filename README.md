@@ -16,9 +16,7 @@ structure and algorithms? Does "it" do the minimum work  (so"it" runs fast)?
  Can I explain "it" to you, quickly and successfully? And does "it" generalize
 (so "it" is not a one-off hack)?
 
-Let's check. Please review my code.  
-This is  a multi-objective semi-supervised explanation tool.
-The code:
+Let's check. Please review my code. This is  a multi-objective semi-supervised explanation tool. The code:
 
 - explores N points via  O(log2(N)) evaluations. 
 - Generates a human-readable summary of that space. 
