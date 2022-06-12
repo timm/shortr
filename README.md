@@ -7,7 +7,7 @@
 
 <a
 href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img 
-src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br><a 
+src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a> <a 
 href="https://zenodo.org/badge/latestdoi/206205826">
 <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 
