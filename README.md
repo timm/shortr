@@ -24,12 +24,10 @@ Share and enjoy!<hr>
  
 
 __Mother Teresa:__   
-"The more you have, the more you are occupied.
-The less you have, the more free you are.
+"The more you have, the more you are occupied. The less you have, the more free you are."
 
 __Ken Thompson:__        
-"One of my most productive days was throwing 
-away 1,000 lines of code."
+"One of my most productive days was throwing away 1,000 lines of code."
 
 __William of Occam:__      
 "It is vain to do with more what can be done with less."
