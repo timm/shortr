@@ -628,7 +628,7 @@ of symbols seen so far.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.mid</span><span class="hljs-params">(i,...)</span></span>      <span class="hljs-keyword">return</span> i.mode <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.mid</span><span class="hljs-params">(i,...)</span></span>  <span class="hljs-keyword">return</span> i.mode <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -858,7 +858,7 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
               <div class="sswrap ">
                 <a class="ss" href="#section-49">&#x00a7;</a>
               </div>
-              <hr>
+              <h2 id="decision-or-regression-tree">Decision (or Regression) Tree</h2>
 
             </div>
             
@@ -870,19 +870,6 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
               
               <div class="sswrap ">
                 <a class="ss" href="#section-50">&#x00a7;</a>
-              </div>
-              <h2 id="decision-or-regression-tree">Decision (or Regression) Tree</h2>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-51">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-51">&#x00a7;</a>
               </div>
               <p><strong>.tree(  <code>listOrRows</code>  :{{ROW}}  )  :ROW</strong><br>return root of decision or regression tree;</p>
 
@@ -897,11 +884,11 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
         </li>
         
         
-        <li id="section-52">
+        <li id="section-51">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-52">&#x00a7;</a>
+                <a class="ss" href="#section-51">&#x00a7;</a>
               </div>
               <p><strong>.treeGrow(  <code>xcols</code>  :{NUM|SYM},  <code>y</code>  :function  )  :ROW</strong><br>return root of decision or regression tree;</p>
 
@@ -923,11 +910,11 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
         </li>
         
         
-        <li id="section-53">
+        <li id="section-52">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-53">&#x00a7;</a>
+                <a class="ss" href="#section-52">&#x00a7;</a>
               </div>
               <p><strong>.show(  <code>pre</code>  :string,   ?<code>show</code>  :function)</strong><br>pretty print;</p>
 
@@ -942,11 +929,11 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
         </li>
         
         
-        <li id="section-54">
+        <li id="section-53">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-54">&#x00a7;</a>
+                <a class="ss" href="#section-53">&#x00a7;</a>
               </div>
               <hr>
 
@@ -955,11 +942,11 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
         </li>
         
         
-        <li id="section-55">
+        <li id="section-54">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-55">&#x00a7;</a>
+                <a class="ss" href="#section-54">&#x00a7;</a>
               </div>
               <h2 id="class-nb">class NB</h2>
 <p>(0) Use row1 to initial our <code>overall</code> knowledge of all rows.<br>After that (1) add row to <code>overall</code> and (2) ROWS about this row’s klass.<br>(3) After <code>wait</code> rows, classify row BEFORE updating training knowledge</p>
@@ -987,13 +974,27 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
         </li>
         
         
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-55">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
         <li id="section-56">
             <div class="annotation">
               
               <div class="sswrap ">
                 <a class="ss" href="#section-56">&#x00a7;</a>
               </div>
-              <hr>
+              <h2 id="class-range">class RANGE</h2>
+<p> RANGE objects track what <code>y</code> was seen from <code>xlo</code> to <code>xhi</code>. </p>
 
             </div>
             
@@ -1006,20 +1007,6 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
               <div class="sswrap ">
                 <a class="ss" href="#section-57">&#x00a7;</a>
               </div>
-              <h2 id="class-range">class RANGE</h2>
-<p> RANGE objects track what <code>y</code> was seen from <code>xlo</code> to <code>xhi</code>.</p>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-58">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-58">&#x00a7;</a>
-              </div>
               <p><strong>RANGE(  <code>xlo</code>  :number,  <code>xhi</code>  :number,  <code>yes</code>  :(NUM|SYM)  )</strong><br>constructor;</p>
 
             </div>
@@ -1029,11 +1016,11 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
         </li>
         
         
-        <li id="section-59">
+        <li id="section-58">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-59">&#x00a7;</a>
+                <a class="ss" href="#section-58">&#x00a7;</a>
               </div>
               <p><strong>RANGE(  <code>x</code>  :number,  <code>y</code>  :number  )</strong><br>extend range to cover <code>x</code>;<br>and add <code>y</code> to the y-values seen so far.</p>
 
@@ -1047,11 +1034,11 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
         </li>
         
         
-        <li id="section-60">
+        <li id="section-59">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-60">&#x00a7;</a>
+                <a class="ss" href="#section-59">&#x00a7;</a>
               </div>
               <p><strong>.__tostring()  :string</strong><br>pretty print;</p>
 
@@ -1062,10 +1049,53 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
   <span class="hljs-keyword">if</span>     lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x, lo)  
   <span class="hljs-keyword">elseif</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt; %s&quot;</span>,x, lo)  
   <span class="hljs-keyword">elseif</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s&quot;</span>, x, hi)  
-  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s &lt;= %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s &lt;= %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-60">&#x00a7;</a>
+              </div>
+              <h2 id="discretization-making-ranges">Discretization (making ranges)</h2>
 
-RANGE.fun = {}
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.fun.ranges</span><span class="hljs-params">(rows,xcol,yklass,y)</span></span>
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-61">&#x00a7;</a>
+              </div>
+              <p>RANGES are generated by two class methods kept in <code>RANGE.fun</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>RANGE.fun = {}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-62">&#x00a7;</a>
+              </div>
+              <p><strong>.fun.ranges(  <code>rows</code>  :{ROW},  <code>xcol</code>  :(NUM|SYM),<br><code>yclass</code>:KLASS,  <code>y</code>  :function  )  :table</strong><br>Returns a list <code>{ranges={RANGE},  div=number}</code> that scores each range.<br>Numeric ranges are first divided into groups of size <code>(hi-lo)/THE.bins</code> 
+then subsequently, – adjacent ranges are merged (see `.fun.merge). 
+Finally, each range is score by the weighted sum of its diversity.</p>
+<p>FYI,  the idiom <code>dict[pos]=dict[pos] or push(list,y)</code> maintains:<br>(a) a set of RANGEs, indexed by <code>pos</code>; and<br>(b) a list of known things, indexed one to max size.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.fun.ranges</span><span class="hljs-params">(rows,xcol,yklass,y)</span></span>
   <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
   <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span>
     <span class="hljs-keyword">local</span> v = row.cells[xcol.at]
@@ -1077,9 +1107,22 @@ RANGE.fun = {}
   list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;xlo&quot;</span>)
   list = xcol.is==<span class="hljs-string">&quot;NUM&quot;</span> <span class="hljs-keyword">and</span> _merge(list, n^THE.<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> list
   <span class="hljs-keyword">return</span> {ranges= list,
-          div   = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> z.ys:div()*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span>
+          div   = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> z.ys:div()*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-63">&#x00a7;</a>
+              </div>
+              <p><strong>.fun.merge( <code>b4</code>  :{RANGE},   <code>min</code>:number  )  :{RANGE)</strong>  </p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.fun.merge</span><span class="hljs-params">(b4,min)</span></span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.fun.merge</span><span class="hljs-params">(b4,min)</span></span>
   <span class="hljs-keyword">local</span> j,t a,b,c,ay,by,cy = <span class="hljs-number">1</span>,{}
   <span class="hljs-keyword">while</span> j &lt;= #b4 <span class="hljs-keyword">do</span> 
     a, b = b4[j], b4[j+<span class="hljs-number">1</span>]
@@ -1098,11 +1141,11 @@ RANGE.fun = {}
         </li>
         
         
-        <li id="section-61">
+        <li id="section-64">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-61">&#x00a7;</a>
+                <a class="ss" href="#section-64">&#x00a7;</a>
               </div>
               <hr>
 
@@ -1111,11 +1154,11 @@ RANGE.fun = {}
         </li>
         
         
-        <li id="section-62">
+        <li id="section-65">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-62">&#x00a7;</a>
+                <a class="ss" href="#section-65">&#x00a7;</a>
               </div>
               <h2 id="tests">Tests</h2>
 
@@ -1156,11 +1199,11 @@ RANGE.fun = {}
         </li>
         
         
-        <li id="section-63">
+        <li id="section-66">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-63">&#x00a7;</a>
+                <a class="ss" href="#section-66">&#x00a7;</a>
               </div>
               <hr>
 
@@ -1169,11 +1212,11 @@ RANGE.fun = {}
         </li>
         
         
-        <li id="section-64">
+        <li id="section-67">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-64">&#x00a7;</a>
+                <a class="ss" href="#section-67">&#x00a7;</a>
               </div>
               <h2 id="start">Start</h2>
 
