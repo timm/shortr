@@ -63,7 +63,7 @@ p {
     .annotation ul li, .annotation ol li {
       font-size: 12px;
       line-height: 13px;
-      margin: 11px 0;
+      xmargin: 11px 0;
     }
 
 h1, h2, h3, h4, h5, h6 {
@@ -81,7 +81,6 @@ h1 {
 }
 h2 {
   font-size: 2.1em;
-  color: #954121;
   margin: 10px 0 15px 0;
   xborder-top: 2px solid #ccc;
 }
@@ -93,15 +92,16 @@ h3,h4,h5,h6 {text-align:right;}
 
 hr {
   border: 0;
-  background: 1px #ddd;
+  background: 1px rgb(15,25,68);
   height: 1px;
-  margin: 20px 0;
-  margin-color: #000080;
+  xmargin: 20px 0;
+  margin-color: rgb(15,25,68); 
 }
 
 pre, tt, code {
   font-size: 12px; line-height: 15px;
-  font-family: Menlo, Monaco, Consolas, "Lucida Console", monospace;
+  xfont-family: Menlo, Monaco, Consolas, "Lucida Console", monospace;
+  font-family: Menlo,  Consolas, "Lucida Console", monospace;
   margin: 0; padding: 0;
 }
   .annotation pre {
@@ -530,3 +530,26 @@ pre .hljs-tex .hljs-formula {
   opacity: 0.5;
 }
 tr,p { line-height: 14px; }
+
+#forkongithub a { background:rgb(15,25,68);
+                  color:#fff;text-decoration:none;font-family:arial,sans-serif;
+                  text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;
+                  line-height:2rem;position:relative;transition:0.5s;}
+#forkongithub a:hover { background:#954121;color:#fff;}
+#forkongithub a::before,#forkongithub a::after { content:"";width:100%;display:block;position:absolute;
+                                                 top:1px;left:0;height:1px;background:#fff;}
+#forkongithub a::after { bottom:1px;top:auto;}
+
+@media screen and (min-width:800px){
+  #forkongithub   { position:fixed;display:block;top:0;right:0;
+                    width:200px;overflow:hidden;height:200px;z-index:9999;}
+  #forkongithub a { width:200px;position:absolute;top:60px;
+                    right:-60px;transform:rotate(45deg);
+                     -webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);
+                     -o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8); }
+}
+
+h1,h2 { color: rgb(15,25,68); }
+b, strong {
+  color: #954121;
+   }
