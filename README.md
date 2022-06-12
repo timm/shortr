@@ -18,7 +18,7 @@ structure and algorithms? Does "it" do the minimum work  (so"it" runs fast)?
 
 Let's check. Please review my code. This is  a multi-objective semi-supervised explanation tool. The code:
 
-- explores N points via  O(log2(N)) evaluations. 
+- Explores N points via  O(log2(N)) evaluations. 
 - Generates a human-readable summary of that space. 
 - In pass1, it find and eval  two distant points using multi-objective criteria. Everything nearest the  worst is pruned and we recurse on the rest.  
 - This algorithm is only approximate so, in pass2, we do it all again, starting with the better items seen in pass1.  
