@@ -30,7 +30,19 @@ All in under 400 lines of code
  (most of which is background stuff that could be used for other learners).    
 
 
-Share and enjoy!<hr>  
+Share and enjoy!
+
+<pre>
+@article{shortr22, 
+  title={timm/l5: base classes defined}, 
+  DOI={10.5281/zenodo.6607038}, 
+  abstractNote={A little lab of learners (in LUA)}, 
+  publisher={Zenodo}, 
+  author={Tim Menzies}, 
+  year={2022}, 
+  month={Jun} }
+</pre>
+<hr>  
  
 
 __Mother Teresa:__   
