@@ -20,7 +20,7 @@
 -- Share and enjoy!<hr>  
 --  
 -- __Mother Teresa:__   
--- <img width=175 align=left src=cup.png> 
+-- <img width=175 align=left src=img/cup.png> 
 -- "The more you have, the more you are occupied.
 -- The less you have, the more free you are."<p>
 -- __Ken Thompson:__     
