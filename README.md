@@ -1,8 +1,9 @@
 
 <img width=300 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
-# SHORTR
+# SHORTR.lus
 
+[code](https://menzies.us/shortr)
 
 <a
 href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img 
