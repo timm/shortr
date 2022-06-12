@@ -14,9 +14,20 @@ Do I understand "it"?
 Can I code "it" succinctly? Using simple tools and a minimal set of data 
 structure and algorithms? Does "it" do the minimum work  (so"it" runs fast)?
  Can I explain "it" to you, quickly and successfully? And does "it" generalize
-(so "it" is not a one-off hack)?<p>Let's check. Please review my code.   
-This is  a multi-objective semi-supervised explanation tool,
-all in under 400 lines of code
+(so "it" is not a one-off hack)?
+
+Let's check. Please review my code.  
+This is  a multi-objective semi-supervised explanation tool.
+The code:
+
+- explores N points via  O(log2(N)) evaluations. 
+- Generates a human-readable summary of that space. 
+- In pass1, it find and eval  two distant points using multi-objective criteria. Everything nearest the  worst is pruned and we recurse on the rest.  
+- This algorithm is only approximate so, in pass2, we do it all again, starting with the better items seen in pass1.  
+- Finally, it explains the final results by  a decision tree that recursively discretizes numerics via their ability to distinguish the best/worst things found in pass2.
+
+
+All in under 400 lines of code
  (most of which is background stuff that could be used for other learners).    
 
 
