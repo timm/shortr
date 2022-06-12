@@ -36,7 +36,7 @@
 -- Less, but better.<p>
 -- __timm:__    
 -- plz, less<p>
--- Other proponents of "write-less-code":   
+-- I hope these people don't mind when I say they are all proponents of "write-less-code":   
 -- 
 -- [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
 -- | [Hilary Mason](https://boingboing.net/2017/06/30/next-level-regexp.html)
