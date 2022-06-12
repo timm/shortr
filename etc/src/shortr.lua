@@ -240,7 +240,6 @@ function ROWS.like(i,row, nklasses, nrows,    prior,like,inc,x)
       inc  = col:like(x,prior)
       like = like + math.log(inc) end end
   return like end
-
 -- __doRows(  ?`src`  :(string|table),  `fun`  :function( table|ROW )   )__   
 -- helper function for reading from tables or files. Case arg1 of ...     
 -- ... _table_  : call  function for all items in table.  
@@ -250,6 +249,36 @@ local function doRows(src, fun)
   if type(src)=="table" then for  _,t in pairs(src) do fun(t) end
                          else for   t in csv(src)   do fun(t) end end end
 
+--------------------------------------------------------------------------------
+-- ## Decision (or Regression) Tree
+
+-- __.tree(  `listOrRows`  :{{ROW}}  )  :ROW__   
+-- return root of decision or regression tree;
+function ROWS.tree(i, listOrRows)
+  local ylabels = {}
+  for label,rows in pairs(listOfRows) do
+    for _,row in pairs(rows) do ylabels[ push(all,row).id ] = label end end
+  return i:treeGrow(i.cols.xs, function(row) return ylabels[row.id] end) end
+-- __.treeGrow(  `xcols`  :{NUM|SYM},  `y`  :function  )  :ROW__   
+-- return root of decision or regression tree;
+function ROWS.treeGrow(i,xcols,y,         gaurd,stop,all,some)
+  rows.gaurd = gaurd
+  stop = stop or (#i.rows)^THE.small
+  rows.kids = {}
+  if #i.rows >= 2*stop then
+    all = map(xcols, function(xcol) return _ranges(i.rows,xcol,SYM,y) end)
+    for j,range in pairs(sort(all, lt"div")[1].ranges) do 
+      some = i:clone()
+      for _,row in pairs(i.rows) do
+        if row:within(range) then some:add(row); break end end 
+      if #some.rows < #i.rows then
+        i.kids[j] = some:treeGrow(xcols, y, range, stop) end end end end
+-- __.show(  `pre`  :string,   ?`show`  :function)__<br>pretty print;
+function ROWS.show(i,pre,show,        show0)
+  function show0(i) print(fmt("%s%s%s" , pre, i.gaurd, #i.rows)) end
+  pre = pre or ""
+  (show or show0)(i)
+  for _,kid in pairs(i.kids or {}) do kid:show(pre.."|.. ", show) end end
 --------------------------------------------------------------------------------
 -- ## class NB
 -- (0) Use row1 to initial our `overall` knowledge of all rows.   
@@ -272,70 +301,7 @@ function NB.train(i,row,      k)
 function NB.guess(i,row) 
     return argmax(i.dict, 
       function(klass) return klass:like(row,#i.list,#i.overall.rows) end) end
--- function TREE.new(i,listOfRows,gaurd)
---   i.gaurd, i.kids = gaurd, {}
---   of   = listOfRows[1][1].of
---   best = sort(map(of.cols.x, 
---                  function(col) i:bins(col,listOfRows) end),lt"div")[1] 
---   i.kids = map(best.ranges, function(range) 
---             listOfRows1 = {}
-    -- local function within(row)       return row:within(best) end 
-    -- local function withins(rows)     return map(rows, within) end
-    -- map(listOrRanges, function(rows) return withins(rows) end) end
-    --   tmp= map(rows,withins) 
-    --   if #tmp > stop then 
-    --    end)
-    --
---------------------------------------------------------------------------------
--- ## class TREE
--- function decisionTree(listOfRows)
--- -- function tree(rows, xols, yklass,y, gaurd)
--- --   local function xranges(xcol) return i:ranges(rows,xcol,yklass,y) end
--- --   i.gaurd = gaurd
--- --   ranges = sort(map(xcols, xranges),lt"div")[1].ranges
--- --   for _,row in pairs(rows) do
--- --     for _,range in pairs(ranges) do 
--- --       if row:within(range) then push(range.rows,row) end; break end end
--- --   i.kids = map(ranges, 
--- --                function(range) return TREE(range.rows,xcols,yklass,y,range) end) end
--- -- 
---   labels , all, xcols = {},{}
---   for label,rows in pairs(listofRows) do
---     for _,row in pairs(rows) do 
---       xcols = row.of.cols.xs
---       labels[ push(all,row).id ] = label end end
---   return TREE(all, xcols, SYM, function(row) return labels[row.id] end) end
--- 
-local _ranges, _merge
-function _ranges(i,rows,xcol,yklass,y)
-  local n,list, dict = 0,{}, {}
-  for _,row in pairs(rows) do
-    local v = row.cells[xcol.at]
-    if v ~= "?" then
-      n = n + 1
-      local pos = xcol:bin(v)
-      dict[pos] = dict[pos] or push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
-      dict[pos]:add(v, y(row)) end end 
-  list = sort(list, lt"xlo")
-  list = xcol.is=="NUM" and _merge(list, n^THE.min) or list
-  return {ranges  = list,
-          div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
 
-function _merge(b4,min)
-  local j,t a,b,c,ay,by,cy = 1,{}
-  while j <= #b4 do 
-    a, b = b4[j], b4[j+1]
-    if b then 
-      ay,by,cy = a.ys, b.ys, a.ys:merge(b.ys)
-      if ay.n<min or by.n<min or cy:div() <= (ay.n*ay:div()+by.n*by:div())/cy.n 
-      then a = raNGE(a.xlo, b.xhi, cy) 
-           j = j + 1 end end -- skip one, since it has just been merged
-    t[#t+1] = a
-    j = j + 1 end
-  if #t < #b4 then return _merge(t,min) end
-  for j=2,#t do t[j].xlo = t[j-1].xhi end
-  t[1].xlo, t[#t].xhi = -big, big
-  return t end
 --------------------------------------------------------------------------------
 -- ## class RANGE
 --  RANGE objects track what `y` was seen from `xlo` to `xhi`.
@@ -357,6 +323,37 @@ function RANGE.__tostring(i)
   elseif hi ==  big then return fmt("%s > %s",x, lo)  
   elseif lo == -big then return fmt("%s <= %s", x, hi)  
   else                   return fmt("%s < %s <= %s",lo,x,hi) end end
+
+RANGE.fun = {}
+function RANGE.fun.ranges(rows,xcol,yklass,y)
+  local n,list, dict = 0,{}, {}
+  for _,row in pairs(rows) do
+    local v = row.cells[xcol.at]
+    if v ~= "?" then
+      n = n + 1
+      local pos = xcol:bin(v)
+      dict[pos] = dict[pos] or push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
+      dict[pos]:add(v, y(row)) end end 
+  list = sort(list, lt"xlo")
+  list = xcol.is=="NUM" and _merge(list, n^THE.min) or list
+  return {ranges= list,
+          div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
+
+function RANGE.fun.merge(b4,min)
+  local j,t a,b,c,ay,by,cy = 1,{}
+  while j <= #b4 do 
+    a, b = b4[j], b4[j+1]
+    if b then 
+      ay,by,cy = a.ys, b.ys, a.ys:merge(b.ys)
+      if ay.n<min or by.n<min or cy:div() <= (ay.n*ay:div()+by.n*by:div())/cy.n 
+      then a = raNGE(a.xlo, b.xhi, cy) 
+           j = j + 1 end end -- skip one, since it has just been merged
+    t[#t+1] = a
+    j = j + 1 end
+  if #t < #b4 then return RANGE.fun.merge(t,min) end
+  for j=2,#t do t[j].xlo = t[j-1].xhi end
+  t[1].xlo, t[#t].xhi = -big, big
+  return t end
 --------------------------------------------------------------------------------
 -- ## Tests
 local no,go = {},{}

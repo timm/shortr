@@ -871,6 +871,96 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
               <div class="sswrap ">
                 <a class="ss" href="#section-50">&#x00a7;</a>
               </div>
+              <h2 id="decision-or-regression-tree">Decision (or Regression) Tree</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-51">&#x00a7;</a>
+              </div>
+              <p><strong>.tree(  <code>listOrRows</code>  :{{ROW}}  )  :ROW</strong><br>return root of decision or regression tree;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.tree</span><span class="hljs-params">(i, listOrRows)</span></span>
+  <span class="hljs-keyword">local</span> ylabels = {}
+  <span class="hljs-keyword">for</span> label,rows <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(listOfRows) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span> ylabels[ push(all,row).id ] = label <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> i:treeGrow(i.cols.xs, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">return</span> ylabels[row.id] <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-52">&#x00a7;</a>
+              </div>
+              <p><strong>.treeGrow(  <code>xcols</code>  :{NUM|SYM},  <code>y</code>  :function  )  :ROW</strong><br>return root of decision or regression tree;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.treeGrow</span><span class="hljs-params">(i,xcols,y,         gaurd,stop,all,some)</span></span>
+  rows.gaurd = gaurd
+  stop = stop <span class="hljs-keyword">or</span> (#i.rows)^THE.small
+  rows.kids = {}
+  <span class="hljs-keyword">if</span> #i.rows &gt;= <span class="hljs-number">2</span>*stop <span class="hljs-keyword">then</span>
+    all = map(xcols, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xcol)</span></span> <span class="hljs-keyword">return</span> _ranges(i.rows,xcol,SYM,y) <span class="hljs-keyword">end</span>)
+    <span class="hljs-keyword">for</span> j,range <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(all, lt<span class="hljs-string">&quot;div&quot;</span>)[<span class="hljs-number">1</span>].ranges) <span class="hljs-keyword">do</span> 
+      some = i:clone()
+      <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.rows) <span class="hljs-keyword">do</span>
+        <span class="hljs-keyword">if</span> row:within(range) <span class="hljs-keyword">then</span> some:add(row); <span class="hljs-keyword">break</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+      <span class="hljs-keyword">if</span> #some.rows &lt; #i.rows <span class="hljs-keyword">then</span>
+        i.kids[j] = some:treeGrow(xcols, y, range, stop) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-53">&#x00a7;</a>
+              </div>
+              <p><strong>.show(  <code>pre</code>  :string,   ?<code>show</code>  :function)</strong><br>pretty print;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.show</span><span class="hljs-params">(i,pre,show,        show0)</span></span>
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">show0</span><span class="hljs-params">(i)</span></span> <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;%s%s%s&quot;</span> , pre, i.gaurd, #i.rows)) <span class="hljs-keyword">end</span>
+  pre = pre <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
+  (show <span class="hljs-keyword">or</span> show0)(i)
+  <span class="hljs-keyword">for</span> _,kid <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kids <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> kid:show(pre..<span class="hljs-string">&quot;|.. &quot;</span>, show) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-54">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-55">&#x00a7;</a>
+              </div>
               <h2 id="class-nb">class NB</h2>
 <p>(0) Use row1 to initial our <code>overall</code> knowledge of all rows.<br>After that (1) add row to <code>overall</code> and (2) ROWS about this row’s klass.<br>(3) After <code>wait</code> rows, classify row BEFORE updating training knowledge</p>
 
@@ -897,98 +987,11 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
         </li>
         
         
-        <li id="section-51">
+        <li id="section-56">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-51">&#x00a7;</a>
-              </div>
-              <p>function TREE.new(i,listOfRows,gaurd)
-  i.gaurd, i.kids = gaurd, {}
-  of   = listOfRows[1][1].of
-  best = sort(map(of.cols.x, 
-                 function(col) i:bins(col,listOfRows) end),lt”div”)[1] 
-  i.kids = map(best.ranges, function(range) 
-            listOfRows1 = {}
-local function within(row)       return row:within(best) end 
-local function withins(rows)     return map(rows, within) end
-map(listOrRanges, function(rows) return withins(rows) end) end
-  tmp= map(rows,withins) 
-  if #tmp &gt; stop then 
-   end)</p>
-<hr>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-52">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-52">&#x00a7;</a>
-              </div>
-              <h2 id="class-tree">class TREE</h2>
-<p>function decisionTree(listOfRows)
-– function tree(rows, xols, yklass,y, gaurd)
-–   local function xranges(xcol) return i:ranges(rows,xcol,yklass,y) end
-–   i.gaurd = gaurd
-–   ranges = sort(map(xcols, xranges),lt”div”)[1].ranges
-–   for _,row in pairs(rows) do
-–     for _,range in pairs(ranges) do 
-–       if row:within(range) then push(range.rows,row) end; break end end
-–   i.kids = map(ranges, 
-–                function(range) return TREE(range.rows,xcols,yklass,y,range) end) end
-– 
-  labels , all, xcols = {},{}
-  for label,rows in pairs(listofRows) do
-    for _,row in pairs(rows) do 
-      xcols = row.of.cols.xs
-      labels[ push(all,row).id ] = label end end
-  return TREE(all, xcols, SYM, function(row) return labels[row.id] end) end</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _ranges, _merge
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_ranges</span><span class="hljs-params">(i,rows,xcol,yklass,y)</span></span>
-  <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
-  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">local</span> v = row.cells[xcol.at]
-    <span class="hljs-keyword">if</span> v ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
-      n = n + <span class="hljs-number">1</span>
-      <span class="hljs-keyword">local</span> pos = xcol:bin(v)
-      dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
-      dict[pos]:add(v, y(row)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-  list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;xlo&quot;</span>)
-  list = xcol.is==<span class="hljs-string">&quot;NUM&quot;</span> <span class="hljs-keyword">and</span> _merge(list, n^THE.<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> list
-  <span class="hljs-keyword">return</span> {ranges  = list,
-          div   = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> z.ys:div()*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_merge</span><span class="hljs-params">(b4,min)</span></span>
-  <span class="hljs-keyword">local</span> j,t a,b,c,ay,by,cy = <span class="hljs-number">1</span>,{}
-  <span class="hljs-keyword">while</span> j &lt;= #b4 <span class="hljs-keyword">do</span> 
-    a, b = b4[j], b4[j+<span class="hljs-number">1</span>]
-    <span class="hljs-keyword">if</span> b <span class="hljs-keyword">then</span> 
-      ay,by,cy = a.ys, b.ys, a.ys:merge(b.ys)
-      <span class="hljs-keyword">if</span> ay.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> by.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> cy:div() &lt;= (ay.n*ay:div()+by.n*by:div())/cy.n 
-      <span class="hljs-keyword">then</span> a = raNGE(a.xlo, b.xhi, cy) 
-           j = j + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-comment">-- skip one, since it has just been merged</span>
-    t[#t+<span class="hljs-number">1</span>] = a
-    j = j + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">if</span> #t &lt; #b4 <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> _merge(t,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> j=<span class="hljs-number">2</span>,#t <span class="hljs-keyword">do</span> t[j].xlo = t[j<span class="hljs-number">-1</span>].xhi <span class="hljs-keyword">end</span>
-  t[<span class="hljs-number">1</span>].xlo, t[#t].xhi = -big, big
-  <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-53">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-53">&#x00a7;</a>
+                <a class="ss" href="#section-56">&#x00a7;</a>
               </div>
               <hr>
 
@@ -997,11 +1000,11 @@ map(listOrRanges, function(rows) return withins(rows) end) end
         </li>
         
         
-        <li id="section-54">
+        <li id="section-57">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-54">&#x00a7;</a>
+                <a class="ss" href="#section-57">&#x00a7;</a>
               </div>
               <h2 id="class-range">class RANGE</h2>
 <p> RANGE objects track what <code>y</code> was seen from <code>xlo</code> to <code>xhi</code>.</p>
@@ -1011,11 +1014,11 @@ map(listOrRanges, function(rows) return withins(rows) end) end
         </li>
         
         
-        <li id="section-55">
+        <li id="section-58">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-55">&#x00a7;</a>
+                <a class="ss" href="#section-58">&#x00a7;</a>
               </div>
               <p><strong>RANGE(  <code>xlo</code>  :number,  <code>xhi</code>  :number,  <code>yes</code>  :(NUM|SYM)  )</strong><br>constructor;</p>
 
@@ -1026,11 +1029,11 @@ map(listOrRanges, function(rows) return withins(rows) end) end
         </li>
         
         
-        <li id="section-56">
+        <li id="section-59">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-56">&#x00a7;</a>
+                <a class="ss" href="#section-59">&#x00a7;</a>
               </div>
               <p><strong>RANGE(  <code>x</code>  :number,  <code>y</code>  :number  )</strong><br>extend range to cover <code>x</code>;<br>and add <code>y</code> to the y-values seen so far.</p>
 
@@ -1044,11 +1047,11 @@ map(listOrRanges, function(rows) return withins(rows) end) end
         </li>
         
         
-        <li id="section-57">
+        <li id="section-60">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-57">&#x00a7;</a>
+                <a class="ss" href="#section-60">&#x00a7;</a>
               </div>
               <p><strong>.__tostring()  :string</strong><br>pretty print;</p>
 
@@ -1059,16 +1062,47 @@ map(listOrRanges, function(rows) return withins(rows) end) end
   <span class="hljs-keyword">if</span>     lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x, lo)  
   <span class="hljs-keyword">elseif</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt; %s&quot;</span>,x, lo)  
   <span class="hljs-keyword">elseif</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s&quot;</span>, x, hi)  
-  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s &lt;= %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s &lt;= %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+RANGE.fun = {}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.fun.ranges</span><span class="hljs-params">(rows,xcol,yklass,y)</span></span>
+  <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
+  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">local</span> v = row.cells[xcol.at]
+    <span class="hljs-keyword">if</span> v ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
+      n = n + <span class="hljs-number">1</span>
+      <span class="hljs-keyword">local</span> pos = xcol:bin(v)
+      dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, RANGE(v,v, yklass(xcol.at, xcol.txt)))
+      dict[pos]:add(v, y(row)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;xlo&quot;</span>)
+  list = xcol.is==<span class="hljs-string">&quot;NUM&quot;</span> <span class="hljs-keyword">and</span> _merge(list, n^THE.<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> list
+  <span class="hljs-keyword">return</span> {ranges= list,
+          div   = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> z.ys:div()*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RANGE.fun.merge</span><span class="hljs-params">(b4,min)</span></span>
+  <span class="hljs-keyword">local</span> j,t a,b,c,ay,by,cy = <span class="hljs-number">1</span>,{}
+  <span class="hljs-keyword">while</span> j &lt;= #b4 <span class="hljs-keyword">do</span> 
+    a, b = b4[j], b4[j+<span class="hljs-number">1</span>]
+    <span class="hljs-keyword">if</span> b <span class="hljs-keyword">then</span> 
+      ay,by,cy = a.ys, b.ys, a.ys:merge(b.ys)
+      <span class="hljs-keyword">if</span> ay.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> by.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> cy:div() &lt;= (ay.n*ay:div()+by.n*by:div())/cy.n 
+      <span class="hljs-keyword">then</span> a = raNGE(a.xlo, b.xhi, cy) 
+           j = j + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-comment">-- skip one, since it has just been merged</span>
+    t[#t+<span class="hljs-number">1</span>] = a
+    j = j + <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> #t &lt; #b4 <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> RANGE.fun.merge(t,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> j=<span class="hljs-number">2</span>,#t <span class="hljs-keyword">do</span> t[j].xlo = t[j<span class="hljs-number">-1</span>].xhi <span class="hljs-keyword">end</span>
+  t[<span class="hljs-number">1</span>].xlo, t[#t].xhi = -big, big
+  <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-58">
+        <li id="section-61">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-58">&#x00a7;</a>
+                <a class="ss" href="#section-61">&#x00a7;</a>
               </div>
               <hr>
 
@@ -1077,11 +1111,11 @@ map(listOrRanges, function(rows) return withins(rows) end) end
         </li>
         
         
-        <li id="section-59">
+        <li id="section-62">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-59">&#x00a7;</a>
+                <a class="ss" href="#section-62">&#x00a7;</a>
               </div>
               <h2 id="tests">Tests</h2>
 
@@ -1122,11 +1156,11 @@ map(listOrRanges, function(rows) return withins(rows) end) end
         </li>
         
         
-        <li id="section-60">
+        <li id="section-63">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-60">&#x00a7;</a>
+                <a class="ss" href="#section-63">&#x00a7;</a>
               </div>
               <hr>
 
@@ -1135,11 +1169,11 @@ map(listOrRanges, function(rows) return withins(rows) end) end
         </li>
         
         
-        <li id="section-61">
+        <li id="section-64">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-61">&#x00a7;</a>
+                <a class="ss" href="#section-64">&#x00a7;</a>
               </div>
               <h2 id="start">Start</h2>
 
