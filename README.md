@@ -1,6 +1,6 @@
 # SHORTR
 
-<img src=/docs/img/l5.png align=right width=400>
+<img src=/docs/img/l5.png align=left width=400>
      
 <a
 href="https://github.com/timm/l5/actions/workflows/tests.yml"><img 
