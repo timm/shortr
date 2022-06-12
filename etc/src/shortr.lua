@@ -38,7 +38,7 @@
 -- "Less, but better."<p>
 -- __timm:__    
 -- "plz, less"<p>
--- Hall of fame (whose code challenges us to write less, but better):   
+--  Role models  (whose code challenges me to write less, but better):   
 -- [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
 -- | [Hilary Mason](https://boingboing.net/2017/06/30/next-level-regexp.html)
 -- | [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)  
@@ -150,6 +150,33 @@ function COLS.add(i,t)
     for _,col in pairs(cols) do col:add(t.cells[col.at]) end end
   return t end
 --------------------------------------------------------------------------------
+-- ## class SYM
+
+-- Summarize a stream of symbols, maintaining the `mode` and frequencies counts
+-- of symbols seen so far.
+
+-- __SYM()__<br>constructor.  
+function SYM.new(i)  i.n,i.syms,i.most,i.mode = 0,{},0,nil end
+--  __.add(  `v`  :any,  ?`inc`=1   )__<br>add `v`, `inc` number of times.
+function SYM.add(i,v,inc)
+  if v=="?" then return v end
+  inc=inc or 1
+  i.n = i.n + inc
+  i.syms[v] = inc + (i.syms[v] or 0)
+  if i.syms[v] > i.most then i.most,i.mode = i.syms[v],v end end
+ --  __.bin(  `x`  :any  )  :any__<br>discrediting a symbol just returns that symbol.
+function SYM.bin(x) return x end
+-- __.like(  `x`  :any  )  :number__<br>report likelihood.   
+function SYM.like(i,x,prior) return ((i.syms[x] or 0)+THE.m*prior)/(i.n+THE.m) end
+--  __.merge(  `j`  :SYM  )  :SYM__<br>Return a SYM that combines self and `j`.
+function SYM.merge(i,j,      k)
+  local k = SYM(i.at, i.txt)
+  for x,n in pairs(i.has) do k:add(x,n) end
+  for x,n in pairs(j.has) do k:add(x,n) end
+  return k end
+-- __.mid()  :any__<br>return the  most commonly seen symbol.
+function SYM.mid(i,...)  return i.mode end
+--------------------------------------------------------------------------------
 -- ## class SOME
 -- NUMs use SOMEs to store at most `THE.Few` samples per numeric columns. 
 
@@ -197,33 +224,6 @@ function NUM.merge(i,j,      k)
 -- __.mid(  ?`p`=2  )  :number__<br>report rounded middle.  
 function NUM.mid(i,p) return rnd(i.mu,p) end
 --------------------------------------------------------------------------------
--- ## class SYM
-
--- Summarize a stream of symbols, maintaining the `mode` and frequencies counts
--- of symbols seen so far.
-
--- __SYM()__<br>constructor.  
-function SYM.new(i)  i.n,i.syms,i.most,i.mode = 0,{},0,nil end
---  __.add(  `v`  :any,  ?`inc`=1   )__<br>add `v`, `inc` number of times.
-function SYM.add(i,v,inc)
-  if v=="?" then return v end
-  inc=inc or 1
-  i.n = i.n + inc
-  i.syms[v] = inc + (i.syms[v] or 0)
-  if i.syms[v] > i.most then i.most,i.mode = i.syms[v],v end end
- --  __.bin(  `x`  :any  )  :any__<br>discrediting a symbol just returns that symbol.
-function SYM.bin(x) return x end
--- __.like(  `x`  :any  )  :number__<br>report likelihood.   
-function SYM.like(i,x,prior) return ((i.syms[x] or 0)+THE.m*prior)/(i.n+THE.m) end
---  __.merge(  `j`  :SYM  )  :SYM__<br>Return a SYM that combines self and `j`.
-function SYM.merge(i,j,      k)
-  local k = SYM(i.at, i.txt)
-  for x,n in pairs(i.has) do k:add(x,n) end
-  for x,n in pairs(j.has) do k:add(x,n) end
-  return k end
--- __.mid()  :any__<br>return the  most commonly seen symbol.
-function SYM.mid(i,...)  return i.mode end
---------------------------------------------------------------------------------
 -- ## class ROW
 -- Store data from one record. Track if we ever use this ROW's dependent variables.
 -- Hold a pointer back to a ROWS (so we can access attribute positions and
@@ -231,8 +231,10 @@ function SYM.mid(i,...)  return i.mode end
 
 -- __ROW(  `of`  :ROWS,  `cells`   :table)__<br>constructor.  
 function ROW.new(i,of,cells) i.of,i.cells,i.evaled  = of,cells,false end
+
 -- __.klass()__<br>Return the klass variable of this ROW.
 function ROW.klass(i)    return i.cells[i.of.cols.klass.at] end
+
 -- __.within(  `range`  :RANGE  )   :boolean__<br>True if ROW is in `range`.
 function ROW.within(i,range)
    local lo, hi, at = range.xlo, range.xhi, range.ys.at
@@ -246,15 +248,19 @@ function ROW.within(i,range)
 
 -- __ROWS(  `t`  :[string]  )__<br>constructor.
 function ROWS.new(i,t) i.cols=COLS(t); i.rows={} end
+
 -- __.add(  `t`  :(table|ROW)  )  :ROW__<br>update with a table or ROW.
 function ROWS.add(i,t) return push(i.rows, i.cols:add(t.cells and t or ROW(i,t))) end
+
 -- __.mid(  `cols`  :[NUM|SYM],  `p`=2  )  :table__   
 -- returns `mid`s of some columns; round numerics to `p` decimal places.
 function ROWS.mid(i, cols, p,     t)
   t={};for _,col in pairs(cols or i.cols.ys) do t[col.txt]=col:mid(p) end;return t end
+
 -- __.clone(  ?`data`  :(table|[ROW])  )  :ROWS__<br>copy this structure, maybe add data.
 function ROWS.clone(i,data,  j) 
   j= ROWS(i.cols.names);for _,row in pairs(data or {}) do j:add(row) end; return j end
+
 -- __.like(  `row`  :ROWS,  `nklasses`  :int;  `nrows`  :int  )  :number__  
 -- how likely is it that `row` could live here?
 function ROWS.like(i,row, nklasses, nrows,    prior,like,inc,x)
@@ -266,6 +272,7 @@ function ROWS.like(i,row, nklasses, nrows,    prior,like,inc,x)
       inc  = col:like(x,prior)
       like = like + math.log(inc) end end
   return like end
+
 -- __doRows(  ?`src`  :(string|table),  `fun`  :function( table|ROW )   )__   
 -- helper function for reading from tables or files. Case arg1 of ...     
 -- ... _table_  : call  function for all items in table.  
@@ -283,20 +290,22 @@ function ROWS.tree(i, listOrRows)
   for label,rows in pairs(listOfRows) do
     for _,row in pairs(rows) do ylabels[ push(all,row).id ] = label end end
   return i:treeGrow(i.cols.xs, function(row) return ylabels[row.id] end) end
+
 -- __.treeGrow(  `xcols`  :[NUM|SYM],  `y`  :function  )  :ROW__   
 -- return root of decision or regression tree;
-function ROWS.treeGrow(i,xcols,y,         gaurd,stop,all,some)
+function ROWS.treeGrow(i,xcols,y,         gaurd,stop)
   rows.gaurd = gaurd
   stop = stop or (#i.rows)^THE.small
   rows.kids = {}
   if #i.rows >= 2*stop then
-    all = map(xcols, function(xcol) return RANGE.make(i.rows,xcol,SYM,y) end)
-    for j,range in pairs(sort(all, lt"div")[1].ranges) do 
-      some = i:clone()
+    local ranges= map(xcols,function(col) return RANGE.make(i.rows,col,SYM,y) end)
+    for j,range in pairs(sort(ranges, lt"div")[1].ranges) do 
+      local kid= i:clone()
       for _,row in pairs(i.rows) do
-        if row:within(range) then some:add(row); break end end 
-      if #some.rows < #i.rows then
-        i.kids[j] = some:treeGrow(xcols, y, range, stop) end end end end
+        if row:within(range) then kid:add(row); break end end 
+      if #kid.rows < #i.rows then
+        i.kids[j] = kid:treeGrow(xcols, y, range, stop) end end end end
+
 -- __.show(  `pre`  :string,   ?`show`  :function)__<br>pretty print;
 function ROWS.show(i,pre,show,        show0)
   function show0(i) print(fmt("%s%s%s" , pre, i.gaurd, #i.rows)) end
