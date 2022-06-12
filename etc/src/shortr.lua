@@ -31,10 +31,11 @@
 -- __timm:__    
 -- plz, less<p>
 -- Other proponents of "write-less-code":   
+-- 
 -- [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
 -- | [Hilary Mason](https://boingboing.net/2017/06/30/next-level-regexp.html)
--- | [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
--- | [Peter Norvig](http://norvig.com/lispy.html)
+-- | [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)  
+--   [Peter Norvig](http://norvig.com/lispy.html)
 -- | [Joel Grus](https://github.com/joelgrus/data-science-from-scratch)
 -- | [Paul Graham](http://www.paulgraham.com/onlisp.html)
 --<p>   
