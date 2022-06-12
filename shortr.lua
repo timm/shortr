@@ -74,7 +74,7 @@ OPTIONS:
   -w  --wait   wait before classifying    =  10
 
 OPTIONS (other):
-  -f  --file   file           =  ../../data/auto93.csv
+  -f  --file   file           =  data/auto93.csv
   -g  --go     start-up goal  =  nothing
   -h  --help   show help      =  false
   -s  --seed   seed           =  10019]]
@@ -447,8 +447,8 @@ local function _classify(file)
   abcd:pretty(abcd:report())
   return true end
 
-function go.soybean()  return _classify("../../data/soybean.csv") end 
-function go.diabetes() return _classify("../../data/diabetes.csv") end 
+function go.soybean()  return _classify("data/soybean.csv") end 
+function go.diabetes() return _classify("data/diabetes.csv") end 
 --------------------------------------------------------------------------------
 -- ## Start
 if    pcall(debug.getlocal, 4, 1)
