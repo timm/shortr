@@ -1091,7 +1091,7 @@ dependent and independent summaries seepage in <code>cols.ys</code> and <code>co
               <p><strong>.fun.ranges(  <code>rows</code>  :{ROW},  <code>xcol</code>  :(NUM|SYM),<br><code>yclass</code>:KLASS,  <code>y</code>  :function  )  :table</strong><br>Returns a list <code>{ranges={RANGE},  div=number}</code> that scores each range.<br>Numeric ranges are first divided into groups of size <code>(hi-lo)/THE.bins</code> 
 then subsequently, – adjacent ranges are merged (see `.fun.merge). 
 Finally, each range is score by the weighted sum of its diversity.</p>
-<p>FYI,  the idiom <code>dict[pos]=dict[pos] or push(list,y)</code> maintains:<br>(a) a set of RANGEs, indexed by <code>pos</code>; and<br>(b) a list of known things, indexed one to max size.</p>
+<p>FYI,  the idiom <code>dict[pos]=dict[pos] or push(list,y)</code> maintains:<br>(a) a set of RANGEs, indexed by <code>pos</code> (so we can find them quick);  and<br>(b) a list of known things, indexed one to max size (so we can sort such a list).</p>
 
             </div>
             
@@ -1118,7 +1118,9 @@ Finally, each range is score by the weighted sum of its diversity.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-63">&#x00a7;</a>
               </div>
-              <p><strong>.fun.merge( <code>b4</code>  :{RANGE},   <code>min</code>:number  )  :{RANGE)</strong>  </p>
+              <p><strong>.fun.merge( <code>b4</code>  :{RANGE},   <code>min</code>:number  )  :{RANGE)</strong><br>Merge adjacent ranges that are too small (less than <code>min</code>), or are better combined
+(than keep separate).  If any merges are made, then loop again for anything else
+to merge.</p>
 
             </div>
             

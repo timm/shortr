@@ -332,8 +332,8 @@ RANGE.fun = {}
 -- Finally, each range is score by the weighted sum of its diversity.
 --   
 -- FYI,  the idiom `dict[pos]=dict[pos] or push(list,y)` maintains:   
--- (a) a set of RANGEs, indexed by `pos`; and        
--- (b) a list of known things, indexed one to max size.
+-- (a) a set of RANGEs, indexed by `pos` (so we can find them quick);  and        
+-- (b) a list of known things, indexed one to max size (so we can sort such a list).
 function RANGE.fun.ranges(rows,xcol,yklass,y)
   local n,list, dict = 0,{}, {}
   for _,row in pairs(rows) do
@@ -348,8 +348,10 @@ function RANGE.fun.ranges(rows,xcol,yklass,y)
   return {ranges= list,
           div   = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
 
--- __.fun.merge( `b4`  :{RANGE},   `min`:number  )  :{RANGE)__  
--- 
+-- __.fun.merge( `b4`  :{RANGE},   `min`:number  )  :{RANGE)__   
+-- Merge adjacent ranges that are too small (less than `min`), or are better combined
+-- (than keep separate).  If any merges are made, then loop again for anything else
+-- to merge.
 function RANGE.fun.merge(b4,min)
   local j,t a,b,c,ay,by,cy = 1,{}
   while j <= #b4 do 
