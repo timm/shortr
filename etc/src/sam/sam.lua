@@ -94,7 +94,7 @@ function Col.merge(i,j,     k)
     for x,n in pairs(kept) do Col.add(k,x,n) end end
   return k end
 
---> .simpler(i:col,this:col,that:col):bool ->am I simpler than `this` and `that`?
+-->.simpler(i:col,this:col,that:col):bool->am `i` simpler than `this` and `that`?
 function Col.simpler(i,this,that)
   return Col.div(i) <= (this.n*Col.div(this) + that.n*Col.div(that)) / i.n end
 
@@ -102,13 +102,13 @@ function Col.simpler(i,this,that)
 function Row.NEW(of,cells) return {of=of,cells=cells,evaled=false} end
 
 function Row.better(i,j)
-  local s1, s2, n = 0, 0, #i.of.y
-  for _,c in pairs(i.of.y) do
+  local s1, s2, ys = 0, 0, i.of.cols.y
+  for _,c in pairs(ys) do
     local x,y =  i.cells[c.at], j.cells[c.at]
     x,y = Col.norm(c, x), Col.norm(c, y)
-    s1  = s1 - 2.7183^(c.w * (x-y)/n)
-    s2  = s2 - 2.7183^(c.w * (y-x)/n) end
-  return s1/n < s2/n  end
+    s1  = s1 - 2.7183^(c.w * (x-y)/#ys)
+    s2  = s2 - 2.7183^(c.w * (y-x)/#ys) end
+  return s1/#ys < s2/#ys  end
 
 --------------------------------------------------------------------------------
 function Data.NEW(t) return {rows={}, cols=Col.COLS(t)} end
@@ -118,10 +118,10 @@ function Data.ROWS(src,fun)
                         else for    t in csv(src)   do fun(t) end end end 
 
 function Data.LOAD(src,    i)
-  Data.ROWS(src,function(t) i=i and Data.add(t,i) or Data.NEW(t) end);return i end
+  Data.ROWS(src,function(t) i=i and Data.add(i,t) or Data.NEW(t) end);return i end
  
 function Data.clone(i,inits,   j)
-  j=Data.NEW(i.names)
+  j=Data.NEW(i.cols.names)
   for _,t in pairs(inits or {}) do Data.add(j,t) end; return j end
 
 function Data.add(i,t)
@@ -136,7 +136,7 @@ function Data.mids(i,cols, t)
   for _,c in pairs(cols or i.cols.y) do t[c.txt] = Col.mid(c) end;return t end
 
 --------------------------------------------------------------------------------
-function Bin.new(xlo, xhi, ys) return {lo=xlo, hi=yhi, ys-ys} end
+function Bin.new(xlo, xhi, ys) return {lo=xlo, hi=xhi, ys=ys} end
 function Bin.add(i,x,y)
   i.lo = math.min(i.lo, x)
   i.hi = math.max(i.hi, x)
@@ -186,17 +186,18 @@ function Go.ROWS(  d)
   oo(Data.mids(d)) end 
 
 function Go.STATS() 
-  oo(mids(Data.LOAD(the.file) )) 
+  oo(Data.mids(Data.LOAD(the.file) )) 
 end
 
 function Go.ORDER(  i,t) 
-  i= rows(the.file)
-  t= orders(i, i.xy)
-  left = clone(i,splice(i.xy,1,30))
-  right= clone(i,splice(i.xy,360))
-  print("first",o(mids(left)))
-  print("last", o(mids(right)))
-  print("all",  o(mids(i)))
+  i= Data.LOAD(the.file)
+  t= sort(i.rows,Row.better)
+  m=(#t)^.5
+  left = Data.clone(i,splice(t,1,m))
+  right= Data.clone(i,splice(i.rows,#t - m))
+  print("all",  o(Data.mids(i)))
+  print("best", o(Data.mids(left)))
+  print("rest", o(Data.mids(right)))
   end 
 --------------------------------------------------------------------------------
 math.randomseed(the.seed)

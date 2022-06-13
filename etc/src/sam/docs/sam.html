@@ -256,8 +256,8 @@ types = int,real, str,tab,bool</p>
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.NEW</span><span class="hljs-params">(of,cells)</span></span> <span class="hljs-keyword">return</span> {of=of,cells=cells,evaled=<span class="hljs-literal">false</span>} <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.better</span><span class="hljs-params">(i,j)</span></span>
-  <span class="hljs-keyword">local</span> s1, s2, n = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, #i.of.y
-  <span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.of.y) <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">local</span> s1, s2, n = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, #i.of.cols.y
+  <span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.of.cols.y) <span class="hljs-keyword">do</span>
     <span class="hljs-keyword">local</span> x,y =  i.cells[c.at], j.cells[c.at]
     x,y = Col.norm(c, x), Col.norm(c, y)
     s1  = s1 - <span class="hljs-number">2.7183</span>^(c.w * (x-y)/n)
@@ -295,15 +295,19 @@ types = int,real, str,tab,bool</p>
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">type</span>(src)==<span class="hljs-string">&quot;table&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span>  _,t <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(src) <span class="hljs-keyword">do</span> fun(t) <span class="hljs-keyword">end</span>
                         <span class="hljs-keyword">else</span> <span class="hljs-keyword">for</span>    t <span class="hljs-keyword">in</span> csv(src)   <span class="hljs-keyword">do</span> fun(t) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.LOAD</span><span class="hljs-params">(src,    i)</span></span>
+  Data.ROWS(src,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(t)</span></span> i=i <span class="hljs-keyword">and</span> Data.add(i,t) <span class="hljs-keyword">or</span> Data.NEW(t) <span class="hljs-keyword">end</span>);<span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
+ 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.clone</span><span class="hljs-params">(i,inits,   j)</span></span>
-  j=Data.NEW(i.names)
+  j=Data.NEW(i.cols.names)
   <span class="hljs-keyword">for</span> _,t <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(inits <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> Data.add(j,t) <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> j <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.add</span><span class="hljs-params">(i,t)</span></span>
   t = t.cells <span class="hljs-keyword">and</span> t <span class="hljs-keyword">or</span> Row.NEW(i,t)
   push(i.rows, t)
   <span class="hljs-keyword">for</span> _,cols <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{i.cols.x, i.cols.y} <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(cols) <span class="hljs-keyword">do</span> Col.add(c, t.cells[c.at]) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+    <span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(cols) <span class="hljs-keyword">do</span> Col.add(c, t.cells[c.at]) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span> 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.mids</span><span class="hljs-params">(i,cols, t)</span></span> 
   t={}
@@ -408,17 +412,18 @@ types = int,real, str,tab,bool</p>
   oo(Data.mids(d)) <span class="hljs-keyword">end</span> 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.STATS</span><span class="hljs-params">()</span></span> 
-  oo(summarize(rows(the.file) )) 
+  oo(Data.mids(Data.LOAD(the.file) )) 
 <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.ORDER</span><span class="hljs-params">(  i,t)</span></span> 
-  i= rows(the.file)
-  t= orders(i, i.xy)
-  left = clone(i,splice(i.xy,<span class="hljs-number">1</span>,<span class="hljs-number">30</span>))
-  right= clone(i,splice(i.xy,<span class="hljs-number">360</span>))
-  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;first&quot;</span>,o(mids(left)))
-  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;last&quot;</span>, o(mids(right)))
-  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;all&quot;</span>,  o(mids(i)))
+  i= Data.LOAD(the.file)
+  t= <span class="hljs-built_in">sort</span>(i.rows,Row.better)
+  m=(#t)^<span class="hljs-number">.5</span>
+  left = Data.clone(i,splice(t,<span class="hljs-number">1</span>,m))
+  right= Data.clone(i,splice(i.rows,#t - m))
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;all&quot;</span>,  o(Data.mids(i)))
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;best&quot;</span>, o(Data.mids(left)))
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;rest&quot;</span>, o(Data.mids(right)))
   <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
