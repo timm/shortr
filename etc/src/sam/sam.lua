@@ -2,6 +2,8 @@ require"lib"
 -- modules start with an Upper case letter
 -- class methods are in Module.UPPERCASE (e.g. Module.NEW for constructors)
 -- instance methods are in Module.method(i,...)
+-- don't say self, say "i" (shorter)
+-- where possible, if looking at two instances, use "i,j"
 --------------------------------------------------------------------------------
 local the={ min  = .5,
             bins = 16,
@@ -17,15 +19,24 @@ function Col.KLASS(x)  return (x or ""):find"!$"  end
 function Col.SKIP(x)   return (x or ""):find":$"  end
 function Col.WEIGHT(x) return (x or ""):find"-$" and -1 or 1 end
 
+function Col.COLS(names)
+  local i={x={}, y={}, names=names, klass=nil}
+  for at,txt in pairs(names) do
+    local new = Col.NUMP(txt) and Col.NUM(at,txt) or Col.NEW(at,txt)
+    if not Col.SKIP(txt) then
+      push(Col.GOAL(txt) and i.y or i.x, new)
+      if Col.KLASS(txt) then i.klass=new end end end
+  return i end
+
 function Col.NEW(at,txt)
-  return {n   = 0,      at  = at  or 0, txt = txt or "", 
-          ok  = false, kept = {},
-          div = 0,     mid  = 0} end
+  return {n  =0,     at=at or 0, txt=txt or "", 
+          ok =false, kept={},
+          div=0,     mid=0} end
 
 function Col.NUM(at,txt,some)
-   i      = Col.New(at,txt)
-   i.w    = Col.WEIGHT(txt)
-   i.nums = some or the.some -- if non-nil the i.nums is a numeric
+   i     = Col.New(at,txt)
+   i.w   = Col.WEIGHT(txt)
+   i.nums= some or the.some -- if non-nil the i.nums is a numeric
    return i end
 
 function Col.add(i,v,inc)
@@ -34,11 +45,8 @@ function Col.add(i,v,inc)
  then i.n = i.n + r
       if i.nums 
       then for _=1,inc do
-             i.lo = math.min(v, Col.hi(i))
-             i.hi = math.max(v, Col.lo(i))
-             if     #i.kepy < i.nums then i.ok=false; push(i.kept,v) 
-             elseif R() < i.nums/i.n then i.ok=false; i.kept[R(#i.kept)]=v end 
-           end -- end for
+            if     #i.kepy < i.nums then i.ok=false;push(i.kept,v) 
+            elseif R() < i.nums/i.n then i.ok=false;i.kept[R(#i.kept)]=v end end 
       else i.ok = false
            i.kept[v] = inc + (i.kept[v] or 0) end end
   return i end
@@ -80,35 +88,30 @@ function Row.NEW(of,cells) return {of=of,cells=cells,evaled=false} end
 function Row.better(i,j)
   local s1, s2, n = 0, 0, #i.of.y
   for _,c in pairs(i.of.y) do
-    local x,y = Col.norm(c, i.cells[c.at]), Col.norm(c, j.cells[c.at])
-    s1 = s1 - 2.7183^(c.w * (x-y)/n)
-    s2 = s2 - 2.7183^(c.w * (y-x)/n) end
+    local x,y =  i.cells[c.at], j.cells[c.at]
+    x,y = Col.norm(c, x), Col.norm(c, y)
+    s1  = s1 - 2.7183^(c.w * (x-y)/n)
+    s2  = s2 - 2.7183^(c.w * (y-x)/n) end
   return s1/n < s2/n  end
 
 --------------------------------------------------------------------------------
 local Data={}
-function Data.READ(src,fun)
-  if type(src)=="table" then for  _,t in pairs(src) do fun(t) end
-                        else for    t in csv(src)   do fun(t) end end end
+function Data.NEW() return {rows={}, cols=nil} end
 
-function Data.NEW(names)
-  local i={x={}, y={}, rows={}, names=names,klass=nil}
-  for at,txt in pairs(names) do
-    local new = Col.NUMP(txt) and Col.NUM(at,txt) or Col.NEW(at,txt)
-    if not Col.SKIP(txt) then
-      push(Col.GOAL(txt) and i.y or i.x, new)
-      if Col.KLASS(txt) then i.klass=new end end end
-  return i end
+function Data.ROWS(src,fun)
+  if type(src)=="table" then for  _,t in pairs(src) do fun(t) end
+                          else for    t in csv(src)   do fun(t) end end end 
 
 function Data.clone(i,inits,   j)
   j=Data.NEW(i.names)
   for _,t in pairs(inits or {}) do Data.add(j,t) end; return j end
 
 function Data.add(i,t)
-  t = t.cells and t or Row.NEW(i,t)
-  push(i.rows, t)
-  for _,cols in pairs{i.x, i.y} do
-    for _,c in pairs(cols) do Col.add(c, t.cells[c.at]) end end end
+  if not i.cols then i.cols = Col.COLS(t) else
+    t = t.cells and t or Row.NEW(i,t)
+    push(i.rows, t)
+    for _,cols in pairs{i.cols.x, i.cols.y} do
+      for _,c in pairs(cols) do Col.add(c, t.cells[c.at]) end end end
 
 --------------------------------------------------------------------------------
 local Bin={}
@@ -125,7 +128,7 @@ function Bin.merge(i,j, min)
   if i.n<min or j.n<min or Col.div(k) <= (i.n*Col.div(i) + j.n*Col.div(j)) / k.n 
   then return {lo=i.lo, hi=j.hi, ys=k} end end
 
-function Bin.RANGES(listOfRows,col,y)
+function Bin.BINS(listOfRows,col,y)
   local n,list, dict = 0,{}, {}
   for label,rows in pairs(listOfRows) do
     for _,row in pairs(rows) do
@@ -147,9 +150,10 @@ function Bin.MERGES(b4, min)
     now[#now+1]  = merged or b4[j] 
     j            = j + (merged and 2 or 1)  end
   if   #now < #b4 
-  then return Bin.MERGES(now,min) 
-  else for j=2,#now do now[j].lo = now[j-1].hi end
-       now[1].lo, now[#t].hi = -big, big
+  then return Bin.MERGES(now,min) -- loop to look for other merges
+  else -- stretch the bins to cover minus infinity to plus Infinity
+       for j=2,#now do now[j].lo = now[j-1].hi end
+       now[1].lo, now[#now].hi = -big, big
        return now end end
 
 --------------------------------------------------------------------------------
