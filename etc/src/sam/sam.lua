@@ -12,24 +12,20 @@ local the={ min  = .5,
 --------------------------------------------------------------------------------
 local Col={}
 function Col.GOAL(x)   return (x or ""):find"[!+-]$" end
-function Col.NUM(x)    return (x or ""):find"^[A-Z]" end
+function Col.NUMP(x)   return (x or ""):find"^[A-Z]" end
 function Col.KLASS(x)  return (x or ""):find"!$"  end
 function Col.SKIP(x)   return (x or ""):find":$"  end
 function Col.WEIGHT(x) return (x or ""):find"-$" and -1 or 1 end
 
 function Col.NEW(at,txt)
-  return {n   = 0, 
-          at  = at  or 0,
-          txt = txt or "", 
-          ok  = false,
-          kept = {},
-          div = 0, 
-          w   = Col.WEIGHT(txt),
-          mid = 0} end
+  return {n   = 0,      at  = at  or 0, txt = txt or "", 
+          ok  = false, kept = {},
+          div = 0,     mid  = 0} end
 
 function Col.NUM(at,txt,some)
-   i= Col.New(at,txt)
-   i.nums  = some or the.some -- if non-nil the i.nums is a numeric
+   i      = Col.New(at,txt)
+   i.w    = Col.WEIGHT(txt)
+   i.nums = some or the.some -- if non-nil the i.nums is a numeric
    return i end
 
 function Col.add(i,v,inc)
@@ -98,7 +94,7 @@ function Data.READ(src,fun)
 function Data.NEW(names)
   local i={x={}, y={}, rows={}, names=names,klass=nil}
   for at,txt in pairs(names) do
-    local new = Col.NUM(txt) and Col.NUM(at,txt) or Col.NEW(at,txt)
+    local new = Col.NUMP(txt) and Col.NUM(at,txt) or Col.NEW(at,txt)
     if not Col.SKIP(txt) then
       push(Col.GOAL(txt) and i.y or i.x, new)
       if Col.KLASS(txt) then i.klass=new end end end
