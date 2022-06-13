@@ -4,10 +4,10 @@ R=$(shell git rev-parse --show-toplevel)
 
 help : Makefile
 	echo ""; printf "usage: make [OPTIONS]\n\n"
-	@gawk 'BEGIN {FS="[ \t]*:.*##[ \t]*"}  \
+	@awk 'BEGIN {FS="[ \t]*:.*##[ \t]*"}  \
 	  NF==2 { printf \
            "  \033[36m%-25s\033[0m %s\n","make " $$1,$$2}'  $< \
-	| grep -v gawk
+	| grep -v awk
 
 docs/index.html: docs/shortr.html ##  commit to main
 	cp docs/shortr.html docs/index.html
@@ -15,9 +15,15 @@ docs/index.html: docs/shortr.html ##  commit to main
 ready: docs/index.html ##  commit to main
 	git add *;git commit -am save;git push;git status
 
-docs/%.html:  %.lua ## make doc
-	docco -l classic $<
-	cp $R/etc/docco.css docs/
+docs/%.html: %.lua ## make html
+	awk 'BEGIN {FS="(-|[ \t]*)?->[ \t]*"}\
+      NF==3 { $$2=gensub(/([A-Za-z0-9_])+:/," `\\1`:  ","g",$$2);\
+              print "--**"$$2"** <br> "$$3 ; next}\
+      1' $< > tmp.lua
+	docco -l classic  tmp.lua;
+	awk 'sub(/>tmp.lua</,">$<<") 1 ' docs/tmp.html > /tmp/$$$$; mv /tmp/$$$$  $@
+	rm tmp.lua docs/tmp.html
+	cp $R/etc/docco.css docs/docco.css
 
 docs/%.pdf : %.lua  ## make pdf
 	@mkdir -p docs

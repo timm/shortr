@@ -4,7 +4,7 @@ require"lib"
 -- instance methods are in Module.method(i,...)
 -- don't say self, say "i" (shorter)
 -- where p-- osible, if looking at two instances, use "i,j"
--- types = int,real, str,tab,bool
+-- types = int,real, str,tab
 --------------------------------------------------------------------------------
 local the={ min  = .5,
             bins = 16,
@@ -14,19 +14,13 @@ local the={ min  = .5,
 
 --------------------------------------------------------------------------------
 local Col={}
---> .GOAL(names:[str]) :bool ->
---> .NUMP(names:[str]) :bool ->
---> .KLASS(names:[str]) :bool ->
---> .SKIP(names:[str]) :bool -> recognize different column types
 function Col.GOAL(x)   return (x or ""):find"[!+-]$" end
 function Col.NUMP(x)   return (x or ""):find"^[A-Z]" end
 function Col.KLASS(x)  return (x or ""):find"!$"  end
 function Col.SKIP(x)   return (x or ""):find":$"  end
-
---> .WEIGHT(names:[str]) :bool -> assign column weight (-1= minimize)
 function Col.WEIGHT(x) return (x or ""):find"-$" and -1 or 1 end
 
---> .COLS(names:[str]) :COLS -> constructor
+--**Col.COLS( `s`:  [str])  ->   COLS** <br>  constructor
 function Col.COLS(names)
   local i={x={}, y={}, names=names, klass=nil}
   for at,txt in pairs(names) do
@@ -36,7 +30,7 @@ function Col.COLS(names)
       if Col.KLASS(txt) then i.klass=new end end end
   return i end
 
---> .NEW(at:?int, txt:?str) :COL -> constructor of numbers
+--**Col.NEW( `t`:  ?int,  `t`:  ?str)  ->   COL** <br>  constructor of numbers
 function Col.NEW(at,txt)
   return {n  =0,     at=at or 0, txt=txt or "", 
           ok =false, kept={},
