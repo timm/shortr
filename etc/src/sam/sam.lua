@@ -12,8 +12,8 @@ local the={ min  = .5,
             seed = 10019,
             file = "../../../data/auto93.csv"}
 
+local Col,Data,Row,Bin = {},{},{},{}
 --------------------------------------------------------------------------------
-local Col={}
 --> .GOAL(names:[str]) :bool ->
 --> .NUMP(names:[str]) :bool ->
 --> .KLASS(names:[str]) :bool ->
@@ -99,7 +99,6 @@ function Col.simpler(i,this,that)
   return Col.div(i) <= (this.n*Col.div(this) + that.n*Col.div(that)) / i.n end
 
 --------------------------------------------------------------------------------
-local Row={}
 function Row.NEW(of,cells) return {of=of,cells=cells,evaled=false} end
 
 function Row.better(i,j)
@@ -112,13 +111,15 @@ function Row.better(i,j)
   return s1/n < s2/n  end
 
 --------------------------------------------------------------------------------
-local Data={}
 function Data.NEW(t) return {rows={}, cols=Col.COLS(t)} end
 
 function Data.ROWS(src,fun)
   if type(src)=="table" then for  _,t in pairs(src) do fun(t) end
                         else for    t in csv(src)   do fun(t) end end end 
 
+function Data.LOAD(src,    i)
+  Data.ROWS(src,function(t) i=i and Data.add(t,i) or Data.NEW(t) end);return i end
+ 
 function Data.clone(i,inits,   j)
   j=Data.NEW(i.names)
   for _,t in pairs(inits or {}) do Data.add(j,t) end; return j end
@@ -127,14 +128,14 @@ function Data.add(i,t)
   t = t.cells and t or Row.NEW(i,t)
   push(i.rows, t)
   for _,cols in pairs{i.cols.x, i.cols.y} do
-    for _,c in pairs(cols) do Col.add(c, t.cells[c.at]) end end end 
+    for _,c in pairs(cols) do Col.add(c, t.cells[c.at]) end end 
+  return i end 
 
 function Data.mids(i,cols, t) 
   t={}
   for _,c in pairs(cols or i.cols.y) do t[c.txt] = Col.mid(c) end;return t end
 
 --------------------------------------------------------------------------------
-local Bin={}
 function Bin.new(xlo, xhi, ys) return {lo=xlo, hi=yhi, ys-ys} end
 function Bin.add(i,x,y)
   i.lo = math.min(i.lo, x)
@@ -185,7 +186,7 @@ function Go.ROWS(  d)
   oo(Data.mids(d)) end 
 
 function Go.STATS() 
-  oo(summarize(rows(the.file) )) 
+  oo(mids(Data.LOAD(the.file) )) 
 end
 
 function Go.ORDER(  i,t) 

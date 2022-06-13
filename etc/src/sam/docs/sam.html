@@ -67,7 +67,9 @@ types = int,real, str,tab,bool</p>
             bins = <span class="hljs-number">16</span>,
             some = <span class="hljs-number">256</span>, 
             seed = <span class="hljs-number">10019</span>,
-            file = <span class="hljs-string">&quot;../../../data/auto93.csv&quot;</span>}</pre></div></div>
+            file = <span class="hljs-string">&quot;../../../data/auto93.csv&quot;</span>}
+
+<span class="hljs-keyword">local</span> Col,Data,Row,Bin = {},{},{},{}</pre></div></div>
             
         </li>
         
@@ -91,20 +93,6 @@ types = int,real, str,tab,bool</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
-              
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> Col={}</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-6">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-6">&#x00a7;</a>
-              </div>
               <p><strong>.GOAL( <code>names</code>:  [str]) :bool</strong> <br> 
 <strong>.NUMP( <code>names</code>:  [str]) :bool</strong> <br> 
 <strong>.KLASS( <code>names</code>:  [str]) :bool</strong> <br> 
@@ -120,11 +108,11 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-7">&#x00a7;</a>
+                <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
               <p><strong>.WEIGHT( <code>names</code>:  [str]) :bool</strong> <br> assign column weight (-1= minimize)</p>
 
@@ -135,11 +123,11 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-8">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-8">&#x00a7;</a>
+                <a class="ss" href="#section-7">&#x00a7;</a>
               </div>
               <p><strong>.COLS( <code>names</code>:  [str]) :COLS</strong> <br> constructor</p>
 
@@ -157,11 +145,11 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-9">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-9">&#x00a7;</a>
+                <a class="ss" href="#section-8">&#x00a7;</a>
               </div>
               <p><strong>.NEW( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :COL</strong> <br> constructor of numbers</p>
 
@@ -227,11 +215,11 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-10">&#x00a7;</a>
+                <a class="ss" href="#section-9">&#x00a7;</a>
               </div>
               <p><strong>.simpler( <code>i</code>:  col, <code>this</code>:  col, <code>that</code>:  col):bool</strong> <br> am I simpler than <code>this</code> and <code>that</code>?</p>
 
@@ -243,11 +231,11 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-11">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-11">&#x00a7;</a>
+                <a class="ss" href="#section-10">&#x00a7;</a>
               </div>
               <hr>
 
@@ -256,17 +244,16 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-12">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-12">&#x00a7;</a>
+                <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> Row={}
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.NEW</span><span class="hljs-params">(of,cells)</span></span> <span class="hljs-keyword">return</span> {of=of,cells=cells,evaled=<span class="hljs-literal">false</span>} <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.NEW</span><span class="hljs-params">(of,cells)</span></span> <span class="hljs-keyword">return</span> {of=of,cells=cells,evaled=<span class="hljs-literal">false</span>} <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.better</span><span class="hljs-params">(i,j)</span></span>
   <span class="hljs-keyword">local</span> s1, s2, n = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, #i.of.y
@@ -280,11 +267,11 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-13">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-13">&#x00a7;</a>
+                <a class="ss" href="#section-12">&#x00a7;</a>
               </div>
               <hr>
 
@@ -293,17 +280,16 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-14">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-14">&#x00a7;</a>
+                <a class="ss" href="#section-13">&#x00a7;</a>
               </div>
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> Data={}
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.NEW</span><span class="hljs-params">(t)</span></span> <span class="hljs-keyword">return</span> {rows={}, cols=Col.COLS(t)} <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.NEW</span><span class="hljs-params">(t)</span></span> <span class="hljs-keyword">return</span> {rows={}, cols=Col.COLS(t)} <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.ROWS</span><span class="hljs-params">(src,fun)</span></span>
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">type</span>(src)==<span class="hljs-string">&quot;table&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span>  _,t <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(src) <span class="hljs-keyword">do</span> fun(t) <span class="hljs-keyword">end</span>
@@ -326,11 +312,11 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-15">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-15">&#x00a7;</a>
+                <a class="ss" href="#section-14">&#x00a7;</a>
               </div>
               <hr>
 
@@ -339,17 +325,16 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-16">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-16">&#x00a7;</a>
+                <a class="ss" href="#section-15">&#x00a7;</a>
               </div>
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> Bin={}
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.new</span><span class="hljs-params">(xlo, xhi, ys)</span></span> <span class="hljs-keyword">return</span> {lo=xlo, hi=yhi, ys-ys} <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.new</span><span class="hljs-params">(xlo, xhi, ys)</span></span> <span class="hljs-keyword">return</span> {lo=xlo, hi=yhi, ys-ys} <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.add</span><span class="hljs-params">(i,x,y)</span></span>
   i.lo = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(i.lo, x)
   i.hi = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(i.hi, x)
@@ -390,11 +375,11 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-17">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-17">&#x00a7;</a>
+                <a class="ss" href="#section-16">&#x00a7;</a>
               </div>
               <hr>
 
@@ -403,11 +388,11 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-18">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-18">&#x00a7;</a>
+                <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
               
             </div>
@@ -439,11 +424,11 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
               <hr>
 
@@ -452,11 +437,11 @@ types = int,real, str,tab,bool</p>
         </li>
         
         
-        <li id="section-20">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
               
             </div>
