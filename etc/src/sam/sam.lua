@@ -87,6 +87,17 @@ function Col.bin(i,x)
     local b=(hi - lo)/the.bins
     x = lo==hi and 1 or math.floor(x/b+.5)*b end 
   return x end 
+
+function Col.merge(i,j,     k)
+  k = (i.nums and Col.NUM or Col.NEW)(i.at, i.txt)
+  for _,kept in pairs{i.kept, j.kept} do
+    for x,n in pairs(kept) do Col.add(k,x,n) end end
+  return k end
+
+--> .simpler(i:col,this:col,that:col):bool ->am I simpler than `this` and `that`?
+function Col.simpler(i,this,that)
+  return Col.div(i) <= (this.n*Col.div(this) + that.n*Col.div(that)) / i.n end
+
 --------------------------------------------------------------------------------
 local Row={}
 function Row.NEW(of,cells) return {of=of,cells=cells,evaled=false} end
@@ -131,11 +142,8 @@ function Bin.add(i,x,y)
   Col.add(i.ys, y) end
 
 function Bin.merge(i,j, min)
-  local k = Col.NEW(i.at, i.txt)
-  for x,n in pairs(i.ys.kept) do Col.add(k,x,n) end
-  for x,n in pairs(j.ys.kept) do Col.add(k,x,n) end
-  if i.n<min or j.n<min or Col.div(k) <= (i.n*Col.div(i) + j.n*Col.div(j)) / k.n 
-  then return {lo=i.lo, hi=j.hi, ys=k} end end
+  local k = Col.merge(i,j)
+  if i.n < min or j.n<min or Col.simpler(k,i,j)  then return k end end
 
 function Bin.BINS(listOfRows,col,y)
   local n,list, dict = 0,{}, {}

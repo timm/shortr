@@ -17,10 +17,11 @@ ready: docs/index.html ##  commit to main
 
 docs/%.html: %.lua ## make html
 	awk 'BEGIN {FS="(-|[ \t]*)?->[ \t]*"}\
-      NF==3 { $$2=gensub(/([A-Za-z0-9_])+:/," `\\1`:  ","g",$$2);\
+      NF==3 { $$2=gensub(/([A-Za-z0-9_]+):/," `\\1`:  ","g",$$2);\
               print "--**"$$2"** <br> "$$3 ; next}\
       1' $< > tmp.lua
-	docco -l classic  tmp.lua;
+	echo "docco: $< -> $@"
+	docco -l classic  tmp.lua > /dev/null
 	awk 'sub(/>tmp.lua</,">$<<") 1 ' docs/tmp.html > /tmp/$$$$; mv /tmp/$$$$  $@
 	rm tmp.lua docs/tmp.html
 	cp $R/etc/docco.css docs/docco.css
