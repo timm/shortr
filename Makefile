@@ -17,7 +17,7 @@ ready: docs/index.html ##  commit to main
 
 docs/%.html: %.lua ## make html
 	awk 'BEGIN {FS="(-|[ \t]*)?->[ \t]*"}\
-      NF==3 { $$2=gensub(/([A-Za-z0-9_]+):/," `\\1`:  ","g",$$2);\
+      NF==3 && /^-->/ { $$2=gensub(/([A-Za-z0-9_]+):/," `\\1`:  ","g",$$2);\
               print "--**"$$2"** <br> "$$3 ; next}\
       1' $< > tmp.lua
 	echo "docco: $< -> $@"

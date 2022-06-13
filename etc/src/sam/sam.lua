@@ -6,10 +6,13 @@ require"lib"
 -- where p-- osible, if looking at two instances, use "i,j"
 -- types = int,real, str,tab,bool
 --------------------------------------------------------------------------------
-local the={ min  = .5,
+local the={ Min  = .5,
             bins = 16,
             some = 256, 
             seed = 10019,
+            wait = 10,
+            m    = 2,
+            k    = 1,
             file = "../../../data/auto93.csv"}
 
 local Col,Data,Row,Bin = {},{},{},{}
@@ -61,16 +64,16 @@ function Col.add(i,v,inc)
   return i end
 
 function Col.ok(i)
-  if not i.ok then 
-    i.div, i.mid = 0, 0
-    if   i.nums 
-    then i.kept = sort(i.kept)
-         i.mid  = per(i.kept, .5)
-         i.div  = (per(i.kept, .9) - per(i.kept, .1)) / 2.56
-    else local most = -1
-         for x,n in pairs(i.kept) do 
-           if n > most then most, i.mid = n, x end
-           i.div = i.div - n/i.n * math.log( n/i.n, 2) end end end 
+  if   not i.ok 
+  then i.div, i.mid = 0, 0
+       if   i.nums 
+       then i.kept = sort(i.kept)
+            i.mid  = per(i.kept, .5)
+            i.div  = (per(i.kept, .9) - per(i.kept, .1)) / 2.56
+       else local most = -1
+            for x,n in pairs(i.kept) do 
+              if n > most then most, i.mid = n, x end
+              i.div = i.div - n/i.n * math.log( n/i.n, 2) end end end 
   i.ok = true end
   
 function Col.lo(i)   Col.ok(i); return i.kept[1] end
@@ -91,12 +94,19 @@ function Col.bin(i,x)
 function Col.merge(i,j,     k)
   k = (i.nums and Col.NUM or Col.NEW)(i.at, i.txt)
   for _,kept in pairs{i.kept, j.kept} do
-    for x,n in pairs(kept) do Col.add(k,x,n) end end
+    for v,inc in pairs(kept) do Col.add(k,v,inc) end end
   return k end
 
 -->.simpler(i:col,this:col,that:col):bool->am `i` simpler than `this` and `that`?
 function Col.simpler(i,this,that)
   return Col.div(i) <= (this.n*Col.div(this) + that.n*Col.div(that)) / i.n end
+
+function Col.like(i,x,prior)
+  if   i.nums 
+  then return ((i.kept[x] or 0)+the.m*prior)/(i.n+the.m) 
+  else local sd,mu=Col.div(i), Col.mid(i)
+       return sd==0 and (x==mu and 1 or 0) or
+           math.exp(-1*(x - mu)^2/(2*sd^2)) / (sd*((2*math.pi)^0.5)) end end
 
 --------------------------------------------------------------------------------
 function Row.NEW(of,cells) return {of=of,cells=cells,evaled=false} end
@@ -110,6 +120,7 @@ function Row.better(i,j)
     s2  = s2 - 2.7183^(c.w * (y-x)/#ys) end
   return s1/#ys < s2/#ys  end
 
+function Row.klass(i) return i.cells[i.of.cols.klass.at] end
 --------------------------------------------------------------------------------
 function Data.NEW(t) return {rows={}, cols=Col.COLS(t)} end
 
@@ -118,7 +129,8 @@ function Data.ROWS(src,fun)
                         else for    t in csv(src)   do fun(t) end end end 
 
 function Data.LOAD(src,    i)
-  Data.ROWS(src,function(t) i=i and Data.add(i,t) or Data.NEW(t) end);return i end
+  Data.ROWS(src,function(t) 
+    if i then Data.add(i,t) else i=Data.NEW(t) end end); return i end
  
 function Data.clone(i,inits,   j)
   j=Data.NEW(i.cols.names)
@@ -129,14 +141,44 @@ function Data.add(i,t)
   push(i.rows, t)
   for _,cols in pairs{i.cols.x, i.cols.y} do
     for _,c in pairs(cols) do Col.add(c, t.cells[c.at]) end end 
-  return i end 
+  return t end 
 
 function Data.mids(i,cols, t) 
   t={}
   for _,c in pairs(cols or i.cols.y) do t[c.txt] = Col.mid(c) end;return t end
 
+function Data.like(i,row, nklasses, nrows)
+  local prior,like,inc,x
+  prior = (#i.rows + the.k) / (nrows + the.k * nklasses)
+  like  = math.log(prior)
+  for _,col in pairs(i.cols.x) do
+    x = row.cells[col.at] 
+    if x and x ~= "?" then
+      inc  = Col.like(col,x,prior)
+      like = like + math.log(inc) end end
+  return like end
+
+local NB={}
+function NB.NEW(src,report)
+  i  = {overall=nil, dict={}, list={}}
+  Data.ROWS(src, function(row) 
+    if not i.overall then i.overall = Data.NEW(row) else -- (0) eat row1
+      row = Data.add(i.overall, row)  -- XX add to overall 
+      if #i.overall.rows > the.wait then report(Row.klass(row), NB.guess(i,row)) end
+      NB.train(i,row) end end)              -- add tp rows's klass
+  return i end
+
+function NB.train(i,row) 
+  local k = Row.klass(row)
+  i.dict[k] = i.dict[k] or push(i.list, Data.clone(i.overall)) -- klass is known
+  i.dict[k].txt = k                            -- each klass knows its name
+  Data.add(i.dict[k],row) end                  -- update klass with row
+
+function NB.guess(i,row) 
+  return argmax(i.dict, 
+    function(klass) return Row.like(klass,row,#i.list,#i.overall.rows) end) end
 --------------------------------------------------------------------------------
-function Bin.new(xlo, xhi, ys) return {lo=xlo, hi=xhi, ys=ys} end
+function Bin.NEW(xlo, xhi, ys) return {lo=xlo, hi=xhi, ys=ys} end
 function Bin.add(i,x,y)
   i.lo = math.min(i.lo, x)
   i.hi = math.max(i.hi, x)

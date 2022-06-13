@@ -9,6 +9,12 @@ function sum(t,f,  n)   n=0;  for k,v in pairs(t) do n = n + f(v) end; return n 
 function per(t,p)       p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 function lt(x)          return function(a,b) return a[x] < b[x] end end
 
+function argmax(t,f)
+  local arg, max = nil, -big
+  for key,x in pairs(t) do local tmp=f(x);if tmp>max then arg,max=key,tmp end end
+  return arg end
+
+
 function o(t) 
   if #t>0 then return "{" .. table.concat(map(t,tostring)," ") .."}" end
   local u={}; for k,v in pairs(t) do u[1+#u] = fmt(":%s %s",k,v) end
