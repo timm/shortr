@@ -1,10 +1,5 @@
 local help=[[
-modules start with an Upper case letter
-class methods are in Module.UPPERCASE (e.g. Module.NEW for constructors)
-instance methods are in Module.method(i,...)
-don't say self, say "i" (shorter)
-where p-- osible, if looking at two instances, use "i,j"
-types = int,real, str,tab,bool
+
 ]]
 -------------------------------------------------------------------------------
 -- ## Names
@@ -21,7 +16,7 @@ types = int,real, str,tab,bool
 -- - `Bin` is a helper class that summarizes what dependent `ys` values are
 --   found between `lo` and `hi` of an independent column.
 -- - `NB` is an application class that implements a Naive Bayes classifier.
-local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
+local b4={}; for x,_ in pairs(_ENV) do b4[x]=x end 
 local _    = require"lib"
 local Abcd = require"abcd"
 
@@ -235,10 +230,10 @@ function NB.NEW(src,report)
   return i end
 
 function NB.train(i,row) 
-  local k = Row.klass(row)
-  i.dict[k] = i.dict[k] or push(i.list, Data.clone(i.overall)) -- klass is known
-  i.dict[k].txt = k                            -- each klass knows its name
-  Data.add(i.dict[k],row) end                  -- update klass with row
+  local kl = Row.klass(row)
+  i.dict[kl] = i.dict[kl] or push(i.list, Data.clone(i.overall)) -- klass is known
+  i.dict[kl].txt = kl                            -- each klass knows its name
+  Data.add(i.dict[kl],row) end                  -- update klass with row
 
 function NB.guess(i,row) 
   return argmax(i.dict, 
@@ -271,15 +266,15 @@ function Bin.BINS(listOfRows,col,y)
             div = sum(list,function(z) return Col.div(z.ys)*z.ys.n/n end)} end
  
 function Bin.MERGES(b4, min)
-  local j,now = 1,{}
-  while j <= #b4 do 
-    local merged = j<#b4 and Bin.merge(b4[j], b4[j+1], min)
-    now[#now+1]  = merged or b4[j] 
-    j            = j + (merged and 2 or 1)  end
+  local n,now = 1,{}
+  while n <= #b4 do 
+    local merged = n<#b4 and Bin.merge(b4[n], b4[n+1], min)
+    now[#now+1]  = merged or b4[n] 
+    n            = n + (merged and 2 or 1)  end
   if   #now < #b4 
   then return Bin.MERGES(now,min) -- loop to look for other merges
   else -- stretch the bins to cover any gaps from minus infinity to plus infinity
-       for j=2,#now do now[j].lo = now[j-1].hi end
+       for n=2,#now do now[n].lo = now[n-1].hi end
        now[1].lo, now[#now].hi = -big, big
        return now end end
 
@@ -318,5 +313,5 @@ function Go.SOYBEAN()  Go.DIABETES("../../../data/soybean.csv") end
 --------------------------------------------------------------------------------
 math.randomseed(the.seed)
 if arg[1]=="-g" and type(Go[arg[2]])=="function" then Go[arg[2]]() end
-for k,v in pairs(_ENV) do  if not b4[k] then print("?",k,type(v)) end end 
+for x,v in pairs(_ENV) do  if not b4[x] then print("?",x,type(v)) end end 
  
