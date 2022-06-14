@@ -1,11 +1,25 @@
+local help=[[
+modules start with an Upper case letter
+class methods are in Module.UPPERCASE (e.g. Module.NEW for constructors)
+instance methods are in Module.method(i,...)
+don't say self, say "i" (shorter)
+where p-- osible, if looking at two instances, use "i,j"
+types = int,real, str,tab,bool
+]]
+-------------------------------------------------------------------------------
+-- ## Names
+
+-- `the` stores settings for this code.
+--  
+-- - `Row` holds one record
+-- - `Col` summarizes columns. One `Col` can be for
+--   numerics or symbolic columns (denoted with ` aCol.nums`).
+-- - `Data` holds many `Row`s, summarized in a table `aData.cols`
+--   (where `aData.cols.x` holds independent columns and
+--    `aData.cols.y` holds dependent columns). 
+-- - `Bin` is a helper class that summarizes what dependent `ys` values are
+--   found between `lo` and `hi` of an independent column.
 require"lib"
--- modules start with an Upper case letter
--- class methods are in Module.UPPERCASE (e.g. Module.NEW for constructors)
--- instance methods are in Module.method(i,...)
--- don't say self, say "i" (shorter)
--- where p-- osible, if looking at two instances, use "i,j"
--- types = int,real, str,tab,bool
---------------------------------------------------------------------------------
 local the={ Min  = .5,
             bins = 16,
             some = 256, 
@@ -16,7 +30,12 @@ local the={ Min  = .5,
             file = "../../../data/auto93.csv"}
 
 local Col,Data,Row,Bin = {},{},{},{}
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+-- ## Col
+-- Summaries a stream of numbers. Knows how to build the right kind of header
+-- for each column. Knows how to store dependent columns separate to independent
+-- columns.
+
 --> .GOAL(names:[str]) :bool ->
 --> .NUMP(names:[str]) :bool ->
 --> .KLASS(names:[str]) :bool ->
@@ -29,7 +48,7 @@ function Col.SKIP(x)   return (x or ""):find":$"  end
 --> .WEIGHT(names:[str]) :bool -> assign column weight (-1= minimize)
 function Col.WEIGHT(x) return (x or ""):find"-$" and -1 or 1 end
 
---> .COLS(names:[str]) :COLS -> constructor
+--> .COLS(names:[str]) :COLS -> constructor: builds `Col`s from `names`.
 function Col.COLS(names)
   local i={x={}, y={}, names=names, klass=nil}
   for at,txt in pairs(names) do
@@ -45,12 +64,14 @@ function Col.NEW(at,txt)
           ok =false, kept={},
           div=0,     mid=0} end
 
+--> .NUM(at:?int, txt:?str) :COL -> constructor of numeric columns.
 function Col.NUM(at,txt,some)
    i     = Col.NEW(at,txt)
    i.w   = Col.WEIGHT(txt)
    i.nums= some or the.some -- if non-nil the i.nums is a numeric
    return i end
 
+--> .add(i:Col, v:any, inc:?int) :Col ->  update `i` with  `v ` ( inc  times)
 function Col.add(i,v,inc)
  inc = inc or 1
  if   v ~= "?"
@@ -63,14 +84,16 @@ function Col.add(i,v,inc)
            i.kept[v] = inc + (i.kept[v] or 0) end end
   return i end
 
+--> .ok(i:col) --> ensure that the current contents are up to date.
+-- E.g. update `mid` (middle) with median
 function Col.ok(i)
   if   not i.ok 
   then i.div, i.mid = 0, 0
        if   i.nums 
        then i.kept = sort(i.kept)
-            i.mid  = per(i.kept, .5)
-            i.div  = (per(i.kept, .9) - per(i.kept, .1)) / 2.56
-       else local most = -1
+            i.mid  = per(i.kept, .5) -- median
+            i.div  = (per(i.kept, .9) - per(i.kept, .1)) / 2.56 -- stdev
+       else local most = -1 -- find the mode and ent
             for x,n in pairs(i.kept) do 
               if n > most then most, i.mid = n, x end
               i.div = i.div - n/i.n * math.log( n/i.n, 2) end end end 
@@ -109,6 +132,7 @@ function Col.like(i,x,prior)
            math.exp(-1*(x - mu)^2/(2*sd^2)) / (sd*((2*math.pi)^0.5)) end end
 
 --------------------------------------------------------------------------------
+-- ## Row
 function Row.NEW(of,cells) return {of=of,cells=cells,evaled=false} end
 
 function Row.better(i,j)
@@ -122,6 +146,7 @@ function Row.better(i,j)
 
 function Row.klass(i) return i.cells[i.of.cols.klass.at] end
 --------------------------------------------------------------------------------
+-- ## Data
 function Data.NEW(t) return {rows={}, cols=Col.COLS(t)} end
 
 function Data.ROWS(src,fun)
@@ -157,7 +182,8 @@ function Data.like(i,row, nklasses, nrows)
       inc  = Col.like(col,x,prior)
       like = like + math.log(inc) end end
   return like end
-
+--------------------------------------------------------------------------------
+-- ## Bin
 local NB={}
 function NB.NEW(src,report)
   i  = {overall=nil, dict={}, list={}}
@@ -178,6 +204,7 @@ function NB.guess(i,row)
   return argmax(i.dict, 
     function(klass) return Row.like(klass,row,#i.list,#i.overall.rows) end) end
 --------------------------------------------------------------------------------
+-- ## Bin
 function Bin.NEW(xlo, xhi, ys) return {lo=xlo, hi=xhi, ys=ys} end
 function Bin.add(i,x,y)
   i.lo = math.min(i.lo, x)
