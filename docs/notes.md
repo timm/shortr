@@ -1,9 +1,20 @@
+sampling: the larger the sample, the less we keep (reservoir)
+
+1% rule
+
+losts of little functions
+
+type hints
+
 literature programming
 - self dcumenting code (make file help, code comment#1
 
 +iterative diconphmzation: discretization, sctott-knot, decision tree
 +
  self-documentating code:
+- type hints
+- help string
+- make menus
 
  +
  +----

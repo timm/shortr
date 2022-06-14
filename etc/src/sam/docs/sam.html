@@ -38,7 +38,7 @@ href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.or
 explanation tool, all in under 300 lines of code (most of
 which is background stuff that could be used for other
 learners). <br></p>
-<p><code>awk &#39;!/^(--|[ \t]*$)/ {n++}</code><br><code>END {print n&quot; lines&quot;}&#39; *.lua</code><br>=&gt; 231 lines</p>
+<p><code>awk &#39;!/^(--|[ \t]*$)/ {n++}</code><br><code>END {print n&quot; lines&quot;}&#39; *.lua</code><br>=&gt; 301 lines</p>
 <p>So, what do you think? Like what you see?</p>
 
             </div>
@@ -87,9 +87,10 @@ types = int,real, str,tab,bool
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <p><code>the</code> stores settings for this code.</p>
+              <p><code>the</code> stores settings for this code. <p>As to the classes used by this system:</p>
 <ul>
-<li><code>Row</code> holds one record</li>
+<li><code>Row</code> hold the <code>cells</code> or record and a pointer (<code>of</code>) back to the 
+container that made them.</li>
 <li><code>Col</code> summarizes columns. One <code>Col</code> can be for
 numerics or symbolic columns (denoted with <code> aCol.nums</code>).</li>
 <li><code>Data</code> holds many <code>Row</code>s, summarized in a table <code>aData.cols</code>
@@ -103,7 +104,8 @@ found between <code>lo</code> and <code>hi</code> of an independent column.</li>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span> 
-<span class="hljs-keyword">local</span> _ =<span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
+<span class="hljs-keyword">local</span> _    = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
+<span class="hljs-keyword">local</span> Abcd = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;abcd&quot;</span>
 
 <span class="hljs-keyword">local</span> argmax,atom,big,csv,fmt = _.argmax, _.atom, _.big, _.csv, _.fmt
 <span class="hljs-keyword">local</span> lt,map,o,oo,per,push    = _.lt, _.map, _.o, _.oo, _.per, _.push
@@ -143,9 +145,7 @@ found between <code>lo</code> and <code>hi</code> of an independent column.</li>
                 <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
               <h2 id="class-col">class Col</h2>
-<p>Summaries a stream of numbers. Knows how to build the right kind of header
-for each column. Knows how to store dependent columns separate to independent
-columns.</p>
+<p>Summaries a column of data. Uses different types for numeric or other data.</p>
 
             </div>
             
@@ -157,6 +157,60 @@ columns.</p>
               
               <div class="sswrap ">
                 <a class="ss" href="#section-7">&#x00a7;</a>
+              </div>
+              <p><strong>.NEW( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :Col</strong> <br> constructor of columns.
+<code>.ok</code> is set to false after every update then set back
+to true if ever we update the columns (see <code>Col.ok</code>).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.NEW</span><span class="hljs-params">(at,txt)</span></span>
+  <span class="hljs-keyword">return</span> {n  =<span class="hljs-number">0</span>,     at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, txt=txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, 
+          ok =<span class="hljs-literal">false</span>, kept={},
+          div=<span class="hljs-number">0</span>,     mid=<span class="hljs-number">0</span>} <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-8">&#x00a7;</a>
+              </div>
+              <p><strong>.NUM( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :Col</strong> <br> constructor, specialized for numerics.
+Numbers have a weight (-1,1) as well as the manddate to keep 
+no more than  <code>aNum.nums</code> samples.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.NUM</span><span class="hljs-params">(at,txt,some,   i)</span></span>
+   i     = Col.NEW(at,txt) <span class="hljs-comment">-- numerics are an extension to general columns.</span>
+   i.w   = Col.WEIGHT(txt)
+   i.nums= some <span class="hljs-keyword">or</span> the.some <span class="hljs-comment">-- if non-nil the i.nums is a numeric</span>
+   <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-9">&#x00a7;</a>
+              </div>
+              <h3 id="factory-to-make-cols">Factory to make Cols</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-10">&#x00a7;</a>
               </div>
               <p><strong>.GOAL( <code>x</code>:  [str]) :bool</strong> <br> 
 <strong>.NUMP( <code>x</code>:  [str]) :bool</strong> <br> 
@@ -173,78 +227,17 @@ columns.</p>
         </li>
         
         
-        <li id="section-8">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-8">&#x00a7;</a>
-              </div>
-              <p><strong>.WEIGHT( <code>x</code>:  [str]) :(-1|1)</strong> <br> assign column weight (-1= minimize)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.WEIGHT</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> (x <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>):<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-9">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-9">&#x00a7;</a>
-              </div>
-              <p><strong>.COLS( <code>names</code>:  [str]) :tab</strong> <br> constructor: builds <code>Col</code>s from <code>names</code>.
-Stores dependents in <code>.y</code>, independents in <code>.x</code>, the klass (if it exists)
-in <code>.klass</code>. Caveat:  only if we are not <code>.SKIP()</code>ping them.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.COLS</span><span class="hljs-params">(names)</span></span>
-  <span class="hljs-keyword">local</span> i={x={}, y={}, names=names, klass=<span class="hljs-literal">nil</span>}
-  <span class="hljs-keyword">for</span> at,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(names) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">local</span> new = Col.NUMP(txt) <span class="hljs-keyword">and</span> Col.NUM(at,txt) <span class="hljs-keyword">or</span> Col.NEW(at,txt)
-    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> Col.SKIP(txt) <span class="hljs-keyword">then</span>
-      push(Col.GOAL(txt) <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x, new)
-      <span class="hljs-keyword">if</span> Col.KLASS(txt) <span class="hljs-keyword">then</span> i.klass=new <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-10">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-10">&#x00a7;</a>
-              </div>
-              <p><strong>.NEW( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :Col</strong> <br> constructor of numbers</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.NEW</span><span class="hljs-params">(at,txt)</span></span>
-  <span class="hljs-keyword">return</span> {n  =<span class="hljs-number">0</span>,     at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, txt=txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, 
-          ok =<span class="hljs-literal">false</span>, kept={},
-          div=<span class="hljs-number">0</span>,     mid=<span class="hljs-number">0</span>} <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
         <li id="section-11">
             <div class="annotation">
               
               <div class="sswrap ">
                 <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
-              <p><strong>.NUM( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :Col</strong> <br> constructor of numeric columns.</p>
+              <p><strong>.WEIGHT( <code>x</code>:  [str]) :(-1|1)</strong> <br> assign column weight.e.g. “-1” means “minimize”,</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.NUM</span><span class="hljs-params">(at,txt,some,   i)</span></span>
-   i     = Col.NEW(at,txt)
-   i.w   = Col.WEIGHT(txt)
-   i.nums= some <span class="hljs-keyword">or</span> the.some <span class="hljs-comment">-- if non-nil the i.nums is a numeric</span>
-   <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.WEIGHT</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> (x <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>):<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -255,7 +248,47 @@ in <code>.klass</code>. Caveat:  only if we are not <code>.SKIP()</code>ping the
               <div class="sswrap ">
                 <a class="ss" href="#section-12">&#x00a7;</a>
               </div>
-              <p><strong>.add( <code>i</code>:  Col,  <code>v</code>:  any,  <code>inc</code>:  ?int) :Col</strong> <br> update <code>i</code> with  <code>v </code> ( inc  times)</p>
+              <p><strong>.COLS( <code>names</code>:  [str]) :tab</strong> <br> constructor (builds <code>Col</code>s from list of <code>names</code>).
+Returns a table that stores dependents in <code>.y</code>, independents in <code>.x</code>, 
+the klass (if it exists)in <code>.klass</code>. Caveat: 
+only if we are not <code>.SKIP()</code>ping them.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.COLS</span><span class="hljs-params">(names)</span></span>
+  <span class="hljs-keyword">local</span> i={x={}, y={}, names=names, klass=<span class="hljs-literal">nil</span>}
+  <span class="hljs-keyword">for</span> at,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(names) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">local</span> new = Col.NUMP(txt) <span class="hljs-keyword">and</span> Col.NUM(at,txt) <span class="hljs-keyword">or</span> Col.NEW(at,txt)
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> Col.SKIP(txt) <span class="hljs-keyword">then</span>
+      push(Col.GOAL(txt) <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x, new)
+      <span class="hljs-keyword">if</span> Col.KLASS(txt) <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(<span class="hljs-number">1000</span>);i.klass=new <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-13">&#x00a7;</a>
+              </div>
+              <h3 id="update">Update</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-14">&#x00a7;</a>
+              </div>
+              <p><strong>.add( <code>i</code>:  Col,  <code>v</code>:  any,  <code>inc</code>:  ?int) :Col</strong> <br> update <code>i</code> with  <code>v </code> ( inc  times)
+Numeric columns keep a sample of the numbers while other columns track the
+frequency of symbols seen so far.</p>
 
             </div>
             
@@ -274,19 +307,34 @@ in <code>.klass</code>. Caveat:  only if we are not <code>.SKIP()</code>ping the
         </li>
         
         
-        <li id="section-13">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-13">&#x00a7;</a>
+                <a class="ss" href="#section-15">&#x00a7;</a>
+              </div>
+              <h3 id="computing-derived-properties">Computing derived properties</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-16">&#x00a7;</a>
               </div>
               <p><strong>.ok( <code>i</code>:  Col)</strong> <br> ensure that the current contents are up to date.
 E.g. update <code>mid</code>dle and <code>div</code>ersity (<em>median</em> and <em>standard
 deviation</em> for numerics; and <em>mode</em> and <em>entropy</em> for others).<p>
-Implementation note about  “(90th-10th)/2.56”: &pm;1 and &pm;2
+This code uses the idiom “(per(.9) - per(.1))/2.56” to find
+standard deviation. To grok that,
+recall that &pm;1 and &pm;2
 standard deviations marks out 66 to  95% of the mass. Somewhere in
 between (at &pm;1.28), we get to 90% of the mass.  So to find one
-standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
+standard deviation, divide the 90th minus 10th percentile by twice 1.28 (2.56).</p>
 
             </div>
             
@@ -300,17 +348,31 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
        <span class="hljs-keyword">else</span> <span class="hljs-keyword">local</span> most = <span class="hljs-number">-1</span> <span class="hljs-comment">-- find the mode and ent</span>
             <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kept) <span class="hljs-keyword">do</span> 
               <span class="hljs-keyword">if</span> n &gt; most <span class="hljs-keyword">then</span> most, i.mid = n, x <span class="hljs-keyword">end</span>
-              i.div = i.div - n/i.n * <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>( n/i.n, <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+              <span class="hljs-keyword">if</span> n &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> i.div=i.div - n/i.n*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(n/i.n,<span class="hljs-number">2</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
   i.ok = <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-14">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-14">&#x00a7;</a>
+                <a class="ss" href="#section-17">&#x00a7;</a>
+              </div>
+              <h3 id="querying">Querying</h3>
+<p>Most of these need to call <code>Col.ok()</code> first (to ensure column is up to date).</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
               <p><strong>.lo( <code>i</code>:  Col) :num</strong> <br> 
 <strong>.hi( <code>i</code>:  Col) :num</strong> <br> 
@@ -327,11 +389,11 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-15">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-15">&#x00a7;</a>
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
               <p><strong>.norm( <code>i</code>:  Col, <code>x</code>:  num) :0..1</strong> <br> normalize <code>x</code> 0..1 for lo..hi.</p>
 
@@ -344,11 +406,27 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-16">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-16">&#x00a7;</a>
+                <a class="ss" href="#section-20">&#x00a7;</a>
+              </div>
+              <ul>
+<li><h3 id="for-discretization">For Discretization</h3>
+</li>
+</ul>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
               <p><strong>.bin( <code>i</code>:  Col, <code>x</code>:  any) :any</strong> <br> round numeric <code>x</code> to nearest <code>(hi-lo)/the.bins</code>
 (and for non-numerics, just return <code>x</code>).</p>
@@ -360,9 +438,22 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
     <span class="hljs-keyword">local</span> lo,hi = Col.lo(i), Col.hi(i)
     <span class="hljs-keyword">local</span> b=(hi - lo)/the.bins
     x = lo==hi <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">floor</span>(x/b+<span class="hljs-number">.5</span>)*b <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-22">&#x00a7;</a>
+              </div>
+              <p><strong>.bin( <code>i</code>:  Col, <code>j</code>:  Col) :Col</strong> <br> returns a combination of two columns.</p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.merge</span><span class="hljs-params">(i,j,     k)</span></span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.merge</span><span class="hljs-params">(i,j,     k)</span></span>
   k = (i.nums <span class="hljs-keyword">and</span> Col.NUM <span class="hljs-keyword">or</span> Col.NEW)(i.at, i.txt)
   <span class="hljs-keyword">for</span> _,kept <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{i.kept, j.kept} <span class="hljs-keyword">do</span>
     <span class="hljs-keyword">for</span> v,inc <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(kept) <span class="hljs-keyword">do</span> Col.add(k,v,inc) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
@@ -371,19 +462,36 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-17">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-17">&#x00a7;</a>
+                <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
               <p><strong>.simpler( <code>i</code>:  col, <code>this</code>:  col, <code>that</code>:  col):bool</strong> <br> am <code>i</code> simpler than <code>this</code> and <code>that</code>?</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.simpler</span><span class="hljs-params">(i,this,that)</span></span>
-  <span class="hljs-keyword">return</span> Col.div(i) &lt;= (this.n*Col.div(this) + that.n*Col.div(that)) / i.n <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> Col.div(i) &lt;= (this.n*Col.div(this) + that.n*Col.div(that)) / i.n <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-24">&#x00a7;</a>
+              </div>
+              <ul>
+<li><h3 id="for-naive-bayes">For Naive Bayes</h3>
+</li>
+</ul>
 
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.like</span><span class="hljs-params">(i,x,prior)</span></span>
   <span class="hljs-keyword">if</span>   i.nums 
   <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> ((i.kept[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>)+the.m*prior)/(i.n+the.m) 
@@ -394,11 +502,11 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-18">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-18">&#x00a7;</a>
+                <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
               <hr>
 
@@ -407,11 +515,11 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
               <h2 id="row">Row</h2>
 
@@ -433,11 +541,11 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-20">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-27">&#x00a7;</a>
               </div>
               <hr>
 
@@ -446,11 +554,11 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-21">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-21">&#x00a7;</a>
+                <a class="ss" href="#section-28">&#x00a7;</a>
               </div>
               <h2 id="data">Data</h2>
 
@@ -495,11 +603,11 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-22">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-22">&#x00a7;</a>
+                <a class="ss" href="#section-29">&#x00a7;</a>
               </div>
               <hr>
 
@@ -508,11 +616,11 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-23">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-23">&#x00a7;</a>
+                <a class="ss" href="#section-30">&#x00a7;</a>
               </div>
               <h2 id="nb">NB</h2>
 
@@ -536,16 +644,16 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.guess</span><span class="hljs-params">(i,row)</span></span> 
   <span class="hljs-keyword">return</span> argmax(i.dict, 
-    <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(klass)</span></span> <span class="hljs-keyword">return</span> Row.like(klass,row,#i.list,#i.overall.rows) <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span></pre></div></div>
+    <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(klass)</span></span> <span class="hljs-keyword">return</span> Data.like(klass,row,#i.list,#i.overall.rows) <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-24">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
+                <a class="ss" href="#section-31">&#x00a7;</a>
               </div>
               <hr>
 
@@ -554,11 +662,11 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-25">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-25">&#x00a7;</a>
+                <a class="ss" href="#section-32">&#x00a7;</a>
               </div>
               <h2 id="bin">Bin</h2>
 
@@ -605,11 +713,11 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-26">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-26">&#x00a7;</a>
+                <a class="ss" href="#section-33">&#x00a7;</a>
               </div>
               <hr>
 
@@ -618,11 +726,11 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-27">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-27">&#x00a7;</a>
+                <a class="ss" href="#section-34">&#x00a7;</a>
               </div>
               
             </div>
@@ -653,16 +761,24 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
   <span class="hljs-keyword">end</span> 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.NB</span><span class="hljs-params">(  i,t)</span></span> 
-  NB.NEW(<span class="hljs-string">&quot;../../../data/auto93.csv&quot;</span>,<span class="hljs-built_in">print</span>) <span class="hljs-keyword">end</span></pre></div></div>
+  a = Abcd.NEW()
+  NB.NEW(<span class="hljs-string">&quot;../../../data/diabetes.csv&quot;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x,y)</span></span> Abcd.add(a,x,y) <span class="hljs-keyword">end</span>) 
+  Abcd.pretty(a,Abcd.report(a)) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.NB1</span><span class="hljs-params">(  i,t)</span></span> 
+  a = Abcd.NEW()
+  NB.NEW(<span class="hljs-string">&quot;../../../data/soybean.csv&quot;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x,y)</span></span> Abcd.add(a,x,y) <span class="hljs-keyword">end</span>) 
+  Abcd.pretty(a,Abcd.report(a))
+  <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-28">
+        <li id="section-35">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-28">&#x00a7;</a>
+                <a class="ss" href="#section-35">&#x00a7;</a>
               </div>
               <hr>
 
@@ -671,11 +787,11 @@ standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
         </li>
         
         
-        <li id="section-29">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-29">&#x00a7;</a>
+                <a class="ss" href="#section-36">&#x00a7;</a>
               </div>
               
             </div>
