@@ -99,7 +99,7 @@ function Col.add(i,v,inc)
   return i end
 -- ### Computing derived properties
 
---> .ok(i:Col) -> ensure that the current contents are up to date.
+--> .ok(i:Col) -> ensure that the current contents are up to date. Returns `kept`.
 -- E.g. update `mid`dle and `div`ersity (_median_ and _standard
 -- deviation_ for numerics; and _mode_ and _entropy_ for others).<p>
 -- This code uses the idiom "(per(.9) - per(.1))/2.56" to find
@@ -119,7 +119,8 @@ function Col.ok(i)
             for x,n in pairs(i.kept) do 
               if n > most then most, i.mid = n, x end
               if n > 0 then i.div=i.div - n/i.n*math.log(n/i.n,2) end end end end 
-  i.ok = true end
+  i.ok = true 
+  return i.kept end
 -- ### Querying
 -- Most of these need to call `Col.ok()` first (to ensure column is up to date).
 
@@ -134,8 +135,7 @@ function Col.mid(i)  Col.ok(i); return i.mid end
 
 --> .norm(i:Col,x:num) :0..1 -> normalize `x` 0..1 for lo..hi.
 function Col.norm(i,x) 
-  local lo,hi = Col.lo(i), Col.hi(i)
-  return hi-lo < 1E-9 and 0 or (x-lo)/(hi-lo) end
+  local a=Col.ok(i); return a[#a]-a[1] < 1E-9 and 0 or (x-a[1])/(a[#a]-a[1]) end
 --- ### For Discretization 
 
 --> .bin(i:Col,x:any) :any -> round numeric `x` to nearest `(hi-lo)/the.bins`
