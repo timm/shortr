@@ -39,7 +39,7 @@ Share and enjoy.
   - Classes names in camel case, starting with an Upper case char. 
   - Class methods are shown as Class.UPPERCASE (e.g. Module.NEW for constructors).
   - Instance methods are shown as Class.lowercase(i,...).
-  - This code uses `i` and `j` and `k` for `self` and other instances.
+  - Instead of using `self`, this code uses `i` and `j` and `k` to denote instances.
 - Type hints:
   - Type hints are defined in terms of class names or  int,real, str,tab,bool.
   -  ?type denotes optional arguments.
