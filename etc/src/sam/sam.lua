@@ -83,7 +83,7 @@ function Col.COLS(names)
     local new = Col.NUMP(txt) and Col.NUM(at,txt) or Col.NEW(at,txt)
     if not Col.SKIP(txt) then
       push(Col.GOAL(txt) and i.y or i.x, new)
-      if Col.KLASS(txt) then print(1000);i.klass=new end end end
+      if Col.KLASS(txt) then i.klass=new end end end
   return i end
 -- ### Update
 
@@ -166,10 +166,10 @@ function Col.simpler(i,this,that)
 
 function Col.like(i,x,prior)
   if   i.nums 
-  then return ((i.kept[x] or 0)+the.m*prior)/(i.n+the.m) 
-  else local sd,mu=Col.div(i), Col.mid(i)
+  then local sd,mu=Col.div(i), Col.mid(i)
        return sd==0 and (x==mu and 1 or 0) or
-           math.exp(-1*(x - mu)^2/(2*sd^2)) / (sd*((2*math.pi)^0.5)) end end
+           math.exp(-1*(x - mu)^2/(2*sd^2)) / (sd*((2*math.pi)^0.5)) 
+  else return ((i.kept[x] or 0)+the.m*prior)/(i.n+the.m) end end
 
 --------------------------------------------------------------------------------
 -- ## Row
@@ -197,8 +197,8 @@ function Data.LOAD(src,    i)
   Data.ROWS(src,function(t) 
     if i then Data.add(i,t) else i=Data.NEW(t) end end); return i end
  
-function Data.clone(i,inits,   j)
-  j=Data.NEW(i.cols.names)
+function Data.clone(i,inits)
+  local j=Data.NEW(i.cols.names)
   for _,t in pairs(inits or {}) do Data.add(j,t) end; return j end
 
 function Data.add(i,t)
@@ -208,8 +208,8 @@ function Data.add(i,t)
     for _,c in pairs(cols) do Col.add(c, t.cells[c.at]) end end 
   return t end 
 
-function Data.mids(i,cols, t) 
-  t={}
+function Data.mids(i,cols) 
+  local t={}
   for _,c in pairs(cols or i.cols.y) do t[c.txt] = Col.mid(c) end;return t end
 
 function Data.like(i,row, nklasses, nrows)
@@ -224,8 +224,8 @@ function Data.like(i,row, nklasses, nrows)
   return like end
 --------------------------------------------------------------------------------
 -- ## NB
-function NB.NEW(src,report,     i)
-  i  = {overall=nil, dict={}, list={}}
+function NB.NEW(src,report)
+  local i  = {overall=nil, dict={}, list={}}
   report = report or print
   Data.ROWS(src, function(row) 
     if not i.overall then i.overall = Data.NEW(row)  else -- (0) eat row1
@@ -278,12 +278,13 @@ function Bin.MERGES(b4, min)
     j            = j + (merged and 2 or 1)  end
   if   #now < #b4 
   then return Bin.MERGES(now,min) -- loop to look for other merges
-  else -- stretch the bins to cover minus infinity to plus Infinity
+  else -- stretch the bins to cover any gaps from minus infinity to plus infinity
        for j=2,#now do now[j].lo = now[j-1].hi end
        now[1].lo, now[#now].hi = -big, big
        return now end end
 
 --------------------------------------------------------------------------------
+-- To disable a test, relabel it from `Go` to `No`.
 local Go,No = {},{}
 
 function Go.THE() oo(the) end
@@ -295,30 +296,24 @@ function Go.ROWS(  d)
   oo(Data.mids(d)) end 
 
 function Go.STATS() 
-  oo(Data.mids(Data.LOAD(the.file) )) 
-end
+  oo(Data.mids(Data.LOAD(the.file) )) end
 
 function Go.ORDER(  i,t,m,left,right) 
   i= Data.LOAD(the.file)
   t= sort(i.rows,Row.better)
-  m=(#t)^.5
+  m= (#t)^.5
   left = Data.clone(i,splice(t,1,m))
   right= Data.clone(i,splice(i.rows,#t - m))
   print("all",  o(Data.mids(i)))
   print("best", o(Data.mids(left)))
-  print("rest", o(Data.mids(right)))
-  end 
+  print("rest", o(Data.mids(right))) end 
 
-function Go.NB(  i,t) 
+function Go.DIABETES(f,  i,t,a) 
   a = Abcd.NEW()
-  NB.NEW("../../../data/diabetes.csv",function(x,y) Abcd.add(a,x,y) end) 
+  NB.NEW(f or "../../../data/diabetes.csv",function(x,y) Abcd.add(a,x,y) end) 
   Abcd.pretty(a,Abcd.report(a)) end
 
-function Go.NB1(  i,t) 
-  a = Abcd.NEW()
-  NB.NEW("../../../data/soybean.csv",function(x,y) Abcd.add(a,x,y) end) 
-  Abcd.pretty(a,Abcd.report(a))
-  end
+function Go.SOYBEAN()  Go.DIABETES("../../../data/soybean.csv") end
 
 --------------------------------------------------------------------------------
 math.randomseed(the.seed)

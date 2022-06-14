@@ -1,3 +1,7 @@
+surprises
+- Col is a primary thing
+- Data is a thing. cloning. reporting. clistering = make recursive tables
+
 iit comes with maths (sampling). it comes with knowledge of humans (cognitive theory)
 it comes wih v&v out ofthe box. it comes with explanaintion and oversight.
 
