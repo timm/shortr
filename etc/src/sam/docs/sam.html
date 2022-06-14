@@ -97,11 +97,18 @@ numerics or symbolic columns (denoted with <code> aCol.nums</code>).</li>
  <code>aData.cols.y</code> holds dependent columns). </li>
 <li><code>Bin</code> is a helper class that summarizes what dependent <code>ys</code> values are
 found between <code>lo</code> and <code>hi</code> of an independent column.</li>
+<li><code>NB</code> is an application class that implements a Naive Bayes classifier.</li>
 </ul>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> k,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[k]=k <span class="hljs-keyword">end</span> 
+<span class="hljs-keyword">local</span> _ =<span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
+
+<span class="hljs-keyword">local</span> argmax,atom,big,csv,fmt = _.argmax, _.atom, _.big, _.csv, _.fmt
+<span class="hljs-keyword">local</span> lt,map,o,oo,per,push    = _.lt, _.map, _.o, _.oo, _.per, _.push
+<span class="hljs-keyword">local</span> R,<span class="hljs-built_in">sort</span>,splice,sum       = _.R,_ .<span class="hljs-built_in">sort</span>, _.splice, _.sum
+
 <span class="hljs-keyword">local</span> the={ Min  = <span class="hljs-number">.5</span>,
             bins = <span class="hljs-number">16</span>,
             some = <span class="hljs-number">256</span>, 
@@ -111,7 +118,7 @@ found between <code>lo</code> and <code>hi</code> of an independent column.</li>
             k    = <span class="hljs-number">1</span>,
             file = <span class="hljs-string">&quot;../../../data/auto93.csv&quot;</span>}
 
-<span class="hljs-keyword">local</span> Col,Data,Row,Bin = {},{},{},{}</pre></div></div>
+<span class="hljs-keyword">local</span> Col,Data,Row,Bin,NB = {},{},{},{},{}</pre></div></div>
             
         </li>
         
@@ -135,7 +142,7 @@ found between <code>lo</code> and <code>hi</code> of an independent column.</li>
               <div class="sswrap ">
                 <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
-              <h2 id="col">Col</h2>
+              <h2 id="class-col">class Col</h2>
 <p>Summaries a stream of numbers. Knows how to build the right kind of header
 for each column. Knows how to store dependent columns separate to independent
 columns.</p>
@@ -151,10 +158,10 @@ columns.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-7">&#x00a7;</a>
               </div>
-              <p><strong>.GOAL( <code>names</code>:  [str]) :bool</strong> <br> 
-<strong>.NUMP( <code>names</code>:  [str]) :bool</strong> <br> 
-<strong>.KLASS( <code>names</code>:  [str]) :bool</strong> <br> 
-<strong>.SKIP( <code>names</code>:  [str]) :bool</strong> <br> recognize different column types</p>
+              <p><strong>.GOAL( <code>x</code>:  [str]) :bool</strong> <br> 
+<strong>.NUMP( <code>x</code>:  [str]) :bool</strong> <br> 
+<strong>.KLASS( <code>x</code>:  [str]) :bool</strong> <br> 
+<strong>.SKIP( <code>x</code>:  [str]) :bool</strong> <br> recognize different column types</p>
 
             </div>
             
@@ -172,7 +179,7 @@ columns.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-8">&#x00a7;</a>
               </div>
-              <p><strong>.WEIGHT( <code>names</code>:  [str]) :bool</strong> <br> assign column weight (-1= minimize)</p>
+              <p><strong>.WEIGHT( <code>x</code>:  [str]) :(-1|1)</strong> <br> assign column weight (-1= minimize)</p>
 
             </div>
             
@@ -187,7 +194,9 @@ columns.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-9">&#x00a7;</a>
               </div>
-              <p><strong>.COLS( <code>names</code>:  [str]) :COLS</strong> <br> constructor: builds <code>Col</code>s from <code>names</code>.</p>
+              <p><strong>.COLS( <code>names</code>:  [str]) :tab</strong> <br> constructor: builds <code>Col</code>s from <code>names</code>.
+Stores dependents in <code>.y</code>, independents in <code>.x</code>, the klass (if it exists)
+in <code>.klass</code>. Caveat:  only if we are not <code>.SKIP()</code>ping them.</p>
 
             </div>
             
@@ -209,7 +218,7 @@ columns.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-10">&#x00a7;</a>
               </div>
-              <p><strong>.NEW( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :COL</strong> <br> constructor of numbers</p>
+              <p><strong>.NEW( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :Col</strong> <br> constructor of numbers</p>
 
             </div>
             
@@ -227,11 +236,11 @@ columns.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
-              <p><strong>.NUM( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :COL</strong> <br> constructor of numeric columns.</p>
+              <p><strong>.NUM( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :Col</strong> <br> constructor of numeric columns.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.NUM</span><span class="hljs-params">(at,txt,some)</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.NUM</span><span class="hljs-params">(at,txt,some,   i)</span></span>
    i     = Col.NEW(at,txt)
    i.w   = Col.WEIGHT(txt)
    i.nums= some <span class="hljs-keyword">or</span> the.some <span class="hljs-comment">-- if non-nil the i.nums is a numeric</span>
@@ -255,7 +264,7 @@ columns.</p>
  <span class="hljs-keyword">if</span>   v ~= <span class="hljs-string">&quot;?&quot;</span>
  <span class="hljs-keyword">then</span> i.n = i.n + inc
       <span class="hljs-keyword">if</span> i.nums 
-      <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span> _=<span class="hljs-number">1</span>,inc <span class="hljs-keyword">do</span>
+      <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span> __=<span class="hljs-number">1</span>,inc <span class="hljs-keyword">do</span>
             <span class="hljs-keyword">if</span>     #i.kept &lt; i.nums <span class="hljs-keyword">then</span> i.ok=<span class="hljs-literal">false</span>;push(i.kept,v) 
             <span class="hljs-keyword">elseif</span> R() &lt; i.nums/i.n <span class="hljs-keyword">then</span> i.ok=<span class="hljs-literal">false</span>;i.kept[R(#i.kept)]=v <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
       <span class="hljs-keyword">else</span> i.ok = <span class="hljs-literal">false</span>
@@ -271,8 +280,13 @@ columns.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-13">&#x00a7;</a>
               </div>
-              <p>**.ok( <code>i</code>:  col) ** <br> ensure that the current contents are up to date.
-E.g. update <code>mid</code> (middle) with median</p>
+              <p><strong>.ok( <code>i</code>:  Col)</strong> <br> ensure that the current contents are up to date.
+E.g. update <code>mid</code>dle and <code>div</code>ersity (<em>median</em> and <em>standard
+deviation</em> for numerics; and <em>mode</em> and <em>entropy</em> for others).<p>
+Implementation note about  “(90th-10th)/2.56”: &pm;1 and &pm;2
+standard deviations marks out 66 to  95% of the mass. Somewhere in
+between (at &pm;1.28), we get to 90% of the mass.  So to find one
+standard deviation, divide the 90th minus 10th percentile by 2.56.</p>
 
             </div>
             
@@ -287,17 +301,61 @@ E.g. update <code>mid</code> (middle) with median</p>
             <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kept) <span class="hljs-keyword">do</span> 
               <span class="hljs-keyword">if</span> n &gt; most <span class="hljs-keyword">then</span> most, i.mid = n, x <span class="hljs-keyword">end</span>
               i.div = i.div - n/i.n * <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>( n/i.n, <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-  i.ok = <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
-  
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.lo</span><span class="hljs-params">(i)</span></span>   Col.ok(i); <span class="hljs-keyword">return</span> i.kept[<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span>
+  i.ok = <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-14">&#x00a7;</a>
+              </div>
+              <p><strong>.lo( <code>i</code>:  Col) :num</strong> <br> 
+<strong>.hi( <code>i</code>:  Col) :num</strong> <br> 
+<strong>.div( <code>i</code>:  Col) :num</strong> <br> 
+<strong>.mid( <code>i</code>:  Col) :any</strong> <br> <code>lo</code>west number, <code>hi</code>ghest number, <code>div</code>ersity, <code>mid</code>dle number. </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.lo</span><span class="hljs-params">(i)</span></span>   Col.ok(i); <span class="hljs-keyword">return</span> i.kept[<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.hi</span><span class="hljs-params">(i)</span></span>   Col.ok(i); <span class="hljs-keyword">return</span> i.kept[#i.kept] <span class="hljs-keyword">end</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.div</span><span class="hljs-params">(i)</span></span>  Col.ok(i); <span class="hljs-keyword">return</span> i.div <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.mid</span><span class="hljs-params">(i)</span></span>  Col.ok(i); <span class="hljs-keyword">return</span> i.mid <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.norm</span><span class="hljs-params">(i,x)</span></span> 
-  <span class="hljs-keyword">local</span> lo,hi = Col.lo(i), Col.hi(i)
-  <span class="hljs-keyword">return</span> hi-lo &lt; <span class="hljs-number">1E-9</span> <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> (x-lo)/(hi-lo) <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.mid</span><span class="hljs-params">(i)</span></span>  Col.ok(i); <span class="hljs-keyword">return</span> i.mid <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-15">&#x00a7;</a>
+              </div>
+              <p><strong>.norm( <code>i</code>:  Col, <code>x</code>:  num) :0..1</strong> <br> normalize <code>x</code> 0..1 for lo..hi.</p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.bin</span><span class="hljs-params">(i,x)</span></span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.norm</span><span class="hljs-params">(i,x)</span></span> 
+  <span class="hljs-keyword">local</span> lo,hi = Col.lo(i), Col.hi(i)
+  <span class="hljs-keyword">return</span> hi-lo &lt; <span class="hljs-number">1E-9</span> <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> (x-lo)/(hi-lo) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-16">&#x00a7;</a>
+              </div>
+              <p><strong>.bin( <code>i</code>:  Col, <code>x</code>:  any) :any</strong> <br> round numeric <code>x</code> to nearest <code>(hi-lo)/the.bins</code>
+(and for non-numerics, just return <code>x</code>).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.bin</span><span class="hljs-params">(i,x)</span></span>
   <span class="hljs-keyword">if</span>   i.nums <span class="hljs-keyword">then</span>
     <span class="hljs-keyword">local</span> lo,hi = Col.lo(i), Col.hi(i)
     <span class="hljs-keyword">local</span> b=(hi - lo)/the.bins
@@ -313,11 +371,11 @@ E.g. update <code>mid</code> (middle) with median</p>
         </li>
         
         
-        <li id="section-14">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-14">&#x00a7;</a>
+                <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
               <p><strong>.simpler( <code>i</code>:  col, <code>this</code>:  col, <code>that</code>:  col):bool</strong> <br> am <code>i</code> simpler than <code>this</code> and <code>that</code>?</p>
 
@@ -336,11 +394,11 @@ E.g. update <code>mid</code> (middle) with median</p>
         </li>
         
         
-        <li id="section-15">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-15">&#x00a7;</a>
+                <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
               <hr>
 
@@ -349,11 +407,11 @@ E.g. update <code>mid</code> (middle) with median</p>
         </li>
         
         
-        <li id="section-16">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-16">&#x00a7;</a>
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
               <h2 id="row">Row</h2>
 
@@ -375,11 +433,11 @@ E.g. update <code>mid</code> (middle) with median</p>
         </li>
         
         
-        <li id="section-17">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-17">&#x00a7;</a>
+                <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
               <hr>
 
@@ -388,11 +446,11 @@ E.g. update <code>mid</code> (middle) with median</p>
         </li>
         
         
-        <li id="section-18">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-18">&#x00a7;</a>
+                <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
               <h2 id="data">Data</h2>
 
@@ -437,11 +495,11 @@ E.g. update <code>mid</code> (middle) with median</p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-22">&#x00a7;</a>
               </div>
               <hr>
 
@@ -450,21 +508,21 @@ E.g. update <code>mid</code> (middle) with median</p>
         </li>
         
         
-        <li id="section-20">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
-              <h2 id="bin">Bin</h2>
+              <h2 id="nb">NB</h2>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> NB={}
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.NEW</span><span class="hljs-params">(src,report)</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.NEW</span><span class="hljs-params">(src,report,     i)</span></span>
   i  = {overall=<span class="hljs-literal">nil</span>, dict={}, list={}}
+  report = report <span class="hljs-keyword">or</span> <span class="hljs-built_in">print</span>
   Data.ROWS(src, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> 
-    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.overall <span class="hljs-keyword">then</span> i.overall = Data.NEW(row) <span class="hljs-keyword">else</span> <span class="hljs-comment">-- (0) eat row1</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.overall <span class="hljs-keyword">then</span> i.overall = Data.NEW(row)  <span class="hljs-keyword">else</span> <span class="hljs-comment">-- (0) eat row1</span>
       row = Data.add(i.overall, row)  <span class="hljs-comment">-- XX add to overall </span>
       <span class="hljs-keyword">if</span> #i.overall.rows &gt; the.wait <span class="hljs-keyword">then</span> report(Row.klass(row), NB.guess(i,row)) <span class="hljs-keyword">end</span>
       NB.train(i,row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>)              <span class="hljs-comment">-- add tp rows&#x27;s klass</span>
@@ -483,11 +541,11 @@ E.g. update <code>mid</code> (middle) with median</p>
         </li>
         
         
-        <li id="section-21">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-21">&#x00a7;</a>
+                <a class="ss" href="#section-24">&#x00a7;</a>
               </div>
               <hr>
 
@@ -496,11 +554,11 @@ E.g. update <code>mid</code> (middle) with median</p>
         </li>
         
         
-        <li id="section-22">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-22">&#x00a7;</a>
+                <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
               <h2 id="bin">Bin</h2>
 
@@ -547,11 +605,11 @@ E.g. update <code>mid</code> (middle) with median</p>
         </li>
         
         
-        <li id="section-23">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-23">&#x00a7;</a>
+                <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
               <hr>
 
@@ -560,16 +618,16 @@ E.g. update <code>mid</code> (middle) with median</p>
         </li>
         
         
-        <li id="section-24">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
+                <a class="ss" href="#section-27">&#x00a7;</a>
               </div>
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>Go,No = {},{}
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> Go,No = {},{}
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.THE</span><span class="hljs-params">()</span></span> oo(the) <span class="hljs-keyword">end</span>
 
@@ -583,7 +641,7 @@ E.g. update <code>mid</code> (middle) with median</p>
   oo(Data.mids(Data.LOAD(the.file) )) 
 <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.ORDER</span><span class="hljs-params">(  i,t)</span></span> 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.ORDER</span><span class="hljs-params">(  i,t,m,left,right)</span></span> 
   i= Data.LOAD(the.file)
   t= <span class="hljs-built_in">sort</span>(i.rows,Row.better)
   m=(#t)^<span class="hljs-number">.5</span>
@@ -592,16 +650,19 @@ E.g. update <code>mid</code> (middle) with median</p>
   <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;all&quot;</span>,  o(Data.mids(i)))
   <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;best&quot;</span>, o(Data.mids(left)))
   <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;rest&quot;</span>, o(Data.mids(right)))
-  <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.NB</span><span class="hljs-params">(  i,t)</span></span> 
+  NB.NEW(<span class="hljs-string">&quot;../../../data/auto93.csv&quot;</span>,<span class="hljs-built_in">print</span>) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-25">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-25">&#x00a7;</a>
+                <a class="ss" href="#section-28">&#x00a7;</a>
               </div>
               <hr>
 
@@ -610,17 +671,18 @@ E.g. update <code>mid</code> (middle) with median</p>
         </li>
         
         
-        <li id="section-26">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-26">&#x00a7;</a>
+                <a class="ss" href="#section-29">&#x00a7;</a>
               </div>
               
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-built_in">math</span>.<span class="hljs-built_in">randomseed</span>(the.seed)
-<span class="hljs-keyword">if</span> <span class="hljs-built_in">arg</span>[<span class="hljs-number">1</span>]==<span class="hljs-string">&quot;-g&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">type</span>(Go[<span class="hljs-built_in">arg</span>[<span class="hljs-number">2</span>]])==<span class="hljs-string">&quot;function&quot;</span> <span class="hljs-keyword">then</span> Go[<span class="hljs-built_in">arg</span>[<span class="hljs-number">2</span>]]() <span class="hljs-keyword">end</span></pre></div></div>
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">arg</span>[<span class="hljs-number">1</span>]==<span class="hljs-string">&quot;-g&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">type</span>(Go[<span class="hljs-built_in">arg</span>[<span class="hljs-number">2</span>]])==<span class="hljs-string">&quot;function&quot;</span> <span class="hljs-keyword">then</span> Go[<span class="hljs-built_in">arg</span>[<span class="hljs-number">2</span>]]() <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span>  <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> b4[k] <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;?&quot;</span>,k,<span class="hljs-built_in">type</span>(v)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         

@@ -19,7 +19,15 @@ types = int,real, str,tab,bool
 --    `aData.cols.y` holds dependent columns). 
 -- - `Bin` is a helper class that summarizes what dependent `ys` values are
 --   found between `lo` and `hi` of an independent column.
-require"lib"
+-- - `NB` is an application class that implements a Naive Bayes classifier.
+local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
+local _    = require"lib"
+local Abcd = require"abcd"
+
+local argmax,atom,big,csv,fmt = _.argmax, _.atom, _.big, _.csv, _.fmt
+local lt,map,o,oo,per,push    = _.lt, _.map, _.o, _.oo, _.per, _.push
+local R,sort,splice,sum       = _.R,_ .sort, _.splice, _.sum
+
 local the={ Min  = .5,
             bins = 16,
             some = 256, 
@@ -29,43 +37,45 @@ local the={ Min  = .5,
             k    = 1,
             file = "../../../data/auto93.csv"}
 
-local Col,Data,Row,Bin = {},{},{},{}
+local Col,Data,Row,Bin,NB = {},{},{},{},{}
 -------------------------------------------------------------------------------
--- ## Col
+-- ## class Col
 -- Summaries a stream of numbers. Knows how to build the right kind of header
 -- for each column. Knows how to store dependent columns separate to independent
 -- columns.
 
---> .GOAL(names:[str]) :bool ->
---> .NUMP(names:[str]) :bool ->
---> .KLASS(names:[str]) :bool ->
---> .SKIP(names:[str]) :bool -> recognize different column types
+--> .GOAL(x:[str]) :bool ->
+--> .NUMP(x:[str]) :bool ->
+--> .KLASS(x:[str]) :bool ->
+--> .SKIP(x:[str]) :bool -> recognize different column types
 function Col.GOAL(x)   return (x or ""):find"[!+-]$" end
 function Col.NUMP(x)   return (x or ""):find"^[A-Z]" end
 function Col.KLASS(x)  return (x or ""):find"!$"  end
 function Col.SKIP(x)   return (x or ""):find":$"  end
 
---> .WEIGHT(names:[str]) :bool -> assign column weight (-1= minimize)
+--> .WEIGHT(x:[str]) :(-1|1) -> assign column weight (-1= minimize)
 function Col.WEIGHT(x) return (x or ""):find"-$" and -1 or 1 end
 
---> .COLS(names:[str]) :COLS -> constructor: builds `Col`s from `names`.
+--> .COLS(names:[str]) :tab -> constructor: builds `Col`s from `names`.
+-- Stores dependents in `.y`, independents in `.x`, the klass (if it exists)
+-- in `.klass`. Caveat:  only if we are not `.SKIP()`ping them.
 function Col.COLS(names)
   local i={x={}, y={}, names=names, klass=nil}
   for at,txt in pairs(names) do
     local new = Col.NUMP(txt) and Col.NUM(at,txt) or Col.NEW(at,txt)
     if not Col.SKIP(txt) then
       push(Col.GOAL(txt) and i.y or i.x, new)
-      if Col.KLASS(txt) then i.klass=new end end end
+      if Col.KLASS(txt) then print(1000);i.klass=new end end end
   return i end
 
---> .NEW(at:?int, txt:?str) :COL -> constructor of numbers
+--> .NEW(at:?int, txt:?str) :Col -> constructor of numbers
 function Col.NEW(at,txt)
   return {n  =0,     at=at or 0, txt=txt or "", 
           ok =false, kept={},
           div=0,     mid=0} end
 
---> .NUM(at:?int, txt:?str) :COL -> constructor of numeric columns.
-function Col.NUM(at,txt,some)
+--> .NUM(at:?int, txt:?str) :Col -> constructor of numeric columns.
+function Col.NUM(at,txt,some,   i)
    i     = Col.NEW(at,txt)
    i.w   = Col.WEIGHT(txt)
    i.nums= some or the.some -- if non-nil the i.nums is a numeric
@@ -77,15 +87,20 @@ function Col.add(i,v,inc)
  if   v ~= "?"
  then i.n = i.n + inc
       if i.nums 
-      then for _=1,inc do
+      then for __=1,inc do
             if     #i.kept < i.nums then i.ok=false;push(i.kept,v) 
             elseif R() < i.nums/i.n then i.ok=false;i.kept[R(#i.kept)]=v end end 
       else i.ok = false
            i.kept[v] = inc + (i.kept[v] or 0) end end
   return i end
 
---> .ok(i:col) --> ensure that the current contents are up to date.
--- E.g. update `mid` (middle) with median
+--> .ok(i:Col) -> ensure that the current contents are up to date.
+-- E.g. update `mid`dle and `div`ersity (_median_ and _standard
+-- deviation_ for numerics; and _mode_ and _entropy_ for others).<p>
+-- Implementation note about  "(90th-10th)/2.56": &pm;1 and &pm;2
+-- standard deviations marks out 66 to  95% of the mass. Somewhere in
+-- between (at &pm;1.28), we get to 90% of the mass.  So to find one
+-- standard deviation, divide the 90th minus 10th percentile by 2.56.
 function Col.ok(i)
   if   not i.ok 
   then i.div, i.mid = 0, 0
@@ -98,15 +113,24 @@ function Col.ok(i)
               if n > most then most, i.mid = n, x end
               i.div = i.div - n/i.n * math.log( n/i.n, 2) end end end 
   i.ok = true end
-  
+
+--> .lo(i:Col) :num -> 
+--> .hi(i:Col) :num -> 
+--> .div(i:Col) :num -> 
+--> .mid(i:Col) :any ->  `lo`west number, `hi`ghest number, `div`ersity, `mid`dle number. 
 function Col.lo(i)   Col.ok(i); return i.kept[1] end
 function Col.hi(i)   Col.ok(i); return i.kept[#i.kept] end
 function Col.div(i)  Col.ok(i); return i.div end
 function Col.mid(i)  Col.ok(i); return i.mid end
+
+
+--> .norm(i:Col,x:num) :0..1 -> normalize `x` 0..1 for lo..hi.
 function Col.norm(i,x) 
   local lo,hi = Col.lo(i), Col.hi(i)
   return hi-lo < 1E-9 and 0 or (x-lo)/(hi-lo) end
 
+--> .bin(i:Col,x:any) :any -> round numeric `x` to nearest `(hi-lo)/the.bins`
+-- (and for non-numerics, just return `x`).
 function Col.bin(i,x)
   if   i.nums then
     local lo,hi = Col.lo(i), Col.hi(i)
@@ -183,12 +207,12 @@ function Data.like(i,row, nklasses, nrows)
       like = like + math.log(inc) end end
   return like end
 --------------------------------------------------------------------------------
--- ## Bin
-local NB={}
-function NB.NEW(src,report)
+-- ## NB
+function NB.NEW(src,report,     i)
   i  = {overall=nil, dict={}, list={}}
+  report = report or print
   Data.ROWS(src, function(row) 
-    if not i.overall then i.overall = Data.NEW(row) else -- (0) eat row1
+    if not i.overall then i.overall = Data.NEW(row)  else -- (0) eat row1
       row = Data.add(i.overall, row)  -- XX add to overall 
       if #i.overall.rows > the.wait then report(Row.klass(row), NB.guess(i,row)) end
       NB.train(i,row) end end)              -- add tp rows's klass
@@ -202,7 +226,7 @@ function NB.train(i,row)
 
 function NB.guess(i,row) 
   return argmax(i.dict, 
-    function(klass) return Row.like(klass,row,#i.list,#i.overall.rows) end) end
+    function(klass) return Data.like(klass,row,#i.list,#i.overall.rows) end) end
 --------------------------------------------------------------------------------
 -- ## Bin
 function Bin.NEW(xlo, xhi, ys) return {lo=xlo, hi=xhi, ys=ys} end
@@ -244,7 +268,7 @@ function Bin.MERGES(b4, min)
        return now end end
 
 --------------------------------------------------------------------------------
-Go,No = {},{}
+local Go,No = {},{}
 
 function Go.THE() oo(the) end
 
@@ -258,7 +282,7 @@ function Go.STATS()
   oo(Data.mids(Data.LOAD(the.file) )) 
 end
 
-function Go.ORDER(  i,t) 
+function Go.ORDER(  i,t,m,left,right) 
   i= Data.LOAD(the.file)
   t= sort(i.rows,Row.better)
   m=(#t)^.5
@@ -268,6 +292,20 @@ function Go.ORDER(  i,t)
   print("best", o(Data.mids(left)))
   print("rest", o(Data.mids(right)))
   end 
+
+function Go.NB(  i,t) 
+  a = Abcd.NEW()
+  NB.NEW("../../../data/diabetes.csv",function(x,y) Abcd.add(a,x,y) end) 
+  Abcd.pretty(a,Abcd.report(a)) end
+
+function Go.NB1(  i,t) 
+  a = Abcd.NEW()
+  NB.NEW("../../../data/soybean.csv",function(x,y) Abcd.add(a,x,y) end) 
+  Abcd.pretty(a,Abcd.report(a))
+  end
+
 --------------------------------------------------------------------------------
 math.randomseed(the.seed)
 if arg[1]=="-g" and type(Go[arg[2]])=="function" then Go[arg[2]]() end
+for k,v in pairs(_ENV) do  if not b4[k] then print("?",k,type(v)) end end 
+ 
