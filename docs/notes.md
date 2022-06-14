@@ -1,3 +1,6 @@
+iit comes with maths (sampling). it comes with knowledge of humans (cognitive theory)
+it comes wih v&v out ofthe box. it comes with explanaintion and oversight.
+
 sampling: the larger the sample, the less we keep (reservoir)
 
 1% rule
