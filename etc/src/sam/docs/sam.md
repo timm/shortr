@@ -3,24 +3,25 @@
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 
 <p> <img width=150 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
-<b>Michelangelo:</b><br>
-<em>Every <strike>block of stone</strike> program  has a <strike>statue</strike> smaller program inside it and it is the task of the 
-<strike>sculptor</strike>designer to discover it.</em>
+<b>Tony Hoare:</b><br>
+<em>"Inside every large program is a small program struggling to get out."</em><p>
+<b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
+<b>Dieter Rans:</b><br><em>"Less, but better."</em>
 
-<b>Dieter Rans:</b><br><em>Less, but better.</em>
+Now that you've done "it", can you do "it" better? Did you really understand "it"?
+Can you now
+write "it" in fewer lines and do you know how to make "it" run faster?
+Can you teach "it" quickly to newcomers?
+And can you generalize "it" such that "it" can be quickly
+adapted to other purposes?
 
-If I really know "it", then should I  know all "it"s shortcuts; i.e. how
-to write "it" succinctly (in fewer lines) and how to make "it" run faster.
-Further, I should be able to generalize "it" such that I can quickly
-adapt "it" to other purposes.
-
-So, do I understand a multi-objective semi-supervised explanation?
+E.g. do I understand a multi-objective semi-supervised explanation?
 Well, maybe. Here's all that, most of which is
 background stuff that could be used for other learners.  
 
 Once
 I build that, I found that decision trees, Naive Bayes classifiers,
-and nearest neighbors were all a tiny extension. 
+and nearest neighbors were all tiny extensions. 
 
 Also included here
 is literate programming, self-documenting code and support for
