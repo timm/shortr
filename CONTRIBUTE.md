@@ -1,6 +1,6 @@
 <a name=top></a>
 
-<img align=right width=450 src=/docs/img/contrib.png>
+<img align=right width=550 src=/docs/img/contrib.png>
 
 # Contribute
 Hello :wave:  
