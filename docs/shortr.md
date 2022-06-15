@@ -2,11 +2,11 @@
 <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br><a 
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 
-<p> <img width=150 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+<p> <img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 <b>Tony Hoare:</b><br>
 <em>"Inside every large program is a small program struggling to get out."</em><p>
 <b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
-<b>Dieter Rans:</b><br><em>"Less, but better."</em>
+<b>Dieter Rams:</b><br><em>"Less, but better."</em>
 
 Now that you've done "it", can you do "it" better? Did you really understand "it"?
 Can you now
@@ -34,9 +34,17 @@ All in around 300 lines of LUA: <br>
 => 301 lines
      
 Share and enjoy.
+### Role models  
+
+### Role Models
+People whose code challenges me to write less, but better:     
+[Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
+| [Hilary Mason](https://www.youtube.com/watch?v=l2btv0yUPNQ)
+| [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
+| [Peter Norvig](http://norvig.com/lispy.html)
+| [Joel Grus](https://github.com/joelgrus/data-science-from-scratch)
+| [Paul Graham](http://www.paulgraham.com/onlisp.html)
 
 ### Coding conventions 
-
 Before reading this, it would be best to     
 [reviews these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
-
