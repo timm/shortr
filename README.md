@@ -11,13 +11,14 @@ href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.or
 <b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
 <b>Dieter Rams:</b><br><em>"Less, but better."</em>
 
-Now that you've done _it_, did you really understand _it_?
-- Can you do _it_ better?
-- Can you now
+Now that you've done _it_, did you really understand _it_? Let's check.
+
+Can you do _it_ better?
+Can you now
 write _it_ in fewer lines and do you know how to make _it_ run faster?
-- Can you see how _it_ is same/different to other things?
-  - and can you use those similarities to do more things with  _it_?
-- Can you teach _it_ quickly to newcomers?
+Can you see how _it_ is same/different to other things?
+And can you use those similarities to do more things with  _it_?
+Finally, can you teach _it_ quickly to newcomers?
 
 E.g. do I understand a multi-objective semi-supervised explanation?
 Well, maybe. Here's all that, most of which is

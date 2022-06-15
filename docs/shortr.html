@@ -35,11 +35,13 @@
 <em>“Inside every large program is a small program struggling to get out.”</em><p>
 <b>Alan Perlis:</b><br><em>“Simplicity does not precede complexity, but follows it.”</em><p>
 <b>Dieter Rams:</b><br><em>“Less, but better.”</em></p>
-<p>Now that you’ve done “it”, can you do “it” better? Did you really
-understand “it”?  Can you now write “it” in fewer lines and do you
-know how to make “it” run faster?  Can you teach “it” quickly to
-newcomers?  And can you generalize “it” such that “it” can be quickly
-adapted to other purposes?</p>
+<p>Now that you’ve done <em>it</em>, did you really understand <em>it</em>? Let’s check.</p>
+<p>Can you do <em>it</em> better?
+Can you now
+write <em>it</em> in fewer lines and do you know how to make <em>it</em> run faster?
+Can you see how <em>it</em> is same/different to other things?
+And can you use those similarities to do more things with  <em>it</em>?
+Finally, can you teach <em>it</em> quickly to newcomers?</p>
 <p>E.g. do I understand a multi-objective semi-supervised explanation algorithms?
 Well, Let’s check. </p>
 <p>Here’s all that, most of which is background stuff
@@ -353,14 +355,11 @@ we update the numerics.</p>
                 <a class="ss" href="#section-15">&#x00a7;</a>
               </div>
               <p><strong>.ok( <code>i</code>:  Col)</strong> <br> ensure that the current contents are up to date. Returns <code>kept</code>.
-E.g. update <code>mid</code>dle and <code>div</code>ersity (<em>median</em> and <em>standard
-deviation</em> for numerics; and <em>mode</em> and <em>entropy</em> for others).<p>
-This code uses the idiom “(per(.9) - per(.1))/2.56” to find
-standard deviation. To grok that,
-recall that &pm;1 and &pm;2
-standard deviations marks out 66 to  95% of the mass. Somewhere in
-between (at &pm;1.28), we get to 90% of the mass.  So to find one
-standard deviation, divide the 90th minus 10th percentile by twice 1.28 (2.56).</p>
+E.g. update <code>mid</code>dle and <code>div</code>ersity (<em>median</em> and <em>standard deviation</em> for
+numerics; and <em>mode</em> and <em>entropy</em> for others).<p> To understand the idiom
+“(per(.9) - per(.1))/2.56”, recall that &pm;1 and &pm;2 standard deviations
+selects 66 to  95% of the mass.  In between (at &pm;1.28), we get to 90%.  So to
+find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</p>
 
             </div>
             
@@ -499,7 +498,8 @@ standard deviation, divide the 90th minus 10th percentile by twice 1.28 (2.56).<
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.simpler</span><span class="hljs-params">(i,this,that)</span></span>
-  <span class="hljs-keyword">return</span> Col.div(i) &lt;= (this.n*Col.div(this) + that.n*Col.div(that)) / i.n <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-built_in">print</span>(o(i.ys),o(this.ys),o(that.ys))
+  <span class="hljs-keyword">return</span> Col.div(i) &lt;= (this.ys.n*Col.div(this)+that.ys.n*Col.div(that))/i.ys.n <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -706,20 +706,21 @@ standard deviation, divide the 90th minus 10th percentile by twice 1.28 (2.56).<
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.merge</span><span class="hljs-params">(i,j, min)</span></span>
   <span class="hljs-keyword">local</span> k = Col.merge(i,j)
-  <span class="hljs-keyword">if</span> i.n &lt; <span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> j.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> Col.simpler(k,i,j)  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">if</span> i.ys.n &lt; <span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> j.ys.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> Col.simpler(k,i,j)  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.BINS</span><span class="hljs-params">(listOfRows,col,y)</span></span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.BINS</span><span class="hljs-params">(listOfRows,col)</span></span>
   <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
   <span class="hljs-keyword">for</span> label,rows <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(listOfRows) <span class="hljs-keyword">do</span>
     <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span>
-      <span class="hljs-keyword">local</span> v = row[col.at]
+      <span class="hljs-keyword">local</span> v = row.cells[col.at]
       <span class="hljs-keyword">if</span> v ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
         n = n + <span class="hljs-number">1</span>
         <span class="hljs-keyword">local</span> pos = Col.bin(col,v)
-        dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, Bin.new(v,v,Col.new(col.at,col.txt)))
+        <span class="hljs-built_in">print</span>(pos, v)
+        dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, Bin.NEW(v,v,Col.NEW(col.at,col.txt)))
         Bin.add(dict[pos], v, label) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
     list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;lo&quot;</span>)
-    list = col.nums <span class="hljs-keyword">and</span> Bin.MERGES(list, n^the.<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> list
+    list = col.nums <span class="hljs-keyword">and</span> Bin.MERGES(list, n^the.Min) <span class="hljs-keyword">or</span> list
     <span class="hljs-keyword">return</span> {bins= list,
             div = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> Col.div(z.ys)*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span>
  
@@ -763,6 +764,19 @@ standard deviation, divide the 90th minus 10th percentile by twice 1.28 (2.56).<
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> Go,No = {},{}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.BINS</span><span class="hljs-params">(  i,t,m,left,right)</span></span>
+  i= Data.LOAD(the.file)
+  t= <span class="hljs-built_in">sort</span>(i.rows,Row.better)
+  m= (#t)^<span class="hljs-number">.5</span>
+  left = splice(t,<span class="hljs-number">1</span>,m)
+  right= splice(i.rows,#t - m)
+  <span class="hljs-keyword">for</span> n,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.x) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">if</span> n==<span class="hljs-number">1</span> <span class="hljs-keyword">then</span>
+       Bin.BINS({left,right},col)
+    <span class="hljs-keyword">end</span>
+    <span class="hljs-built_in">print</span>(n,col.txt, col.nums <span class="hljs-keyword">and</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">or</span> <span class="hljs-literal">false</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span> 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.THE</span><span class="hljs-params">()</span></span> oo(the); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
 
