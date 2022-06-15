@@ -29,8 +29,7 @@ test-driven development.
 
 All in around 300 lines of LUA: <br>
 
-`awk '!/^(--|[ \t]*$)/ {n++}`   
-`END {print n" lines"}' *.lua`  
+`awk '!/^(--|[ \t]*$)/ {n++} END {print n" lines"}' *.lua`  
 => 301 lines
      
 Share and enjoy.
