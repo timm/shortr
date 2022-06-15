@@ -11,7 +11,7 @@ If you offer pull requests to this code, please use these conventions.
 
 ## Classes:
 - Classes names in camel case, starting with an Upper case char. 
-- Class methods are shown as Class.UPPERCASE (e.g. Module.NEW for constructors).
+- Class methods are shown as Class.UPPERCASE (e.g. Class.NEW for constructors).
 - Instance methods are shown as Class.lowercase(i,...).
 - Instead of using `self`, this code uses `i` and `j` and `k` to denote instances.
 
