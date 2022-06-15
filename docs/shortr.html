@@ -54,41 +54,9 @@ test-driven development. </p>
 <p>All in around 300 lines of LUA: <br></p>
 <p><code>awk &#39;!/^(--|[ \t]*$)/ {n++}</code><br><code>END {print n&quot; lines&quot;}&#39; *.lua</code><br>=&gt; 301 lines</p>
 <p>Share and enjoy.</p>
-<h2 id="coding-conventions">Coding conventions</h2>
-<ul>
-<li>Classes:<ul>
-<li>Classes names in camel case, starting with an Upper case char. </li>
-<li>Class methods are shown as Class.UPPERCASE (e.g. Module.NEW for constructors).</li>
-<li>Instance methods are shown as Class.lowercase(i,…).</li>
-<li>Instead of using <code>self</code>, this code uses <code>i</code> and <code>j</code> and <code>k</code> to denote instances.</li>
-</ul>
-</li>
-<li>Type hints:<ul>
-<li>Type hints are defined in terms of class names or  int,real, str,tab,bool.</li>
-<li>?type denotes optional arguments.</li>
-</ul>
-</li>
-<li>Formatting:<ul>
-<li>Any line that just contains <code>end</code> is joined to the last line.</li>
-<li>Where possible, write functions in one-line.</li>
-<li>Line width max=80 (soft limit) or 83 (hard limit). </li>
-<li>Tabs done with 2 spaces.</li>
-</ul>
-</li>
-<li>Other:<ul>
-<li>Common LUA routines imported from <code>lib.lua</code>.</li>
-<li>Test suite at end (see <code>Go</code>).</li>
-<li>Initial help string defines the config options.</li>
-</ul>
-</li>
-<li>Command-line options<ul>
-<li>If called as a main program, then <code>--xxxx value</code> on the command line updates option <code>xxxx</code>.</li>
-<li>Shorthand #1: <code>-x</code>  is the same as  <code>--xxxx</code>.</li>
-<li>Shorthand #2: Boolean <code>option</code>s don’t use <code>value</code>.
-Merely mentioning it on the command-line will flip its default.</li>
-</ul>
-</li>
-</ul>
+<h3 id="coding-conventions">Coding conventions</h3>
+<p>Before reading this code, it is suggested you review 
+<a href="https://github.com/timm/shortr/blob/master/CONTRIBUTE.md">these local coding conventions</a>.</p>
 
             </div>
             
