@@ -1,6 +1,7 @@
 
 <img width=300 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
+# SHORTR
  
 <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br><a 
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
@@ -31,8 +32,7 @@ test-driven development.
 
 All in around 300 lines of LUA: <br>
 
-`awk '!/^(--|[ \t]*$)/{n++}END{print n" lines"}' *.lua`  
-=> 301 lines
+`awk '!/^(--|[ \t]*$)/{n++}END{print n" lines"}' *.lua`   => 301 lines
      
 Share and enjoy.
 
