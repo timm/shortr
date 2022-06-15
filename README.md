@@ -11,11 +11,11 @@ href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.or
 <b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
 <b>Dieter Rams:</b><br><em>"Less, but better."</em>
 
-Now that you've done "it", can you do "it" better? Did you really understand "it"?
+Now that you've done _it_, can you do _it_ better? Did you really understand _it_?
 Can you now
-write "it" in fewer lines and do you know how to make "it" run faster?
-Can you teach "it" quickly to newcomers?
-And can you generalize "it" such that "it" can be quickly
+write _it_ in fewer lines and do you know how to make _it_ run faster?
+Can you teach _it_ quickly to newcomers?
+And can you generalize _it_ such that _it_ can be quickly
 adapted to other purposes?
 
 E.g. do I understand a multi-objective semi-supervised explanation?
