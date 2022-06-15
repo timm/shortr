@@ -29,7 +29,8 @@ test-driven development.
 
 All in around 300 lines of LUA: <br>
 
-`awk '!/^(--|[ \t]*$)/{n++}END{print n" lines"}' *.lua`  
+`awk '!/^(--|[ \t]*$)/{n++}`   
+`END {print n" lines"}' *.lua`  
 => 301 lines
      
 Share and enjoy.
@@ -45,4 +46,4 @@ People whose code challenges me to write less, but better:
 
 ### Coding conventions 
 Before reading this, it would be best to     
-[reviews these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
+[review these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
