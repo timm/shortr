@@ -7,9 +7,9 @@ SHORTR: semi-supervised multi-objective optimization
 Generate a readable summary of N items after O(log2(N)) evals.
 PASS1 (guess): eval two distant items on multi-objective criteria.
       Prune everything nearest the worst one. Recurse on rest.  
-PASS2 (guess again): do it again on better items from first pass.  
-PASS3 (explain): recursively discretize attributes on how well
-      they distinguish second pass's best and worst items.
+PASS2 (guess again): do it again, using better items from first pass.  
+PASS3 (explain): recursively discretize attributes on how well they
+      distinguish the best and worst items (seen in second pass).
 
 USAGE:
   lua shortr.lua [OPTIONS]

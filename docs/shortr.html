@@ -27,7 +27,7 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              <p><span id="forkongithub"><a href="https://github.com/timm/shortr">Fork me on GitHub</a></span>
+              <p><span id="forkongithub"><a href="https://github.com/timm/shortr/README.md">Fork me on GitHub</a></span>
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><p>
 <img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
@@ -72,9 +72,9 @@ SHORTR: semi-supervised multi-objective optimization
 Generate a readable summary of N items after O(log2(N)) evals.
 PASS1 (guess): eval two distant items on multi-objective criteria.
       Prune everything nearest the worst one. Recurse on rest.  
-PASS2 (guess again): do it again on better items from first pass.  
-PASS3 (explain): recursively discretize attributes on how well
-      they distinguish second pass&#x27;s best and worst items.
+PASS2 (guess again): do it again, using better items from first pass.  
+PASS3 (explain): recursively discretize attributes on how well they
+      distinguish the best and worst items (seen in second pass).
 
 USAGE:
   lua shortr.lua [OPTIONS]
