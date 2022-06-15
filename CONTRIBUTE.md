@@ -9,65 +9,30 @@ Contributions welcome :kiss: :heart:
 
 If you offer pull requests to this code, please use these conventions.
 
-## LUA conventions
 
-- Minimize use of `local`
-  -  Define all local names at top of file (so code can be defined in any order).
-- Use `i` instead of `self`. 
-- When defining methods:
-  - Don't use `function FRED:method() return self.n + 1 end`;
-  - Do use `function FRED.method(i) return i.n+1 end`.
-- Here are suggestions for variable names
-  - Use `col` for instances of NUM and SYM class
-  - Use `v` for cells in rows
-- Layout lines 80 chars side (max,ish). Use 2 spaces for "tab".
-- Try doing functions as one-liners. Multi-line functions need a trailing line.
-- Annotate functions/methods with at least a one-line prefix comment that includes
-  type annotations and defaults for optional arguments.
+Classes:
+- Classes names in camel case, starting with an Upper case char. 
+- Class methods are shown as Class.UPPERCASE (e.g. Module.NEW for constructors).
+- Instance methods are shown as Class.lowercase(i,...).
+- Instead of using `self`, this code uses `i` and `j` and `k` to denote instances.
 
-Please write code in five section:
-1. an initial help string defining the options
-2. a `lib` section defining all the support.
-   - There `lib` section should not perform start-up actions nor reference `THE` settings.
-4. a `names` section that, using the support code, builds   
-   (a) the objects; and    
-   (b) the settings (which are parsed from the help string)
-5. a   `methods` section that defines what the classes can do;
-6. a   `demos` section with examples/ test suite / demos 
-7. a `start` section that either    
-   (a) returns all the classes and settings;  or   
-   (b) actually runs (*) the code in this file
+Type hints:
+- Type hints are defined in terms of class names or  int,real, str,tab,bool.
+-  ?type denotes optional arguments.
 
-(*) Looks for updates to the settings on the 
-    command-line, then runs some of the demos.
+Formatting:
+- Any line that just contains `end` is joined to the last line.
+- Where possible, write functions in one-line.
+- Line width max=80 (soft limit) or 83 (hard limit). 
+- Tabs done with 2 spaces.
 
-## Objects
-
-Objects, yes,  inheritance, no (harder to debug)   
-- UPPERCASE functions are constructors
-
-## Tests
-
-Test cases stored in `go` functions.    
-- Tests should return `true` if the test passes or a warning string if otherwise
-- Tests should be silent unless they fail or the verbose flag is set in command line.
-- Tests can be disabled by renaming from `go.fun` to `no.fun`.
-- All tests run at run time (exception, if `-g xx` appears on command-line, just run 
-  `go.xx()`.
-
-## Settings
-
-Define global settings   
-in the help strings at top of file.    
-- Allow for `-h` on the command line to print help
-- Settings stored in the global "THE"
-- Settings generated from "help" string
-- Settings can be updated from the strings seed in flags
-
-Beware missing values (marked in "?") and avoid them
-
-## Linting 
-
--  1st line: traps list of pre-existing globals  
-- 2nd last line: look for "rogue" globals (by comparing with data trapped on line1)
-- Last line: exit to operating system with number of failures seen in tests
+Other:
+- Common LUA routines imported from `lib.lua`.
+- Test suite at end (see `Go`).
+- Initial help string defines the config options.
+- 
+Command-line options
+- If called as a main program, then `--xxxx value` on the command line updates option `xxxx`.
+- Shorthand #1: `-x`  is the same as  `--xxxx`.
+- Shorthand #2: Boolean `option`s don't use `value`.
+  Merely mentioning it on the command-line will flip its default.

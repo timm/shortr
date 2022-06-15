@@ -1,19 +1,16 @@
-local lib=require"lib"
-local klass  = lib.klass
+local ABCD = {}
+function ABCD.NEW(data,rx,    i) 
+  return {data=data or "", rx=rx or "", yes=0, no=0,
+          known = {}, a={}, b={}, c={}, d ={}} end
 
 local fmt = string.format
+
 local function inc(f,a,n) f=f or {};f[a]=(f[a] or 0) + (n or 1) return f end
 local function slots(t, u)
-  u={}; for k,v in pairs(t) do u[1+#u]=k end; return lib.sort(u) end
+  u={}; for k,v in pairs(t) do u[1+#u]=k end; table.sort(u); return u end
 
-local ABCD = klass"ABCD"
-function ABCD.new(i,data,rx) 
-  i.data, i.rx = data or "", rx or ""
-  i.yes, i.no  = 0,0
-  i.known, i.a, i.b, i.c, i.d = {},{},{},{},{} end
-
-function ABCD.exists(i,x,   new) 
-  new = not i.known[x]
+function ABCD.exists(i,x)
+  local new = not i.known[x]
   inc(i.known,x)
   if new then
     i.a[x]=i.yes + i.no; i.b[x]=0; i.c[x]=0; i.d[x]=0 end end
@@ -51,13 +48,12 @@ function ABCD.pretty(i,t)
                          u.acc, u.pd, u.pf, u.prec, u.f, u.g, x)) end end
 
 function ABCD.add(i,got,want)
-  i:exists(want) 
-  i:exists(got)  
+  ABCD.exists(i,want) 
+  ABCD.exists(i,got)  
   if want == got then i.yes=i.yes+1 else i.no=i.no+1 end
   for x,xx in pairs(i.known) do 
     if   want == x
     then inc(want == got and i.d or i.b, x)
     else inc(got  == x   and i.c or i.a, x) end end end 
-  --return show and i:pretty(i:report()) or i:report() end
 
 return ABCD
