@@ -6,9 +6,17 @@
 
 
  <img width=300 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
-<b>Tony Hoare:</b><br><em>"Inside every large program is a small program struggling to get out."</em><p>
-<b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
-<b>Dieter Rams:</b><br><em>"Less, but better."</em><br clear=all>
+ 
+__Tony Hoare:__. 
+_"Inside every large program is a small program struggling to get out."_
+
+
+__Alan Perlis:__
+_"Simplicity does not precede complexity, but follows it."_ 
+
+__Dieter Rams:__. 
+_"Less, but better."_
+<br clear=all>
 
 Now that you've done _it_, did you really understand _it_? Let's check.
 
@@ -16,7 +24,7 @@ Can you do _it_ better?
 Can you now
 write _it_ in fewer lines and do you know how to make _it_ run faster?
 Can you see how _it_ is same/different to other things?
-And can you use those similarities to do more things with  _it_?
+And can you use those similarities to do more things with  _it_? 
 Finally, can you teach _it_ quickly to newcomers?
 
 E.g. do I understand a multi-objective semi-supervised explanation?
