@@ -37,6 +37,6 @@ Share and enjoy.
 
 ### Coding conventions 
 
-Before reading this code, it is suggested you review 
-[these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
+Before reading this, it would be best to     
+[reviews these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
 
