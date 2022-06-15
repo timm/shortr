@@ -30,8 +30,6 @@ OPTIONS (other):
 -------------------------------------------------------------------------------
 -- ## Names
 --  
--- As to the classes used by this system:
---  
 -- - `Row` hold the `cells` or record and a pointer (`of`) back to the 
 --   container that made them.
 -- - `Col` summarizes columns. One `Col` can be for
