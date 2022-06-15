@@ -58,8 +58,7 @@ local R,sort,splice,sum             = _.R, _.sort, _.splice, _.sum
 local the={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) the[key] = atom(x) end)
   
-local Col,Data,Row,Bin,NB = {},{},{},{},{}
-
+local Col,Data,Row,Bin,NB = {},{},{},{},{}
 -------------------------------------------------------------------------------
 -- ## class Col
 -- Summaries a column of data. Uses different types for numeric or other data.
@@ -126,14 +125,11 @@ function Col.add(i,v,inc)
 -- ### Computing derived properties
 
 --> .ok(i:Col) -> ensure that the current contents are up to date. Returns `kept`.
--- E.g. update `mid`dle and `div`ersity (_median_ and _standard
--- deviation_ for numerics; and _mode_ and _entropy_ for others).<p>
--- This code uses the idiom "(per(.9) - per(.1))/2.56" to find
--- standard deviation. To grok that,
--- recall that &pm;1 and &pm;2
--- standard deviations marks out 66 to  95% of the mass. Somewhere in
--- between (at &pm;1.28), we get to 90% of the mass.  So to find one
--- standard deviation, divide the 90th minus 10th percentile by twice 1.28 (2.56).
+-- E.g. update `mid`dle and `div`ersity (_median_ and _standard deviation_ for
+-- numerics; and _mode_ and _entropy_ for others).<p> To understand the idiom
+-- "(per(.9) - per(.1))/2.56", recall that &pm;1 and &pm;2 standard deviations
+-- selects 66 to  95% of the mass.  In between (at &pm;1.28), we get to 90%.  So to
+-- find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).
 function Col.ok(i)
   if   not i.ok 
   then i.div, i.mid = 0, 0
