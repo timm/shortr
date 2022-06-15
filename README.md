@@ -1,70 +1,50 @@
 
 <img width=300 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
-# SHORTR.lua
+<span id="forkongithub"><a href="https://github.com/timm/shortr">Fork me on GitHub</a></span>
+<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br><a 
+href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 
-[code](https://menzies.us/shortr)
+ <b>Tony Hoare:</b><br>
+<em>"Inside every large program is a small program struggling to get out."</em><p>
+<b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
+<b>Dieter Rams:</b><br><em>"Less, but better."</em>
 
-<a
-href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img 
-src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a> <a 
-href="https://zenodo.org/badge/latestdoi/206205826">
-<img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
+Now that you've done "it", can you do "it" better? Did you really understand "it"?
+Can you now
+write "it" in fewer lines and do you know how to make "it" run faster?
+Can you teach "it" quickly to newcomers?
+And can you generalize "it" such that "it" can be quickly
+adapted to other purposes?
 
-Do I understand "it"?
-Can I code "it" succinctly? Using simple tools and a minimal set of data 
-structure and algorithms? Does "it" do the minimum work  (so"it" runs fast)?
- Can I explain "it" to you, quickly and successfully? And does "it" generalize
-(so "it" is not a one-off hack)?
+E.g. do I understand a multi-objective semi-supervised explanation?
+Well, maybe. Here's all that, most of which is
+background stuff that could be used for other learners.  
 
-Let's check. Please review my code. This is  a multi-objective semi-supervised explanation tool. The code:
+Once
+I build that, I found that decision trees, Naive Bayes classifiers,
+and nearest neighbors were all tiny extensions. 
 
-- Explores N points via  O(log2(N)) evaluations. 
-- Generates a human-readable summary of that space. 
-- In pass1, it find and eval  two distant points using multi-objective criteria. Everything nearest the  worst is pruned and we recurse on the rest.  
-- This algorithm is only approximate so, in pass2, we do it all again, starting with the better items seen in pass1.  
-- Finally, it explains the final results by  a decision tree that recursively discretizes numerics via their ability to distinguish the best/worst things found in pass2.
+Also included here
+is literate programming, self-documenting code and support for
+test-driven development. 
 
+All in around 300 lines of LUA: <br>
 
-All in under 400 lines of code
- (most of which is background stuff that could be used for other learners).    
+`awk '!/^(--|[ \t]*$)/{n++}END{print n" lines"}' *.lua`  
+=> 301 lines
+     
+Share and enjoy.
 
-
-Share and enjoy!
-
-<hr>  
- 
-
-__Mother Teresa:__   
-"The more you have, the more you are occupied. The less you have, the more free you are."
-
-__Ken Thompson:__        
-"One of my most productive days was throwing away 1,000 lines of code."
-
-__William of Occam:__      
-"It is vain to do with more what can be done with less."
-
-__Donald Knuth:__     
-"It is much more rewarding to do more with less."
-
-__Leonardo da Vinci:__       
-"Simplicity is the ultimate sophistication."
-
-__Edsger Dijkstra:__        
-"Simplicity is prerequisite for reliability."
-
-__Dieter Ram:__       
-"Less, but better."
-
-__timm:__     
-"plz, less"
-
-<hr> 
-
-Role models  (whose code challenges me to write less, but better):   
+### Role Models
+People whose code challenges me to write less, but better:     
 [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
 | [Hilary Mason](https://www.youtube.com/watch?v=l2btv0yUPNQ)
-| [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
-| [Peter Norvig](http://norvig.com/lispy.html)
+| [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)    
+  [Peter Norvig](http://norvig.com/lispy.html)
 | [Joel Grus](https://github.com/joelgrus/data-science-from-scratch)
 | [Paul Graham](http://www.paulgraham.com/onlisp.html)
+
+### Coding conventions 
+Before reading this, it would be best to     
+[reviews these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
