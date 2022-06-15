@@ -28,31 +28,27 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr">Fork me on GitHub</a></span>
-<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br><a 
-href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a></p>
-<p> <img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+<a href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
+<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><p>
+<img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 <b>Tony Hoare:</b><br>
-<em>"Inside every large program is a small program struggling to get out."</em><p>
-<b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
-<b>Dieter Rams:</b><br><em>"Less, but better."</em>
-
-<p>Now that you’ve done “it”, can you do “it” better? Did you really understand “it”?
-Can you now
-write “it” in fewer lines and do you know how to make “it” run faster?
-Can you teach “it” quickly to newcomers?
-And can you generalize “it” such that “it” can be quickly
+<em>“Inside every large program is a small program struggling to get out.”</em><p>
+<b>Alan Perlis:</b><br><em>“Simplicity does not precede complexity, but follows it.”</em><p>
+<b>Dieter Rams:</b><br><em>“Less, but better.”</em></p>
+<p>Now that you’ve done “it”, can you do “it” better? Did you really
+understand “it”?  Can you now write “it” in fewer lines and do you
+know how to make “it” run faster?  Can you teach “it” quickly to
+newcomers?  And can you generalize “it” such that “it” can be quickly
 adapted to other purposes?</p>
-<p>E.g. do I understand a multi-objective semi-supervised explanation?
-Well, maybe. Here’s all that, most of which is
-background stuff that could be used for other learners.  </p>
-<p>Once
-I build that, I found that decision trees, Naive Bayes classifiers,
-and nearest neighbors were all tiny extensions. </p>
-<p>Also included here
-is literate programming, self-documenting code and support for
-test-driven development. </p>
+<p>E.g. do I understand a multi-objective semi-supervised explanation algorithms?
+Well, Let’s check. </p>
+<p>Here’s all that, most of which is background stuff
+that could be used for other learners.  Once I build that, I found
+that decision trees, Naive Bayes classifiers, and nearest neighbors
+were all tiny extensions.  Also included here is literate programming,
+self-documenting code and support for test-driven development.</p>
 <p>All in around 300 lines of LUA: <br></p>
-<p><code>awk &#39;!/^(--|[ \t]*$)/{n++}END{print n&quot; lines&quot;}&#39; *.lua</code><br>=&gt; 301 lines</p>
+<p><code>awk &#39;!/^(--|[ \t]*$)/{n++}</code><br><code>END {print n&quot; lines&quot;}&#39; *.lua</code><br>=&gt; 301 lines</p>
 <p>Share and enjoy.</p>
 <h3 id="role-models">Role Models</h3>
 <p>People whose code challenges me to write less, but better:<br><a href="https://www.youtube.com/watch?v=o9pEzgHorH0">Jack Diederich</a> 
@@ -61,7 +57,7 @@ test-driven development. </p>
 | <a href="https://github.com/joelgrus/data-science-from-scratch">Joel Grus</a>
 | <a href="http://www.paulgraham.com/onlisp.html">Paul Graham</a></p>
 <h3 id="coding-conventions">Coding conventions</h3>
-<p>Before reading this, it would be best to<br><a href="https://github.com/timm/shortr/blob/master/CONTRIBUTE.md">reviews these local coding conventions</a>.</p>
+<p>Before reading this, it would be best to<br><a href="https://github.com/timm/shortr/blob/master/CONTRIBUTE.md">review these local coding conventions</a>.</p>
 
             </div>
             
@@ -76,9 +72,9 @@ eval  two distant points using multi-objective criteria.
 Everything nearest the  worst is pruned and we recurse on
 the rest.  This algorithm is only approximate so, in pass2,
 we do it all again, starting with the better items seen in
-pass1.  Explain the final results by  a decision tree that
-recursively discretizes numerics via their ability to
-distinguish the best/worst things found in pass2.
+pass1.  Explain the final results with  a decision tree that
+recursively discretizes numerics (on their ability to
+distinguish best/worst things found in pass2).
      
 USAGE:
   lua shortr.lua [OPTIONS]
@@ -86,18 +82,18 @@ USAGE:
 OPTIONS:
 
 OPTIONS:
-  -M  --Min    min size of space                 =  .5
-  -b  --bins   max number of bins                =  16
-  -k  --k      NB hack, low attribute frequency  =  2
-  -m  --m      NB back, low class frequency      =  2
-  -s  --some   max number of nums to keep        =  256
-  -w  --wait   wait this number before testing   =  10
+  -M  --Min    min size of space                    =  .5
+  -b  --bins   max number of bins                   =  16
+  -k  --k      Bayes hack: low attribute frequency  =  2
+  -m  --m      Bayes hack: low class frequency      =  1
+  -s  --some   max number of nums to keep           =  256
+  -w  --wait   wait this number before testing      =  10
 
 OPTIONS (other):
-  -f  --file   file           =  data/auto93.csv
-  -g  --go     start-up goal  =  nothing
-  -h  --help   show help      =  false
-  -s  --seed   seed           =  10019]]</span></pre></div></div>
+  -f  --file   file                     =  data/auto93.csv
+  -g  --go     start-up goal            =  nothing
+  -h  --help   show help                =  false
+  -s  --seed   seed                     =  10019]]</span></pre></div></div>
             
         </li>
         
@@ -139,7 +135,7 @@ found between <code>lo</code> and <code>hi</code> of an independent column.</li>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> b4={}; <span class="hljs-keyword">for</span> x,_ <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">_ENV</span>) <span class="hljs-keyword">do</span> b4[x]=x <span class="hljs-keyword">end</span> 
-<span class="hljs-keyword">local</span> _    = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib1&quot;</span>
+<span class="hljs-keyword">local</span> _    = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
 <span class="hljs-keyword">local</span> Abcd = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;abcd&quot;</span>
   
 <span class="hljs-keyword">local</span> argmax,atom,big,cli,csv,demos = _.argmax,_.atom,_.big,_.cli,_.csv,_.demos
