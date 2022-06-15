@@ -43,5 +43,5 @@ People whose code challenges me to write less, but better:
 | [Paul Graham](http://www.paulgraham.com/onlisp.html)
 
 ### Coding conventions 
-Before reading this, it would be best to     
+Before reading this, it might  be best to    
 [review these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
