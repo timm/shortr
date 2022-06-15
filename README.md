@@ -15,8 +15,8 @@ Now that you've done _it_, did you really understand _it_?
 - Can you do _it_ better?
 - Can you now
 write _it_ in fewer lines and do you know how to make _it_ run faster?
-- Can you see how _it_ is same/different to other things and can you
-use those similarities to do more things with  _it_?
+- Can you see how _it_ is same/different to other things?
+  - and can you use those similarities to do more things with  _it_?
 - Can you teach _it_ quickly to newcomers?
 
 E.g. do I understand a multi-objective semi-supervised explanation?
