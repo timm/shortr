@@ -1,15 +1,15 @@
 
-<img width=300 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
 # SHORTR
  
-<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br><a 
-href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
+<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><a  href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>  
 
- <b>Tony Hoare:</b><br>
+
+ <img width=300 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+<b>Tony Hoare:</b><br>
 <em>"Inside every large program is a small program struggling to get out."</em><p>
 <b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
-<b>Dieter Rams:</b><br><em>"Less, but better."</em>
+<b>Dieter Rams:</b><br><em>"Less, but better."</em><br clear=all>
 
 Now that you've done _it_, did you really understand _it_? Let's check.
 
@@ -46,4 +46,4 @@ People whose code challenges me to write less, but better:
 | [Paul Graham](http://www.paulgraham.com/onlisp.html)
 
 ### Coding conventions 
-Before reading this, it would be best to   [review  these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
+Before reading this code, it might be best to   [review  these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
