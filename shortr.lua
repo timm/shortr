@@ -9,9 +9,9 @@ eval  two distant points using multi-objective criteria.
 Everything nearest the  worst is pruned and we recurse on
 the rest.  This algorithm is only approximate so, in pass2,
 we do it all again, starting with the better items seen in
-pass1.  Explain the final results by  a decision tree that
-recursively discretizes numerics via their ability to
-distinguish the best/worst things found in pass2.
+pass1.  Explain the final results with  a decision tree that
+recursively discretizes numerics (on their ability to
+distinguish best/worst things found in pass2).
      
 USAGE:
   lua shortr.lua [OPTIONS]
@@ -19,18 +19,18 @@ USAGE:
 OPTIONS:
 
 OPTIONS:
-  -M  --Min    min size of space                 =  .5
-  -b  --bins   max number of bins                =  16
-  -k  --k      NB hack, low attribute frequency  =  2
-  -m  --m      NB back, low class frequency      =  2
-  -s  --some   max number of nums to keep        =  256
-  -w  --wait   wait this number before testing   =  10
+  -M  --Min    min size of space                    =  .5
+  -b  --bins   max number of bins                   =  16
+  -k  --k      Bayes hack: low attribute frequency  =  2
+  -m  --m      Bayes hack: low class frequency      =  1
+  -s  --some   max number of nums to keep           =  256
+  -w  --wait   wait this number before testing      =  10
 
 OPTIONS (other):
-  -f  --file   file           =  data/auto93.csv
-  -g  --go     start-up goal  =  nothing
-  -h  --help   show help      =  false
-  -s  --seed   seed           =  10019]]
+  -f  --file   file                     =  data/auto93.csv
+  -g  --go     start-up goal            =  nothing
+  -h  --help   show help                =  false
+  -s  --seed   seed                     =  10019]]
 
 -------------------------------------------------------------------------------
 -- ## Names
@@ -48,7 +48,7 @@ OPTIONS (other):
 --   found between `lo` and `hi` of an independent column.
 -- - `NB` is an application class that implements a Naive Bayes classifier.
 local b4={}; for x,_ in pairs(_ENV) do b4[x]=x end 
-local _    = require"lib1"
+local _    = require"lib"
 local Abcd = require"abcd"
   
 local argmax,atom,big,cli,csv,demos = _.argmax,_.atom,_.big,_.cli,_.csv,_.demos
