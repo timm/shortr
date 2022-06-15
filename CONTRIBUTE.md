@@ -1,11 +1,11 @@
 <a name=top></a>
 
-<img align=right width=550 src=/docs/img/contrib.png>
+<img align=right width=650 src=/docs/img/contrib.png>
 
 # Contribute
-Hello :wave:  
+Hello :wave:.  
 
-Contributions welcome :kiss: :heart:
+Contributions welcome :kiss: :heart:.
 
 If you offer pull requests to this code, please use these conventions.
 
