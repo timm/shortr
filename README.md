@@ -6,8 +6,7 @@
 
 
  <img width=300 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
-<b>Tony Hoare:</b><br>
-<em>"Inside every large program is a small program struggling to get out."</em><p>
+<b>Tony Hoare:</b><br><em>"Inside every large program is a small program struggling to get out."</em><p>
 <b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
 <b>Dieter Rams:</b><br><em>"Less, but better."</em><br clear=all>
 
