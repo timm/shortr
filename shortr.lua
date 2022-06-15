@@ -59,6 +59,7 @@ local the={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) the[key] = atom(x) end)
   
 local Col,Data,Row,Bin,NB = {},{},{},{},{}
+
 -------------------------------------------------------------------------------
 -- ## class Col
 -- Summaries a column of data. Uses different types for numeric or other data.
@@ -189,8 +190,7 @@ function Col.like(i,x,prior)
   then local sd,mu=Col.div(i), Col.mid(i)
        return sd==0 and (x==mu and 1 or 0) or
            math.exp(-1*(x - mu)^2/(2*sd^2)) / (sd*((2*math.pi)^0.5)) 
-  else return ((i.kept[x] or 0)+the.m*prior)/(i.n+the.m) end end
-
+  else return ((i.kept[x] or 0)+the.m*prior)/(i.n+the.m) end end
 --------------------------------------------------------------------------------
 -- ## Row
 function Row.NEW(of,cells) return {of=of,cells=cells,evaled=false} end
@@ -301,8 +301,7 @@ function Bin.MERGES(b4, min)
   else -- stretch the bins to cover any gaps from minus infinity to plus infinity
        for n=2,#now do now[n].lo = now[n-1].hi end
        now[1].lo, now[#now].hi = -big, big
-       return now end end
-
+       return now end end
 --------------------------------------------------------------------------------
 -- To disable a test, relabel it from `Go` to `No`.
 local Go,No = {},{}
