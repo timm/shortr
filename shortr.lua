@@ -51,6 +51,11 @@ local Abcd = require"abcd"
 -- `the` stores settings for this code.
 local the={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) the[key] =_.atom(x) end)
+
+-- If `the.Min` is greater than one, then `small` is `the.Min`. 
+-- Else it is some fractional power of some number.
+local function small(n) return the.Min <1 and n^the.Min or the.Min end
+
 -- Other names
 local argmax,atom,big,cli,csv,demos = _.argmax,_.atom,_.big,_.cli,_.csv,_.demos
 local fmt,lt,map,o,oo,per,push      = _.fmt,_.lt,_.map,_.o,_.oo,_.per,_.push
@@ -281,7 +286,7 @@ function Bin.BINS(listOfRows,col)
         dict[pos] = dict[pos] or push(list, Bin.NEW(v,v,Col.NEW(col.at,col.txt)))
         Bin.add(dict[pos], v, label) end end end
     list = sort(list, lt"lo")
-    list = col.nums and Bin.MERGES(list, n^the.Min) or list
+    list = col.nums and Bin.MERGES(list, small(n)) or list
     return {bins= list,
             div = sum(list,function(z) return Col.div(z.ys)*z.ys.n/n end)} end
  
