@@ -34,7 +34,6 @@ All in around 300 lines of LUA: <br>
 => 301 lines
      
 Share and enjoy.
-### Role models  
 
 ### Role Models
 People whose code challenges me to write less, but better:     
