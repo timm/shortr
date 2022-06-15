@@ -21,7 +21,7 @@ write _it_ in fewer lines and do you know how to make _it_ run faster?
 
 E.g. do I understand a multi-objective semi-supervised explanation?
 Well, maybe. Here's all that, most of which is
-background stuff that could be used for other learners.  
+background stuff that could be used for other learners.
 Once
 I build that, I found that decision trees, Naive Bayes classifiers,
 and nearest neighbors were all tiny extensions. 
