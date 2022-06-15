@@ -21,11 +21,9 @@ adapted to other purposes?
 E.g. do I understand a multi-objective semi-supervised explanation?
 Well, maybe. Here's all that, most of which is
 background stuff that could be used for other learners.  
-
 Once
 I build that, I found that decision trees, Naive Bayes classifiers,
 and nearest neighbors were all tiny extensions. 
-
 Also included here
 is literate programming, self-documenting code and support for
 test-driven development. 
