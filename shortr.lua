@@ -30,7 +30,7 @@ OPTIONS (other):
 -------------------------------------------------------------------------------
 -- ## Names
 --  
--- `the` stores settings for this code. <p>As to the classes used by this system:
+-- As to the classes used by this system:
 --  
 -- - `Row` hold the `cells` or record and a pointer (`of`) back to the 
 --   container that made them.
@@ -42,6 +42,8 @@ OPTIONS (other):
 -- - `Bin` is a helper class that summarizes what dependent `ys` values are
 --   found between `lo` and `hi` of an independent column.
 -- - `NB` is an application class that implements a Naive Bayes classifier.
+local Col,Data,Row,Bin,NB = {},{},{},{},{}
+  
 local b4={}; for x,_ in pairs(_ENV) do b4[x]=x end 
 local _    = require"lib"
 local Abcd = require"abcd"
@@ -50,10 +52,10 @@ local argmax,atom,big,cli,csv,demos = _.argmax,_.atom,_.big,_.cli,_.csv,_.demos
 local fmt,lt,map,o,oo,per,push      = _.fmt,_.lt,_.map,_.o,_.oo,_.per,_.push
 local R,sort,splice,sum             = _.R, _.sort, _.splice, _.sum
 
+-- `the` stores settings for this code.
 local the={}
 help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) the[key] = atom(x) end)
   
-local Col,Data,Row,Bin,NB = {},{},{},{},{}
 -------------------------------------------------------------------------------
 -- ## class Col
 -- Summaries a column of data. Uses different types for numeric or other data.
