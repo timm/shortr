@@ -68,20 +68,15 @@ self-documenting code and support for test-driven development.</p>
 SHORTR: semi-supervised multi-objective optimization
 (c) 2022 Tim Menzies &lt;timm@ieee.org&gt; BSD2 license
    
-Explore N points via  O(log2(N)) evaluations. Generate a
-human-readable summary of that space.  In pass1, find and
-eval  two distant points using multi-objective criteria.
-Everything nearest the  worst is pruned and we recurse on
-the rest.  This algorithm is only approximate so, in pass2,
-we do it all again, starting with the better items seen in
-pass1.  Explain the final results with  a decision tree that
-recursively discretizes numerics (on their ability to
-distinguish best/worst things found in pass2).
-     
+Generate a readable summary of N items after O(log2(N)) evals.
+PASS1 (guess): eval two distant items on multi-objective criteria.
+      Prune everything nearest the worst one. Recurse on rest.  
+PASS2 (guess again): do it again on better items from first pass.  
+PASS3 (explain): recursively discretize attributes on how well
+      they distinguish second pass&#x27;s best and worst items.
+
 USAGE:
   lua shortr.lua [OPTIONS]
-
-OPTIONS:
 
 OPTIONS:
   -M  --Min    min size of space                    =  .5
@@ -522,7 +517,7 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
   <span class="hljs-keyword">if</span>   i.nums 
   <span class="hljs-keyword">then</span> <span class="hljs-keyword">local</span> sd,mu=Col.div(i), Col.mid(i)
        <span class="hljs-keyword">return</span> sd==<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> (x==mu <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">or</span>
-           <span class="hljs-built_in">math</span>.<span class="hljs-built_in">exp</span>(<span class="hljs-number">-1</span>*(x - mu)^<span class="hljs-number">2</span>/(<span class="hljs-number">2</span>*sd^<span class="hljs-number">2</span>)) / (sd*((<span class="hljs-number">2</span>*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">pi</span>)^<span class="hljs-number">0.5</span>)) 
+           <span class="hljs-built_in">math</span>.<span class="hljs-built_in">exp</span>(<span class="hljs-number">-.5</span>*((x - mu)/sd)^<span class="hljs-number">2</span>) / (sd*((<span class="hljs-number">2</span>*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">pi</span>)^<span class="hljs-number">0.5</span>)) 
   <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span> ((i.kept[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>)+the.m*prior)/(i.n+the.m) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>

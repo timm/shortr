@@ -3,20 +3,15 @@ local help= [[
 SHORTR: semi-supervised multi-objective optimization
 (c) 2022 Tim Menzies <timm@ieee.org> BSD2 license
    
-Explore N points via  O(log2(N)) evaluations. Generate a
-human-readable summary of that space.  In pass1, find and
-eval  two distant points using multi-objective criteria.
-Everything nearest the  worst is pruned and we recurse on
-the rest.  This algorithm is only approximate so, in pass2,
-we do it all again, starting with the better items seen in
-pass1.  Explain the final results with  a decision tree that
-recursively discretizes numerics (on their ability to
-distinguish best/worst things found in pass2).
-     
+Generate a readable summary of N items after O(log2(N)) evals.
+PASS1 (guess): eval two distant items on multi-objective criteria.
+      Prune everything nearest the worst one. Recurse on rest.  
+PASS2 (guess again): do it again on better items from first pass.  
+PASS3 (explain): recursively discretize attributes on how well
+      they distinguish second pass's best and worst items.
+
 USAGE:
   lua shortr.lua [OPTIONS]
-
-OPTIONS:
 
 OPTIONS:
   -M  --Min    min size of space                    =  .5
