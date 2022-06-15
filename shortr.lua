@@ -182,7 +182,8 @@ function Col.merge(i,j,     k)
 
 -->.simpler(i:col,this:col,that:col):bool->am `i` simpler than `this` and `that`?
 function Col.simpler(i,this,that)
-  return Col.div(i) <= (this.n*Col.div(this) + that.n*Col.div(that)) / i.n end
+  print(o(i.ys),o(this.ys),o(that.ys))
+  return Col.div(i) <= (this.ys.n*Col.div(this)+that.ys.n*Col.div(that))/i.ys.n end
 --- ### For Naive Bayes 
 
 function Col.like(i,x,prior)
@@ -273,20 +274,21 @@ function Bin.add(i,x,y)
 
 function Bin.merge(i,j, min)
   local k = Col.merge(i,j)
-  if i.n < min or j.n<min or Col.simpler(k,i,j)  then return k end end
+  if i.ys.n < min or j.ys.n<min or Col.simpler(k,i,j)  then return k end end
 
-function Bin.BINS(listOfRows,col,y)
+function Bin.BINS(listOfRows,col)
   local n,list, dict = 0,{}, {}
   for label,rows in pairs(listOfRows) do
     for _,row in pairs(rows) do
-      local v = row[col.at]
+      local v = row.cells[col.at]
       if v ~= "?" then
         n = n + 1
         local pos = Col.bin(col,v)
-        dict[pos] = dict[pos] or push(list, Bin.new(v,v,Col.new(col.at,col.txt)))
+        print(pos, v)
+        dict[pos] = dict[pos] or push(list, Bin.NEW(v,v,Col.NEW(col.at,col.txt)))
         Bin.add(dict[pos], v, label) end end end
     list = sort(list, lt"lo")
-    list = col.nums and Bin.MERGES(list, n^the.min) or list
+    list = col.nums and Bin.MERGES(list, n^the.Min) or list
     return {bins= list,
             div = sum(list,function(z) return Col.div(z.ys)*z.ys.n/n end)} end
  
@@ -305,6 +307,19 @@ function Bin.MERGES(b4, min)
 --------------------------------------------------------------------------------
 -- To disable a test, relabel it from `Go` to `No`.
 local Go,No = {},{}
+
+function Go.BINS(  i,t,m,left,right)
+  i= Data.LOAD(the.file)
+  t= sort(i.rows,Row.better)
+  m= (#t)^.5
+  left = splice(t,1,m)
+  right= splice(i.rows,#t - m)
+  for n,col in pairs(i.cols.x) do
+    if n==1 then
+       Bin.BINS({left,right},col)
+    end
+    print(n,col.txt, col.nums and true or false) end
+  return true end 
 
 function Go.THE() oo(the); return true end
 
