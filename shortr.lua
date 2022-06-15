@@ -186,7 +186,7 @@ function Col.like(i,x,prior)
   if   i.nums 
   then local sd,mu=Col.div(i), Col.mid(i)
        return sd==0 and (x==mu and 1 or 0) or
-           math.exp(-1*(x - mu)^2/(2*sd^2)) / (sd*((2*math.pi)^0.5)) 
+           math.exp(-.5*((x - mu)/sd)^2) / (sd*((2*math.pi)^0.5)) 
   else return ((i.kept[x] or 0)+the.m*prior)/(i.n+the.m) end end
 --------------------------------------------------------------------------------
 -- ## Row
