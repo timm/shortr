@@ -31,7 +31,6 @@ OPTIONS (other):
 -------------------------------------------------------------------------------
 -- ## Names
 
---> Row{ _of=:DATA, cols=:{x=:[COL], y=:[COL}} -> one record,
 --   container that made them.<p>
 local Row={} 
 -- `Col` summarizes columns. One `Col` can be for
