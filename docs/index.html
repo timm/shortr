@@ -55,9 +55,9 @@ self-documenting code and support for test-driven development.</p>
 <h3 id="role-models">Role Models</h3>
 <p>People whose code challenges me to write less, but better:<br><a href="https://www.youtube.com/watch?v=o9pEzgHorH0">Jack Diederich</a> 
 | <a href="https://www.youtube.com/watch?v=l2btv0yUPNQ">Hilary Mason</a>
-| <a href="https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html">Brian Kernighan</a><br>  <a href="http://norvig.com/lispy.html">Peter Norvig</a>
-| <a href="https://github.com/joelgrus/data-science-from-scratch">Joel Grus</a>
-| <a href="http://www.paulgraham.com/onlisp.html">Paul Graham</a></p>
+| <a href="https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html">Brian Kernighan</a><br>| <a href="https://github.com/joelgrus/data-science-from-scratch">Joel Grus</a><br>  <a href="http://www.paulgraham.com/onlisp.html">Paul Graham</a>
+| <a href="http://norvig.com/lispy.html">Peter Norvig</a>
+| <a href="https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&amp;isAllowed=y">Guy Steele</a></p>
 <h3 id="coding-conventions">Coding conventions</h3>
 <p>Before reading this, it might  be best to<br><a href="https://github.com/timm/shortr/blob/master/CONTRIBUTE.md">review these local coding conventions</a>.</p>
 
@@ -88,10 +88,10 @@ OPTIONS:
   -w  --wait   wait this number before testing      =  10
 
 OPTIONS (other):
-  -f  --file   file                     =  data/auto93.csv
-  -g  --go     start-up goal            =  nothing
-  -h  --help   show help                =  false
-  -s  --seed   seed                     =  10019]]</span></pre></div></div>
+  -f  --file   file           =  data/auto93.csv
+  -g  --go     start-up goal  =  nothing
+  -h  --help   show help      =  false
+  -s  --seed   seed           =  10019]]</span></pre></div></div>
             
         </li>
         
@@ -128,7 +128,8 @@ OPTIONS (other):
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <p>  container that made them.<p></p>
+              <p><code>Row</code> holds one record (in <code>cells</code>) and a pointer (<code>_of</code>) to 
+the container that holds it `container that made them.<p></p>
 
             </div>
             
@@ -612,8 +613,7 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.simpler</span><span class="hljs-params">(i,this,that)</span></span>
-  <span class="hljs-built_in">print</span>(o(i.ys),o(this.ys),o(that.ys))
-  <span class="hljs-keyword">return</span> Col.div(i) &lt;= (this.ys.n*Col.div(this)+that.ys.n*Col.div(that))/i.ys.n <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">return</span> Col.div(i) &lt;= (this.n*Col.div(this)+that.n*Col.div(that))/i.n <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -665,10 +665,10 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.NEW</span><span class="hljs-params">(of,cells)</span></span> <span class="hljs-keyword">return</span> {of=of,cells=cells,evaled=<span class="hljs-literal">false</span>} <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.NEW</span><span class="hljs-params">(of,cells)</span></span> <span class="hljs-keyword">return</span> {_of=of,cells=cells,evaled=<span class="hljs-literal">false</span>} <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.better</span><span class="hljs-params">(i,j)</span></span>
-  <span class="hljs-keyword">local</span> s1, s2, ys = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, i.of.cols.y
+  <span class="hljs-keyword">local</span> s1, s2, ys = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, i._of.cols.y
   <span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(ys) <span class="hljs-keyword">do</span>
     <span class="hljs-keyword">local</span> x,y =  i.cells[c.at], j.cells[c.at]
     x,y = Col.norm(c, x), Col.norm(c, y)
@@ -676,7 +676,7 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
     s2  = s2 - <span class="hljs-number">2.7183</span>^(c.w * (y-x)/#ys) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> s1/#ys &lt; s2/#ys  <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.klass</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.cells[i.of.cols.klass.at] <span class="hljs-keyword">end</span></pre></div></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.klass</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.cells[i._of.cols.klass.at] <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -819,8 +819,10 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
   Col.add(i.ys, y) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.merge</span><span class="hljs-params">(i,j, min)</span></span>
-  <span class="hljs-keyword">local</span> k = Col.merge(i,j)
-  <span class="hljs-keyword">if</span> i.ys.n &lt; <span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> j.ys.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> Col.simpler(k,i,j)  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">local</span> iy,jy = i.ys,j.ys
+  <span class="hljs-keyword">local</span> ky    = Col.merge(iy,jy)
+  <span class="hljs-keyword">if</span> iy.n &lt; <span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> jy.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> Col.simpler(ky,iy,jy) <span class="hljs-keyword">then</span> 
+    <span class="hljs-keyword">return</span> Bin.NEW(i.lo, j.hi, ky) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.BINS</span><span class="hljs-params">(listOfRows,col)</span></span>
   <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
@@ -830,13 +832,12 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
       <span class="hljs-keyword">if</span> v ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
         n = n + <span class="hljs-number">1</span>
         <span class="hljs-keyword">local</span> pos = Col.bin(col,v)
-        <span class="hljs-built_in">print</span>(pos, v)
         dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, Bin.NEW(v,v,Col.NEW(col.at,col.txt)))
         Bin.add(dict[pos], v, label) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-    list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;lo&quot;</span>)
-    list = col.nums <span class="hljs-keyword">and</span> Bin.MERGES(list, small(n)) <span class="hljs-keyword">or</span> list
-    <span class="hljs-keyword">return</span> {bins= list,
-            div = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> Col.div(z.ys)*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span>
+  list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;lo&quot;</span>)
+  list = col.nums <span class="hljs-keyword">and</span> Bin.MERGES(list, small(n)) <span class="hljs-keyword">or</span> list
+  <span class="hljs-keyword">return</span> {bins= list,
+          div = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> Col.div(z.ys)*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span>
  
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.MERGES</span><span class="hljs-params">(b4, min)</span></span>
   <span class="hljs-keyword">local</span> n,now = <span class="hljs-number">1</span>,{}
@@ -885,11 +886,13 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
   m= (#t)^<span class="hljs-number">.5</span>
   left = splice(t,<span class="hljs-number">1</span>,m)
   right= splice(i.rows,#t - m)
-  <span class="hljs-keyword">for</span> n,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.x) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">if</span> n==<span class="hljs-number">1</span> <span class="hljs-keyword">then</span>
-       Bin.BINS({left,right},col)
-    <span class="hljs-keyword">end</span>
-    <span class="hljs-built_in">print</span>(n,col.txt, col.nums <span class="hljs-keyword">and</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">or</span> <span class="hljs-literal">false</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> n,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(i.cols.x) <span class="hljs-keyword">do</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&quot;</span>)
+    <span class="hljs-keyword">local</span> bins = Bin.BINS({left,right},col).bins 
+    <span class="hljs-keyword">if</span> #bins &gt; <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> 
+       <span class="hljs-keyword">for</span> _,bin <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(bins) <span class="hljs-keyword">do</span>
+         <span class="hljs-built_in">print</span>(bin.ys.txt, bin.lo, bin.hi) <span class="hljs-keyword">end</span>   <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span> 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.THE</span><span class="hljs-params">()</span></span> oo(the); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
@@ -899,6 +902,7 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
     <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> d <span class="hljs-keyword">then</span> d=Data.NEW(row) <span class="hljs-keyword">else</span>
        Data.add(d,row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>)
   oo(Data.mids(d))
+  oo(Col.ok(d.cols.x[<span class="hljs-number">1</span>]))
   <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span> 
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.STATS</span><span class="hljs-params">()</span></span> 
