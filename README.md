@@ -15,7 +15,10 @@ href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.or
 
  
 
- 
+ ```diff
++ this text is highlighted in green
+- this text is highlighted in red
+```
 
 > __Dieter Rams:__      
 _"Less, but better."_
