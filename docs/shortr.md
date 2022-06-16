@@ -18,7 +18,7 @@ Finally, can you teach _it_ quickly to newcomers?
 E.g. do I understand a multi-objective semi-supervised explanation algorithms?
 Well, Let's check. 
 
-<img width=150 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+<img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
 Here's all that, most of which is background stuff
 that could be used for other learners.  Once I build that, I found
