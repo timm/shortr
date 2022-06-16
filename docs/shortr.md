@@ -1,4 +1,5 @@
 <span id="forkongithub"><a href="https://github.com/timm/shortr/blob/master/README.md">Fork me on GitHub</a></span>
+<img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><p>
 <b>Tony Hoare:</b><br>
@@ -15,7 +16,6 @@ Can you see how _it_ is same/different to other things?
 And can you use those similarities to do more things with  _it_?
 Finally, can you teach _it_ quickly to newcomers?
 
-<img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
 E.g. do I understand a multi-objective semi-supervised explanation algorithms?
 Well, Let's check. 
