@@ -2,7 +2,7 @@
 
 # SHORTR:  less XAI, but better
 
-Semi-supervised multi-objective optimization.   
+Semi-supervised multi-objective optimization XAI.   
 From N items, find and explain the best ones, using just log(N) evals.
  
 <a href="http://menzies.us/shortr"> <img align=left src="docs/img/docs.png" width=300></a>
