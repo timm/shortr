@@ -5,12 +5,12 @@ lib.big = math.huge
 lib.fmt = string.format
 lib.R   = math.random
 
-function lib.push(t,x)      t[1+#t]=x; return x end
-function lib.sort(t,f)      table.sort(t,f); return t end
-function lib.map(t,f,  u)   u={}; for _,v in pairs(t) do u[1+#u]=f(v) end; return u end
-function lib.sum(t,f,  n)   n=0;  for _,v in pairs(t) do n = n + f(v) end; return n end
-function lib.per(t,p)       p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
-function lib.lt(x)          return function(a,b) return a[x] < b[x] end end
+function lib.push(t,x)    t[1+#t]=x; return x end
+function lib.sort(t,f)    table.sort(t,f); return t end
+function lib.map(t,f,  u) u={}; for _,v in pairs(t) do u[1+#u]=f(v) end; return u end
+function lib.sum(t,f,  n) n=0;  for _,v in pairs(t) do n = n + f(v) end; return n end
+function lib.per(t,p)     p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
+function lib.lt(x)        return function(a,b) return a[x] < b[x] end end
 
 function lib.argmax(t,f)
   local arg, max = nil, -lib.big
@@ -19,8 +19,11 @@ function lib.argmax(t,f)
 
 function lib.o(t) 
   if type(t) ~= "table" then return tostring(t) end
-  if #t>0 then return "{" .. table.concat(lib.map(t,tostring)," ") .."}" end
-  local u={}; for x,v in pairs(t) do u[1+#u] = lib.fmt(":%s %s",x,v) end
+  if #t>0 then return "{"..table.concat(lib.map(t,lib.o)," ").."}" end
+  local u,pub
+  function pub(x) return "_"~=tostring(x):sub(1,1) end
+  u={}; for x,v in pairs(t) do 
+          if pub(x) then u[1+#u]=lib.fmt(":%s %s",x,lib.o(v)) end end
   return "{"..table.concat(lib.sort(u)," ").."}" end 
 
 function lib.oo(t) print(lib.o(t)); return t end
@@ -32,9 +35,8 @@ function lib.cli(t,help)
       if flag==("-"..key:sub(1,1)) or flag==("--"..key) then 
          x= x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
     t[key] = lib.atom(x) end 
-  if t.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;31m%1\27[0m"),"")) end
+  if t.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"")) end
   return t end
-
 
 function lib.atom(str) 
   str = str:match"^%s*(.-)%s*$"

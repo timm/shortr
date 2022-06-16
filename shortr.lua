@@ -23,15 +23,16 @@ OPTIONS:
   -w  --wait   wait this number before testing      =  10
 
 OPTIONS (other):
-  -f  --file   file                     =  data/auto93.csv
-  -g  --go     start-up goal            =  nothing
-  -h  --help   show help                =  false
-  -s  --seed   seed                     =  10019]]
+  -f  --file   file           =  data/auto93.csv
+  -g  --go     start-up goal  =  nothing
+  -h  --help   show help      =  false
+  -s  --seed   seed           =  10019]]
 
 -------------------------------------------------------------------------------
 -- ## Names
 
---   container that made them.<p>
+-- `Row` holds one record (in `cells`) and a pointer (`_of`) to 
+-- the container that holds it `container that made them.<p>
 local Row={} 
 -- `Col` summarizes columns. One `Col` can be for
 --   numerics or symbolic columns (denoted with ` aCol.nums`).<p>
@@ -122,7 +123,8 @@ function Col.add(i,v,inc)
             if     #i.kept < i.nums then i.ok=false;push(i.kept,v) 
             elseif R() < i.nums/i.n then i.ok=false;i.kept[R(#i.kept)]=v end end 
       else i.ok = false
-           i.kept[v] = inc + (i.kept[v] or 0) end end
+           i.kept[v] = inc + (i.kept[v] or 0) 
+           print(v,inc,o(i.kept)) end end
   return i end
 -- ### Computing derived properties
 
@@ -192,10 +194,10 @@ function Col.like(i,x,prior)
   else return ((i.kept[x] or 0)+the.m*prior)/(i.n+the.m) end end
 --------------------------------------------------------------------------------
 -- ## Row
-function Row.NEW(of,cells) return {of=of,cells=cells,evaled=false} end
+function Row.NEW(of,cells) return {_of=of,cells=cells,evaled=false} end
 
 function Row.better(i,j)
-  local s1, s2, ys = 0, 0, i.of.cols.y
+  local s1, s2, ys = 0, 0, i._of.cols.y
   for _,c in pairs(ys) do
     local x,y =  i.cells[c.at], j.cells[c.at]
     x,y = Col.norm(c, x), Col.norm(c, y)
@@ -203,7 +205,7 @@ function Row.better(i,j)
     s2  = s2 - 2.7183^(c.w * (y-x)/#ys) end
   return s1/#ys < s2/#ys  end
 
-function Row.klass(i) return i.cells[i.of.cols.klass.at] end
+function Row.klass(i) return i.cells[i._of.cols.klass.at] end
 --------------------------------------------------------------------------------
 -- ## Data
 function Data.NEW(t) return {rows={}, cols=Col.COLS(t)} end
@@ -285,10 +287,11 @@ function Bin.BINS(listOfRows,col)
         print(pos, v)
         dict[pos] = dict[pos] or push(list, Bin.NEW(v,v,Col.NEW(col.at,col.txt)))
         Bin.add(dict[pos], v, label) end end end
-    list = sort(list, lt"lo")
-    list = col.nums and Bin.MERGES(list, small(n)) or list
-    return {bins= list,
-            div = sum(list,function(z) return Col.div(z.ys)*z.ys.n/n end)} end
+  print(1,o(list))
+  list = sort(list, lt"lo")
+  list = col.nums and Bin.MERGES(list, small(n)) or list
+  return {bins= list,
+          div = sum(list,function(z) return Col.div(z.ys)*z.ys.n/n end)} end
  
 function Bin.MERGES(b4, min)
   local n,now = 1,{}
@@ -312,7 +315,8 @@ function Go.BINS(  i,t,m,left,right)
   m= (#t)^.5
   left = splice(t,1,m)
   right= splice(i.rows,#t - m)
-  for n,col in pairs(i.cols.x) do
+  for n,col in ipairs(i.cols.x) do
+    print("::",col.at, col.nums)
     if n==1 then
        Bin.BINS({left,right},col)
     end
@@ -326,6 +330,7 @@ function Go.ROWS(  d)
     if not d then d=Data.NEW(row) else
        Data.add(d,row) end end)
   oo(Data.mids(d))
+  oo(Col.ok(d.cols.x[1]))
   return true end 
 
 function Go.STATS() 
