@@ -65,6 +65,7 @@ local R,sort,splice,sum             = _.R, _.sort, _.splice, _.sum
 -------------------------------------------------------------------------------
 -- ## class Col
 -- Summaries a column of data. Uses different types for numeric or other data.
+-- It `i.nums` is non-nil, then this is a column for numerics.
 
 --> .NEW(at:?int, txt:?str) :Col -> constructor of columns.
 -- `.ok` is set to false after every update then set back
@@ -84,8 +85,7 @@ function Col.NEW(at,txt)
 function Col.NUM(at,txt,some,   i)
    i     = Col.NEW(at,txt)  --> :[COL] -> numerics extend general columns.
    i.w   = Col.WEIGHT(txt)  --> :num   -> if minimizing, then -1. Else 1
-   i.nums= some or the.some --> :num   -> max number of items to keep
-                            --            if non-nil then "i" is a numeric
+   i.nums= some or the.some --> :num   -> max num of items to keep. 
    return i end
 -- ### Factory to make Cols
 
