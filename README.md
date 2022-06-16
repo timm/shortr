@@ -13,8 +13,6 @@ href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.or
 
 <p>&nbsp;
 <p>&nbsp;
-<p>&nbsp;
-<p>&nbsp;
 
 __Tony Hoare:__    
 _"Inside every large program is a small program struggling to get out."_
