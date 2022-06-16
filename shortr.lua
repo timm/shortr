@@ -166,7 +166,7 @@ function Col.mid(i)  Col.ok(i); return i.mid end
 --> .norm(i:Col,x:num) :0..1 -> normalize `x` 0..1 for lo..hi.
 function Col.norm(i,x) 
   local a=Col.ok(i); return a[#a]-a[1] < 1E-9 and 0 or (x-a[1])/(a[#a]-a[1]) end
---- ### For Discretization 
+-- ### For Discretization 
 
 --> .bin(i:Col,x:any) :any -> round numeric `x` to nearest `(hi-lo)/the.bins`
 -- (and for non-numerics, just return `x`).
@@ -185,8 +185,8 @@ function Col.merge(i,j,     k)
 
 -->.simpler(i:col,this:col,that:col):bool->am `i` simpler than `this` and `that`?
 function Col.simpler(i,this,that)
-  return Col.div(i) <= (this.n*Col.div(this)+that.n*Col.div(that))/i.n end
---- ### For Naive Bayes 
+  return Col.div(i) <= (this.n*Col.div(this) + that.n*Col.div(that)) / i.n end
+-- ### For Naive Bayes 
 
 function Col.like(i,x,prior)
   if   i.nums 
