@@ -25,7 +25,7 @@ _"Simplicity does not precede complexity, but follows it."_
 
 __Dieter Rams:__      
 _"Less, but better."_
-<br clear=all>
+ 
 
 Now that you've done _it_, did you really understand _it_? Let's check.
 
