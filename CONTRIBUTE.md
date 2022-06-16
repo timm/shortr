@@ -11,7 +11,7 @@ If you offer pull requests to this code, please use these conventions.
 
 ## Metatables (just say no)
 - Sorry, but please  don't use metatables. Why? Well, the whole point of this code is make people say "hey, that
-   is so easy I can write it in Rust, Typescript, Python, Erlang,  Ruby, etc, etc...". So this code steers
+   is so easy I can write it in Rust, Typescript, Python, Julia, Erlang,  Ruby, etc, etc...". So this code steers
    clear of clever LUA
    constructs that might not easily port.
 
