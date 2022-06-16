@@ -1,5 +1,5 @@
 @article{shortr22, 
-  title={timm/l5: base classes defined}, 
+  title={timm/shortr: less AI, but better}, 
   DOI={10.5281/zenodo.6607038}, 
   abstractNote={A little lab of learners (in LUA)}, 
   publisher={Zenodo}, 
