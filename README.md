@@ -62,6 +62,13 @@ Share and enjoy.
 ### Coding conventions 
 Before reading this code, it might be best to   [review  these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
 
+And why, you may ask, is this written in LUA? Well. the whole point of this code is make people say "hey, that
+   is so easy I can write it in Rust, Typescript, Python, Julia, Erlang,  Ruby, etc, etc...". So this code steers
+   clear of clever coding practices
+   that might not easily port. Off-the-shelf LUA has less than 2 dozen built-ins-- which makes it pretty useful as a simple executable specification system.
+
+   (Aside: also, for me, LUA is kinda fun to use.)
+   
 
 ### Role Models
 People whose code challenges me to write less, but better:
@@ -76,14 +83,7 @@ And, of course, (some (great (LISPers))):
 - [Paul Graham](http://www.paulgraham.com/onlisp.html)
 , [Peter Norvig](http://norvig.com/lispy.html)
 and [Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y).
+ 
 
-### Why is it written in LUA?
 
-
-The whole point of this code is make people say "hey, that
-   is so easy I can write it in Rust, Typescript, Python, Julia, Erlang,  Ruby, etc, etc...". So this code steers
-   clear of clever coding practices
-   that might not easily port. Off-the-shelf LUA has less than 2 dozen built-ins-- which makes it pretty useful as a simple executable specification system.
-
-   (Aside: also, for me, LUA is kinda fun to use.)
 
