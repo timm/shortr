@@ -24,6 +24,8 @@ that decision trees, Naive Bayes classifiers, and nearest neighbors
 were all tiny extensions.  Also included here is literate programming,
 self-documenting code and support for test-driven development.
 
+<img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+
 All in around 300 lines of LUA: <br>
 
 `awk '!/^(--|[ \t]*$)/{n++}`     
@@ -32,7 +34,6 @@ All in around 300 lines of LUA: <br>
      
 Share and enjoy.
 
-<img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
 ### Role Models
 People whose code challenges me to write less, but better:   
