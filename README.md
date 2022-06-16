@@ -66,5 +66,17 @@ And, of course, some LISPers:
 , [Peter Norvig](http://norvig.com/lispy.html)
 and [Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y).
 
+### Why is it written in LUA?
+
+
+The whole point of this code is make people say "hey, that
+   is so easy I can write it in Rust, Typescript, Python, Julia, Erlang,  Ruby, etc, etc...". So this code steers
+   clear of clever coding practices
+   that might not easily port. Off-the-shelf LUA has less than 2 dozen built-ins-- which makes it pretty useful as a simple executable specification system.
+
+   (Aside: also, for me, LUA is kinda fun to use.)
+
+
+
 ### Coding conventions 
 Before reading this code, it might be best to   [review  these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
