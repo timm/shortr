@@ -12,7 +12,6 @@ href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.or
  <img width=200 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
 <p>&nbsp;
-<p>&nbsp;
 
 __Tony Hoare:__    
 _"Inside every large program is a small program struggling to get out."_
