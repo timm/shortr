@@ -36,7 +36,7 @@ Can you see how _it_ is same/different to other things?
 And can you use those similarities to do more things with  _it_? 
 Finally, can you teach _it_ quickly to newcomers?
 
-E.g. do I understand a multi-objective semi-supervised explanation?
+E.g. do I understand a multi-objective semi-supervised XAI?
 Well, maybe. Here's all that, most of which is
 background stuff that could be used for other learners.
 Once
