@@ -1,6 +1,6 @@
 
 
-# SHORTR
+# SHORTR:  less AI, but better
  
 <a href="http://menzies.us/shortr"> <img align=left src="docs/img/docs.png" width=300></a>
 <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br><a  
