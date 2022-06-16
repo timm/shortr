@@ -14,11 +14,7 @@ From N items, find and explain the best ones, using just log(N) evals.
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>  
 
  
-
- ```diff
-+ this text is highlighted in green
-- this text is highlighted in red
-```
+ 
 
 > __Dieter Rams:__      
 _"Less, but better."_
