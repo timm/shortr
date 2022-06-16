@@ -1,5 +1,6 @@
 surprise: doco and tests take a large percent of the work
 
+small support (see make file)
 
 beware log(0) and hi==lo
 
