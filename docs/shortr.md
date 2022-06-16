@@ -50,4 +50,4 @@ and [Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf
 
 ### Coding conventions 
 Before reading this, it might  be best to    
-review these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
+review these [local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
