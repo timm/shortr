@@ -1,4 +1,4 @@
-<span id="forkongithub"><a href="https://github.com/timm/shortr/blob/master/README.md">Fork me on GitHub</a></span>
+<span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
 
 Semi-supervised multi-objective optimization XAI.   
  From N items, find and explain the best ones, using just log(N) evals.
