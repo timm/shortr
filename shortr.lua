@@ -123,8 +123,7 @@ function Col.add(i,v,inc)
             if     #i.kept < i.nums then i.ok=false;push(i.kept,v) 
             elseif R() < i.nums/i.n then i.ok=false;i.kept[R(#i.kept)]=v end end 
       else i.ok = false
-           i.kept[v] = inc + (i.kept[v] or 0) 
-           print(v,inc,o(i.kept)) end end
+           i.kept[v] = inc + (i.kept[v] or 0) end end
   return i end
 -- ### Computing derived properties
 
@@ -182,7 +181,7 @@ function Col.merge(i,j,     k)
 
 -->.simpler(i:col,this:col,that:col):bool->am `i` simpler than `this` and `that`?
 function Col.simpler(i,this,that)
-  print(o(i.ys),o(this.ys),o(that.ys))
+  print(">>",o(i.ys),o(this.ys),o(that.ys))
   return Col.div(i) <= (this.ys.n*Col.div(this)+that.ys.n*Col.div(that))/i.ys.n end
 --- ### For Naive Bayes 
 
@@ -284,10 +283,9 @@ function Bin.BINS(listOfRows,col)
       if v ~= "?" then
         n = n + 1
         local pos = Col.bin(col,v)
-        print(pos, v)
+        --print("pos",pos, v)
         dict[pos] = dict[pos] or push(list, Bin.NEW(v,v,Col.NEW(col.at,col.txt)))
         Bin.add(dict[pos], v, label) end end end
-  print(1,o(list))
   list = sort(list, lt"lo")
   list = col.nums and Bin.MERGES(list, small(n)) or list
   return {bins= list,
@@ -316,11 +314,12 @@ function Go.BINS(  i,t,m,left,right)
   left = splice(t,1,m)
   right= splice(i.rows,#t - m)
   for n,col in ipairs(i.cols.x) do
-    print("::",col.at, col.nums)
+    --print("::",col.at, col.nums)
     if n==1 then
        Bin.BINS({left,right},col)
     end
-    print(n,col.txt, col.nums and true or false) end
+    --print(n,col.txt, col.nums and true or false) 
+  end
   return true end 
 
 function Go.THE() oo(the); return true end
