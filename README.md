@@ -2,10 +2,12 @@
 
 # shortr.lua:<br>  less, but better XAI. :eyes:
 
-Semi-supervised multi-objective optimization XAI.   
+
+  <img width=200 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+ 
+ Semi-supervised multi-objective optimization XAI.   
 From N items, find and explain the best ones, using just log(N) evals.
  
-  <img width=200 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
  
 <a href="http://menzies.us/shortr"> <img align=left src="docs/img/docs.png" width=300></a>
 <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br><a  
