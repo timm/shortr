@@ -309,9 +309,13 @@ to true if ever we update the columns (see <code>Col.ok</code>).</p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.NEW</span><span class="hljs-params">(at,txt)</span></span>
-  <span class="hljs-keyword">return</span> {n  =<span class="hljs-number">0</span>,     at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, txt=txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, 
-          ok =<span class="hljs-literal">false</span>, kept={},
-          div=<span class="hljs-number">0</span>,     mid=<span class="hljs-number">0</span>} <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">return</span> {n  =<span class="hljs-number">0</span>,         <span class="hljs-comment">--&gt; :num    -&gt; number of items seen so far    </span>
+          at=at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>,    <span class="hljs-comment">--&gt; :num    -&gt; column number</span>
+          txt=txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">--&gt; :str    -&gt; name of this column</span>
+          ok =<span class="hljs-literal">false</span>,     <span class="hljs-comment">--&gt; :bool   -&gt; true if  derived contents up to date</span>
+          kept={},       <span class="hljs-comment">--&gt; :[any]  -&gt; summary of the items seen so far</span>
+          div=<span class="hljs-number">0</span>,         <span class="hljs-comment">--&gt; :number -&gt; diversity (sd,entropy for nums.other)</span>
+          mid=<span class="hljs-number">0</span> } <span class="hljs-keyword">end</span>    <span class="hljs-comment">--&gt; :any i  -&gt; middle (median,mode for nums,other)</span></pre></div></div>
             
         </li>
         
@@ -329,10 +333,9 @@ no more than  <code>aNum.nums</code> samples.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.NUM</span><span class="hljs-params">(at,txt,some,   i)</span></span>
-   i     = Col.NEW(at,txt) <span class="hljs-comment">-- numerics are an extension to general columns.</span>
-   i.w   = Col.WEIGHT(txt)
-   i.nums= some <span class="hljs-keyword">or</span> the.some <span class="hljs-comment">-- if non-nil the i.nums is a numeric</span>
-   <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span></pre></div></div>
+   i     = Col.NEW(at,txt)  <span class="hljs-comment">--&gt; :[COL] -&gt; numerics extend general columns.</span>
+   i.w   = Col.WEIGHT(txt)  <span class="hljs-comment">--&gt; :num   -&gt; if minimizing, then -1. Else 1</span>
+   i.nums= some <span class="hljs-keyword">or</span> the.some <span class="hljs-comment">--&gt; :num   -&gt; max number of items to keep</span></pre></div></div>
             
         </li>
         
@@ -343,9 +346,12 @@ no more than  <code>aNum.nums</code> samples.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
-              <h3 id="factory-to-make-cols">Factory to make Cols</h3>
+              <pre><code>       <span class="hljs-keyword">if</span> non-<span class="hljs-literal">nil</span> <span class="hljs-keyword">then</span> <span class="hljs-string">&quot;i&quot;</span> is a numeric
+</code></pre>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>   <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -355,6 +361,19 @@ no more than  <code>aNum.nums</code> samples.</p>
               
               <div class="sswrap ">
                 <a class="ss" href="#section-18">&#x00a7;</a>
+              </div>
+              <h3 id="factory-to-make-cols">Factory to make Cols</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
               <p><strong>.GOAL( <code>x</code>:  [str]) :bool</strong> <br> 
 <strong>.NUMP( <code>x</code>:  [str]) :bool</strong> <br> 
@@ -371,11 +390,11 @@ no more than  <code>aNum.nums</code> samples.</p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
               <p><strong>.WEIGHT( <code>x</code>:  [str]) :(-1|1)</strong> <br> assign column weight.e.g. “-1” means “minimize”,</p>
 
@@ -386,11 +405,11 @@ no more than  <code>aNum.nums</code> samples.</p>
         </li>
         
         
-        <li id="section-20">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
               <p><strong>.COLS( <code>names</code>:  [str]) :tab</strong> <br> constructor (builds <code>Col</code>s from list of <code>names</code>).
 Returns a table that stores dependents in <code>.y</code>, independents in <code>.x</code>, 
@@ -411,11 +430,11 @@ only if we are not <code>.SKIP()</code>ping them.</p>
         </li>
         
         
-        <li id="section-21">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-21">&#x00a7;</a>
+                <a class="ss" href="#section-22">&#x00a7;</a>
               </div>
               <h3 id="update">Update</h3>
 
@@ -424,11 +443,11 @@ only if we are not <code>.SKIP()</code>ping them.</p>
         </li>
         
         
-        <li id="section-22">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-22">&#x00a7;</a>
+                <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
               <p><strong>.add( <code>i</code>:  Col,  <code>v</code>:  any,  <code>inc</code>:  ?int) :Col</strong> <br> update <code>i</code> with  <code>v </code> ( inc  times)
 Numeric columns keep a sample of the numbers while other columns track the
@@ -452,11 +471,11 @@ we update the numerics.</p>
         </li>
         
         
-        <li id="section-23">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-23">&#x00a7;</a>
+                <a class="ss" href="#section-24">&#x00a7;</a>
               </div>
               <h3 id="computing-derived-properties">Computing derived properties</h3>
 
@@ -465,11 +484,11 @@ we update the numerics.</p>
         </li>
         
         
-        <li id="section-24">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
+                <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
               <p><strong>.ok( <code>i</code>:  Col)</strong> <br> ensure that the current contents are up to date. Returns <code>kept</code>.
 E.g. update <code>mid</code>dle and <code>div</code>ersity (<em>median</em> and <em>standard deviation</em> for
@@ -497,11 +516,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-25">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-25">&#x00a7;</a>
+                <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
               <h3 id="querying">Querying</h3>
 <p>Most of these need to call <code>Col.ok()</code> first (to ensure column is up to date).</p>
@@ -511,11 +530,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-26">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-26">&#x00a7;</a>
+                <a class="ss" href="#section-27">&#x00a7;</a>
               </div>
               <p><strong>.lo( <code>i</code>:  Col) :num</strong> <br> 
 <strong>.hi( <code>i</code>:  Col) :num</strong> <br> 
@@ -532,11 +551,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-27">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-27">&#x00a7;</a>
+                <a class="ss" href="#section-28">&#x00a7;</a>
               </div>
               <p><strong>.norm( <code>i</code>:  Col, <code>x</code>:  num) :0..1</strong> <br> normalize <code>x</code> 0..1 for lo..hi.</p>
 
@@ -548,11 +567,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-28">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-28">&#x00a7;</a>
+                <a class="ss" href="#section-29">&#x00a7;</a>
               </div>
               <ul>
 <li><h3 id="for-discretization">For Discretization</h3>
@@ -564,11 +583,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-29">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-29">&#x00a7;</a>
+                <a class="ss" href="#section-30">&#x00a7;</a>
               </div>
               <p><strong>.bin( <code>i</code>:  Col, <code>x</code>:  any) :any</strong> <br> round numeric <code>x</code> to nearest <code>(hi-lo)/the.bins</code>
 (and for non-numerics, just return <code>x</code>).</p>
@@ -585,11 +604,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-30">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-30">&#x00a7;</a>
+                <a class="ss" href="#section-31">&#x00a7;</a>
               </div>
               <p><strong>.bin( <code>i</code>:  Col, <code>j</code>:  Col) :Col</strong> <br> returns a combination of two columns.</p>
 
@@ -604,11 +623,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-31">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-31">&#x00a7;</a>
+                <a class="ss" href="#section-32">&#x00a7;</a>
               </div>
               <p><strong>.simpler( <code>i</code>:  col, <code>this</code>:  col, <code>that</code>:  col):bool</strong> <br> am <code>i</code> simpler than <code>this</code> and <code>that</code>?</p>
 
@@ -620,11 +639,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-32">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-32">&#x00a7;</a>
+                <a class="ss" href="#section-33">&#x00a7;</a>
               </div>
               <ul>
 <li><h3 id="for-naive-bayes">For Naive Bayes</h3>
@@ -644,11 +663,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-33">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-33">&#x00a7;</a>
+                <a class="ss" href="#section-34">&#x00a7;</a>
               </div>
               <hr>
 
@@ -657,19 +676,24 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-34">
+        <li id="section-35">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-34">&#x00a7;</a>
+                <a class="ss" href="#section-35">&#x00a7;</a>
               </div>
               <h2 id="row">Row</h2>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.NEW</span><span class="hljs-params">(of,cells)</span></span> <span class="hljs-keyword">return</span> {_of=of,cells=cells,evaled=<span class="hljs-literal">false</span>} <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.NEW</span><span class="hljs-params">(of,cells)</span></span> <span class="hljs-keyword">return</span> {
+  _of=of,      <span class="hljs-comment">--&gt; [DATA] pointer back to creating containing</span>
+  cells=cells, <span class="hljs-comment">--&gt; :[any] -&gt; row values</span>
+  evaled=<span class="hljs-literal">false</span> <span class="hljs-comment">--&gt; :bool  -&gt; true if ever we use &quot;y&quot; values from this row</span>
+  } <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.better</span><span class="hljs-params">(i,j)</span></span>
+  i.evaled, j.evaled = <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>
   <span class="hljs-keyword">local</span> s1, s2, ys = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, i._of.cols.y
   <span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(ys) <span class="hljs-keyword">do</span>
     <span class="hljs-keyword">local</span> x,y =  i.cells[c.at], j.cells[c.at]
@@ -683,11 +707,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-35">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-35">&#x00a7;</a>
+                <a class="ss" href="#section-36">&#x00a7;</a>
               </div>
               <hr>
 
@@ -696,17 +720,19 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-36">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-36">&#x00a7;</a>
+                <a class="ss" href="#section-37">&#x00a7;</a>
               </div>
               <h2 id="data">Data</h2>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.NEW</span><span class="hljs-params">(t)</span></span> <span class="hljs-keyword">return</span> {rows={}, cols=Col.COLS(t)} <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.NEW</span><span class="hljs-params">(t)</span></span> <span class="hljs-keyword">return</span> {
+   rows={},              <span class="hljs-comment">--&gt; :[Row]   -&gt;rows being stored here</span>
+   cols=Col.COLS(t)} <span class="hljs-keyword">end</span> <span class="hljs-comment">--&gt; :[[Col]] -&gt; info and summaries about columns</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.ROWS</span><span class="hljs-params">(src,fun)</span></span>
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">type</span>(src)==<span class="hljs-string">&quot;table&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">for</span>  _,t <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(src) <span class="hljs-keyword">do</span> fun(t) <span class="hljs-keyword">end</span>
@@ -745,11 +771,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-37">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-37">&#x00a7;</a>
+                <a class="ss" href="#section-38">&#x00a7;</a>
               </div>
               <hr>
 
@@ -758,18 +784,20 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-38">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-38">&#x00a7;</a>
+                <a class="ss" href="#section-39">&#x00a7;</a>
               </div>
               <h2 id="nb">NB</h2>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.NEW</span><span class="hljs-params">(src,report)</span></span>
-  <span class="hljs-keyword">local</span> i  = {overall=<span class="hljs-literal">nil</span>, dict={}, list={}}
+  <span class="hljs-keyword">local</span> i  = {overall=<span class="hljs-literal">nil</span>,  <span class="hljs-comment">--&gt; [Data]</span>
+              dict={}, 
+              list={}}
   report = report <span class="hljs-keyword">or</span> <span class="hljs-built_in">print</span>
   Data.ROWS(src, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> 
     <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.overall <span class="hljs-keyword">then</span> i.overall = Data.NEW(row)  <span class="hljs-keyword">else</span> <span class="hljs-comment">-- (0) eat row1</span>
@@ -791,11 +819,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-39">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-39">&#x00a7;</a>
+                <a class="ss" href="#section-40">&#x00a7;</a>
               </div>
               <hr>
 
@@ -804,11 +832,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-40">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-40">&#x00a7;</a>
+                <a class="ss" href="#section-41">&#x00a7;</a>
               </div>
               <h2 id="bin">Bin</h2>
 
@@ -857,11 +885,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-41">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-41">&#x00a7;</a>
+                <a class="ss" href="#section-42">&#x00a7;</a>
               </div>
               <hr>
 
@@ -870,11 +898,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-42">
+        <li id="section-43">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-42">&#x00a7;</a>
+                <a class="ss" href="#section-43">&#x00a7;</a>
               </div>
               <p>To disable a test, relabel it from <code>Go</code> to <code>No</code>.</p>
 
@@ -932,11 +960,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-43">
+        <li id="section-44">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-43">&#x00a7;</a>
+                <a class="ss" href="#section-44">&#x00a7;</a>
               </div>
               <hr>
 
@@ -945,11 +973,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-44">
+        <li id="section-45">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-44">&#x00a7;</a>
+                <a class="ss" href="#section-45">&#x00a7;</a>
               </div>
               
             </div>

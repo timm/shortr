@@ -70,17 +70,22 @@ local R,sort,splice,sum             = _.R, _.sort, _.splice, _.sum
 -- `.ok` is set to false after every update then set back
 -- to true if ever we update the columns (see `Col.ok`).
 function Col.NEW(at,txt)
-  return {n  =0,     at=at or 0, txt=txt or "", 
-          ok =false, kept={},
-          div=0,     mid=0} end
+  return {n  =0,         --> :num    -> number of items seen so far    
+          at=at or 0,    --> :num    -> column number
+          txt=txt or "", --> :str    -> name of this column
+          ok =false,     --> :bool   -> true if  derived contents up to date
+          kept={},       --> :[any]  -> summary of the items seen so far
+          div=0,         --> :number -> diversity (sd,entropy for nums.other)
+          mid=0 } end    --> :any i  -> middle (median,mode for nums,other)
 
 --> .NUM(at:?int, txt:?str) :Col -> constructor, specialized for numerics.
 -- Numbers have a weight (-1,1) as well as the manddate to keep 
 -- no more than  `aNum.nums` samples.
 function Col.NUM(at,txt,some,   i)
-   i     = Col.NEW(at,txt) -- numerics are an extension to general columns.
-   i.w   = Col.WEIGHT(txt)
-   i.nums= some or the.some -- if non-nil the i.nums is a numeric
+   i     = Col.NEW(at,txt)  --> :[COL] -> numerics extend general columns.
+   i.w   = Col.WEIGHT(txt)  --> :num   -> if minimizing, then -1. Else 1
+   i.nums= some or the.some --> :num   -> max number of items to keep
+                            --            if non-nil then "i" is a numeric
    return i end
 -- ### Factory to make Cols
 
@@ -192,9 +197,14 @@ function Col.like(i,x,prior)
   else return ((i.kept[x] or 0)+the.m*prior)/(i.n+the.m) end end
 --------------------------------------------------------------------------------
 -- ## Row
-function Row.NEW(of,cells) return {_of=of,cells=cells,evaled=false} end
+function Row.NEW(of,cells) return {
+  _of=of,      --> [DATA] pointer back to creating containing
+  cells=cells, --> :[any] -> row values
+  evaled=false --> :bool  -> true if ever we use "y" values from this row
+  } end
 
 function Row.better(i,j)
+  i.evaled, j.evaled = true, true
   local s1, s2, ys = 0, 0, i._of.cols.y
   for _,c in pairs(ys) do
     local x,y =  i.cells[c.at], j.cells[c.at]
@@ -206,7 +216,9 @@ function Row.better(i,j)
 function Row.klass(i) return i.cells[i._of.cols.klass.at] end
 --------------------------------------------------------------------------------
 -- ## Data
-function Data.NEW(t) return {rows={}, cols=Col.COLS(t)} end
+function Data.NEW(t) return {
+   rows={},              --> :[Row]   ->rows being stored here
+   cols=Col.COLS(t)} end --> :[[Col]] -> info and summaries about columns
 
 function Data.ROWS(src,fun)
   if type(src)=="table" then for  _,t in pairs(src) do fun(t) end
@@ -244,7 +256,9 @@ function Data.like(i,row, nklasses, nrows)
 --------------------------------------------------------------------------------
 -- ## NB
 function NB.NEW(src,report)
-  local i  = {overall=nil, dict={}, list={}}
+  local i  = {overall=nil,  --> [Data]
+              dict={}, 
+              list={}}
   report = report or print
   Data.ROWS(src, function(row) 
     if not i.overall then i.overall = Data.NEW(row)  else -- (0) eat row1
