@@ -1,6 +1,6 @@
 <span id="forkongithub"><a href="https://github.com/timm/shortr/blob/master/README.md">Fork me on GitHub</a></span>
 
-Semi-supervised multi-objective optimization.
+Semi-supervised multi-objective optimization.   
  From N items, find and explain the best ones, using just log(N) evals.
 
 <img width=150 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
@@ -12,7 +12,7 @@ Semi-supervised multi-objective optimization.
 <br break=all><p>
 
 
-<p>
+<p><br break=all>
 <b>Tony Hoare:</b><br>
 <em>"Inside every large program is a small program struggling to get out."</em><p>
 <b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
