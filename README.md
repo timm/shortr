@@ -57,6 +57,12 @@ All in around 300 lines of LUA: <br>
      
 Share and enjoy.
 
+
+
+### Coding conventions 
+Before reading this code, it might be best to   [review  these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
+
+
 ### Role Models
 People whose code challenges me to write less, but better:
 
@@ -81,7 +87,3 @@ The whole point of this code is make people say "hey, that
 
    (Aside: also, for me, LUA is kinda fun to use.)
 
-
-
-### Coding conventions 
-Before reading this code, it might be best to   [review  these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
