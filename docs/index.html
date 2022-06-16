@@ -717,7 +717,7 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.NEW</span><span class="hljs-params">(t)</span></span> <span class="hljs-keyword">return</span> {
-   rows={},              <span class="hljs-comment">--&gt; :[Row]   -&gt;rows being stored here</span>
+   rows={},              <span class="hljs-comment">--&gt; :[Row]   -&gt; rows being stored here</span>
    cols=Col.COLS(t)} <span class="hljs-keyword">end</span> <span class="hljs-comment">--&gt; :[[Col]] -&gt; info and summaries about columns</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.ROWS</span><span class="hljs-params">(src,fun)</span></span>
@@ -781,9 +781,9 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.NEW</span><span class="hljs-params">(src,report)</span></span>
-  <span class="hljs-keyword">local</span> i  = {overall=<span class="hljs-literal">nil</span>,  <span class="hljs-comment">--&gt; [Data]</span>
-              dict={}, 
-              list={}}
+  <span class="hljs-keyword">local</span> i  = {overall=<span class="hljs-literal">nil</span>,  <span class="hljs-comment">--&gt; [Data] -&gt; summary of all rows</span>
+              dict={},      <span class="hljs-comment">--&gt; [Data] -&gt; rows, indexed by klass name</span>
+              list={}}      <span class="hljs-comment">--&gt; [Data] -&gt; a list of items in &quot;dict&quot;</span>
   report = report <span class="hljs-keyword">or</span> <span class="hljs-built_in">print</span>
   Data.ROWS(src, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> 
     <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.overall <span class="hljs-keyword">then</span> i.overall = Data.NEW(row)  <span class="hljs-keyword">else</span> <span class="hljs-comment">-- (0) eat row1</span>

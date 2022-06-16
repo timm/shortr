@@ -217,7 +217,7 @@ function Row.klass(i) return i.cells[i._of.cols.klass.at] end
 --------------------------------------------------------------------------------
 -- ## Data
 function Data.NEW(t) return {
-   rows={},              --> :[Row]   ->rows being stored here
+   rows={},              --> :[Row]   -> rows being stored here
    cols=Col.COLS(t)} end --> :[[Col]] -> info and summaries about columns
 
 function Data.ROWS(src,fun)
@@ -256,9 +256,9 @@ function Data.like(i,row, nklasses, nrows)
 --------------------------------------------------------------------------------
 -- ## NB
 function NB.NEW(src,report)
-  local i  = {overall=nil,  --> [Data]
-              dict={}, 
-              list={}}
+  local i  = {overall=nil,  --> [Data] -> summary of all rows
+              dict={},      --> [Data] -> rows, indexed by klass name
+              list={}}      --> [Data] -> a list of items in "dict"
   report = report or print
   Data.ROWS(src, function(row) 
     if not i.overall then i.overall = Data.NEW(row)  else -- (0) eat row1
