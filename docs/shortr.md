@@ -1,6 +1,6 @@
 <span id="forkongithub"><a href="https://github.com/timm/shortr/blob/master/README.md">Fork me on GitHub</a></span>
 
-Semi-supervised multi-objective optimization.   
+Semi-supervised multi-objective optimization XAI.   
  From N items, find and explain the best ones, using just log(N) evals.
 
 <img width=150 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
