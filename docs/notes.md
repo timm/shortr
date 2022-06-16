@@ -1,3 +1,9 @@
+surprise: doco and tests take a large percent of the work
+
+
+beware log(0) and hi==lo
+
+
 surprises
 - Col is a primary thing
 - Data is a thing. cloning. reporting. clistering = make recursive tables
