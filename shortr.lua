@@ -171,11 +171,10 @@ function Col.norm(i,x)
 --> .bin(i:Col,x:any) :any -> round numeric `x` to nearest `(hi-lo)/the.bins`
 -- (and for non-numerics, just return `x`).
 function Col.bin(i,x)
-  if   i.nums then
-    local lo,hi = Col.lo(i), Col.hi(i)
-    local b=(hi - lo)/the.bins
-    x = lo==hi and 1 or math.floor(x/b+.5)*b end 
-  return x end 
+  if  not i.nums then return x end
+  local a = Col.ok(i)
+  local b = (a[#a] - a[1])/the.bins
+  return a[#a]==a[1] and 1 or math.floor(x/b+.5)*b end 
 
 --> .bin(i:Col,j:Col) :Col -> returns a combination of two columns.
 function Col.merge(i,j,     k)
