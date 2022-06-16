@@ -52,7 +52,7 @@ People whose code challenges me to write less, but better:
 And, of course, some LISPers:
 [Paul Graham](http://www.paulgraham.com/onlisp.html)
 , [Peter Norvig](http://norvig.com/lispy.html)
-and [Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y)
+and [Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y).
 
 ### Coding conventions 
 Before reading this code, it might be best to   [review  these local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
