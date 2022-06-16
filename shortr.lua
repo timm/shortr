@@ -76,7 +76,7 @@ function Col.NEW(at,txt)
           ok =false,     --> :bool   -> true if  derived contents up to date
           kept={},       --> :[any]  -> summary of the items seen so far
           div=0,         --> :number -> diversity (sd,entropy for nums.other)
-          mid=0 } end    --> :any i  -> middle (median,mode for nums,other)
+          mid=0 } end    --> :any    -> middle (median,mode for nums,other)
 
 --> .NUM(at:?int, txt:?str) :Col -> constructor, specialized for numerics.
 -- Numbers have a weight (-1,1) as well as the manddate to keep 
