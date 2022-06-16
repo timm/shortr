@@ -69,7 +69,7 @@ And why, you may ask, is this written in LUA? Well. the whole point of this code
 
    (Aside: also, for me, LUA is kinda fun to use.)
    
-_____
+ 
 
 ### Role Models
 People whose code challenges me to write less, but better: [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
