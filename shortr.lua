@@ -4,7 +4,7 @@ local help= [[
 SHORTR: semi-supervised multi-objective optimization
 (c) 2022 Tim Menzies <timm@ieee.org> BSD2 license
    
-From N items, find and explain the best ones, using O(log2(N)) evals.
+From N items, find and explain the best ones, using just log(N) evals.
 PASS1 (guess): eval two distant items on multi-objective criteria.
       Prune everything nearest the worst one. Recurse on rest.  
 PASS2 (guess again): do it again, using better items from first pass.  
