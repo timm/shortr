@@ -15,10 +15,11 @@ Can you see how _it_ is same/different to other things?
 And can you use those similarities to do more things with  _it_?
 Finally, can you teach _it_ quickly to newcomers?
 
+<img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+
 E.g. do I understand a multi-objective semi-supervised explanation algorithms?
 Well, Let's check. 
 
-<img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
 Here's all that, most of which is background stuff
 that could be used for other learners.  Once I build that, I found
