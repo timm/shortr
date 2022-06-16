@@ -673,9 +673,9 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.NEW</span><span class="hljs-params">(of,cells)</span></span> <span class="hljs-keyword">return</span> {
-  _of=of,      <span class="hljs-comment">--&gt; [DATA] pointer back to creating containing</span>
-  cells=cells, <span class="hljs-comment">--&gt; :[any] -&gt; row values</span>
-  evaled=<span class="hljs-literal">false</span> <span class="hljs-comment">--&gt; :bool  -&gt; true if ever we use &quot;y&quot; values from this row</span>
+  _of=of,      <span class="hljs-comment">--&gt; :[DATA] -&gt; pointer back to creating containing</span>
+  cells=cells, <span class="hljs-comment">--&gt; :[any]  -&gt; row values</span>
+  evaled=<span class="hljs-literal">false</span> <span class="hljs-comment">--&gt; :bool   -&gt; true if ever we use &quot;y&quot; values from this row</span>
   } <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.better</span><span class="hljs-params">(i,j)</span></span>
@@ -781,9 +781,9 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.NEW</span><span class="hljs-params">(src,report)</span></span>
-  <span class="hljs-keyword">local</span> i  = {overall=<span class="hljs-literal">nil</span>,  <span class="hljs-comment">--&gt; [Data] -&gt; summary of all rows</span>
-              dict={},      <span class="hljs-comment">--&gt; [Data] -&gt; rows, indexed by klass name</span>
-              list={}}      <span class="hljs-comment">--&gt; [Data] -&gt; a list of items in &quot;dict&quot;</span>
+  <span class="hljs-keyword">local</span> i  = {overall=<span class="hljs-literal">nil</span>,  <span class="hljs-comment">--&gt; :[Data] -&gt; summary of all rows</span>
+              dict={},      <span class="hljs-comment">--&gt; :[Data] -&gt; rows, indexed by klass name</span>
+              list={}}      <span class="hljs-comment">--&gt; :[Data] -&gt; a list of items in &quot;dict&quot;</span>
   report = report <span class="hljs-keyword">or</span> <span class="hljs-built_in">print</span>
   Data.ROWS(src, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> 
     <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.overall <span class="hljs-keyword">then</span> i.overall = Data.NEW(row)  <span class="hljs-keyword">else</span> <span class="hljs-comment">-- (0) eat row1</span>

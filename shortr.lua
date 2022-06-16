@@ -198,9 +198,9 @@ function Col.like(i,x,prior)
 --------------------------------------------------------------------------------
 -- ## Row
 function Row.NEW(of,cells) return {
-  _of=of,      --> [DATA] pointer back to creating containing
-  cells=cells, --> :[any] -> row values
-  evaled=false --> :bool  -> true if ever we use "y" values from this row
+  _of=of,      --> :[DATA] -> pointer back to creating containing
+  cells=cells, --> :[any]  -> row values
+  evaled=false --> :bool   -> true if ever we use "y" values from this row
   } end
 
 function Row.better(i,j)
@@ -256,9 +256,9 @@ function Data.like(i,row, nklasses, nrows)
 --------------------------------------------------------------------------------
 -- ## NB
 function NB.NEW(src,report)
-  local i  = {overall=nil,  --> [Data] -> summary of all rows
-              dict={},      --> [Data] -> rows, indexed by klass name
-              list={}}      --> [Data] -> a list of items in "dict"
+  local i  = {overall=nil,  --> :[Data] -> summary of all rows
+              dict={},      --> :[Data] -> rows, indexed by klass name
+              list={}}      --> :[Data] -> a list of items in "dict"
   report = report or print
   Data.ROWS(src, function(row) 
     if not i.overall then i.overall = Data.NEW(row)  else -- (0) eat row1
