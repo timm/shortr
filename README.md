@@ -12,7 +12,7 @@ href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.or
 <br clear=all>
 
 
- <img width=200 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+ <img width=200 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
 <p>&nbsp;
 
