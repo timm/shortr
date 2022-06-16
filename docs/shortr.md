@@ -18,13 +18,14 @@ Finally, can you teach _it_ quickly to newcomers?
 E.g. do I understand a multi-objective semi-supervised explanation algorithms?
 Well, Let's check. 
 
+<img width=150 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+
 Here's all that, most of which is background stuff
 that could be used for other learners.  Once I build that, I found
 that decision trees, Naive Bayes classifiers, and nearest neighbors
 were all tiny extensions.  Also included here is literate programming,
 self-documenting code and support for test-driven development.
 
-<img width=150 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
 All in around 300 lines of LUA: <br>
 
