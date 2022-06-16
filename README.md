@@ -44,11 +44,11 @@ All in around 300 lines of LUA: <br>
 Share and enjoy.
 
 ### Role Models
-People whose code challenges me to write less, but better:     
+People whose code challenges me to write less, but better 
 [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
 | [Hilary Mason](https://www.youtube.com/watch?v=l2btv0yUPNQ)
 | [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
-| [Joel Grus](https://github.com/joelgrus/data-science-from-scratch)    
+| [Joel Grus](https://github.com/joelgrus/data-science-from-scratch)
 and, of course, some LISPers:
 [Paul Graham](http://www.paulgraham.com/onlisp.html)
 | [Peter Norvig](http://norvig.com/lispy.html)
