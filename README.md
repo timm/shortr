@@ -1,6 +1,6 @@
 
 
-# shortr.lua:  less XAI, but better
+# shortr.lua:<br>  (less XAI, but better)
 
 Semi-supervised multi-objective optimization XAI.   
 From N items, find and explain the best ones, using just log(N) evals.
