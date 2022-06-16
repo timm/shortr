@@ -15,21 +15,20 @@ href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.or
 
  
 
-________
  
 
-__Dieter Rams:__      
+> __Dieter Rams:__      
 _"Less, but better."_
 
-__Alan Perlis:__    
+> __Alan Perlis:__    
 _"Simplicity does not precede complexity, but follows it."_ 
 
 
 
-__Tony Hoare:__    
+> __Tony Hoare:__    
 _"Inside every large program is a small program struggling to get out."_
 
-________
+ 
 
  
 
