@@ -1,6 +1,6 @@
 
 
-# SHORTR:  less AI, but better
+# SHORTR:  less XAI, but better
 
 Semi-supervised multi-objective optimization.   
 From N items, find and explain the best ones, using just log(N) evals.

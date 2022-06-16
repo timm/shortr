@@ -1,7 +1,7 @@
 local b4={}; for x,_ in pairs(_ENV) do b4[x]=x end 
 local help= [[
   
-SHORTR: semi-supervised multi-objective optimization
+SHORTR: semi-supervised multi-objective optimization XAI
 (c) 2022 Tim Menzies <timm@ieee.org> BSD2 license
    
 From N items, find and explain the best ones, using just log(N) evals.
