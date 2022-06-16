@@ -30,11 +30,14 @@
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr/blob/master/README.md">Fork me on GitHub</a></span>
 <img width=175 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
-<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><p>
+<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a>
+<a href="https://opensource.org/licenses/BSD-2-Clause)"><img src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a><p></p>
+<p>
 <b>Tony Hoare:</b><br>
-<em>“Inside every large program is a small program struggling to get out.”</em><p>
-<b>Alan Perlis:</b><br><em>“Simplicity does not precede complexity, but follows it.”</em><p>
-<b>Dieter Rams:</b><br><em>“Less, but better.”</em></p>
+<em>"Inside every large program is a small program struggling to get out."</em><p>
+<b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
+<b>Dieter Rams:</b><br><em>"Less, but better."</em>
+
 <p>Now that you’ve done <em>it</em>, did you really understand <em>it</em>? Let’s check.</p>
 <p>Can you do <em>it</em> better?
 Can you now
@@ -581,11 +584,10 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.bin</span><span class="hljs-params">(i,x)</span></span>
-  <span class="hljs-keyword">if</span>   i.nums <span class="hljs-keyword">then</span>
-    <span class="hljs-keyword">local</span> lo,hi = Col.lo(i), Col.hi(i)
-    <span class="hljs-keyword">local</span> b=(hi - lo)/the.bins
-    x = lo==hi <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">floor</span>(x/b+<span class="hljs-number">.5</span>)*b <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">if</span>  <span class="hljs-keyword">not</span> i.nums <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">local</span> a = Col.ok(i)
+  <span class="hljs-keyword">local</span> b = (a[#a] - a[<span class="hljs-number">1</span>])/the.bins
+  <span class="hljs-keyword">return</span> a[#a]==a[<span class="hljs-number">1</span>] <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">floor</span>(x/b+<span class="hljs-number">.5</span>)*b <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
