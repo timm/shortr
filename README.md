@@ -60,7 +60,7 @@ People whose code challenges me to write less, but better:
 , [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
 , [Joel Grus](https://github.com/joelgrus/data-science-from-scratch).   
 
-And, of course, some LISPers:
+And, of course, (some (great (LISPers))):
 
 - [Paul Graham](http://www.paulgraham.com/onlisp.html)
 , [Peter Norvig](http://norvig.com/lispy.html)
