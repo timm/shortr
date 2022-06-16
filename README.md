@@ -1,10 +1,10 @@
 
 
+  <img width=200 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+ 
 # shortr.lua:<br>  less, but better XAI. :eyes:
 
 
-  <img width=200 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
- 
  Semi-supervised multi-objective optimization XAI.   
 From N items, find and explain the best ones, using just log(N) evals.
  
@@ -13,11 +13,10 @@ From N items, find and explain the best ones, using just log(N) evals.
 <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br><a  
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>  
 
-<br clear=all>
+ 
 
 
-
- <p>&nbsp;
+ 
 
 __Dieter Rams:__      
 _"Less, but better."_
