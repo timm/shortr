@@ -75,8 +75,7 @@ And why, you may ask, is this written in LUA? Well. the whole point of this code
 People whose code challenges me to write less, but better: [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
 , [Hilary Mason](https://www.youtube.com/watch?v=l2btv0yUPNQ)
 , [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
-, [Joel Grus](https://github.com/joelgrus/data-science-from-scratch).   
-
+, [Joel Grus](https://github.com/joelgrus/data-science-from-scratch).       
 And, of course, (some (great (LISPers))):  [Paul Graham](http://www.paulgraham.com/onlisp.html)
 , [Peter Norvig](http://norvig.com/lispy.html)
 and [Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y).
