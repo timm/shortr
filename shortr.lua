@@ -192,7 +192,6 @@ function Col.like(i,x,prior)
   if  not i.nums then return ((i.kept[x] or 0)+the.m*prior) / (i.n+the.m) else
     local sd,mu=Col.div(i), Col.mid(i)
     if sd==0 then return x==mu and 1 or 1/big end
-    --if sd < mu - 4*sd or sd>mu + 4*sd then return 1/big end
     return math.exp(-.5*((x - mu)/sd)^2) / (sd*((2*math.pi)^0.5)) end  end
 
 --------------------------------------------------------------------------------
