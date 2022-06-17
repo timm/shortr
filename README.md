@@ -1,6 +1,6 @@
 
 
-  <img width=300 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+  <img width=200 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
  
 # shortr.lua:<br>  less, but better XAI. :eyes:
 
