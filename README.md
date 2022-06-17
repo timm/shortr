@@ -75,9 +75,9 @@ People whose code challenges me to write less, but better: [Jack Diederich](http
 , [Hilary Mason](https://www.youtube.com/watch?v=l2btv0yUPNQ)
 , [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
 , [Joel Grus](https://github.com/joelgrus/data-science-from-scratch).       
-And, of course, some great LISPers:  ([Paul Graham](http://www.paulgraham.com/onlisp.html)
+And, of course, some great LISPers:  ([Conrad Barski](https://doc.lagout.org/programmation/Lisp/Land%20of%20Lisp_%20Learn%20to%20Program%20in%20Lisp%2C%20One%20Game%20at%20a%20Time%20%5BBarski%202010-11-15%5D.pdf) ([Paul Graham](http://www.paulgraham.com/onlisp.html)
  ([Peter Norvig](http://norvig.com/lispy.html)
- ([Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y) ))).
+ ([Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y) )))).
  
 
 
