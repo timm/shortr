@@ -11,10 +11,7 @@ Semi-supervised multi-objective optimization XAI.
 
 <br break=all><p>
 <img width=150 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
-<br break=all>
 
-
-<p><br break=all>
 <b>Tony Hoare:</b><br>
 <em>"Inside every large program is a small program struggling to get out."</em><p>
 <b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
