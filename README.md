@@ -71,7 +71,7 @@ And why, you may ask, is this written in LUA? Well. the whole point of this code
  
 
 ### Role Models
-Whose work dares me to write less, but better: [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
+Their work dares me to write less, but better. [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
 , [Hilary Mason](https://www.youtube.com/watch?v=l2btv0yUPNQ)
 , [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
 , [Joel Grus](https://github.com/joelgrus/data-science-from-scratch).       
