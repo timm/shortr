@@ -59,7 +59,7 @@ local function small(n) return the.Min <1 and n^the.Min or the.Min end
 
 -- Other names
 local argmax,atom,big,cli,csv,demos = _.argmax,_.atom,_.big,_.cli,_.csv,_.demos
-local fmt,lt,map,o,oo,per,push      = _.fmt,_.lt,_.map,_.o,_.oo,_.per,_.push
+local fmt,id,lt,map,o,oo,per,push   = _.fmt,_.id,_.lt,_.map,_.o,_.oo,_.per,_.push
 local R,sort,splice,sum             = _.R, _.sort, _.splice, _.sum
 
 -------------------------------------------------------------------------------
@@ -196,11 +196,11 @@ function Col.like(i,x,prior)
   else return ((i.kept[x] or 0)+the.m*prior)/(i.n+the.m) end end
 --------------------------------------------------------------------------------
 -- ## Row
-function Row.NEW(of,cells) return {
-  _of=of,      --> :[DATA] -> pointer back to creating containing
-  cells=cells, --> :[any]  -> row values
-  evaled=false --> :bool   -> true if ever we use "y" values from this row
-  } end
+function Row.NEW(of,cells) 
+  return {id     = id(),      --> :num    -> unique id 
+          _of    = of,        --> :[DATA] -> pointer back to creating containing
+          cells  = cells,     --> :[any]  -> row values
+          evaled = false} end --> :bool   -> true if we use this rows' "y" values
 
 function Row.better(i,j)
   i.evaled, j.evaled = true, true
@@ -238,9 +238,9 @@ function Data.add(i,t)
     for _,c in pairs(cols) do Col.add(c, t.cells[c.at]) end end 
   return t end 
 
-function Data.mids(i,cols) 
-  local t={}
-  for _,c in pairs(cols or i.cols.y) do t[c.txt] = Col.mid(c) end;return t end
+function Data.mids(i,cols,    t) 
+  t={};for _,c in pairs(cols or i.cols.y) do t[c.txt]=Col.mid(c) end;return t end
+-- ### For Naive Bayes 
 
 function Data.like(i,row, nklasses, nrows)
   local prior,like,inc,x
@@ -252,6 +252,16 @@ function Data.like(i,row, nklasses, nrows)
       inc  = Col.like(col,x,prior)
       like = like + math.log(inc) end end
   return like end
+
+-- function Data.tree(i, listOfRows)
+--   local n=0
+--   for _,rows in pairs(listOrRows) do n=n+#rows end 
+--   Data.split(i,listOfRows, small(n)) end
+--
+-- function Data.split(i, listOfRows, stop, gaurd)
+--   i.gaurd=gaurd
+--   if #i.rows > 2*stop then
+--
 --------------------------------------------------------------------------------
 -- ## NB
 function NB.NEW(src,report)
@@ -277,7 +287,11 @@ function NB.guess(i,row)
     function(klass) return Data.like(klass,row,#i.list,#i.overall.rows) end) end
 --------------------------------------------------------------------------------
 -- ## Bin
-function Bin.NEW(xlo, xhi, ys) return {lo=xlo, hi=xhi, ys=ys} end
+function Bin.NEW(xlo, xhi, ys) 
+   return {lo=xlo,     --> :num   -> low x
+           hi=xhi,     --> :num   -> high x
+           ys=ys} end  --> :[any] -> y values seen for "lo" to "hi"
+
 function Bin.add(i,x,y)
   i.lo = math.min(i.lo, x)
   i.hi = math.max(i.hi, x)
@@ -310,29 +324,29 @@ function Bin.MERGES(b4, min)
     local merged = n<#b4 and Bin.merge(b4[n], b4[n+1], min)
     now[#now+1]  = merged or b4[n] 
     n            = n + (merged and 2 or 1)  end
-  if   #now < #b4 
-  then return Bin.MERGES(now,min) -- loop to look for other merges
-  else -- stretch the bins to cover any gaps from minus infinity to plus infinity
-       for n=2,#now do now[n].lo = now[n-1].hi end
-       now[1].lo, now[#now].hi = -big, big
-       return now end end
+  return #now < #b4 and Bins.STRETCH(now) or Bin.MERGES(now,min) end
+
+-- stretch the bins to cover any gaps from minus infinity to plus infinity
+function Bin.STRECH(bins)
+  for n=2,#bins do bins[n].lo = bins[n-1].hi end
+  bins[1].lo, bins[#bins].hi = -big, big
+  return bins end end
 --------------------------------------------------------------------------------
 -- To disable a test, relabel it from `Go` to `No`.
 local Go,No = {},{}
 
 function Go.BINS(  i,t,m,left,right)
-  i= Data.LOAD(the.file)
-  t= sort(i.rows,Row.better)
-  m= (#t)^.5
-  left = splice(t,1,m)
-  right= splice(i.rows,#t - m)
+  i = Data.LOAD(the.file)
+  t = sort(i.rows,Row.better)
+  m = (#t)^.5
+  left  = splice(t,1,m)
+  right = splice(i.rows,#t - m)
   for n,col in ipairs(i.cols.x) do
     print("")
     local bins = Bin.BINS({left,right},col).bins 
     if #bins > 1 then 
        for _,bin in pairs(bins) do
-         print(bin.ys.txt, bin.lo, bin.hi) end   end
-  end
+         print(bin.ys.txt, bin.lo, bin.hi) end end end
   return true end 
 
 function Go.THE() oo(the); return true end
@@ -340,7 +354,7 @@ function Go.THE() oo(the); return true end
 function Go.ROWS(  d) 
   Data.ROWS(the.file,function(row)
     if not d then d=Data.NEW(row) else
-       Data.add(d,row) end end)
+      Data.add(d,row) end end)
   oo(Data.mids(d))
   oo(Col.ok(d.cols.x[1]))
   return true end 
