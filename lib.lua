@@ -17,7 +17,7 @@ function lib.lt(x)        return function(a,b) return a[x] < b[x] end end
 
 function lib.argmax(t,f)
   local arg, max = nil, -lib.big
-  for key,x in pairs(t) do local tmp=f(x);if tmp>max then arg,max=key,tmp end end
+  for key,x in pairs(t) do local tmp=f(x);if tmp>=max then arg,max=key,tmp end end
   return arg end
 
 function lib.o(t) 

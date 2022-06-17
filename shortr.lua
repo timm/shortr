@@ -189,11 +189,12 @@ function Col.simpler(i,this,that)
 -- ### For Naive Bayes 
 
 function Col.like(i,x,prior)
-  if   i.nums 
-  then local sd,mu=Col.div(i), Col.mid(i)
-       return sd==0 and (x==mu and 1 or 0) or
-           math.exp(-.5*((x - mu)/sd)^2) / (sd*((2*math.pi)^0.5)) 
-  else return ((i.kept[x] or 0)+the.m*prior)/(i.n+the.m) end end
+  if  not i.nums then return ((i.kept[x] or 0)+the.m*prior) / (i.n+the.m) else
+    local sd,mu=Col.div(i), Col.mid(i)
+    if sd==0 then return x==mu and 1 or 1/big end
+    --if sd < mu - 4*sd or sd>mu + 4*sd then return 1/big end
+    return math.exp(-.5*((x - mu)/sd)^2) / (sd*((2*math.pi)^0.5)) end  end
+
 --------------------------------------------------------------------------------
 -- ## Row
 function Row.NEW(of,cells) 
@@ -330,7 +331,7 @@ function Bin.MERGES(b4, min)
 function Bin.STRECH(bins)
   for n=2,#bins do bins[n].lo = bins[n-1].hi end
   bins[1].lo, bins[#bins].hi = -big, big
-  return bins end end
+  return bins end 
 --------------------------------------------------------------------------------
 -- To disable a test, relabel it from `Go` to `No`.
 local Go,No = {},{}
