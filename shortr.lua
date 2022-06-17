@@ -48,6 +48,7 @@ local Bin={}
 local NB={}
 -- Imports  
 local _    = require"lib"
+local lib  = _
 local Abcd = require"abcd"
 -- `the` stores settings for this code.
 local the={}
@@ -303,7 +304,9 @@ function Bin.merge(i,j, min)
   if iy.n < min or jy.n<min or Col.simpler(ky,iy,jy) then 
     return Bin.NEW(i.lo, j.hi, ky) end end
 
-function Bin.BINS(listOfRows,col)
+function Bin.BINS(listOfRows,col,y,yklass)
+  y = yklass or function(row) return Row.klass(row) end 
+  yKlass= yKlass or Col.NEW
   local n,list, dict = 0,{}, {}
   for label,rows in pairs(listOfRows) do
     for _,row in pairs(rows) do
@@ -364,10 +367,12 @@ function Go.STATS()
 
 function Go.ORDER(  i,t,m,left,right) 
   i= Data.LOAD(the.file)
+  print(0, lib._id)
   t= sort(i.rows,Row.better)
   m= (#t)^.5
   left = Data.clone(i,splice(t,1,m))
   right= Data.clone(i,splice(i.rows,#t - m))
+  print(2, lib._id)
   print("all",  o(Data.mids(i)))
   print("best", o(Data.mids(left)))
   print("rest", o(Data.mids(right))) 

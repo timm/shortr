@@ -5,8 +5,8 @@ lib.big = math.huge
 lib.fmt = string.format
 lib.R   = math.random
 
-local _id=0
-function lib.id() _id = 1 + _id; return _id end
+lib._id=0
+function lib.id() lib._id = 1 + lib._id; return _id end
 
 function lib.push(t,x)    t[1+#t]=x; return x end
 function lib.sort(t,f)    table.sort(t,f); return t end
