@@ -9,7 +9,7 @@ Semi-supervised multi-objective optimization XAI.
 <br>
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 
-<br break=all><p>
+<br break=all>
 <img width=150 align=left src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
 <b>Tony Hoare:</b><br>
