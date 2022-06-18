@@ -1,3 +1,11 @@
+
+but the best way. no best way. albert. but at least a quick way o(log(N)) initial ass uitable to define. refuce a larger slace to smaelr space of options.
+or run as a postoorcessor to simplify some other more complex inference. or as inspiration for research "X works in shortr... soulf that work better if..." and then we cangt\and better shortr 2.0
+
+also the code is offered, politely, as a suggestion that maybe it is not a good idea to hac together lots of existing code into a massive conglomieration.
+suopply chain threats. comphrension. simplicity nderneatn
+
+
 surprise: doco and tests take a large percent of the work
 
 small support (see make file)
