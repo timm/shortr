@@ -13,7 +13,7 @@ From N items, find and explain the best ones, using just log(N) evals.
 href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a><br>
 <a href="http://menzies.us/shortr"> <img align=left src="docs/img/docs.png" width=200></a>
   
-<br ><p>&nbsp;
+ <p>&nbsp;
  
  
 > __Dieter Rams:__      
