@@ -1,7 +1,6 @@
 
 
-  <img width=200 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
- 
+
 # shortr.lua:<br>  less, but better XAI. :eyes:
 
 
@@ -15,7 +14,8 @@ href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.or
 
  
  
-
+ <br clear=all> <img width=200 align=right src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+ 
 > __Dieter Rams:__      
 _"Less, but better."_
 
