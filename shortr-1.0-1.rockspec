@@ -26,7 +26,8 @@ build = {
    type = "builtin",
    copy_directories = { "data" },
    modules={
-     shortr="shortr.lua",
-     lib="lib.lua"}
+     shortr = "shortr.lua",
+     abcd   = "abcd.lua",
+     lib    = "lib.lua"}
 }
 
