@@ -254,9 +254,13 @@ function Data.like(i,row, nklasses, nrows)
       like = like + math.log(inc) end end
   return like end
 
--- function Data.tree(i, listOfRows)
---   local n=0
---   for _,rows in pairs(listOrRows) do n=n+#rows end 
+function Data.tree(i, listOfRows)
+  local n,labels = 0,{}
+  local y = function(row) return labels[row.id] end 
+  for _,rows in pairs(listOrRows) do 
+    for _,row in pairs(rows) do n=n+1; labels[row.id]=label end end
+  Data.split(i,
+
 --   Data.split(i,listOfRows, small(n)) end
 --
 -- function Data.split(i, listOfRows, stop, gaurd)
@@ -304,18 +308,17 @@ function Bin.merge(i,j, min)
   if iy.n < min or jy.n<min or Col.simpler(ky,iy,jy) then 
     return Bin.NEW(i.lo, j.hi, ky) end end
 
-function Bin.BINS(listOfRows,col,y,yklass)
-  y = yklass or function(row) return Row.klass(row) end 
-  yKlass= yKlass or Col.NEW
+function Bin.BINS(rows,col,y,yKlass)
+  y      = y or function(row) return Row.klass(row) end 
+  yKlass = yKlass or Col.NEW
   local n,list, dict = 0,{}, {}
-  for label,rows in pairs(listOfRows) do
-    for _,row in pairs(rows) do
-      local v = row.cells[col.at]
-      if v ~= "?" then
-        n = n + 1
-        local pos = Col.bin(col,v)
-        dict[pos] = dict[pos] or push(list, Bin.NEW(v,v,Col.NEW(col.at,col.txt)))
-        Bin.add(dict[pos], v, label) end end end
+  for _,row in pairs(rows) do
+    local v = row.cells[col.at]
+    if v ~= "?" then
+      n = n + 1
+      local pos = Col.bin(col,v)
+      dict[pos] = dict[pos] or push(list, Bin.NEW(v,v,yKlass(col.at,col.txt)))
+      Bin.add(dict[pos], v, y(rows)) end end 
   list = sort(list, lt"lo")
   list = col.nums and Bin.MERGES(list, small(n)) or list
   return {bins= list,
