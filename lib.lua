@@ -6,7 +6,7 @@ lib.fmt = string.format
 lib.R   = math.random
 
 lib._id=0
-function lib.id() lib._id = 1 + lib._id; return _id end
+function lib.id() lib._id = 1 + lib._id; return lib._id end
 
 function lib.push(t,x)    t[1+#t]=x; return x end
 function lib.sort(t,f)    table.sort(t,f); return t end

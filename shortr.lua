@@ -41,7 +41,7 @@ local Col={} or {n=0}
 --   (where `aData.cols.x` holds independent columns and
 --    `aData.cols.y` holds dependent columns). <p>
 local Data={}
--- `Bin` is a helper class that summarizes what dependent `ys` values are
+-- `Bin` is a helpe class that summarizes what dependent `ys` values are
 --   found between `lo` and `hi` of an independent column.<p>
 local Bin={}
 -- `NB` is an application class that implements a Naive Bayes classifier.
@@ -253,20 +253,34 @@ function Data.like(i,row, nklasses, nrows)
       inc  = Col.like(col,x,prior)
       like = like + math.log(inc) end end
   return like end
+-- ### For Decision Trees 
 
-function Data.tree(i, listOfRows)
-  local n,labels = 0,{}
+function Data.tree(i,listOfRows)
+  local n,labels,rows = 0,{},{}
   local y = function(row) return labels[row.id] end 
-  for _,rows in pairs(listOrRows) do 
-    for _,row in pairs(rows) do n=n+1; labels[row.id]=label end end
-  Data.split(i,
+  for label,rows1 in pairs(listOrRows) do 
+    n = n + #rows
+    for _,row in pairs(rows) do 
+      rows[1+#rows]=row
+      labels[row.id]=label end end
+  return Data.split(Data.clone(i,rows), i._of.cols.x, y, small(n)) end
 
---   Data.split(i,listOfRows, small(n)) end
---
--- function Data.split(i, listOfRows, stop, gaurd)
---   i.gaurd=gaurd
---   if #i.rows > 2*stop then
---
+function Data.split(i, xcols, y, stop)
+  if i.rows < 2*stop then return i end
+  local bins = function(xcol) return Bin.BINS(i.rows,xcol,y,Col.NEW) end
+  i.kids = map(sort(map(xcols, bins),lt"div")[1].bins,
+               function(gaurd1)
+                 local kid = Data.clone(Bin.holds(gaurd1,rows))
+                 kid.gaurd = gaurd1
+                 return Data.split(kid, xcols, y, stop) end)
+  return i end
+
+function Data.show(i,pre)
+  pre = pre or ""
+  local gaurd = i.gaurd and Bin.show(i.gaurd)
+  print(pre .. (gaurd or ""), Data.mids(i))
+  for _,kid in pairs(i.kids) do Data.show(kid,"|.. "..pre) end end
+  
 --------------------------------------------------------------------------------
 -- ## NB
 function NB.NEW(src,report)
@@ -297,6 +311,13 @@ function Bin.NEW(xlo, xhi, ys)
            hi=xhi,     --> :num   -> high x
            ys=ys} end  --> :[any] -> y values seen for "lo" to "hi"
 
+function Bin.show(i)
+  local x,lo,hi = self.ys.txt, self.lo, self.hi
+  if     lo ==  hi  then return fmt("%s == %s",x, lo)  
+  elseif hi ==  big then return fmt("%s >= %s",x, lo)  
+  elseif lo == -big then return fmt("%s < %s", x, hi)  
+  else                   return fmt("%s <= %s < %s",lo,x,hi) end end
+
 function Bin.add(i,x,y)
   i.lo = math.min(i.lo, x)
   i.hi = math.max(i.hi, x)
@@ -308,6 +329,13 @@ function Bin.merge(i,j, min)
   if iy.n < min or jy.n<min or Col.simpler(ky,iy,jy) then 
     return Bin.NEW(i.lo, j.hi, ky) end end
 
+function Bin.hold(i, row)
+  local x = row.cells[i.ys.at]
+  return x=="?" or i.lo==i.hi or i.lo<x and x<=i.hi end
+
+function Bin.holds(i, rows)
+  return map(rows,function(row) if Bin.hold(i,row) then return row end end) end 
+
 function Bin.BINS(rows,col,y,yKlass)
   y      = y or function(row) return Row.klass(row) end 
   yKlass = yKlass or Col.NEW
@@ -318,7 +346,7 @@ function Bin.BINS(rows,col,y,yKlass)
       n = n + 1
       local pos = Col.bin(col,v)
       dict[pos] = dict[pos] or push(list, Bin.NEW(v,v,yKlass(col.at,col.txt)))
-      Bin.add(dict[pos], v, y(rows)) end end 
+      Bin.add(dict[pos], v, y(row)) end end 
   list = sort(list, lt"lo")
   list = col.nums and Bin.MERGES(list, small(n)) or list
   return {bins= list,
@@ -347,9 +375,17 @@ function Go.BINS(  i,t,m,left,right)
   m = (#t)^.5
   left  = splice(t,1,m)
   right = splice(i.rows,#t - m)
-  for n,col in ipairs(i.cols.x) do
+  local n,labels,rows = 0,{},{}
+  local y = function(row) return labels[row.id] end 
+  for label,rows in ipairs({left,right}) do 
+    n = n + #rows
+    for _,row in pairs(rows) do 
+      oo(row)
+      rows[1+#rows] = row
+      labels[row.id]=label end end
+  for n,xcol in ipairs(i.cols.x) do
     print("")
-    local bins = Bin.BINS({left,right},col).bins 
+    local bins = Bin.BINS(rows, xcol, y, Col.new).bins
     if #bins > 1 then 
        for _,bin in pairs(bins) do
          print(bin.ys.txt, bin.lo, bin.hi) end end end
