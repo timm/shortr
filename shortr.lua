@@ -255,7 +255,6 @@ function Data.like(i,row, nklasses, nrows)
   return like end
 -- ### For Decision Trees 
 
-local _tree
 function Data.tree(i,listOfRows)
   local total,rows,ylabels = 0,{},{}
   for label,rows1 in pairs(listOfRows) do 
