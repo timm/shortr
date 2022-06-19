@@ -34,6 +34,8 @@ and reflect to see what we've learned from the past to simplify the future.
 
 For the reader who is feeling  calm and reflective today, we offer the following.
 
+XX all the above could ahve been said many times since the dan of programm,ing. we have one new thing to
+add:a repeated result about minimal models. momimal or not at all. manifold.
 ____
 examppes from my role model file
 -----
