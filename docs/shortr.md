@@ -48,13 +48,13 @@ Share and enjoy.
 
 
 ### Role Models
-Their work dares me to write less, but better:
+Their work dares me to write less, but better:<br>
 [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0) 
 , [Hilary Mason](https://www.youtube.com/watch?v=l2btv0yUPNQ)
 , [Brian McFee](https://brianmcfee.net/papers/ismir2011_sptree.pdf),  
 , [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html)
 , [Joel Grus](https://github.com/joelgrus/data-science-from-scratch).<p>
-AAs do my fav LISPers: 
+As do my fav LISPers: <br>
 ([Peter Seibel](https://gigamonkeys.com/book/)
   ([Conrad Barski](https://doc.lagout.org/programmation/Lisp/Land%20of%20Lisp_%20Learn%20to%20Program%20in%20Lisp%2C%20One%20Game%20at%20a%20Time%20%5BBarski%202010-11-15%5D.pdf)
   ([Paul Graham](http://www.paulgraham.com/onlisp.html)
