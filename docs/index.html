@@ -53,18 +53,21 @@ that could be used for other learners.  Once I build that, I found
 that decision trees, Naive Bayes classifiers, and nearest neighbors
 were all tiny extensions.  Also included here is literate programming,
 self-documenting code and support for test-driven development.</p>
-<p>All in around 300 lines of LUA: <br></p>
-<p><code>awk &#39;!/^(--|[ \t]*$)/{n++}</code><br><code>END {print n&quot; lines&quot;}&#39; *.lua</code><br>=&gt; 301 lines</p>
+<p>All in around 500 lines of LUA: <br></p>
+<p><code>awk &#39;!/^(--|[ \t]*$)/{n++}</code><br><code>END {print n&quot; lines&quot;}&#39; *.lua</code><br>=&gt; 500 lines</p>
 <p>Share and enjoy.</p>
 <h3 id="role-models">Role Models</h3>
-<p>Their work dares me to write less, but better.
+<p>Their work dares me to write less, but better:
 <a href="https://www.youtube.com/watch?v=o9pEzgHorH0">Jack Diederich</a> 
 , <a href="https://www.youtube.com/watch?v=l2btv0yUPNQ">Hilary Mason</a>
-, <a href="https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html">Brian Kernighan</a>
+, <a href="https://brianmcfee.net/papers/ismir2011_sptree.pdf">Brian McFee</a>,<br>, <a href="https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html">Brian Kernighan</a>
 , <a href="https://github.com/joelgrus/data-science-from-scratch">Joel Grus</a>.<p>
-And, of course, (some (great (LISPers))):<br><a href="http://www.paulgraham.com/onlisp.html">Paul Graham</a>
-, <a href="http://norvig.com/lispy.html">Peter Norvig</a>
-and <a href="https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&amp;isAllowed=y">Guy Steele</a>.</p>
+AAs do my fav LISPers: 
+(<a href="https://gigamonkeys.com/book/">Peter Seibel</a>
+  (<a href="https://doc.lagout.org/programmation/Lisp/Land%20of%20Lisp_%20Learn%20to%20Program%20in%20Lisp%2C%20One%20Game%20at%20a%20Time%20%5BBarski%202010-11-15%5D.pdf">Conrad Barski</a>
+  (<a href="http://www.paulgraham.com/onlisp.html">Paul Graham</a>
+    (<a href="http://norvig.com/lispy.html">Peter Norvig</a>
+      (<a href="https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&amp;isAllowed=y">Guy Steele</a>))))).</p>
 <h3 id="coding-conventions">Coding conventions</h3>
 <p>Before reading this, it might  be best to<br>review these <a href="https://github.com/timm/shortr/blob/master/CONTRIBUTE.md">local coding conventions</a>.</p>
 
@@ -89,8 +92,10 @@ USAGE:
 OPTIONS:
   -M  --Min    min size of space                    =  .5
   -b  --bins   max number of bins                   =  16
+  -F  --Far    how far to look for remove points    =  .9
   -k  --k      Bayes hack: low attribute frequency  =  2
   -m  --m      Bayes hack: low class frequency      =  1
+  -p  --p      distance coefficient (2=Euclidean)   =  2
   -s  --some   max number of nums to keep           =  256
   -w  --wait   wait this number before testing      =  10
 
@@ -184,7 +189,7 @@ the container that holds it `container that made them.<p></p>
               <div class="sswrap ">
                 <a class="ss" href="#section-7">&#x00a7;</a>
               </div>
-              <p><code>Bin</code> is a helper class that summarizes what dependent <code>ys</code> values are
+              <p><code>Bin</code> is a helpe class that summarizes what dependent <code>ys</code> values are
   found between <code>lo</code> and <code>hi</code> of an independent column.<p></p>
 
             </div>
@@ -220,6 +225,7 @@ the container that holds it `container that made them.<p></p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _    = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
+<span class="hljs-keyword">local</span> lib  = _
 <span class="hljs-keyword">local</span> Abcd = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;abcd&quot;</span></pre></div></div>
             
         </li>
@@ -267,9 +273,11 @@ Else it is some fractional power of some number.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> argmax,atom,big,cli,csv,demos = _.argmax,_.atom,_.big,_.cli,_.csv,_.demos
-<span class="hljs-keyword">local</span> fmt,id,lt,map,o,oo,per,push   = _.fmt,_.id,_.lt,_.map,_.o,_.oo,_.per,_.push
-<span class="hljs-keyword">local</span> R,<span class="hljs-built_in">sort</span>,splice,sum             = _.R, _.<span class="hljs-built_in">sort</span>, _.splice, _.sum</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> any,argmax,atom,big     = _.any,_.argmax,_.atom,_.big
+<span class="hljs-keyword">local</span> cli,csv,demos           = _.cli,_.csv,_.demos
+<span class="hljs-keyword">local</span> fmt,id,lt,many,map,o,oo = _.fmt,_.id,_.lt,_.many,_.map,_.o,_.oo
+<span class="hljs-keyword">local</span> per,push                = _.per,_.push
+<span class="hljs-keyword">local</span> R,rnd,<span class="hljs-built_in">sort</span>,splice,sum   = _.R, _.rnd,_.<span class="hljs-built_in">sort</span>, _.splice, _.sum</pre></div></div>
             
         </li>
         
@@ -530,14 +538,15 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
               <p><strong>.lo( <code>i</code>:  Col) :num</strong> <br> 
 <strong>.hi( <code>i</code>:  Col) :num</strong> <br> 
 <strong>.div( <code>i</code>:  Col) :num</strong> <br> 
-<strong>.mid( <code>i</code>:  Col) :any</strong> <br> <code>lo</code>west number, <code>hi</code>ghest number, <code>div</code>ersity, <code>mid</code>dle number. </p>
+<strong>.mid( <code>i</code>:  Col, <code>p</code>:  num) :any</strong> <br> <code>lo</code>west number, <code>hi</code>ghest number,
+<code>div</code>ersity, <code>mid</code>dle number (maybe rounded to <code>p</code> decimal places).</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.lo</span><span class="hljs-params">(i)</span></span>   Col.ok(i); <span class="hljs-keyword">return</span> i.kept[<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.hi</span><span class="hljs-params">(i)</span></span>   Col.ok(i); <span class="hljs-keyword">return</span> i.kept[#i.kept] <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.div</span><span class="hljs-params">(i)</span></span>  Col.ok(i); <span class="hljs-keyword">return</span> i.div <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.mid</span><span class="hljs-params">(i)</span></span>  Col.ok(i); <span class="hljs-keyword">return</span> i.mid <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.lo</span><span class="hljs-params">(i)</span></span>    Col.ok(i); <span class="hljs-keyword">return</span> i.kept[<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.hi</span><span class="hljs-params">(i)</span></span>    Col.ok(i); <span class="hljs-keyword">return</span> i.kept[#i.kept] <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.div</span><span class="hljs-params">(i)</span></span>   Col.ok(i); <span class="hljs-keyword">return</span> i.div <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.mid</span><span class="hljs-params">(i,p)</span></span> Col.ok(i); <span class="hljs-keyword">return</span> rnd(i.mid,p) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -652,9 +661,21 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
               <div class="sswrap ">
                 <a class="ss" href="#section-33">&#x00a7;</a>
               </div>
-              <hr>
+              <ul>
+<li><h3 id="for-distance-calcs">For Distance Calcs</h3>
+</li>
+</ul>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Col.dist</span><span class="hljs-params">(i,x,y)</span></span>
+  <span class="hljs-keyword">if</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">and</span> y==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.nums <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x==y <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span>
+    <span class="hljs-keyword">if</span>     x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> y = Col.norm(i,y); x = y&lt;<span class="hljs-number">.5</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">0</span> 
+    <span class="hljs-keyword">elseif</span> y==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> x = Col.norm(i,x); y = x&lt;<span class="hljs-number">.5</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>
+    <span class="hljs-keyword">else</span>   x,y = Col.norm(i,x), Col.norm(i,y) <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">abs</span>(x - y) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -664,6 +685,19 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
               
               <div class="sswrap ">
                 <a class="ss" href="#section-34">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-35">&#x00a7;</a>
               </div>
               <h2 id="row">Row</h2>
 
@@ -685,20 +719,20 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
     s2  = s2 - <span class="hljs-number">2.7183</span>^(c.w * (y-x)/#ys) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> s1/#ys &lt; s2/#ys  <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.klass</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.cells[i._of.cols.klass.at] <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-35">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-35">&#x00a7;</a>
-              </div>
-              <hr>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.klass</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> i.cells[i._of.cols.klass.at] <span class="hljs-keyword">end</span>
 
-            </div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.dist</span><span class="hljs-params">(i,j)</span></span> 
+  <span class="hljs-keyword">local</span> d, cols = <span class="hljs-number">0</span>, i._of.cols.x
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(cols) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">local</span> inc = Col.dist(col, i.cells[col.at], j.cells[col.at]) 
+    d         = d + inc^the.p <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> (d / #cols) ^ (<span class="hljs-number">1</span>/the.p) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.around</span><span class="hljs-params">(i, rows)</span></span>
+  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rowGap</span><span class="hljs-params">(j)</span></span> <span class="hljs-keyword">return</span> {row=j, gap=Row.dist(i,j)} <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">sort</span>(map(rows <span class="hljs-keyword">or</span> i._of.rows, rowGap), lt<span class="hljs-string">&quot;gap&quot;</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Row.far</span><span class="hljs-params">(i,rows)</span></span> <span class="hljs-keyword">return</span> per(Row.around(i,rows), the.Far).row <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -708,6 +742,19 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
               
               <div class="sswrap ">
                 <a class="ss" href="#section-36">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-37">&#x00a7;</a>
               </div>
               <h2 id="data">Data</h2>
 
@@ -736,17 +783,17 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
     <span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(cols) <span class="hljs-keyword">do</span> Col.add(c, t.cells[c.at]) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
   <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span> 
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.mids</span><span class="hljs-params">(i,cols,    t)</span></span> 
-  t={};<span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(cols <span class="hljs-keyword">or</span> i.cols.y) <span class="hljs-keyword">do</span> t[c.txt]=Col.mid(c) <span class="hljs-keyword">end</span>;<span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.mids</span><span class="hljs-params">(i,p,cols,    t)</span></span> 
+  t={};<span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(cols <span class="hljs-keyword">or</span> i.cols.y) <span class="hljs-keyword">do</span> t[c.txt]=Col.mid(c,p) <span class="hljs-keyword">end</span>;<span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-37">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-37">&#x00a7;</a>
+                <a class="ss" href="#section-38">&#x00a7;</a>
               </div>
               <h3 id="for-naive-bayes">For Naive Bayes</h3>
 
@@ -767,31 +814,101 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-38">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-38">&#x00a7;</a>
+                <a class="ss" href="#section-39">&#x00a7;</a>
               </div>
-              <p>function Data.tree(i, listOfRows)
-  local n=0
-  for _,rows in pairs(listOrRows) do n=n+#rows end 
-  Data.split(i,listOfRows, small(n)) end</p>
-<p>function Data.split(i, listOfRows, stop, gaurd)
-  i.gaurd=gaurd
-  if #i.rows &gt; 2*stop then</p>
-<hr>
+              <h3 id="for-decision-trees">For Decision Trees</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.tree</span><span class="hljs-params">(i,listOfRows)</span></span>
+  <span class="hljs-keyword">local</span> total,rows,ylabels = <span class="hljs-number">0</span>,{},{}
+  <span class="hljs-keyword">for</span> label,rows1 <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(listOfRows) <span class="hljs-keyword">do</span> 
+    total = total + #rows
+    <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows1) <span class="hljs-keyword">do</span> 
+      rows[<span class="hljs-number">1</span>+#rows]=row
+      ylabels[row.id]=label <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">end</span> <span class="hljs-comment">----- end data collection</span>
+  <span class="hljs-keyword">local</span> y,mapSortedBins
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">y</span><span class="hljs-params">(row)</span></span> 
+    <span class="hljs-keyword">return</span> ylabels[row.id] <span class="hljs-keyword">end</span> 
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">mapSortedBins</span><span class="hljs-params">(j)</span></span> 
+    <span class="hljs-keyword">local</span> bins,down
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bins</span><span class="hljs-params">(xcol)</span></span> 
+      <span class="hljs-keyword">return</span> Bin.BINS(j.rows,xcol,y,Col.New) <span class="hljs-keyword">end</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">down</span><span class="hljs-params">(bin)</span></span>
+      <span class="hljs-keyword">local</span> new = Data.clone(j, Bin.holds(bin, j.rows))
+      <span class="hljs-keyword">if</span> #new.rows&lt;#j.rows <span class="hljs-keyword">then</span> 
+        new.gaurd = bin 
+        <span class="hljs-keyword">return</span> mapSortedBins(new) <span class="hljs-keyword">end</span> 
+    <span class="hljs-keyword">end</span> <span class="hljs-comment">----------------------</span>
+    <span class="hljs-keyword">if</span> #j.rows &gt;= <span class="hljs-number">2</span>*small(total) <span class="hljs-keyword">then</span> 
+      j.kids = map(<span class="hljs-built_in">sort</span>(map(j.cols.x, bins),lt<span class="hljs-string">&quot;div&quot;</span>)[<span class="hljs-number">1</span>].bins, down) <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">return</span> j 
+  <span class="hljs-keyword">end</span> <span class="hljs-comment">------</span>
+  <span class="hljs-keyword">return</span> mapSortedBins(Data.clone(i, rows)) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.show</span><span class="hljs-params">(i,lvl)</span></span>
+  lvl = lvl <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>
+  <span class="hljs-keyword">local</span> gaurd = i.gaurd <span class="hljs-keyword">and</span> Bin.show(i.gaurd)
+  <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;%-40s&quot;</span>, o(Data.mids(i,<span class="hljs-number">2</span>))), (<span class="hljs-string">&quot;| &quot;</span>):<span class="hljs-built_in">rep</span>(lvl) .. (gaurd <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>))
+  <span class="hljs-keyword">for</span> _,kid <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kids <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> Data.show(kid, <span class="hljs-number">1</span>+lvl) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-40">&#x00a7;</a>
+              </div>
+              <h3 id="for-distance-calcs">For Distance Calcs</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Data.split</span><span class="hljs-params">(i,rows, stop, rest,x,        some,y,c,rxs,best)</span></span>
+  rest, rows = rest <span class="hljs-keyword">or</span> {}, rows <span class="hljs-keyword">or</span> i.rows
+  stop       = stop <span class="hljs-keyword">or</span> small(#rows)
+  <span class="hljs-keyword">if</span> #rows &lt;= <span class="hljs-number">2</span>*stop <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> rows,rest,x <span class="hljs-keyword">end</span>
+  some = many(rows, the.some)
+  x    = x <span class="hljs-keyword">or</span> Row.far(any(some), some)
+  y    =      Row.far(x,         some)
+  <span class="hljs-keyword">if</span> Row.better(y,x) <span class="hljs-keyword">then</span> x,y = y,x <span class="hljs-keyword">end</span>
+  c = Row.dist(x,y)
+  rxs = map(rows,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(r)</span></span> 
+              <span class="hljs-keyword">return</span> {r=r, x=(Row.dist(r,x)^<span class="hljs-number">2</span>+c^<span class="hljs-number">2</span> - Row.dist(r,y)^<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*c)} <span class="hljs-keyword">end</span>) 
+  best= {} <span class="hljs-comment">-- things closest to x or y, respectively</span>
+  <span class="hljs-keyword">for</span> i,rx <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">sort</span>(rxs, lt<span class="hljs-string">&quot;x&quot;</span>)) <span class="hljs-keyword">do</span> 
+    push(i&lt;=#rows*<span class="hljs-number">.5</span> <span class="hljs-keyword">and</span> best <span class="hljs-keyword">or</span> rest, rx.r) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> Data.split(best, stop, rest,x) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-41">&#x00a7;</a>
+              </div>
+              <hr>
 
             </div>
             
         </li>
         
         
-        <li id="section-39">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-39">&#x00a7;</a>
+                <a class="ss" href="#section-42">&#x00a7;</a>
               </div>
               <h2 id="nb">NB</h2>
 
@@ -822,89 +939,6 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-40">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-40">&#x00a7;</a>
-              </div>
-              <hr>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-41">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-41">&#x00a7;</a>
-              </div>
-              <h2 id="bin">Bin</h2>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.NEW</span><span class="hljs-params">(xlo, xhi, ys)</span></span> 
-   <span class="hljs-keyword">return</span> {lo=xlo,     <span class="hljs-comment">--&gt; :num   -&gt; low x</span>
-           hi=xhi,     <span class="hljs-comment">--&gt; :num   -&gt; high x</span>
-           ys=ys} <span class="hljs-keyword">end</span>  <span class="hljs-comment">--&gt; :[any] -&gt; y values seen for &quot;lo&quot; to &quot;hi&quot;</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.add</span><span class="hljs-params">(i,x,y)</span></span>
-  i.lo = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(i.lo, x)
-  i.hi = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(i.hi, x)
-  Col.add(i.ys, y) <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.merge</span><span class="hljs-params">(i,j, min)</span></span>
-  <span class="hljs-keyword">local</span> iy,jy = i.ys,j.ys
-  <span class="hljs-keyword">local</span> ky    = Col.merge(iy,jy)
-  <span class="hljs-keyword">if</span> iy.n &lt; <span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> jy.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> Col.simpler(ky,iy,jy) <span class="hljs-keyword">then</span> 
-    <span class="hljs-keyword">return</span> Bin.NEW(i.lo, j.hi, ky) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.BINS</span><span class="hljs-params">(listOfRows,col)</span></span>
-  <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
-  <span class="hljs-keyword">for</span> label,rows <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(listOfRows) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span>
-      <span class="hljs-keyword">local</span> v = row.cells[col.at]
-      <span class="hljs-keyword">if</span> v ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
-        n = n + <span class="hljs-number">1</span>
-        <span class="hljs-keyword">local</span> pos = Col.bin(col,v)
-        dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, Bin.NEW(v,v,Col.NEW(col.at,col.txt)))
-        Bin.add(dict[pos], v, label) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;lo&quot;</span>)
-  list = col.nums <span class="hljs-keyword">and</span> Bin.MERGES(list, small(n)) <span class="hljs-keyword">or</span> list
-  <span class="hljs-keyword">return</span> {bins= list,
-          div = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> Col.div(z.ys)*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span>
- 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.MERGES</span><span class="hljs-params">(b4, min)</span></span>
-  <span class="hljs-keyword">local</span> n,now = <span class="hljs-number">1</span>,{}
-  <span class="hljs-keyword">while</span> n &lt;= #b4 <span class="hljs-keyword">do</span> 
-    <span class="hljs-keyword">local</span> merged = n&lt;#b4 <span class="hljs-keyword">and</span> Bin.merge(b4[n], b4[n+<span class="hljs-number">1</span>], <span class="hljs-built_in">min</span>)
-    now[#now+<span class="hljs-number">1</span>]  = merged <span class="hljs-keyword">or</span> b4[n] 
-    n            = n + (merged <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)  <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> #now &lt; #b4 <span class="hljs-keyword">and</span> Bins.STRETCH(now) <span class="hljs-keyword">or</span> Bin.MERGES(now,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-42">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-42">&#x00a7;</a>
-              </div>
-              <p>stretch the bins to cover any gaps from minus infinity to plus infinity</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.STRECH</span><span class="hljs-params">(bins)</span></span>
-  <span class="hljs-keyword">for</span> n=<span class="hljs-number">2</span>,#bins <span class="hljs-keyword">do</span> bins[n].lo = bins[n<span class="hljs-number">-1</span>].hi <span class="hljs-keyword">end</span>
-  bins[<span class="hljs-number">1</span>].lo, bins[#bins].hi = -big, big
-  <span class="hljs-keyword">return</span> bins <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
         <li id="section-43">
             <div class="annotation">
               
@@ -924,11 +958,141 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
               <div class="sswrap ">
                 <a class="ss" href="#section-44">&#x00a7;</a>
               </div>
+              <h2 id="bin">Bin</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.NEW</span><span class="hljs-params">(xlo, xhi, ys)</span></span> 
+   <span class="hljs-keyword">return</span> {lo=xlo,     <span class="hljs-comment">--&gt; :num   -&gt; low x</span>
+           hi=xhi,     <span class="hljs-comment">--&gt; :num   -&gt; high x</span>
+           ys=ys} <span class="hljs-keyword">end</span>  <span class="hljs-comment">--&gt; :[any] -&gt; y values seen for &quot;lo&quot; to &quot;hi&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.show</span><span class="hljs-params">(i)</span></span>
+  <span class="hljs-keyword">local</span> x,lo,hi = i.ys.txt, i.lo, i.hi
+  <span class="hljs-keyword">if</span>     lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x, lo)  
+  <span class="hljs-keyword">elseif</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x, lo)  
+  <span class="hljs-keyword">elseif</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s&quot;</span>, x, hi)  
+  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s &lt; %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.add</span><span class="hljs-params">(i,x,y)</span></span>
+  i.lo = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(i.lo, x)
+  i.hi = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(i.hi, x)
+  Col.add(i.ys, y) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.merge</span><span class="hljs-params">(i,j, min)</span></span>
+  <span class="hljs-keyword">local</span> iy,jy = i.ys,j.ys
+  <span class="hljs-keyword">local</span> ky    = Col.merge(iy,jy)
+  <span class="hljs-keyword">if</span> iy.n &lt; <span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> jy.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> Col.simpler(ky,iy,jy) <span class="hljs-keyword">then</span> 
+    <span class="hljs-keyword">return</span> Bin.NEW(i.lo, j.hi, ky) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.hold</span><span class="hljs-params">(i, row)</span></span>
+  <span class="hljs-keyword">local</span> x = row.cells[i.ys.at]
+  <span class="hljs-keyword">return</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">or</span> i.lo==i.hi <span class="hljs-keyword">or</span> i.lo&lt;x <span class="hljs-keyword">and</span> x&lt;=i.hi <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.holds</span><span class="hljs-params">(i, rows)</span></span>
+  <span class="hljs-keyword">return</span> map(rows,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">if</span> Bin.hold(i,row) <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> row <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span> 
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.BINS</span><span class="hljs-params">(rows,col,y,yKlass)</span></span>
+  y      = y <span class="hljs-keyword">or</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">return</span> Row.klass(row) <span class="hljs-keyword">end</span> 
+  yKlass = yKlass <span class="hljs-keyword">or</span> Col.NEW
+  <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
+  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">local</span> v = row.cells[col.at]
+    <span class="hljs-keyword">if</span> v ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
+      n = n + <span class="hljs-number">1</span>
+      <span class="hljs-keyword">local</span> pos = Col.bin(col,v)
+      dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, Bin.NEW(v,v,yKlass(col.at,col.txt)))
+      Bin.add(dict[pos], v, y(row)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;lo&quot;</span>)
+  list = col.nums <span class="hljs-keyword">and</span> Bin.MERGES(list, small(n)) <span class="hljs-keyword">or</span> list
+  <span class="hljs-keyword">return</span> {bins= list,
+          div = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> Col.div(z.ys)*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span>
+ 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.MERGES</span><span class="hljs-params">(b4, min)</span></span>
+  <span class="hljs-keyword">local</span> n,now = <span class="hljs-number">1</span>,{}
+  <span class="hljs-keyword">while</span> n &lt;= #b4 <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">local</span> merged = n&lt;#b4 <span class="hljs-keyword">and</span> Bin.merge(b4[n], b4[n+<span class="hljs-number">1</span>], <span class="hljs-built_in">min</span>)
+    now[#now+<span class="hljs-number">1</span>]  = merged <span class="hljs-keyword">or</span> b4[n] 
+    n            = n + (merged <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)  <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> #now &lt; #b4 <span class="hljs-keyword">and</span> Bin.MERGES(now,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> Bin.XPAND(now) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-45">&#x00a7;</a>
+              </div>
+              <p>xpand the bins to cover any gaps from minus infinity to plus infinity</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.XPAND</span><span class="hljs-params">(bins)</span></span>
+  <span class="hljs-keyword">if</span> #bins&gt;<span class="hljs-number">1</span> <span class="hljs-keyword">then</span>
+    <span class="hljs-keyword">for</span> n=<span class="hljs-number">2</span>,#bins <span class="hljs-keyword">do</span> bins[n].lo = bins[n<span class="hljs-number">-1</span>].hi <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  bins[<span class="hljs-number">1</span>].lo, bins[#bins].hi = -big, big
+  <span class="hljs-keyword">return</span> bins <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-46">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-47">&#x00a7;</a>
+              </div>
               <p>To disable a test, relabel it from <code>Go</code> to <code>No</code>.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> Go,No = {},{}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.FAR</span><span class="hljs-params">(  i,r1,r2)</span></span>
+  i  = Data.LOAD(the.file)
+  <span class="hljs-keyword">local</span> ok=<span class="hljs-literal">true</span>
+  <span class="hljs-keyword">for</span> _ = <span class="hljs-number">1</span>,<span class="hljs-number">100</span> <span class="hljs-keyword">do</span>
+    r1 = i.rows[ <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span>(#i.rows) ]
+    r2 = Row.far(r1)
+    <span class="hljs-built_in">print</span>(Row.dist(r1,r2)) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.DIST</span><span class="hljs-params">(  i,r1,r2)</span></span>
+  i  = Data.LOAD(the.file)
+  r1 = i.rows[ <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span>(#i.rows) ]
+  <span class="hljs-keyword">local</span> ok=<span class="hljs-literal">true</span>
+  <span class="hljs-keyword">for</span> _ = <span class="hljs-number">1</span>,<span class="hljs-number">100</span> <span class="hljs-keyword">do</span>
+    r2 = i.rows[ <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span>(#i.rows) ]
+    ok = ok <span class="hljs-keyword">and</span> Row.dist(r1,r2) &lt;= <span class="hljs-number">1</span>
+    r1 = r2 <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> ok <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.TREE</span><span class="hljs-params">(  i,t,m,left,right)</span></span>
+  i = Data.LOAD(the.file)
+  t = <span class="hljs-built_in">sort</span>(i.rows,Row.better)
+  m = #t/<span class="hljs-number">2</span>
+  left  = splice(t,<span class="hljs-number">1</span>,m)
+  right = splice(i.rows,#t - m)
+  <span class="hljs-keyword">local</span> n,labels,rows = <span class="hljs-number">0</span>,{},{}
+  <span class="hljs-keyword">local</span> y = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">return</span> labels[row.id] <span class="hljs-keyword">end</span> 
+  <span class="hljs-built_in">print</span><span class="hljs-string">&quot;&quot;</span>
+  Data.show(Data.tree(i,{left,right}))
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.BINS</span><span class="hljs-params">(  i,t,m,left,right)</span></span>
   i = Data.LOAD(the.file)
@@ -936,9 +1100,16 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
   m = (#t)^<span class="hljs-number">.5</span>
   left  = splice(t,<span class="hljs-number">1</span>,m)
   right = splice(i.rows,#t - m)
-  <span class="hljs-keyword">for</span> n,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(i.cols.x) <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">local</span> n,labels,rows = <span class="hljs-number">0</span>,{},{}
+  <span class="hljs-keyword">local</span> y = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">return</span> labels[row.id] <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">for</span> label,rows1 <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>({left,right}) <span class="hljs-keyword">do</span> 
+    n = n + #rows
+    <span class="hljs-keyword">for</span> m,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows1) <span class="hljs-keyword">do</span> 
+      rows[<span class="hljs-number">1</span>+#rows] = row
+      labels[row.id]=label <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> n,xcol <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(i.cols.x) <span class="hljs-keyword">do</span>
     <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&quot;</span>)
-    <span class="hljs-keyword">local</span> bins = Bin.BINS({left,right},col).bins 
+    <span class="hljs-keyword">local</span> bins = Bin.BINS(rows, xcol, y, Col.new).bins
     <span class="hljs-keyword">if</span> #bins &gt; <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> 
        <span class="hljs-keyword">for</span> _,bin <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(bins) <span class="hljs-keyword">do</span>
          <span class="hljs-built_in">print</span>(bin.ys.txt, bin.lo, bin.hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
@@ -959,10 +1130,12 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Go.ORDER</span><span class="hljs-params">(  i,t,m,left,right)</span></span> 
   i= Data.LOAD(the.file)
+  <span class="hljs-built_in">print</span>(<span class="hljs-number">0</span>, lib._id)
   t= <span class="hljs-built_in">sort</span>(i.rows,Row.better)
   m= (#t)^<span class="hljs-number">.5</span>
   left = Data.clone(i,splice(t,<span class="hljs-number">1</span>,m))
   right= Data.clone(i,splice(i.rows,#t - m))
+  <span class="hljs-built_in">print</span>(<span class="hljs-number">2</span>, lib._id)
   <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;all&quot;</span>,  o(Data.mids(i)))
   <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;best&quot;</span>, o(Data.mids(left)))
   <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;rest&quot;</span>, o(Data.mids(right))) 
@@ -979,11 +1152,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-45">
+        <li id="section-48">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-45">&#x00a7;</a>
+                <a class="ss" href="#section-48">&#x00a7;</a>
               </div>
               <hr>
 
@@ -992,11 +1165,11 @@ find 1 standard deviation, divide 90th - 10th percentile by twice 1.28 (2.56).</
         </li>
         
         
-        <li id="section-46">
+        <li id="section-49">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-46">&#x00a7;</a>
+                <a class="ss" href="#section-49">&#x00a7;</a>
               </div>
               
             </div>
