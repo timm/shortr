@@ -1,3 +1,35 @@
+age of massh ups. long supply chains of code X depending on code y on code z.
+changed the way we think about coding. MIT changed its first year subject to stop
+looking deeping and instead went to mash up. we end up wu with nsrat's supply
+chain exposures. or long build times. or siatuations where one peron pulling a 3 line package
+can (at least, temporarily) break the internet.
+
+been templted. in enironemtns that remward and promote impressive technical
+accomplishmnet, the idea that pirrmive looking apps can be qucly wired together,
+is certainly appelaing. and many start seeing that wiring together as itsself
+a productiviity advantage and start processing scirting or meta-level
+tools to sped up that wiing system (e.g. punlish compoentns as types that
+now the types of their oo, offer a visual programming environemtn where anything
+can be wited nto anything else via a GUI, provided the types being produced
+by the upstream thing match the types required as input by the downstream thing.
+
+but instead of wiring together large assemblies,s perhaps we need to be looking
+for synthesis and simplification across our code base. another way to use a prior
+code base is to treat it like the results of an experiment. that work found out
+of ABCDEF.. that AB and DE was most useful. also, looking over AB and DE we can see
+a way toregactor them both sich that we can do both, in  less code. "THe best answer
+is the one that destroys the question" said Susan Sontag and perhaps she was writing.
+Perhaps old code shuld be viewed as a corpse that we, as code scavnegers, pick over
+looking for the tastiest morsels.
+
+Just to be clear, constantly reviewing and refactoring old code into new, simpler,
+systems is not recommended in hfast pasced environments when all that matters
+is getting a product out the door in order to generate the cash flow that lets us
+live another day. But perhaps, sometimes, it is useful to sit back and calm down
+and reflect to see what we've learned from the past to simplify the future.
+
+For the reader who is feeling  calm and reflective today, we offer the following.
+
 
 but the best way. no best way. albert. but at least a quick way o(log(N)) initial ass uitable to define. refuce a larger slace to smaelr space of options.
 or run as a postoorcessor to simplify some other more complex inference. or as inspiration for research "X works in shortr... soulf that work better if..." and then we cangt\and better shortr 2.0
