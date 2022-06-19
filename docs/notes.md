@@ -25,7 +25,11 @@ looking for the tastiest morsels.
 Just to be clear, constantly reviewing and refactoring old code into new, simpler,
 systems is not recommended in hfast pasced environments when all that matters
 is getting a product out the door in order to generate the cash flow that lets us
-live another day. But perhaps, sometimes, it is useful to sit back and calm down
+live another day. 
+But there is some evidence that that approach has gone too far. model stores. awful
+code, looking pretty.
+
+So perhaps, sometimes, it is useful to sit back and calm down
 and reflect to see what we've learned from the past to simplify the future.
 
 For the reader who is feeling  calm and reflective today, we offer the following.
