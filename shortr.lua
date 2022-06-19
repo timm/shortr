@@ -17,8 +17,10 @@ USAGE:
 OPTIONS:
   -M  --Min    min size of space                    =  .5
   -b  --bins   max number of bins                   =  16
+  -F  --Far    how far to look for remove points    =  .9
   -k  --k      Bayes hack: low attribute frequency  =  2
   -m  --m      Bayes hack: low class frequency      =  1
+  -p  --p      distance coefficient (2=Euclidean)   =  2
   -s  --some   max number of nums to keep           =  256
   -w  --wait   wait this number before testing      =  10
 
@@ -59,9 +61,11 @@ help:gsub(" [-][-]([^%s]+)[^\n]*%s([^%s]+)",function(key,x) the[key] =_.atom(x) 
 local function small(n) return the.Min <1 and n^the.Min or the.Min end
 
 -- Other names
-local argmax,atom,big,cli,csv,demos = _.argmax,_.atom,_.big,_.cli,_.csv,_.demos
-local fmt,id,lt,map,o,oo,per,push   = _.fmt,_.id,_.lt,_.map,_.o,_.oo,_.per,_.push
-local R,rnd,sort,splice,sum             = _.R, _.rnd,_.sort, _.splice, _.sum
+local any,argmax,atom,big     = _.any,_.argmax,_.atom,_.big
+local cli,csv,demos           = _.cli,_.csv,_.demos
+local fmt,id,lt,many,map,o,oo = _.fmt,_.id,_.lt,_.many,_.map,_.o,_.oo
+local per,push                = _.per,_.push
+local R,rnd,sort,splice,sum   = _.R, _.rnd,_.sort, _.splice, _.sum
 
 -------------------------------------------------------------------------------
 -- ## class Col
@@ -158,10 +162,11 @@ function Col.ok(i)
 --> .lo(i:Col) :num -> 
 --> .hi(i:Col) :num -> 
 --> .div(i:Col) :num -> 
---> .mid(i:Col) :any ->  `lo`west number, `hi`ghest number, `div`ersity, `mid`dle number. 
-function Col.lo(i)   Col.ok(i); return i.kept[1] end
-function Col.hi(i)   Col.ok(i); return i.kept[#i.kept] end
-function Col.div(i)  Col.ok(i); return i.div end
+--> .mid(i:Col,p:num) :any ->  `lo`west number, `hi`ghest number,
+-- `div`ersity, `mid`dle number (maybe rounded to `p` decimal places).
+function Col.lo(i)    Col.ok(i); return i.kept[1] end
+function Col.hi(i)    Col.ok(i); return i.kept[#i.kept] end
+function Col.div(i)   Col.ok(i); return i.div end
 function Col.mid(i,p) Col.ok(i); return rnd(i.mid,p) end
 
 --> .norm(i:Col,x:num) :0..1 -> normalize `x` 0..1 for lo..hi.
@@ -194,6 +199,15 @@ function Col.like(i,x,prior)
     local sd,mu=Col.div(i), Col.mid(i)
     if sd==0 then return x==mu and 1 or 1/big end
     return math.exp(-.5*((x - mu)/sd)^2) / (sd*((2*math.pi)^0.5)) end  end
+--- ### For Distance Calcs
+
+function Col.dist(i,x,y)
+  if x=="?" and y=="?" then return 1 end
+    if not i.nums then return x==y and 0 or 1 else
+    if     x=="?" then y = Col.norm(i,y); x = y<.5 and 1 or 0 
+    elseif y=="?" then x = Col.norm(i,x); y = x<.5 and 1 or 0
+    else   x,y = Col.norm(i,x), Col.norm(i,y) end
+    return math.abs(x - y) end end 
 
 --------------------------------------------------------------------------------
 -- ## Row
@@ -214,6 +228,20 @@ function Row.better(i,j)
   return s1/#ys < s2/#ys  end
 
 function Row.klass(i) return i.cells[i._of.cols.klass.at] end
+
+function Row.dist(i,j) 
+  local d, cols = 0, i._of.cols.x
+  for _,col in pairs(cols) do
+    local inc = Col.dist(col, i.cells[col.at], j.cells[col.at]) 
+    d         = d + inc^the.p end
+  return (d / #cols) ^ (1/the.p) end
+
+function Row.around(i, rows)
+  local function rowGap(j) return {row=j, gap=Row.dist(i,j)} end
+  return sort(map(rows or i._of.rows, rowGap), lt"gap") end
+
+function Row.far(i,rows) return per(Row.around(i,rows), the.Far).row end
+
 --------------------------------------------------------------------------------
 -- ## Data
 function Data.NEW(t) return {
@@ -273,7 +301,7 @@ function Data.tree(i,listOfRows)
     function down(bin)
       local new = Data.clone(j, Bin.holds(bin, j.rows))
       if #new.rows<#j.rows then 
-        new.gaurd=bin 
+        new.gaurd = bin 
         return mapSortedBins(new) end 
     end ----------------------
     if #j.rows >= 2*small(total) then 
@@ -287,8 +315,24 @@ function Data.show(i,lvl)
   local gaurd = i.gaurd and Bin.show(i.gaurd)
   print(fmt("%-40s", o(Data.mids(i,2))), ("| "):rep(lvl) .. (gaurd or ""))
   for _,kid in pairs(i.kids or {}) do Data.show(kid, 1+lvl) end end
-  
---------------------------------------------------------------------------------
+-- ### For Distance Calcs
+
+function Data.split(i,rows, stop, rest,x,        some,y,c,rxs,best)
+  rest, rows = rest or {}, rows or i.rows
+  stop       = stop or small(#rows)
+  if #rows <= 2*stop then return rows,rest,x end
+  some = many(rows, the.some)
+  x    = x or Row.far(any(some), some)
+  y    =      Row.far(x,         some)
+  if Row.better(y,x) then x,y = y,x end
+  c = Row.dist(x,y)
+  rxs = map(rows,function(r) 
+              return {r=r, x=(Row.dist(r,x)^2+c^2 - Row.dist(r,y)^2)/(2*c)} end) 
+  best= {} -- things closest to x or y, respectively
+  for i,rx in pairs(sort(rxs, lt"x")) do 
+    push(i<=#rows*.5 and best or rest, rx.r) end
+  return Data.split(best, stop, rest,x) end
+ --------------------------------------------------------------------------------
 -- ## NB
 function NB.NEW(src,report)
   local i  = {overall=nil,  --> :[Data] -> summary of all rows
@@ -376,6 +420,25 @@ function Bin.XPAND(bins)
 --------------------------------------------------------------------------------
 -- To disable a test, relabel it from `Go` to `No`.
 local Go,No = {},{}
+
+function Go.FAR(  i,r1,r2)
+  i  = Data.LOAD(the.file)
+  local ok=true
+  for _ = 1,100 do
+    r1 = i.rows[ math.random(#i.rows) ]
+    r2 = Row.far(r1)
+    print(Row.dist(r1,r2)) end
+  return true end
+
+function Go.DIST(  i,r1,r2)
+  i  = Data.LOAD(the.file)
+  r1 = i.rows[ math.random(#i.rows) ]
+  local ok=true
+  for _ = 1,100 do
+    r2 = i.rows[ math.random(#i.rows) ]
+    ok = ok and Row.dist(r1,r2) <= 1
+    r1 = r2 end 
+  return ok end
 
 function Go.TREE(  i,t,m,left,right)
   i = Data.LOAD(the.file)

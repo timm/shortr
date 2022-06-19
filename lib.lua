@@ -14,6 +14,8 @@ function lib.map(t,f,  u) u={}; for _,v in pairs(t) do u[1+#u]=f(v) end; return 
 function lib.sum(t,f,  n) n=0;  for _,v in pairs(t) do n = n + f(v) end; return n end
 function lib.per(t,p)     p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 function lib.lt(x)        return function(a,b) return a[x] < b[x] end end
+function lib.any(a, i)    i=lib.R()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
+function lib.many(a,n, u) u={}; for j=1,n do         u[1+#u]=any(a) end; return u end
 
 function lib.argmax(t,f)
   local arg, max = nil, -lib.big
