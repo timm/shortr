@@ -20,6 +20,10 @@ function lib.argmax(t,f)
   for key,x in pairs(t) do local tmp=f(x);if tmp>=max then arg,max=key,tmp end end
   return arg end
 
+function lib.rnd(num, numDecimalPlaces)
+  local mult = 10^(numDecimalPlaces or 2)
+  return math.floor(num * mult + 0.5) / mult end
+
 function lib.o(t) 
   if type(t) ~= "table" then return tostring(t) end
   if #t>0 then return "{"..table.concat(lib.map(t,lib.o)," ").."}" end

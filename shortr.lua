@@ -61,7 +61,7 @@ local function small(n) return the.Min <1 and n^the.Min or the.Min end
 -- Other names
 local argmax,atom,big,cli,csv,demos = _.argmax,_.atom,_.big,_.cli,_.csv,_.demos
 local fmt,id,lt,map,o,oo,per,push   = _.fmt,_.id,_.lt,_.map,_.o,_.oo,_.per,_.push
-local R,sort,splice,sum             = _.R, _.sort, _.splice, _.sum
+local R,rnd,sort,splice,sum             = _.R, _.rnd,_.sort, _.splice, _.sum
 
 -------------------------------------------------------------------------------
 -- ## class Col
@@ -162,7 +162,7 @@ function Col.ok(i)
 function Col.lo(i)   Col.ok(i); return i.kept[1] end
 function Col.hi(i)   Col.ok(i); return i.kept[#i.kept] end
 function Col.div(i)  Col.ok(i); return i.div end
-function Col.mid(i)  Col.ok(i); return i.mid end
+function Col.mid(i,p) Col.ok(i); return rnd(i.mid,p) end
 
 --> .norm(i:Col,x:num) :0..1 -> normalize `x` 0..1 for lo..hi.
 function Col.norm(i,x) 
@@ -239,8 +239,8 @@ function Data.add(i,t)
     for _,c in pairs(cols) do Col.add(c, t.cells[c.at]) end end 
   return t end 
 
-function Data.mids(i,cols,    t) 
-  t={};for _,c in pairs(cols or i.cols.y) do t[c.txt]=Col.mid(c) end;return t end
+function Data.mids(i,p,cols,    t) 
+  t={};for _,c in pairs(cols or i.cols.y) do t[c.txt]=Col.mid(c,p) end;return t end
 -- ### For Naive Bayes 
 
 function Data.like(i,row, nklasses, nrows)
@@ -255,31 +255,32 @@ function Data.like(i,row, nklasses, nrows)
   return like end
 -- ### For Decision Trees 
 
+local _tree
 function Data.tree(i,listOfRows)
-  local n,labels,rows = 0,{},{}
-  local y = function(row) return labels[row.id] end 
-  for label,rows1 in pairs(listOrRows) do 
-    n = n + #rows
-    for _,row in pairs(rows) do 
+  local total,rows,ylabels = 0,{},{}
+  for label,rows1 in pairs(listOfRows) do 
+    total = total + #rows
+    for _,row in pairs(rows1) do 
       rows[1+#rows]=row
-      labels[row.id]=label end end
-  return Data.split(Data.clone(i,rows), i._of.cols.x, y, small(n)) end
+      ylabels[row.id]=label end end -- end data collection
+  local function y(row)  return ylabels[row.id] end 
+  local function across(j) 
+    local function down(bin)
+      local new = Data.clone(j,Bin.holds(bin, j.rows))
+      if #new.rows<#j.rows then new.gaurd=bin return across(new) end end
+    local function bins(x) 
+      return Bin.BINS(j.rows,x,y,Col.New) end
+    if #j.rows >= 2*small(total) then 
+      local binsFromBestCol = sort(map(j.cols.x, bins),lt"div")[1].bins 
+      j.kids = map(binsFromBestCol, down) end 
+    return j end
+  return across(Data.clone(i, rows)) end
 
-function Data.split(i, xcols, y, stop)
-  if i.rows < 2*stop then return i end
-  local bins = function(xcol) return Bin.BINS(i.rows,xcol,y,Col.NEW) end
-  i.kids = map(sort(map(xcols, bins),lt"div")[1].bins,
-               function(gaurd1)
-                 local kid = Data.clone(Bin.holds(gaurd1,rows))
-                 kid.gaurd = gaurd1
-                 return Data.split(kid, xcols, y, stop) end)
-  return i end
-
-function Data.show(i,pre)
-  pre = pre or ""
+function Data.show(i,lvl)
+  lvl = lvl or 0
   local gaurd = i.gaurd and Bin.show(i.gaurd)
-  print(pre .. (gaurd or ""), Data.mids(i))
-  for _,kid in pairs(i.kids) do Data.show(kid,"|.. "..pre) end end
+  print(fmt("%-40s", o(Data.mids(i,2))), ("| "):rep(lvl) .. (gaurd or ""))
+  for _,kid in pairs(i.kids or {}) do Data.show(kid, 1+lvl) end end
   
 --------------------------------------------------------------------------------
 -- ## NB
@@ -312,7 +313,7 @@ function Bin.NEW(xlo, xhi, ys)
            ys=ys} end  --> :[any] -> y values seen for "lo" to "hi"
 
 function Bin.show(i)
-  local x,lo,hi = self.ys.txt, self.lo, self.hi
+  local x,lo,hi = i.ys.txt, i.lo, i.hi
   if     lo ==  hi  then return fmt("%s == %s",x, lo)  
   elseif hi ==  big then return fmt("%s >= %s",x, lo)  
   elseif lo == -big then return fmt("%s < %s", x, hi)  
@@ -358,16 +359,29 @@ function Bin.MERGES(b4, min)
     local merged = n<#b4 and Bin.merge(b4[n], b4[n+1], min)
     now[#now+1]  = merged or b4[n] 
     n            = n + (merged and 2 or 1)  end
-  return #now < #b4 and Bins.STRETCH(now) or Bin.MERGES(now,min) end
+  return #now < #b4 and Bin.MERGES(now,min) or Bin.XPAND(now) end
 
--- stretch the bins to cover any gaps from minus infinity to plus infinity
-function Bin.STRECH(bins)
-  for n=2,#bins do bins[n].lo = bins[n-1].hi end
+-- xpand the bins to cover any gaps from minus infinity to plus infinity
+function Bin.XPAND(bins)
+  if #bins>1 then
+    for n=2,#bins do bins[n].lo = bins[n-1].hi end end
   bins[1].lo, bins[#bins].hi = -big, big
   return bins end 
 --------------------------------------------------------------------------------
 -- To disable a test, relabel it from `Go` to `No`.
 local Go,No = {},{}
+
+function Go.TREE(  i,t,m,left,right)
+  i = Data.LOAD(the.file)
+  t = sort(i.rows,Row.better)
+  m = #t/2
+  left  = splice(t,1,m)
+  right = splice(i.rows,#t - m)
+  local n,labels,rows = 0,{},{}
+  local y = function(row) return labels[row.id] end 
+  print""
+  Data.show(Data.tree(i,{left,right}))
+  return true end
 
 function Go.BINS(  i,t,m,left,right)
   i = Data.LOAD(the.file)
@@ -377,10 +391,9 @@ function Go.BINS(  i,t,m,left,right)
   right = splice(i.rows,#t - m)
   local n,labels,rows = 0,{},{}
   local y = function(row) return labels[row.id] end 
-  for label,rows in ipairs({left,right}) do 
+  for label,rows1 in pairs({left,right}) do 
     n = n + #rows
-    for _,row in pairs(rows) do 
-      oo(row)
+    for m,row in pairs(rows1) do 
       rows[1+#rows] = row
       labels[row.id]=label end end
   for n,xcol in ipairs(i.cols.x) do
