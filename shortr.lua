@@ -261,19 +261,26 @@ function Data.tree(i,listOfRows)
     total = total + #rows
     for _,row in pairs(rows1) do 
       rows[1+#rows]=row
-      ylabels[row.id]=label end end -- end data collection
-  local function y(row)  return ylabels[row.id] end 
-  local function across(j) 
-    local function down(bin)
-      local new = Data.clone(j,Bin.holds(bin, j.rows))
-      if #new.rows<#j.rows then new.gaurd=bin return across(new) end end
-    local function bins(x) 
-      return Bin.BINS(j.rows,x,y,Col.New) end
+      ylabels[row.id]=label end 
+  end ----- end data collection
+  local y,mapSortedBins
+  function y(row) 
+    return ylabels[row.id] end 
+  function mapSortedBins(j) 
+    local bins,down
+    function bins(xcol) 
+      return Bin.BINS(j.rows,xcol,y,Col.New) end
+    function down(bin)
+      local new = Data.clone(j, Bin.holds(bin, j.rows))
+      if #new.rows<#j.rows then 
+        new.gaurd=bin 
+        return mapSortedBins(new) end 
+    end ----------------------
     if #j.rows >= 2*small(total) then 
-      local binsFromBestCol = sort(map(j.cols.x, bins),lt"div")[1].bins 
-      j.kids = map(binsFromBestCol, down) end 
-    return j end
-  return across(Data.clone(i, rows)) end
+      j.kids = map(sort(map(j.cols.x, bins),lt"div")[1].bins, down) end
+    return j 
+  end ------
+  return mapSortedBins(Data.clone(i, rows)) end
 
 function Data.show(i,lvl)
   lvl = lvl or 0
