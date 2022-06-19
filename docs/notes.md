@@ -30,6 +30,9 @@ and reflect to see what we've learned from the past to simplify the future.
 
 For the reader who is feeling  calm and reflective today, we offer the following.
 
+____
+examppes from my role model file
+-----
 
 but the best way. no best way. albert. but at least a quick way o(log(N)) initial ass uitable to define. refuce a larger slace to smaelr space of options.
 or run as a postoorcessor to simplify some other more complex inference. or as inspiration for research "X works in shortr... soulf that work better if..." and then we cangt\and better shortr 2.0

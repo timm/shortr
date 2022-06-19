@@ -57,7 +57,7 @@ Their work dares me to write less, but better:<br>
 As do my fav LISPers: <br>
 ([Peter Seibel](https://gigamonkeys.com/book/)
   ([Conrad Barski](https://doc.lagout.org/programmation/Lisp/Land%20of%20Lisp_%20Learn%20to%20Program%20in%20Lisp%2C%20One%20Game%20at%20a%20Time%20%5BBarski%202010-11-15%5D.pdf)
-  ([Paul Graham](http://www.paulgraham.com/onlisp.html)<nr>
+  ([Paul Graham](http://www.paulgraham.com/onlisp.html)<br>
     ([Peter Norvig](http://norvig.com/lispy.html)
       ([Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y)))))).
 
