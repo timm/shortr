@@ -51,9 +51,9 @@ Also included here
 is literate programming, self-documenting code and support for
 test-driven development. 
 
-All in around 300 lines of LUA: <br>
+All in a few hundreds  lines of LUA: <br>
 
-`awk '!/^(--|[ \t]*$)/{n++} END {print n" lines"}' *.lua`   => 301 lines
+`awk '!/^(--|[ \t]*$)/{n++} END {print n" lines"}' *.lua`   => 511 lines
      
 Share and enjoy.
 
