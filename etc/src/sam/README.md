@@ -3,7 +3,7 @@
 # [SHORTR . lua](README.md)
 Semi-supervised multi-objective optimization XAI.   
 From N items, find and explain the best ones, using just log(N) evals.  
-All in tiny code source.
+All in a tiny code base.
      
 [data](data.md) :: 
 [num](num.md) :: 
