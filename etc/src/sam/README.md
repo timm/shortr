@@ -40,7 +40,16 @@ And can you use those similarities to do more things with  _it_?
 Finally, can you teach _it_ quickly to newcomers?
 
 E.g. do I understand a multi-objective semi-supervised XAI?
-Well, maybe. Here's all that, most of which is
+Well, maybe.  Here I search
+N items, find and explain the best ones, using just log(N) evals:
+
+- PASS1 (guess): eval two distant items on multi-objective criteria.
+        Prune everything nearest the worst one. Recurse on rest.  
+- PASS2 (guess again): do it again, using better items from first pass.  
+- PASS3 (explain): recursively discretize attributes on how well they
+         distinguish the best and worst items (seen in second pass).
+
+Here's all that, most of which is
 background stuff that could be used for other learners.
 Once
 I build that, I found that decision trees, Naive Bayes classifiers,
@@ -54,6 +63,3 @@ All in a few hundreds  lines of LUA: <br>
 `awk '!/^(--|[ \t]*$)/{n++} END {print n" lines"}' *.lua`   => 511 lines
      
 Share and enjoy.
-
-
- 
