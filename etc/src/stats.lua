@@ -42,7 +42,7 @@ local function _col(i,at,txt)
   i.w = i.txt:find"-$" and -1 or 1  end
 
 local Sym=obj("Sym", _col)
-local Num=obj("Num", function(i,at,txt) _col(i,at,txt); i.names,i.ok = 256,true end)
+local Num=obj("Num", function(i,at,txt) _col(i,at,txt); i.nums,i.ok = 256,true end)
 
 function col(at,txt) return (name:find"^[A-Z]" and Num or Sym)(at,txt) end
 
