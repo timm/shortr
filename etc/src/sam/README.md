@@ -1,10 +1,10 @@
-<img width=150 src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
-    
+<img align=left width=200 src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+       
 # [SHORTR . lua](README.md)
 Semi-supervised multi-objective optimization XAI.   
 From N items, find and explain the best ones, using just log(N) evals.  
 All in a few hundreds  lines of LUA:    
-`awk '!/^(--|[ \t]*$)/{n++} END {print n" lines"}' *.lua`   =>   511 lines
+`awk '!/^(--|[ \t]*$)/{n++} END {print n" lines"}' *.lua`   =>   511 lines<br clear=all>
      
 [data](data.md) :: 
 [num](num.md) :: 
