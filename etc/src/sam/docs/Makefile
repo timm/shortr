@@ -11,11 +11,9 @@ help : Makefile
            "  \033[36m%-25s\033[0m %s\n","make " $$1,$$2}'  $< \
 	| grep -v awk
 
-src/*.lua: *.md
-  gawk 'BEGIN {pre="-- "; } \
-       /^```lua/     { print "-- " $0; next; pre="" } \
-       /^```[ \t]*$/ { pre = "-- "  } \
-                     { print pre $0 }' $^ > $@
+../src/%.lua: %.md
+	mkdir -p ../src
+	(gawk -f head.awk README.md; gawk -f tail.awk $^) > $@
 
 ready:  ##  commit to main
 	git add *;git commit -am save;git push;git status
