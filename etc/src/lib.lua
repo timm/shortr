@@ -25,12 +25,14 @@ lib.big = math.huge
 lib.fmt = string.format
 lib.R   = math.random
 
-
+--> obj(name :str) :klass -> class creator
+local _id = 0
 function obj(name,    t,new)
   function new(kl,...) 
-     local x=setmetatable({id=id()},kl); kl.new(x,...); return x end 
-       t = {__tostring=o, is=name or ""}; t.__index=t
-         return setmetatable(t, {__call=new}) end
+    _id = _id + 1
+    local x=setmetatable({id=_id},kl); kl.new(x,...); return x end 
+  t = {__tostring=o, is=name or ""}; t.__index=t
+  return setmetatable(t, {__call=new}) end
 
 --> thing(x :str) :any -> coerce x to some LUA type
 function thing(x)
@@ -39,8 +41,9 @@ function thing(x)
   if x=="true" then return true elseif x=="false" then return false end
   return math.tointeger(x) or tonumber(x) or x end
 
---> help(x :str) :tab -> for lines with "--", pull keys+defaults. 
--- Look for updates for "key" on command-line. 
+--> help(x :str) :tab -> For lines with `--`, pull keys+defaults. 
+-- Look for updates for "key" on command-line. Things with boolean defaults
+-- are negated via `--flag`. Other keys need `--flag value`. 
 function help(str)
   local t = {}
   str:gsub("\n  ([-][-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
