@@ -1,4 +1,4 @@
-<img align=right width=200 src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+<img width=150 src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
     
 # [SHORTR . lua](README.md)
 Semi-supervised multi-objective optimization XAI.   
