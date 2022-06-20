@@ -12,19 +12,19 @@
 --    \/____/   \/_/    \/___/ \/_/   \/____/  \/___/  \/__/\/_/
 
 local lib = {}
-
+--------------------------------------------------------------------------------
 --> lint() :nil -> report rogue globals
 local b4={}; for x,_ in pairs(_ENV) do b4[x]=x end 
 function lib.lint() --> ()  
   for x,v in pairs(_ENV) do if not b4[x] then print("?",x,type(v)) end end end
-
+--------------------------------------------------------------------------------
 --> big             :num -> large number
 --> fmt(:str, :str) :str -> emulate printf
 --> R( max:?num=1)  :num -> return random number 0..max
 lib.big = math.huge
 lib.fmt = string.format
 lib.R   = math.random
-
+--------------------------------------------------------------------------------
 --> obj(name :str) :klass -> class creator
 local _id = 0
 function obj(name,    t,new)
@@ -33,14 +33,14 @@ function obj(name,    t,new)
     local x=setmetatable({id=_id},kl); kl.new(x,...); return x end 
   t = {__tostring=o, is=name or ""}; t.__index=t
   return setmetatable(t, {__call=new}) end
-
+--------------------------------------------------------------------------------
 --> thing(x :str) :any -> coerce x to some LUA type
 function thing(x)
   if type(x)~="string" then return x end
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
   return math.tointeger(x) or tonumber(x) or x end
-
+--------------------------------------------------------------------------------
 --> help(x :str) :tab -> For lines with `--`, pull keys+defaults. 
 -- Look for updates for "key" on command-line. Things with boolean defaults
 -- are negated via `--flag`. Other keys need `--flag value`. 
@@ -54,7 +54,7 @@ function help(str)
    if t.help then 
      os.exit(print(str:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"")) end
   return t end
-
+--------------------------------------------------------------------------------
 --> csv(src :str, fun :function) :nil -> for file lines, split on "," pass to fun
 function csv(file, fun,    line,t)
   file  = io.input(file)
