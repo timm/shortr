@@ -1,4 +1,5 @@
 <img align=right width=200 src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+    
 # [SHORTR . lua](README.md)
 Semi-supervised multi-objective optimization XAI.  From N items, find and explain 
 the best ones, using just log(N) evals.  All in a few hundreds  lines of LUA:    
@@ -32,7 +33,7 @@ Well, maybe.  Here I search
 N items, find and explain the best ones, using just log(N) evals:
 
 - PASS1 (guess): eval two distant items on multi-objective criteria.
-        Prune everything nearest the worst one. Recurse on rest.  
+        [Prune](Prune) everything nearest the worst one. Recurse on rest.  
 - PASS2 (guess again): do it again, using better items from first pass.  
 - PASS3 (explain): recursively discretize attributes on how well they
          distinguish the best and worst items (seen in second pass).

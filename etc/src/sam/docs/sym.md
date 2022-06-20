@@ -1,4 +1,5 @@
 <img align=right width=200 src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+    
 # [SHORTR . lua](README.md)
 Semi-supervised multi-objective optimization XAI.  From N items, find and explain 
 the best ones, using just log(N) evals.  All in a few hundreds  lines of LUA:    
