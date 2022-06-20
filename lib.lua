@@ -17,6 +17,7 @@ function lib.lt(x)        return function(a,b) return a[x] < b[x] end end
 function lib.any(a, i)    i=lib.R()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
 function lib.many(a,n, u) u={}; for j=1,n do         u[1+#u]=any(a) end; return u end
 
+--
 function lib.argmax(t,f)
   local arg, max = nil, -lib.big
   for key,x in pairs(t) do local tmp=f(x);if tmp>=max then arg,max=key,tmp end end
