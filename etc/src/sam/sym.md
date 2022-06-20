@@ -1,4 +1,4 @@
-<img align=right width=200 src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
+<img align=right width=150 src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
 
 shortr :: [home](home) :: [asd](as) :: [sdsa](asd) :: [sad](asd)  
 
