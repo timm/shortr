@@ -13,7 +13,7 @@ help : Makefile
 
 ../src/%.lua: %.md
 	mkdir -p ../src
-	(gawk -f head.awk README.md; gawk -f tail.awk $^) > $@
+	(gawk -f head.awk README.md; gawk -f tail.awk $^) > tmp; mv tmp $@
 
 ready:  ##  commit to main
 	git add *;git commit -am save;git push;git status
