@@ -1,6 +1,6 @@
 <img align=right width=150 src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
     
-# [Short](README.md)
+# [Shortr.lua](README.md)
 Semi-supervised multi-objective optimization XAI.   
 From N items, find and explain the best ones, using just log(N) evals.
      
