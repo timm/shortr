@@ -1,4 +1,4 @@
-[asd] | [sdsa] | [sad]
+[asd](as) | [sdsa](asd) | [sad](asd)
 
 # Sym
 
