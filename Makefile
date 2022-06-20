@@ -12,7 +12,7 @@ help : Makefile
 docs/index.html: docs/shortr.html ##  commit to main
 	cp docs/shortr.html docs/index.html
 
-ready: docs/index.html ##  commit to main
+ready:  ##  commit to main
 	git add *;git commit -am save;git push;git status
 
 docs/%.html: %.lua docs/%.md ## make html
