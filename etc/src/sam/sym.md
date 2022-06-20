@@ -11,7 +11,7 @@ From N items, find and explain the best ones, using just log(N) evals.
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 
  
-# Sym
+## class Sym
 
 
 ```lua
@@ -20,7 +20,7 @@ function Sym.NEW(at,txt) --> (at :num, txt:str) :Sym
   return {_is=Sym,at=at or 0,txt=txt or {},n=0,kept={},
          w=(txt or ""):find"-$" and -1 or 1} end
 ```
-## Creation
+### Creation
 ```lua
 function Sym.add(i,x,inc) --> (i :Sym, x :any, inc :?num) :Sym
   if x=="?" then return else
@@ -28,7 +28,7 @@ function Sym.add(i,x,inc) --> (i :Sym, x :any, inc :?num) :Sym
     i.kept[x] = inc + (i.kept[x] or 0) 
     if i.kept[x] > i.most then i.most,i.mode = i.kept[x],x end end end
 ```
-## Queries
+### Queries
 ```lua
 function [Sym mid](Sym.mid)(i) --> (i :Sym) :num
   return i.mode end
@@ -37,6 +37,8 @@ function Sym.div(i,  e) --> (i :Sym) :num
   local log=function(x) return math.log(x,2) end
   e=0; for _,v in pairs(i.kept) do if v>0 then e=e-v/i.n*log(v/i.n) end end
   return e end
-
+```
+### Return
+```lua
 return Sym
 ```
