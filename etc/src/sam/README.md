@@ -1,11 +1,15 @@
 <img align=right width=150 src="https://raw.githubusercontent.com/timm/shortr/master/docs/img/cup.png">
     
-# Short
+# [Short](README.md)
 Semi-supervised multi-objective optimization XAI.   
 From N items, find and explain the best ones, using just log(N) evals.
      
-[shortr](README.md) :: [num](num.md) :: [sym](sym.md) :: [row](row.md) ::
-[range](range.md) :: [data](data.md) :: [lib](lib.md)  
+[data](data.md) :: 
+[num](num.md) :: 
+[range](range.md) :: 
+[row](row.md) ::
+[sym](sym.md) :: 
+[lib](lib.md)  
          
 <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a>
 <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a>
