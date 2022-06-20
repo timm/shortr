@@ -14,10 +14,10 @@ function cat(t,f)
 function chat(t) print(cat(t)); return t end
 
 local _id = 0
-function obj(name,    t,new)
+function obj(name,fun,    t,new)
   function new(kl,...) 
     _id = _id + 1
-    local x=setmetatable({id=_id},kl); kl.NEW(x,...); return x end 
+    local x=setmetatable({id=_id},kl); fun(x,...); return x end 
   t = {__tostring=cat, is=name or ""}; t.__index=t
   return setmetatable(t, {__call=new}) end
 
@@ -34,16 +34,29 @@ function csv(file, fun)
     line = io.read() end
   io.close(file) end
 
-local Num=obj"Num"
-function Num.NEW(i,at,txt)
-  i.n,i.at,i.txt,i.kept = 0,at,txt,{} 
-  i.names,i.ok = 256,true end
+local Num=obj("Num", function(i,at,txt)
+  i.n,i.at,i.txt,i.kept = 0,at or 0 ,txt or "",{} 
+  i.names,i.ok = 256,true end)
+
+local Sym=obj("Sym", function(i,at,txt)
+  i.n,i.at,i.txt,i.kept = 0,at or 0,txt or "",{} end)
 
 function init(at,txt)
-  local new=(name:find"^[A-Z]" and Num or Sym)(at,txt)
-  new.w = txt:find"-$" and -1 or 1
-  new.ignorep = txt:find":$"
-  return new end
+  local i=(name:find"^[A-Z]" and Num or Sym)(at,txt)
+  i.w = i.txt:find"-$" and -1 or 1
+  i.ignorep = i.txt:find":$"
+  return i  end
 
-csv("../../data/auto93.csv",function(row) 
-  data = data and maps2(data,row,update) or map2(row,init) end
+local Rows=obj("Row", function(i,row) i.rows={}; i.cols=nil; i.categories={} end)
+function Rows.add(i,row)
+  rs.kepts = rs.cols and maps(r.kepts,row,update) or i:categorize(kap(row,init) end)
+
+function Rows.categorize(i,cols)
+  for _,col in pairs(cols) do if not col.ignorep then 
+     push(col.txt:find"[!+-]$" and i.categories.y or i.categories.y, col) end end 
+  return end
+
+function make(f,rows) 
+  local function make1(row) if rows then rows:add(row) else rows=Rows(row) end
+  if type(src)=="table" then map(rows,make1) else csv(src,make1) end
+  return rows end
