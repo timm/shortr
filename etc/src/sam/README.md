@@ -42,10 +42,8 @@ N items, find and explain the best ones, using just log(N) evals:
 - PASS3 (explain): recursively discretize attributes on how well they
          distinguish the best and worst items (seen in second pass).
 
-Here's all that, most of which is
-background stuff that could be used for other learners.
-Once
-I build that, I found that decision trees, Naive Bayes classifiers,
+Note that once 
+I build that, decision trees, Naive Bayes classifiers,
 and nearest neighbors were all tiny extensions. 
 Also included here
 is literate programming, self-documenting code and support for
