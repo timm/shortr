@@ -4,14 +4,14 @@
 Semi-supervised multi-objective optimization XAI.   
 From N items, find and explain the best ones, using just log(N) evals.  
 All in a few hundreds  lines of LUA:    
-`awk '!/^(--|[ \t]*$)/{n++} END {print n" lines"}' *.lua`   =>   511 lines<br clear=all>
+`awk '!/^(--|[ \t]*$)/{n++} END {print n" lines"}' *.lua`   =>   511 lines
      
 [data](data.md) :: 
 [num](num.md) :: 
 [range](range.md) :: 
 [row](row.md) ::
 [sym](sym.md) :: 
-[lib](lib.md)  
+[lib](lib.md) <br clear=all>
          
 <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a>
 <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a>
