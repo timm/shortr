@@ -15,4 +15,45 @@ From N items, find and explain the best ones, using just log(N) evals.
 <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a>
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 
+> __Dieter Rams:__      
+_"Less, but better."_
+
+> __Alan Perlis:__    
+_"Simplicity does not precede complexity, but follows it."_ 
+
+
+
+> __Tony Hoare:__    
+_"Inside every large program is a small program struggling to get out."_
+
+ 
+
+ 
+
+Now that you've done _it_, did you really understand _it_? Let's check.
+
+Can you do _it_ better?
+Can you now
+write _it_ in fewer lines and do you know how to make _it_ run faster?
+Can you see how _it_ is same/different to other things?
+And can you use those similarities to do more things with  _it_? 
+Finally, can you teach _it_ quickly to newcomers?
+
+E.g. do I understand a multi-objective semi-supervised XAI?
+Well, maybe. Here's all that, most of which is
+background stuff that could be used for other learners.
+Once
+I build that, I found that decision trees, Naive Bayes classifiers,
+and nearest neighbors were all tiny extensions. 
+Also included here
+is literate programming, self-documenting code and support for
+test-driven development. 
+
+All in a few hundreds  lines of LUA: <br>
+
+`awk '!/^(--|[ \t]*$)/{n++} END {print n" lines"}' *.lua`   => 511 lines
+     
+Share and enjoy.
+
+
  
