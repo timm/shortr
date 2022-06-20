@@ -1,5 +1,8 @@
-[asd](as) :: [sdsa](asd) :: [sad](asd)
+[home](home) :: [asd](as) :: [sdsa](asd) :: [sad](asd)      
+<a  href="https://zenodo.org/badge/latestdoi/206205826"> <img src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
+<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a>     
 
+ 
 # Sym
 
 
@@ -19,7 +22,7 @@ function Sym.add(i,x,inc) --> (i :Sym, x :any, inc :?num) :Sym
 ```
 ## Queries
 ```lua
-function Sym.mid(i) --> (i :Sym) :num
+function [Sym mid](Sym.mid)(i) --> (i :Sym) :num
   return i.mode end
 
 function Sym.div(i,  e) --> (i :Sym) :num
