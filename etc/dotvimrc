@@ -162,7 +162,7 @@ let g:GitGutterSignsDisable=0
 colorscheme jellybeans
   set number
 set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
+:set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 autocmd Filetype python setlocal ts=2 sw=2 expandtab  
 let g:syntastic_always_populate_loc_list = 1
