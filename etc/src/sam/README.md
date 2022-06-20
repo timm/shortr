@@ -3,7 +3,8 @@
 # [SHORTR . lua](README.md)
 Semi-supervised multi-objective optimization XAI.   
 From N items, find and explain the best ones, using just log(N) evals.  
-All in a tiny code base.
+All in a few hundreds  lines of LUA:    
+`awk '!/^(--|[ \t]*$)/{n++} END {print n" lines"}' *.lua`   =>   511 lines
      
 [data](data.md) :: 
 [num](num.md) :: 
@@ -49,7 +50,5 @@ and nearest neighbors were all tiny extensions.
 Also included here
 is literate programming, self-documenting code and support for
 test-driven development. 
-All in a few hundreds  lines of LUA: <br>
-`awk '!/^(--|[ \t]*$)/{n++} END {print n" lines"}' *.lua`   => 511 lines
      
 Share and enjoy.
