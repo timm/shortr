@@ -4,7 +4,8 @@
 Semi-supervised multi-objective optimization XAI.   
 From N items, find and explain the best ones, using just log(N) evals.  
 All in a few hundreds  lines of LUA:    
-`awk '!/^(--|[ \t]*$)/{n++} END {print n" lines"}' *.lua`   =>   511 lines
+`awk '!/^(--|[ \t]*$)/{n++}`   
+`END {print n" lines"}' *.lua`   =>   511 lines
        
 [data](data.md) :: 
 [num](num.md) :: 
