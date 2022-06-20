@@ -3,17 +3,20 @@
 
 ```lua
 local Sym={}
-
 function Sym.NEW(at,txt) --> (at :num, txt:str) :Sym
   return {_is=Sym,at=at or 0,txt=txt or {},n=0,kept={},
          w=(txt or ""):find"-$" and -1 or 1} end
-
+```
+## Creation
+```lua
 function Sym.add(i,x,inc) --> (i :Sym, x :any, inc :?num) :Sym
   if x=="?" then return else
     i.n = i.n + 1
     i.kept[x] = inc + (i.kept[x] or 0) 
     if i.kept[x] > i.most then i.most,i.mode = i.kept[x],x end end end
-
+```
+## Queries
+```lua
 function Sym.mid(i) --> (i :Sym) :num
   return i.mode end
 
