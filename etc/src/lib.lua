@@ -46,13 +46,11 @@ function thing(x)
 -- are negated via `--flag`. Other keys need `--flag value`. 
 function help(str)
   local t = {}
-  str:gsub("\n  ([-][-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",
-    function(f1,k,f2,x)
+  str:gsub("\n  ([-][-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",function(f1,k,f2,x)
       for n,flag in ipairs(arg) do if flag==f1 or flag==f2 then
         x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
         t[k] = thing(x) end) 
-   if t.help then 
-     os.exit(print(str:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"")) end
+   if t.help then print(str:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"") end
   return t end
 --------------------------------------------------------------------------------
 --> csv(src :str, fun :function) :nil -> for file lines, split on "," pass to fun
