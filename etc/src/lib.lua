@@ -27,15 +27,15 @@ lib.R   = math.random
 --------------------------------------------------------------------------------
 --> obj(name :str) :klass -> class creator
 local _id = 0
-function obj(name,    t,new)
+function lib.obj(name,    t,new)
   function new(kl,...) 
     _id = _id + 1
     local x=setmetatable({id=_id},kl); kl.new(x,...); return x end 
-  t = {__tostring=o, is=name or ""}; t.__index=t
+  t = {__tostring=lib.o, is=name or ""}; t.__index=t
   return setmetatable(t, {__call=new}) end
 --------------------------------------------------------------------------------
 --> thing(x :str) :any -> coerce x to some LUA type
-function thing(x)
+function lib.thing(x)
   if type(x)~="string" then return x end
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
@@ -44,20 +44,20 @@ function thing(x)
 --> help(x :str) :tab -> For lines with `--`, pull keys+defaults. 
 -- Look for updates for "key" on command-line. Things with boolean defaults
 -- are negated via `--flag`. Other keys need `--flag value`. 
-function help(str)
+function lib.help(str)
   local t = {}
   str:gsub("\n  ([-][-]([^%s]+))[%s]+(-[^%s]+)[^\n]*%s([^%s]+)",function(f1,k,f2,x)
       for n,flag in ipairs(arg) do if flag==f1 or flag==f2 then
         x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
-        t[k] = thing(x) end) 
+        t[k] = lib.thing(x) end) 
    if t.help then print(str:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"") end
   return t end
 --------------------------------------------------------------------------------
 --> csv(src :str, fun :function) :nil -> for file lines, split on "," pass to fun
-function csv(file, fun,    line,t)
+function lib.csv(file, fun,    line,t)
   file  = io.input(file)
   line = io.read()
   while line do
-    t={}; for x in line:gmatch("([^,]+)") do t[1+#t]=thing(x) end; fun(t) 
+    t={}; for x in line:gmatch("([^,]+)") do t[1+#t]=lib.thing(x) end; fun(t) 
     line = io.read() end
   io.close(file) end
