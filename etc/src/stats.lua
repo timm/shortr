@@ -1,4 +1,4 @@
-local _=require"lib"
+-- ## Summarize data
 local the=require"the"
 local obj,per = _.obj,_.per
 

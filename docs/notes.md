@@ -1,3 +1,6 @@
+keep control of the  seed
+
+
 Understanding AI (a friedly approach)
 
 software deisng is about choices. sysmtes that seem fixed, unchangabel, enternal

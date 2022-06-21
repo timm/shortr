@@ -30,28 +30,48 @@
               <img width=150 align=left src="ada.png">
 
 <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span></p>
-<p><a href="about.html">about</a> ::
-<a href="lib.html">lib</a> ::
-<a href="stats.html">stats</a></p>
+<p><a href="about.html">about</a>
+:: <a href="new.html">new</a>
+:: <a href="lib.html">lib</a>
+:: <a href="stats.html">stats</a>
+:: <a href="go.html">go</a></p>
 <p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em></p>
-<p>(c) 2022, Tim Menzies, <a href="mailto:&#116;&#105;&#109;&#x6d;&#64;&#105;&#101;&#101;&#x65;&#46;&#111;&#114;&#103;">&#116;&#105;&#109;&#x6d;&#64;&#105;&#101;&#101;&#x65;&#46;&#111;&#114;&#103;</a></p>
 <p><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 <br>
  <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a></p>
+<p>(c) 2022 Tim Menzies <br><a href="mailto:&#116;&#x69;&#109;&#x6d;&#64;&#105;&#x65;&#x65;&#x65;&#46;&#x6f;&#114;&#x67;">&#116;&#x69;&#109;&#x6d;&#64;&#105;&#x65;&#x65;&#x65;&#46;&#x6f;&#114;&#x67;</a>
+<br clear=all></p>
+<h2 id="options">Options</h2>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">return</span> <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;lib&quot;</span>).help(<span class="hljs-string">[[
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-2">&#x00a7;</a>
+              </div>
+              <p>To process this string, you’ll need two commands from
+<code>lib</code>: <code>opts</code> and <code>cli</code>.</p>
+<p>To extract keys and defaults for the settings,  use<br><code>the = opts(require&quot;about))</code>.</p>
+<p>To update the defaults from any command-line flags, use<br><code>the = cli(opts(require&quot;about&quot;))</code>.</p>
 
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">return</span> <span class="hljs-string">[[
+  
 TRICKS : bag of LUA tricks, (c) 2022 Tim Menzies, BSD2
-
+  
 OPTIONS:
   -s  --seed    random number seed = 10019
-
+  
 OPTIONS (other):
   -f  --file    data file        = ../../data/auto93.csv
   -g  --go      start up action  =  nothing,
-  -h  --help    show help        =  false]]</span>)</pre></div></div>
+  -h  --help    show help        =  false]]</span></pre></div></div>
             
         </li>
         

@@ -30,20 +30,26 @@
               <img width=150 align=left src="ada.png">
 
 <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span></p>
-<p><a href="about.html">about</a> ::
-<a href="lib.html">lib</a> ::
-<a href="stats.html">stats</a></p>
+<p><a href="about.html">about</a>
+:: <a href="new.html">new</a>
+:: <a href="lib.html">lib</a>
+:: <a href="stats.html">stats</a>
+:: <a href="go.html">go</a></p>
 <p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em></p>
-<p>(c) 2022, Tim Menzies, <a href="mailto:&#x74;&#x69;&#109;&#109;&#x40;&#105;&#x65;&#x65;&#101;&#x2e;&#x6f;&#114;&#103;">&#x74;&#x69;&#109;&#109;&#x40;&#105;&#x65;&#x65;&#101;&#x2e;&#x6f;&#114;&#103;</a></p>
 <p><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 <br>
  <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a></p>
+<p>(c) 2022 Tim Menzies <br><a href="mailto:&#116;&#105;&#x6d;&#109;&#64;&#x69;&#x65;&#x65;&#101;&#46;&#111;&#114;&#103;">&#116;&#105;&#x6d;&#109;&#64;&#x69;&#x65;&#x65;&#101;&#46;&#111;&#114;&#103;</a>
+<br clear=all></p>
+<h2 id="define-demos--tests">Define demos / tests</h2>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> the=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>
+            <div class="content"><div class='highlight'><pre>
 <span class="hljs-keyword">local</span> _=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
-<span class="hljs-keyword">local</span> chat,csv,goes,maps,<span class="hljs-built_in">sort</span> = _.chat, _.csv, _.goes, _.maps, _.<span class="hljs-built_in">sort</span></pre></div></div>
+<span class="hljs-keyword">local</span> chat,cli,csv,goes,maps
+<span class="hljs-keyword">local</span> settings,<span class="hljs-built_in">sort</span> = _.settings, _.<span class="hljs-built_in">sort</span>
+<span class="hljs-keyword">local</span> the = cli(opts(<span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>))</pre></div></div>
             
         </li>
         
@@ -54,8 +60,7 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
               </div>
-              <h2 id="define-test-suites">Define test suites</h2>
-<p>To disable a test, rename it from <code>go</code> to <code>no</code>.</p>
+              <p>To disable a test, rename it from <code>go</code> to <code>no</code>.</p>
 
             </div>
             
@@ -77,7 +82,7 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-3">&#x00a7;</a>
               </div>
-              <h2 id="start">Start</h2>
+              <h3 id="start">Start</h3>
 
             </div>
             

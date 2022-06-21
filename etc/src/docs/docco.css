@@ -84,6 +84,8 @@ h2 {
   margin: 10px 0 15px 0;
   border-top: 2px solid #ccc;
 }
+h3 {
+  font-size: 1.7em; }
 
 h4 {
   text-decoration: italic;

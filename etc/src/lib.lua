@@ -1,11 +1,12 @@
+-- ## Misc library routines
 local m={}
--- ## Linting
+-- ### Linting
 
---> rogues() -> Find rogue locals. Run this _last_ after everything else.
+--> rogues() -> Find rogue locals. Run `rogues()` _last_ after everything else.
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 function m.rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
--- ##  Lists
+-- ###  Lists
 
 --> sort(t:tab, f:fun) :tab -> Return `t`, sorted of function `f` (default "<").
 function m.sort(t,f) table.sort(t,f); return t end
@@ -27,9 +28,10 @@ function m.map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x) end;return u
 function m.kap(t,f,     u) u={};for k,x in pairs(t) do u[1+#u]=f(k,x) end;return u end
 function m.maps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(x,u[k]) end;return v end
 function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;return v end
--- ## Strings to things
+-- ### String to thing
 
---> thing(s:str):any -> Coerce string to a thing.
+--> thing(s:str):any -> Coerce string to whatever
+-- is simplest (boolean or integer or float or, if all else fails, a string).
 function m.thing(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false else
@@ -46,48 +48,58 @@ function m.csv(file, fun)
   while true do
     local line = io.read()
     if not line then return io.close(file) else fun(m.words(line, ",",m.thing)) end end end
--- ## Thing to string
+-- ### Thing to string
 
 --> fmt(s:str,...) :str -> emulate prinft
 m.fmt=string.format
 
----> cat(t:tab):str -> Return table as string. For key-indexed lists, show keys (sorted).
+--> cat(t:tab):str -> Return table as string. For key-indexed lists, show keys (sorted).
 function m.cat(t,    key,u)
   function key(k,v) if (tostring(k)):sub(1,1)~="_" then return m.fmt(":%s %s",k,v) end end
-  u=  #t>1 and m. map(t,f or tostring) or m.sort(m.kap(t,key))
+  u=  #t>1 and m.map(t,f or tostring) or m.sort(m.kap(t,key))
   return (t._is or "").."{"..table.concat(u," ").."}" end
 
 --> chat(t:tab):t -> Print table (as string). Return `t`.
 function m.chat(t) print(m.cat(t)); return t end
--- ## Settings
+-- ### Settings
 
---> help(x :str) :tab -> For lines with `--`, pull keys+defaults. 
--- Look for updates for "key" on command-line. Things with boolean defaults
--- are negated via `--flag`. Other keys need `--flag value`.  Print the help
+--> opts(x:str) :tab -> Parse `str` for lines with `--`; then pull keys+defaults. 
+function m.opts(x)
+  local t = {}
+  x:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",
+           function(f1,f2,k,x) t[k] = m.thing(x) end)
+  t._HELP = x
+  return t end
+
+--> cli(t:tab) :tab -> For keys in `t`, look for updates on command-line. 
+-- Things with boolean defaults are flipped via `--flag`. 
+-- Other keys need `--flag value`.  Print the help
 -- (if `-h` appears on command line). Return a table with setting `key`s and
 -- `value`s.
-function m.help(str)
-  local t = {}
-  str:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",function(f1,f2,k,x)
-    for n,flag in ipairs(arg) do if flag==f1 or flag==f2 then
-      x = x=="false" and"true" or x=="true" and"false" or arg[n+1] end end 
-      t[k] = m.thing(x) end) 
-    if t.help then print(str:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"") end
+function m.cli(the)
+  for key,x in pairs(the) do 
+    x = tostring(x)
+    for n,flag in ipairs(arg) do 
+      if flag=="-"..key:sub(1,1) or flag=="--"..key  then
+        x = x=="false" and"true" or x=="true" and"false" or arg[n+1] 
+        t[k] = m.thing(x) end end end
+    if t.help then print(t._HELP:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"") end
   return t end
--- ## Tests
+-- ### Tests
 
 --> goes(settings:tab, tests:[fun]) -> Run some tests.
--- Reset random seed beforehand,  and settings afterwards
+-- Before each test, reset random seed settings. 
 function m.goes(settings,tests)
-  local fails, old, tmp = 0, {}
+  local fails, old = 0, {}
   for k,v in pairs(settings) do old[k]=v end
-  tmp = settings.go=="all" and tests or {[settings.go]=tests[settings.go]}
+  local tmp = settings.go=="all" and tests or {[settings.go]=tests[settings.go]}
   for k,v in pairs(tmp) do
-    math.randomseed(settings.seed or 10019)
-    if v() ~= true then fails = fails+1; print("FAIL",l) end
-    for k,v in pairs(old) do settings[k]=v end end
-  os.exit(fails) end
--- ## Objects
+    for k,v in pairs(old) do settings[k]=v end end -- reset settings to default
+    math.randomseed(settings.seed or 10019)        -- reset seed to default
+    local out = v()
+    if out ~= true then fails = fails+1; print(fmt("FAIL: [%s] %s",k,out or "")) end
+  os.exit(fails) end -- if fails==0 then our return code to the OS will be zero.
+-- ### Objects
 
 --> obj(name:str, fun:fun):object -> Return a klass `name` with constructor `fun`.
 -- Add a unique `id` and a `tosting` method (that uses `cat` (above).
@@ -96,6 +108,6 @@ function m.obj(name,fun,    t,new,x)
   function new(kl,...) _id=_id+1; x=setmetatable({_id=_id},kl);fun(x,...); return x end 
   t = {__tostring=m.cat,_is=name}; t.__index=t
   return setmetatable(t, {__call=new}) end
--- ## Return
+-- ### Return
 
 return m

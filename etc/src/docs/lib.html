@@ -30,14 +30,18 @@
               <img width=150 align=left src="ada.png">
 
 <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span></p>
-<p><a href="about.html">about</a> ::
-<a href="lib.html">lib</a> ::
-<a href="stats.html">stats</a></p>
+<p><a href="about.html">about</a>
+:: <a href="new.html">new</a>
+:: <a href="lib.html">lib</a>
+:: <a href="stats.html">stats</a>
+:: <a href="go.html">go</a></p>
 <p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em></p>
-<p>(c) 2022, Tim Menzies, <a href="mailto:&#116;&#105;&#x6d;&#109;&#64;&#x69;&#101;&#x65;&#x65;&#x2e;&#111;&#x72;&#x67;">&#116;&#105;&#x6d;&#109;&#64;&#x69;&#101;&#x65;&#x65;&#x2e;&#111;&#x72;&#x67;</a></p>
 <p><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
 <br>
  <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a></p>
+<p>(c) 2022 Tim Menzies <br><a href="mailto:&#x74;&#105;&#109;&#109;&#64;&#105;&#101;&#101;&#x65;&#46;&#111;&#x72;&#103;">&#x74;&#105;&#109;&#109;&#64;&#105;&#101;&#101;&#x65;&#46;&#111;&#x72;&#103;</a>
+<br clear=all></p>
+<h2 id="misc-library-routines">Misc library routines</h2>
 
             </div>
             
@@ -52,7 +56,7 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
               </div>
-              <h2 id="linting">Linting</h2>
+              <h3 id="linting">Linting</h3>
 
             </div>
             
@@ -65,7 +69,7 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-3">&#x00a7;</a>
               </div>
-              <p><strong>rogues()</strong> <br> Find rogue locals. Run this <em>last</em> after everything else.</p>
+              <p><strong>rogues()</strong> <br> Find rogue locals. Run <code>rogues()</code> <em>last</em> after everything else.</p>
 
             </div>
             
@@ -82,7 +86,7 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <h2 id="lists">Lists</h2>
+              <h3 id="lists">Lists</h3>
 
             </div>
             
@@ -178,7 +182,7 @@ key and value to <code>f</code>. <code>maps</code> and <code>kaps</code> pass it
               <div class="sswrap ">
                 <a class="ss" href="#section-10">&#x00a7;</a>
               </div>
-              <h2 id="strings-to-things">Strings to things</h2>
+              <h3 id="string-to-thing">String to thing</h3>
 
             </div>
             
@@ -191,7 +195,8 @@ key and value to <code>f</code>. <code>maps</code> and <code>kaps</code> pass it
               <div class="sswrap ">
                 <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
-              <p><strong>thing( <code>s</code>:  str):any</strong> <br> Coerce string to a thing.</p>
+              <p><strong>thing( <code>s</code>:  str):any</strong> <br> Coerce string to whatever
+is simplest (boolean or integer or float or, if all else fails, a string).</p>
 
             </div>
             
@@ -245,7 +250,7 @@ key and value to <code>f</code>. <code>maps</code> and <code>kaps</code> pass it
               <div class="sswrap ">
                 <a class="ss" href="#section-14">&#x00a7;</a>
               </div>
-              <h2 id="thing-to-string">Thing to string</h2>
+              <h3 id="thing-to-string">Thing to string</h3>
 
             </div>
             
@@ -273,13 +278,13 @@ key and value to <code>f</code>. <code>maps</code> and <code>kaps</code> pass it
               <div class="sswrap ">
                 <a class="ss" href="#section-16">&#x00a7;</a>
               </div>
-              <p>-&gt; cat(t:tab):str -&gt; Return table as string. For key-indexed lists, show keys (sorted).</p>
+              <p><strong>cat( <code>t</code>:  tab):str</strong> <br> Return table as string. For key-indexed lists, show keys (sorted).</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">m.cat</span><span class="hljs-params">(t,    key,u)</span></span>
   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">key</span><span class="hljs-params">(k,v)</span></span> <span class="hljs-keyword">if</span> (<span class="hljs-built_in">tostring</span>(k)):<span class="hljs-built_in">sub</span>(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)~=<span class="hljs-string">&quot;_&quot;</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> m.fmt(<span class="hljs-string">&quot;:%s %s&quot;</span>,k,v) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  u=  #t&gt;<span class="hljs-number">1</span> <span class="hljs-keyword">and</span> m. map(t,f <span class="hljs-keyword">or</span> <span class="hljs-built_in">tostring</span>) <span class="hljs-keyword">or</span> m.<span class="hljs-built_in">sort</span>(m.kap(t,key))
+  u=  #t&gt;<span class="hljs-number">1</span> <span class="hljs-keyword">and</span> m.map(t,f <span class="hljs-keyword">or</span> <span class="hljs-built_in">tostring</span>) <span class="hljs-keyword">or</span> m.<span class="hljs-built_in">sort</span>(m.kap(t,key))
   <span class="hljs-keyword">return</span> (t._is <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>)..<span class="hljs-string">&quot;{&quot;</span>..<span class="hljs-built_in">table</span>.<span class="hljs-built_in">concat</span>(u,<span class="hljs-string">&quot; &quot;</span>)..<span class="hljs-string">&quot;}&quot;</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
@@ -306,7 +311,7 @@ key and value to <code>f</code>. <code>maps</code> and <code>kaps</code> pass it
               <div class="sswrap ">
                 <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
-              <h2 id="settings">Settings</h2>
+              <h3 id="settings">Settings</h3>
 
             </div>
             
@@ -319,21 +324,15 @@ key and value to <code>f</code>. <code>maps</code> and <code>kaps</code> pass it
               <div class="sswrap ">
                 <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
-              <p><strong>help(x :str) :tab</strong> <br> For lines with <code>--</code>, pull keys+defaults. 
-Look for updates for “key” on command-line. Things with boolean defaults
-are negated via <code>--flag</code>. Other keys need <code>--flag value</code>.  Print the help
-(if <code>-h</code> appears on command line). Return a table with setting <code>key</code>s and
-<code>value</code>s.</p>
+              <p><strong>opts( <code>x</code>:  str) :tab</strong> <br> Parse <code>str</code> for lines with <code>--</code>; then pull keys+defaults. </p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">m.help</span><span class="hljs-params">(str)</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">m.opts</span><span class="hljs-params">(x)</span></span>
   <span class="hljs-keyword">local</span> t = {}
-  str:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)&quot;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(f1,f2,k,x)</span></span>
-    <span class="hljs-keyword">for</span> n,flag <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">arg</span>) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> flag==f1 <span class="hljs-keyword">or</span> flag==f2 <span class="hljs-keyword">then</span>
-      x = x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">and</span><span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">or</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">and</span><span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">arg</span>[n+<span class="hljs-number">1</span>] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-      t[k] = m.thing(x) <span class="hljs-keyword">end</span>) 
-    <span class="hljs-keyword">if</span> t.help <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(str:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;[%u][%u%d]+&quot;</span>,<span class="hljs-string">&quot;\27[1;32m%1\27[0m&quot;</span>),<span class="hljs-string">&quot;&quot;</span>) <span class="hljs-keyword">end</span>
+  x:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)&quot;</span>,
+           <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(f1,f2,k,x)</span></span> t[k] = m.thing(x) <span class="hljs-keyword">end</span>)
+  t._HELP = x
   <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
@@ -345,9 +344,23 @@ are negated via <code>--flag</code>. Other keys need <code>--flag value</code>. 
               <div class="sswrap ">
                 <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
-              <h2 id="tests">Tests</h2>
+              <p><strong>cli( <code>t</code>:  tab) :tab</strong> <br> For keys in <code>t</code>, look for updates on command-line. 
+Things with boolean defaults are flipped via <code>--flag</code>. 
+Other keys need <code>--flag value</code>.  Print the help
+(if <code>-h</code> appears on command line). Return a table with setting <code>key</code>s and
+<code>value</code>s.</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">m.cli</span><span class="hljs-params">(the)</span></span>
+  <span class="hljs-keyword">for</span> key,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(the) <span class="hljs-keyword">do</span> 
+    x = <span class="hljs-built_in">tostring</span>(x)
+    <span class="hljs-keyword">for</span> n,flag <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">arg</span>) <span class="hljs-keyword">do</span> 
+      <span class="hljs-keyword">if</span> flag==<span class="hljs-string">&quot;-&quot;</span>..key:<span class="hljs-built_in">sub</span>(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>) <span class="hljs-keyword">or</span> flag==<span class="hljs-string">&quot;--&quot;</span>..key  <span class="hljs-keyword">then</span>
+        x = x==<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">and</span><span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">or</span> x==<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-keyword">and</span><span class="hljs-string">&quot;false&quot;</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">arg</span>[n+<span class="hljs-number">1</span>] 
+        t[k] = m.thing(x) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> t.help <span class="hljs-keyword">then</span> <span class="hljs-built_in">print</span>(t._HELP:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;[%u][%u%d]+&quot;</span>,<span class="hljs-string">&quot;\27[1;32m%1\27[0m&quot;</span>),<span class="hljs-string">&quot;&quot;</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -358,20 +371,9 @@ are negated via <code>--flag</code>. Other keys need <code>--flag value</code>. 
               <div class="sswrap ">
                 <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
-              <p><strong>goes( <code>settings</code>:  tab,  <code>tests</code>:  [fun])</strong> <br> Run some tests.
-Reset random seed beforehand,  and settings afterwards</p>
+              <h3 id="tests">Tests</h3>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">m.goes</span><span class="hljs-params">(settings,tests)</span></span>
-  <span class="hljs-keyword">local</span> fails, old, tmp = <span class="hljs-number">0</span>, {}
-  <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(settings) <span class="hljs-keyword">do</span> old[k]=v <span class="hljs-keyword">end</span>
-  tmp = settings.go==<span class="hljs-string">&quot;all&quot;</span> <span class="hljs-keyword">and</span> tests <span class="hljs-keyword">or</span> {[settings.go]=tests[settings.go]}
-  <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(tmp) <span class="hljs-keyword">do</span>
-    <span class="hljs-built_in">math</span>.<span class="hljs-built_in">randomseed</span>(settings.seed <span class="hljs-keyword">or</span> <span class="hljs-number">10019</span>)
-    <span class="hljs-keyword">if</span> v() ~= <span class="hljs-literal">true</span> <span class="hljs-keyword">then</span> fails = fails+<span class="hljs-number">1</span>; <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;FAIL&quot;</span>,l) <span class="hljs-keyword">end</span>
-    <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(old) <span class="hljs-keyword">do</span> settings[k]=v <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-built_in">os</span>.<span class="hljs-built_in">exit</span>(fails) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -382,9 +384,21 @@ Reset random seed beforehand,  and settings afterwards</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-22">&#x00a7;</a>
               </div>
-              <h2 id="objects">Objects</h2>
+              <p><strong>goes( <code>settings</code>:  tab,  <code>tests</code>:  [fun])</strong> <br> Run some tests.
+Before each test, reset random seed settings. </p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">m.goes</span><span class="hljs-params">(settings,tests)</span></span>
+  <span class="hljs-keyword">local</span> fails, old = <span class="hljs-number">0</span>, {}
+  <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(settings) <span class="hljs-keyword">do</span> old[k]=v <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">local</span> tmp = settings.go==<span class="hljs-string">&quot;all&quot;</span> <span class="hljs-keyword">and</span> tests <span class="hljs-keyword">or</span> {[settings.go]=tests[settings.go]}
+  <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(tmp) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(old) <span class="hljs-keyword">do</span> settings[k]=v <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-comment">-- reset settings to default</span>
+    <span class="hljs-built_in">math</span>.<span class="hljs-built_in">randomseed</span>(settings.seed <span class="hljs-keyword">or</span> <span class="hljs-number">10019</span>)        <span class="hljs-comment">-- reset seed to default</span>
+    <span class="hljs-keyword">local</span> out = v()
+    <span class="hljs-keyword">if</span> out ~= <span class="hljs-literal">true</span> <span class="hljs-keyword">then</span> fails = fails+<span class="hljs-number">1</span>; <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;FAIL: [%s] %s&quot;</span>,k,out <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>)) <span class="hljs-keyword">end</span>
+  <span class="hljs-built_in">os</span>.<span class="hljs-built_in">exit</span>(fails) <span class="hljs-keyword">end</span> <span class="hljs-comment">-- if fails==0 then our return code to the OS will be zero.</span></pre></div></div>
             
         </li>
         
@@ -394,6 +408,19 @@ Reset random seed beforehand,  and settings afterwards</p>
               
               <div class="sswrap ">
                 <a class="ss" href="#section-23">&#x00a7;</a>
+              </div>
+              <h3 id="objects">Objects</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-24">&#x00a7;</a>
               </div>
               <p><strong>obj( <code>name</code>:  str,  <code>fun</code>:  fun):object</strong> <br> Return a klass <code>name</code> with constructor <code>fun</code>.
 Add a unique <code>id</code> and a <code>tosting</code> method (that uses <code>cat</code> (above).</p>
@@ -409,13 +436,13 @@ Add a unique <code>id</code> and a <code>tosting</code> method (that uses <code>
         </li>
         
         
-        <li id="section-24">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
+                <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
-              <h2 id="return">Return</h2>
+              <h3 id="return">Return</h3>
 
             </div>
             

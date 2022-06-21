@@ -1,8 +1,10 @@
-local the=require"about"
-local _=require"lib"
-local chat,csv,goes,maps,sort = _.chat, _.csv, _.goes, _.maps, _.sort
+-- ## Define demos / tests
 
--- ## Define test suites
+local _=require"lib"
+local chat,cli,csv,goes,maps
+local settings,sort = _.settings, _.sort
+local the = cli(opts(require"about"))
+
 -- To disable a test, rename it from `go` to `no`.
 local go,no = {},{}
 
@@ -13,5 +15,5 @@ function go.maps() chat(maps({1,2,3},{10,20,30},
 
 function go.rows() csv(the.file, chat); return true end
   
--- ## Start
+-- ### Start
 goes(the, go)
