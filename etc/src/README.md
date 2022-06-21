@@ -1,5 +1,17 @@
--- SHORTR.lua (c) 2022, Tim Menzies <timm@ieee.org>, BSD2 license.   
--- Semi-supervised multi-objective optimization XAI. From N   
--- items, find and explain the best ones, using just log(N)    
--- evals.  All in a few hundreds lines of LUA.
-
+-- <img width=150 align=left src="ada.png">
+-- 
+-- <span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
+--  
+-- [about](about.html) ::
+-- [lib](lib.html) ::
+-- [stats](stats.html)
+-- 
+--  **Ada Lovelace:**    
+-- _"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation."_
+--    
+-- (c) 2022, Tim Menzies, <timm@ieee.org>
+--
+-- <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
+-- <br>
+--  <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a>
+-- 
