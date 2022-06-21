@@ -1,8 +1,108 @@
-age of massh ups. long supply chains of code X depending on code y on code z.
-changed the way we think about coding. MIT changed its first year subject to stop
+Understanding AI (a friedly approach)
+
+software deisng is about choices. sysmtes that seem fixed, unchangabel, enternal
+are actually comprised on millions of choices that someone has made. If we don't
+like something and we can't see how to change it, that might means we
+don't know the choice points and how to influence them.
+
+take AI for example. do we like that kind of  black box AI systems
+taht use opagqq agorihsm running over models that only a small number of large corporaitas
+can generate ? which offer no understanding of their internal struture? with a 
+long track record of making biased or polarizing decisions that adversial effects
+not only subgroups in our society, but aos threatens the very idea of policy making
+via considered rational debate?
+
+or do we want another kkidn of AI, one that we can understand and that understands
+our limitations? And this other kind of AI is more of a friend that helps us:
+- make and  monitor new decisions
+- find and fix problems with old decisions 
+
+sure sometimes the data is so complex that we need that first kind of AI that discovers
+and exploits patterns far beyond the power of mere mortals. but all problems are not
+like that. and even if they were, for complex decisions that  mission or
+safety critical, then we must at least augment (and perhaps, even, repalce)
+that kind of AI with another kinds of friendlier, understandable. AI.
+
+having thought about this for a while, i'm wondering if there is something that's been
+overlooked. some "thing" we can learn from decades of working with these tools that might
+simplify the thing we call AI and make it friendlier and more understandable. this book
+is about two such things:
+
+THING1: Some "thing" learned over decades of AI is that the reason most of the systems
+work is that complex data can often be approximated by a much simpler data set
+taht can be described using far fewer variables. This is called the "manifold" effect 
+and is the basis of much cirrent work in (e.g.) semi-supervised learning. 
+Another "thing" that is good to know about manifolds is that within, there is often just
+a few settings to variables, or just a few key examples, that let us distinguish one thing
+from another.
+
+THING2: maybe we don't understand AI cause we don't understand understanding. decision
+making is not some hard nad fces certain process. its mre a best guess pulled from a space
+of possibities. but most people don;t seem to appreciate that. If you doubt that, then
+show people two overlapping bell-shaped curves and walk them, left to right, over the x-axis. Where
+do they draw the line that seperates one group from the other? And what happens if we don't
+have one axis, but dozens (each with different overlap)? and what if the shapes we are talking
+obout aren't pretty little bell curves but real world data that can any darned shape at all?
+
+Lets try another kind of AI that takes advantage of THING1 and THING2. THING1 tells us
+that a good tactic when faced with a new problem is to drill down to find the keys
+(the underlying attribtesa andsettings that most effect the system)..
+And THING2 tells us taht if we want understandable AI, we better start out looking at how
+humans understand things, then use that to build new kinds of AI algorithms.
+
+This book is organized about THING1 and THING2. All the work here assumes that we don't
+model all the data, rather, we just drive as fast as we can towards the keys attributes and settings.
+Technically speaking, (and fell free not to skip over this bit),
+we'll use a heterogenous distance metric to recusrively divde data via
+random projections down to (say) clusters of size sqrt(N). Then we';l use multi-objective 
+evalaution criteria and contrast set learning to select best clusters. Finally, a decision tree
+learner will be applied to explain the difference between best and worst clusters.
+algorithm
+
+As for THING2, we'll start by looking at how humans understand and sample the  world around them.
+Then we'll build tools to improve that understanding. Specifically, we'll start with seven sampling
+policies seen in qualitative reaoning, then augment sampling such that it can support
+nine common business intellgerence operatiosn (compare, contast, model, etc).
+The sampling methods (used in software engienering) were documented in a recent paper by Ralph et.al. 
+and the business intelligence operators come from some work at Microsoft by Buse and Zimmermann where 210 managers were asked
+"what do they need from AI?". Along the way, tools from THING1 will be used as sub-routines to help us sample better.
+
+There are several reasons to take this friendlier sampling approach to AI.
+Firstly, it is human understandable (if you don't believe that, then please skim the rest of this thin book).
+
+Also, right of the gate, we can discuss about  verification  and bias mitigation. Sampling means looking "here", but not necessarily
+"there". How can we improve our sampling to minimize
+the odds of missing important stuff? How can we sample to better access important
+voices and data and improve what the system does?  Please contrast this with what happens in a traditional
+AI subject that spends so much time on algorithms that ethics and verification become hasty footnotes at the end
+of the subject (if mentioned at all).
+
+Further, sampling comes with  MATHS! Beautiful simple maths based
+on sampling theory that offers guarantees on  how many samples are needed such that we are within &epsilon;
+of the best answer. Which means, right from the start, we can reason about what is going on within these systems (unlike other approach to AI).
+
+Lastly, we can show many examples where this friendlier approach to AI  actually out-performs
+prior state-of-the-art reasoning. It turns out that reasoning about people is a better way to reason about AI.
+The cognitive limitations of humans means they ahve to be smarter about how they sample the world. And if we
+implement those smarter sampling policies as algorithms, then we can do better than traditional AI.
+
+(Do we do better all the time? 
+No, of course not. There are so many examples of approaches that work well in one context and fail in another.
+There's even a theory about that-- see the wonderfully named Wolpert's "no free lunch theorem"s. But our
+results do tell us that it is not insane to try friendlier AI. Opague and complex deep learning algorithms
+are not necessarily the best firt choice for a new domain. And even if you use those algorithms, you could
+still find friendly AI useful as (a) a way to quickly partition a hard problem into several smaller and simpler parts;
+(b) a way to tune your deep learner; (c) as an explaination tool to let people understand what you have done.)
+
+------------------
+
+tells us that for optimizera dn learnes
+do
+[age](age) of massh ups. long supply chains of code X depending on code y on code z.
+changed sway we think about coding. MIT changed its first year subject to stop
 looking deeping and instead went to mash up. we end up wu with nsrat's supply
 chain exposures. or long build times. or siatuations where one peron pulling a 3 line package
-can (at least, temporarily) break the internet.
+can (at least, temporarily) break [the](the) internet.
 
 been templted. in enironemtns that remward and promote impressive technical
 accomplishmnet, the idea that pirrmive looking apps can be qucly wired together,
