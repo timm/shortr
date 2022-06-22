@@ -48,6 +48,6 @@ function go.COLS() chat(COLS{"aa","Bb","Cc-"}.x); return true end
 -- Load data from a csv file to a ROWS object.
 function go.ROWS() chat(ROWS():adds(the.file).cols.y); return true end
 
---------------------
+-------
 -- ### Start
 goes(the, go)
