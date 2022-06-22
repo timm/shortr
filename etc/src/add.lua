@@ -1,9 +1,9 @@
 -- ## Update
 local _=require"about"
-local kl=require"klass"
+local o=require"obj"
 local R,csv,push = _.R, _.csv, _.push
-local COLS,NUM,SOME,SYM = kl.COLS, kl.NUM, kl.SOME, kl.SYM
-local ROW,ROWS          = kl.ROW, kl.ROWS
+local COLS,NUM,SOME,SYM = o.COLS, o.NUM, o.SOME, o.SYM
+local ROW,ROWS          = o.ROW, o.ROWS
 
 --> add(i:SOME: x:num)-> `n` times,update `i`.
 -- Helper function for NUM. If full then at odds `i.some/i.x`, keep `x`
@@ -29,14 +29,16 @@ function COLS.add(i,row)
   for _,cols in pairs{i.x,i.y} do
     for _,col in pairs(cols) do col:add(row.cells[col.at]) end end end
 
+--> add(i:ROWS: row:ROW) -> add ROW to ROWS, update the summaries in `i.cols`.
+function ROWS.add(i,t) 
+  t = t.cells and t or ROW(i,t)
+  if i.cols then i.cols:add(push(i.rows, t)) else i.cols=COLS(t.cells) end end
+-- ### Bulk 'adds' (e.g. import from file)
+
 --> adds(i:ROWS: src:(str|tab)):ROWS -> copy the data from `src` into `i`.
 function ROWS.adds(i,src)
   local what2do = type(src)=="table" and map or csv
   what2do(src, function(t) i:add(t) end) 
   return i end
 
---> add(i:ROWS: row:ROW) -> add ROW to ROWS, update the summaries in `i.cols`.
-function ROWS.add(i,t) 
-  t = t.cells and t or ROW(i,t)
-  if i.cols then i.cols:add(push(i.rows, t)) else i.cols=COLS(t.cells) end end
 

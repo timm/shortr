@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>b(Ai)ttery ⤑ klass.lua</title>
+  <title>b(Ai)ttery ⤑ obj.lua</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -15,7 +15,7 @@
         
           <li id="title">
               <div class="annotation">
-                  <h1>b(Ai)ttery ⤑ klass.lua</h1>
+                  <h1>b(Ai)ttery ⤑ obj.lua</h1>
               </div>
           </li>
         
@@ -31,17 +31,17 @@
 <img align=left width=175   src="ada.png"><br>
 LUA is a “batteries-not-included” language.<br>So I’ve coded up all my fav AI “batteries” into B(Ai)TTERY.</p>
 <p><a href="about.html">about</a>
-:: <a href="klass.html">klass</a>
+:: <a href="obj.html">obj</a>
 :: <a href="add.html">add</a>
 :: <a href="query.html">query</a>
 :: <a href="lib.html">lib</a>
 :: <a href="stats.html">stats</a>
 :: <a href="go.html">go</a>     </p>
 <p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em> </p>
+<p>(c) 2022, Tim Menzies, <a href="mailto:&#116;&#105;&#x6d;&#x6d;&#64;&#x69;&#x65;&#x65;&#x65;&#46;&#x6f;&#114;&#103;">&#116;&#105;&#x6d;&#x6d;&#64;&#x69;&#x65;&#x65;&#x65;&#46;&#x6f;&#114;&#103;</a></p>
 <p><a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a><br><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br>
-(c) 2022 Tim Menzies, <a href="mailto:&#x74;&#105;&#x6d;&#109;&#64;&#x69;&#101;&#101;&#x65;&#46;&#x6f;&#x72;&#103;">&#x74;&#105;&#x6d;&#109;&#64;&#x69;&#101;&#101;&#x65;&#46;&#x6f;&#x72;&#103;</a>
 <br clear=all></p>
-<h2 id="define-classes">Define classes</h2>
+<h2 id="class-creation-control">Class Creation Control</h2>
 
             </div>
             
@@ -152,8 +152,7 @@ Goal columns get added to <code>i.y</code> and others to <code>i.x (unless denot
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> ROWS = obj(<span class="hljs-string">&quot;ROWS&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,names,rows)</span></span> 
-  i.overall,i.cols,i.rows = <span class="hljs-literal">nil</span>,<span class="hljs-literal">nil</span>,{}
-  <span class="hljs-keyword">if</span> names <span class="hljs-keyword">then</span> i.cols = COLS(names) <span class="hljs-keyword">end</span> 
+  i.rows, i.cols = {}, (names <span class="hljs-keyword">and</span> COLS(names) <span class="hljs-keyword">or</span> <span class="hljs-literal">nil</span>)
   <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> i:add(row) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">end</span>)</pre></div></div>
             
@@ -166,14 +165,16 @@ Goal columns get added to <code>i.y</code> and others to <code>i.x (unless denot
               <div class="sswrap ">
                 <a class="ss" href="#section-8">&#x00a7;</a>
               </div>
-              <p><strong>ROWS.clone( <code>init</code>:  ?[ROW]) :ROWS</strong> <br> Return a ROWS with same structure as <code>i</code>. 
-Optionally, <code>init</code>ialize it with some rows.</p>
+              <h3 id="replicating-structure-of-an-instance">Replicating structure of an instance</h3>
+<p><strong>ROWS.clone( <code>init</code>:  ?[ROW]) :ROWS</strong> <br> Return a ROWS with same structure as <code>i</code>. 
+Optionally, <code>init</code>ialize it with some rows. Add a pointer back to the 
+original table that spawned <code>eve</code>rything else (useful for some distance calcs).</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.clone</span><span class="hljs-params">(i,init)</span></span>
   <span class="hljs-keyword">local</span> j=ROWS(i.cols.names,init)
-  j.overall = i.overall <span class="hljs-keyword">or</span> i
+  j.eve = i.eve <span class="hljs-keyword">or</span> i 
   <span class="hljs-keyword">return</span> j <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>

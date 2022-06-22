@@ -85,7 +85,9 @@ function m.opts(x)
 -- Things with boolean defaults are flipped via `--flag`. 
 -- Other keys need `--flag value`.  Print the help
 -- (if `-h` appears on command line). Return a table with setting `key`s and
--- `value`s.
+-- `value`s. IMPORTANT NOTE: this function alters-in-place the table `t`
+-- that is passed in-- which means that it alters settings for anything pointing
+-- to `t`.
 function m.cli(t)
   for key,x in pairs(t) do 
     x = tostring(x)
@@ -98,18 +100,22 @@ function m.cli(t)
   return t end
 -- ### Tests
 
---> goes(settings:tab, tests:[fun]) -> Run some tests.
--- Before each test, reset random seed settings. 
-function m.goes(settings,tests)
+--> on(opts:tab, tests:[fun]) -> Run some tests.
+-- If  `opt.go=="all"`, then run all tests, sorted on their name.
+-- Before each test, reset random seed and the options `opts.
+function m.on(opts,tests)
   local fails, old = 0, {}
-  for k,v in pairs(settings) do old[k]=v end
-  local tmp = settings.go=="all" and tests or {[settings.go]=tests[settings.go]}
-  for txt,fun in pairs(tmp) do
-    for k,v in pairs(old) do settings[k]=v end -- reset settings to default
-    math.randomseed(settings.seed or 10019)    -- reset seed to default
-    print(">> ",txt)
-    local out = fun()
-    if out ~= true then fails=fails+1; print(m.fmt("FAIL: [%s] %s",txt,out or "")) end end
+  for k,v in pairs(opts) do old[k]=v end
+  local t=opts.go=="all" and m.kap(tests,function(k,_) return k end) or {opts.go}
+  for _,txt in pairs(m.sort(t)) do
+    local fun = tests[txt]
+    if type(fun)=="function" then
+      for k,v in pairs(old) do opts[k]=v end -- reset opts to default
+      math.randomseed(opts.seed or 10019)    -- reset seed to default
+      print(">> ",txt)
+      local out = fun()
+      if out ~= true then fails=fails+1
+                          print(m.fmt("FAIL: [%s] %s",txt,out or "")) end end end
   m.rogues()
   os.exit(fails) end -- if fails==0 then our return code to the OS will be zero.
 -- ### Objects

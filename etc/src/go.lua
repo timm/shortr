@@ -1,9 +1,10 @@
 -- ## Define demos / tests
 
 local _ = require"about"
-local chat,cli,csv,goes,maps = _.chat, _.cli, _.csv, _.goes, _.maps
-local settings,sort,the      = _.settings, _.sort,_.the
-local klass=require"klass"
+local chat,cli,csv,maps,on = _.chat, _.cli, _.csv,  _.maps, _.on
+local settings,sort,the      = _.settings, _.sort, _.the
+
+local klass=require"obj"
 local COLS,NUM, ROWS = klass.COLS,klass.NUM, klass.ROWS
 local SOME, SYM      = klass.SOME, klass.SYM
 require"add"
@@ -50,4 +51,5 @@ function go.ROWS() chat(ROWS():adds(the.file).cols.y); return true end
 
 -------
 -- ### Start
-goes(the, go)
+the = cli(the)
+on(the, go)

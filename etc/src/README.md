@@ -4,7 +4,7 @@
 -- So I've coded up all my fav AI "batteries" into B(Ai)TTERY.
 --   
 -- [about](about.html)
--- :: [klass](klass.html)
+-- :: [obj](obj.html)
 -- :: [add](add.html)
 -- :: [query](query.html)
 -- :: [lib](lib.html)
@@ -14,7 +14,8 @@
 --  **Ada Lovelace:**    
 -- _"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation."_ 
 -- 
+-- (c) 2022, Tim Menzies, <timm@ieee.org>
+--
 -- <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a>   
 -- <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br>
--- (c) 2022 Tim Menzies, <timm@ieee.org>
 -- <br clear=all>

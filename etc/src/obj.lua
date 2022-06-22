@@ -1,4 +1,4 @@
--- ## Define classes    
+-- ## Class Creation Control
 local _=require"about"
 local obj,push,the = _.obj,_.push,_.the
 
@@ -13,7 +13,7 @@ local SOME = obj("SOME", function(i,max)
 --> NUM(at:?int, txt:?str) :NUM -> Summarize a stream of numbers.
 local NUM = obj("NUM", function(i,at,txt) 
   i.at, i.txt, i.n, i.kept =  at or 0, txt or "", 0, SOME(the.Some)
-  i.ok, i.w =  true, i.txt:find"-$"  end)
+  i.w =  i.txt:find"-$"  end)
 
 --> COLS(names:[str]) :COLS -> Factory. Turns a list of names into NUMs or SYMs.
 -- Goal columns get added to `i.y` and others to `i.x (unless denoted `ignored`). 
@@ -35,16 +35,17 @@ local ROW = obj("ROW", function(i,of,cells)
 --> ROWS(names:?[str], rows:?[ROW}) :ROWS -> Place to store many ROWS
 --  and summarize them (in `i.cols`).
 local ROWS = obj("ROWS", function(i,names,rows) 
-  i.overall,i.cols,i.rows = nil,nil,{}
-  if names then i.cols = COLS(names) end 
+  i.rows, i.cols = {}, (names and COLS(names) or nil)
   for _,row in pairs(rows or {}) do i:add(row) end
   end)
 
+-- ### Replicating structure of an instance
 --> ROWS.clone(init:?[ROW]) :ROWS -> Return a ROWS with same structure as `i`. 
--- Optionally, `init`ialize it with some rows.
+-- Optionally, `init`ialize it with some rows. Add a pointer back to the 
+-- original table that spawned `eve`rything else (useful for some distance calcs).
 function ROWS.clone(i,init)
   local j=ROWS(i.cols.names,init)
-  j.overall = i.overall or i
+  j.eve = i.eve or i 
   return j end
 
 -----

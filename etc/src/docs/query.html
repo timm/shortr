@@ -31,26 +31,25 @@
 <img align=left width=175   src="ada.png"><br>
 LUA is a “batteries-not-included” language.<br>So I’ve coded up all my fav AI “batteries” into B(Ai)TTERY.</p>
 <p><a href="about.html">about</a>
-:: <a href="klass.html">klass</a>
+:: <a href="obj.html">obj</a>
 :: <a href="add.html">add</a>
 :: <a href="query.html">query</a>
 :: <a href="lib.html">lib</a>
 :: <a href="stats.html">stats</a>
 :: <a href="go.html">go</a>     </p>
 <p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em> </p>
+<p>(c) 2022, Tim Menzies, <a href="mailto:&#x74;&#x69;&#109;&#109;&#x40;&#105;&#x65;&#101;&#x65;&#x2e;&#111;&#x72;&#x67;">&#x74;&#x69;&#109;&#109;&#x40;&#105;&#x65;&#101;&#x65;&#x2e;&#111;&#x72;&#x67;</a></p>
 <p><a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a><br><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br>
-(c) 2022 Tim Menzies, <a href="mailto:&#x74;&#x69;&#x6d;&#x6d;&#64;&#105;&#x65;&#101;&#101;&#x2e;&#x6f;&#114;&#x67;">&#x74;&#x69;&#x6d;&#x6d;&#64;&#105;&#x65;&#101;&#101;&#x2e;&#x6f;&#114;&#x67;</a>
 <br clear=all></p>
 <h2 id="query">Query</h2>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>
-<span class="hljs-keyword">local</span> R, csv, per, push, rnd = _.R, _.csv, _.per, _.push, _.rnd
+<span class="hljs-keyword">local</span> R, per, rnd = _.R, _.per, _.rnd
    
-<span class="hljs-keyword">local</span> kl=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;klass&quot;</span>
-<span class="hljs-keyword">local</span> COLS, NUM, SOME, SYM   = kl.COLS, kl.NUM, kl.SOME, kl.SYM
-<span class="hljs-keyword">local</span> ROW,ROWS               = kl.ROW, kl.ROWS</pre></div></div>
+<span class="hljs-keyword">local</span> o=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;obj&quot;</span>
+<span class="hljs-keyword">local</span> COLS, NUM, ROWS, SOME, SYM = o.COLS, o.NUM,  o.ROWS, o.SOME, o.SYM</pre></div></div>
             
         </li>
         
@@ -60,19 +59,6 @@ LUA is a “batteries-not-included” language.<br>So I’ve coded up all my fav
               
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
-              </div>
-              <h3 id="mid-central-tendency">Mid (central tendency)</h3>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-3">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-3">&#x00a7;</a>
               </div>
               <p><strong>mids( <code>i</code>:  ROW, <code>p</code>:  ?int=2,cols=?[COL]=i.cols.y):tab</strong> <br> Return <code>mid</code> of columnss
 rounded to <code>p</code> places.</p>
@@ -87,23 +73,46 @@ rounded to <code>p</code> places.</p>
         </li>
         
         
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-3">&#x00a7;</a>
+              </div>
+              <p><strong>mids( <code>i</code>:  (NUM|SYM), <code>p</code>:  ?float=.5):tab</strong> <br> Return a columns’ <code>mid</code>ddle
+(central tendency), rounded to <code>p</code> places.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.mid</span><span class="hljs-params">(i,p)</span></span> 
+  <span class="hljs-keyword">local</span> a=i.kept:has(); <span class="hljs-keyword">return</span> rnd(per(a,<span class="hljs-number">.5</span>),p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.mid</span><span class="hljs-params">(i,p)</span></span>
+  <span class="hljs-keyword">local</span> <span class="hljs-built_in">max</span>,mode=<span class="hljs-number">-1</span>,<span class="hljs-literal">nil</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kept) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n &gt; most <span class="hljs-keyword">then</span> most,mode = n,x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> rnd(mode, p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
         <li id="section-4">
             <div class="annotation">
               
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <p><strong>mids( <code>i</code>:  ROW, <code>p</code>:  ?float=.5,cols=?[COL]=i.cols.y):tab</strong> <br> Return <code>mid</code> of columns.
-rounded to <code>p</code> places.</p>
+              <p><strong>div( <code>i</code>:  (NUM|SYM), <code>p</code>:  ?float=.5):tab</strong> <br> Return <code>div</code>ersity of a column
+(its tendency <em>not</em> to be a its central tendency).</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.mid</span><span class="hljs-params">(i,p)</span></span>
-  <span class="hljs-keyword">local</span> <span class="hljs-built_in">max</span>,mode=<span class="hljs-number">-1</span>,<span class="hljs-literal">nil</span>
-  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kept) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n &gt; most <span class="hljs-keyword">then</span> most,mode = n,x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> rnd(mode, p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.mid</span><span class="hljs-params">(i,p)</span></span> <span class="hljs-keyword">local</span> a=i.kept:has(); <span class="hljs-keyword">return</span> rnd(per(a,<span class="hljs-number">.5</span>),p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.div</span><span class="hljs-params">(i,p)</span></span> 
+  <span class="hljs-keyword">local</span> a=i.kept:has(); <span class="hljs-keyword">return</span> rnd( (per(a,<span class="hljs-number">.9</span>) - per(a,<span class="hljs-number">.1</span>))/<span class="hljs-number">2.56</span>, p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
+   
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.div</span><span class="hljs-params">(i,p)</span></span>
+  <span class="hljs-keyword">local</span> ent,<span class="hljs-built_in">log</span>=<span class="hljs-number">0</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(x,<span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kept) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> ent=ent - n/i.n*<span class="hljs-built_in">log</span>(n/i.n) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> rnd(ent,p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -114,18 +123,9 @@ rounded to <code>p</code> places.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
-              <h3 id="div-diversity">Div (diversity)</h3>
+              <h3 id="general-queries">General queries</h3>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.div</span><span class="hljs-params">(i,p)</span></span> 
-  <span class="hljs-keyword">local</span> a=i.kept:has(); <span class="hljs-keyword">return</span> rnd( (per(a,<span class="hljs-number">.9</span>) - per(a,<span class="hljs-number">.1</span>))/<span class="hljs-number">2.56</span>, p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.div</span><span class="hljs-params">(i,p)</span></span>
-  <span class="hljs-keyword">local</span> ent,<span class="hljs-built_in">log</span>=<span class="hljs-number">0</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(x,<span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kept) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> ent=ent - n/i.n*<span class="hljs-built_in">log</span>(n/i.n) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> rnd(ent,p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -136,15 +136,27 @@ rounded to <code>p</code> places.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
-              <h3 id="other-queries">Other queries</h3>
+              <p><strong>norm( <code>i</code>:  NUM,  <code>x</code>:  num):num</strong> <br> Normalize <code>x</code> 0..1 for lo..hi,</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.norm</span><span class="hljs-params">(i,x)</span></span>
-  <span class="hljs-keyword">local</span> a=i.kept:has(); <span class="hljs-keyword">return</span> (a[#a]-a[<span class="hljs-number">1</span>])&lt;<span class="hljs-number">1E-9</span> <span class="hljs-keyword">or</span> (x-a[<span class="hljs-number">1</span>])/(a[#a]-a[<span class="hljs-number">1</span>]) <span class="hljs-keyword">end</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.norm</span><span class="hljs-params">(i,x)</span></span>
+  <span class="hljs-keyword">local</span> a=i.kept:has(); <span class="hljs-keyword">return</span> (a[#a]-a[<span class="hljs-number">1</span>])&lt;<span class="hljs-number">1E-9</span> <span class="hljs-keyword">or</span> (x-a[<span class="hljs-number">1</span>])/(a[#a]-a[<span class="hljs-number">1</span>]) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-7">&#x00a7;</a>
+              </div>
+              <p><strong>has( <code>i</code>:  SOME):tab</strong> <br> Ensure contents are sorted. Return those contents.</p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SOME.has</span><span class="hljs-params">(i)</span></span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SOME.has</span><span class="hljs-params">(i)</span></span>
   i.kept = i.ok <span class="hljs-keyword">and</span> i.kept <span class="hljs-keyword">or</span> <span class="hljs-built_in">sort</span>(i.kept); i.ok=<span class="hljs-literal">true</span>; <span class="hljs-keyword">return</span> i.kept ; <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
