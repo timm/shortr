@@ -29,24 +29,31 @@
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
 <img align=left width=175   src="ada.png"><br>
-LUA is a “batteries-not-included” language.<br>Here are my favorite b(Ai)tteries (for AI).</p>
+LUA is a “batteries-not-included” language.<br>Here are my favorite b(Ai)tteries (for XAI).</p>
 <p><a href="about.html">about</a>
-:: <a href="new.html">new</a>
+:: <a href="klass.html">klass</a>
+:: <a href="add.html">add</a>
+:: <a href="query.html">query</a>
 :: <a href="lib.html">lib</a>
 :: <a href="stats.html">stats</a>
 :: <a href="go.html">go</a>     </p>
 <p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em> </p>
 <p><a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a><br><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br>
-(c) 2022 Tim Menzies, <a href="mailto:&#116;&#105;&#x6d;&#x6d;&#x40;&#105;&#101;&#101;&#x65;&#x2e;&#x6f;&#114;&#103;">&#116;&#105;&#x6d;&#x6d;&#x40;&#105;&#101;&#101;&#x65;&#x2e;&#x6f;&#114;&#103;</a>
+(c) 2022 Tim Menzies, <a href="mailto:&#116;&#x69;&#x6d;&#109;&#64;&#105;&#x65;&#x65;&#x65;&#x2e;&#111;&#114;&#x67;">&#116;&#x69;&#x6d;&#109;&#64;&#105;&#x65;&#x65;&#x65;&#x2e;&#111;&#114;&#x67;</a>
 <br clear=all></p>
 <h2 id="define-demos--tests">Define demos / tests</h2>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>
-<span class="hljs-keyword">local</span> _=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>
-<span class="hljs-keyword">local</span> chat,cli,csv,goes,maps = _.chat,_.cli,_.csv,_/maps
-<span class="hljs-keyword">local</span> settings,<span class="hljs-built_in">sort</span> = _.settings, _.<span class="hljs-built_in">sort</span></pre></div></div>
+<span class="hljs-keyword">local</span> _ = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>
+<span class="hljs-keyword">local</span> chat,cli,csv,goes,maps = _.chat, _.cli, _.csv, _.goes, _.maps
+<span class="hljs-keyword">local</span> settings,<span class="hljs-built_in">sort</span>,the      = _.settings, _.<span class="hljs-built_in">sort</span>,_.the
+<span class="hljs-keyword">local</span> klass=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;klass&quot;</span>
+<span class="hljs-keyword">local</span> COLS,NUM, ROWS = klass.COLS,klass.NUM, klass.ROWS
+<span class="hljs-keyword">local</span> SOME, SYM      = klass.SOME, klass.SYM
+<span class="hljs-built_in">require</span><span class="hljs-string">&quot;add&quot;</span>
+<span class="hljs-built_in">require</span><span class="hljs-string">&quot;query&quot;</span></pre></div></div>
             
         </li>
         
@@ -61,14 +68,7 @@ LUA is a “batteries-not-included” language.<br>Here are my favorite b(Ai)tte
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> go,no = {},{}
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.the</span><span class="hljs-params">()</span></span>  chat(the); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.sort</span><span class="hljs-params">()</span></span> chat(<span class="hljs-built_in">sort</span>{<span class="hljs-number">10</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1</span>,<span class="hljs-number">15</span>,<span class="hljs-number">0</span>}); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.maps</span><span class="hljs-params">()</span></span> chat(maps({<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>},{<span class="hljs-number">10</span>,<span class="hljs-number">20</span>,<span class="hljs-number">30</span>}, 
-                             <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x,y)</span></span> <span class="hljs-keyword">return</span> x+y <span class="hljs-keyword">end</span>)); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.rows</span><span class="hljs-params">()</span></span> csv(the.file, chat); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> go,no = {},{}</pre></div></div>
             
         </li>
         
@@ -78,6 +78,163 @@ LUA is a “batteries-not-included” language.<br>Here are my favorite b(Ai)tte
               
               <div class="sswrap ">
                 <a class="ss" href="#section-3">&#x00a7;</a>
+              </div>
+              <p>Print <code>the</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.THE</span><span class="hljs-params">()</span></span> chat(the); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-4">&#x00a7;</a>
+              </div>
+              <p>Sort some numbers.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.SORT</span><span class="hljs-params">()</span></span> chat(<span class="hljs-built_in">sort</span>{<span class="hljs-number">10</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1</span>,<span class="hljs-number">15</span>,<span class="hljs-number">0</span>}); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-5">&#x00a7;</a>
+              </div>
+              <p>Iterate over 2 lists</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.MAPS</span><span class="hljs-params">()</span></span> 
+  chat(maps({<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>},{<span class="hljs-number">10</span>,<span class="hljs-number">20</span>,<span class="hljs-number">30</span>}, 
+       <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x,y)</span></span> <span class="hljs-keyword">return</span> x+y <span class="hljs-keyword">end</span>)); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-6">&#x00a7;</a>
+              </div>
+              <p> Summarize stream of numbers</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.NUMS</span><span class="hljs-params">()</span></span> 
+  <span class="hljs-keyword">local</span> n=NUM(); <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">1000</span> <span class="hljs-keyword">do</span> n:add(i) <span class="hljs-keyword">end</span>; chat(n)
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-7">&#x00a7;</a>
+              </div>
+              <p>Keep a sample of 32 nums (out of 1000).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.SOME</span><span class="hljs-params">()</span></span> 
+  <span class="hljs-keyword">local</span> s=SOME(<span class="hljs-number">32</span>); <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">1000</span> <span class="hljs-keyword">do</span> s:add(i) <span class="hljs-keyword">end</span>
+  chat(<span class="hljs-built_in">sort</span>(s.kept)); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-8">&#x00a7;</a>
+              </div>
+              <p> Summarize stream of symbols</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.SYM</span><span class="hljs-params">()</span></span> 
+  <span class="hljs-keyword">local</span> s=SYM()
+  <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">1000</span> <span class="hljs-keyword">do</span> <span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>} <span class="hljs-keyword">do</span> s:add(c) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  chat(<span class="hljs-built_in">sort</span>(s.kept)); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-9">&#x00a7;</a>
+              </div>
+              <p>Print CSV file.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.CSV</span><span class="hljs-params">()</span></span> csv(the.file, chat); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-10">&#x00a7;</a>
+              </div>
+              <p>Try initializing some columns from a list of names.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.COLS</span><span class="hljs-params">()</span></span> chat(COLS{<span class="hljs-string">&quot;aa&quot;</span>,<span class="hljs-string">&quot;Bb&quot;</span>,<span class="hljs-string">&quot;Cc-&quot;</span>}.x); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-11">&#x00a7;</a>
+              </div>
+              <p>Load data from a csv file to a ROWS object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.ROWS</span><span class="hljs-params">()</span></span> chat(ROWS():adds(the.file).cols.y); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-12">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-13">&#x00a7;</a>
               </div>
               <h3 id="start">Start</h3>
 

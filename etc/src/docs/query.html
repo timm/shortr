@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>b(Ai)tteries ⤑ query.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>b(Ai)tteries ⤑ query.lua</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
+<img align=left width=175   src="ada.png"><br>
+LUA is a “batteries-not-included” language.<br>Here are my favorite b(Ai)tteries (for XAI).</p>
+<p><a href="about.html">about</a>
+:: <a href="klass.html">klass</a>
+:: <a href="add.html">add</a>
+:: <a href="query.html">query</a>
+:: <a href="lib.html">lib</a>
+:: <a href="stats.html">stats</a>
+:: <a href="go.html">go</a>     </p>
+<p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em> </p>
+<p><a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a><br><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br>
+(c) 2022 Tim Menzies, <a href="mailto:&#x74;&#105;&#x6d;&#x6d;&#x40;&#105;&#101;&#101;&#101;&#46;&#x6f;&#114;&#103;">&#x74;&#105;&#x6d;&#x6d;&#x40;&#105;&#101;&#101;&#101;&#46;&#x6f;&#114;&#103;</a>
+<br clear=all></p>
+<h2 id="query">Query</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>
+<span class="hljs-keyword">local</span> kl=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;klass&quot;</span>
+<span class="hljs-keyword">local</span> R, csv, per, push, rnd = _.R, _.csv, _.per, _.push, _.rnd
+<span class="hljs-keyword">local</span> COLS, NUM, SOME, SYM   = kl.COLS, kl.NUM, kl.SOME, kl.SYM
+<span class="hljs-keyword">local</span> ROW,ROWS               = kl.ROW, kl.ROWS</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-2">&#x00a7;</a>
+              </div>
+              <p><strong>mids( <code>i</code>:  ROW, <code>p</code>:  ?int=2,cols=?[COL]=i.cols.y):tab</strong> <br> Return <code>mid</code> of columnss
+rounded to <code>p</code> places.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.mids</span><span class="hljs-params">(i,p,cols,    t)</span></span> 
+  t={}
+  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(cols <span class="hljs-keyword">or</span> i.cols.y) <span class="hljs-keyword">do</span> t[col.txt]=col:mid(p) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> rnd(t,p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-3">&#x00a7;</a>
+              </div>
+              <p><strong>mids( <code>i</code>:  ROW, <code>p</code>:  ?float=.5,cols=?[COL]=i.cols.y):tab</strong> <br> Return <code>mid</code> of columns.
+rounded to <code>p</code> places.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.mid</span><span class="hljs-params">(i,p)</span></span>
+  <span class="hljs-keyword">local</span> <span class="hljs-built_in">max</span>,mode=<span class="hljs-number">-1</span>,<span class="hljs-literal">nil</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kept) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n &gt; most <span class="hljs-keyword">then</span> most,mode = n,x <span class="hljs-keyword">end</span>;
+  <span class="hljs-keyword">return</span> rnd(mode, p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.mid</span><span class="hljs-params">(i,p)</span></span> <span class="hljs-keyword">local</span> a=i.kept:has(); <span class="hljs-keyword">return</span> rnd(per(a,<span class="hljs-number">.5</span>),p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SOME.has</span><span class="hljs-params">(i)</span></span>
+  i.kept = i.ok <span class="hljs-keyword">and</span> i.kept <span class="hljs-keyword">or</span> <span class="hljs-built_in">sort</span>(i.kept); i.ok=<span class="hljs-literal">true</span>; <span class="hljs-keyword">return</span> i.kept <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.div</span><span class="hljs-params">(i,p)</span></span> 
+  <span class="hljs-keyword">local</span> a=i.kept:has(); <span class="hljs-keyword">return</span> rnd( (per(a,<span class="hljs-number">.9</span>) - per(a,<span class="hljs-number">.1</span>))/<span class="hljs-number">2.56</span>, p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.div</span><span class="hljs-params">(i,p)</span></span>
+  <span class="hljs-keyword">local</span> ent,<span class="hljs-built_in">log</span>=<span class="hljs-number">0</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(x,<span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kept) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> ent=ent - n/i.n*<span class="hljs-built_in">log</span>(n/i.n) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> rnd(ent,p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.norm</span><span class="hljs-params">(i,x)</span></span>
+  <span class="hljs-keyword">local</span> a=i.kept:has(); <span class="hljs-keyword">return</span> (a[#a]-a[<span class="hljs-number">1</span>])&lt;<span class="hljs-number">1E-9</span> <span class="hljs-keyword">or</span> (x-a[<span class="hljs-number">1</span>])/(a[#a]-a[<span class="hljs-number">1</span>]) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,9 +1,11 @@
 -- <span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
 -- <img align=left width=175   src="ada.png"><br>
--- LUA is a "batteries-not-included" language.<br>Here are my favorite b(Ai)tteries (for AI).
+-- LUA is a "batteries-not-included" language.<br>Here are my favorite b(Ai)tteries (for XAI).
 --   
 -- [about](about.html)
--- :: [new](new.html)
+-- :: [klass](klass.html)
+-- :: [add](add.html)
+-- :: [query](query.html)
 -- :: [lib](lib.html)
 -- :: [stats](stats.html)
 -- :: [go](go.html)     

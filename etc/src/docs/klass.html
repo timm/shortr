@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>b(Ai)tteries ⤑ klass.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>b(Ai)tteries ⤑ klass.lua</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
+<img align=left width=175   src="ada.png"><br>
+LUA is a “batteries-not-included” language.<br>Here are my favorite b(Ai)tteries (for XAI).</p>
+<p><a href="about.html">about</a>
+:: <a href="klass.html">klass</a>
+:: <a href="add.html">add</a>
+:: <a href="query.html">query</a>
+:: <a href="lib.html">lib</a>
+:: <a href="stats.html">stats</a>
+:: <a href="go.html">go</a>     </p>
+<p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em> </p>
+<p><a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a><br><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br>
+(c) 2022 Tim Menzies, <a href="mailto:&#x74;&#105;&#x6d;&#x6d;&#x40;&#105;&#101;&#101;&#101;&#x2e;&#x6f;&#114;&#x67;">&#x74;&#105;&#x6d;&#x6d;&#x40;&#105;&#101;&#101;&#101;&#x2e;&#x6f;&#114;&#x67;</a>
+<br clear=all></p>
+<h2 id="define-classes">Define classes</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>
+<span class="hljs-keyword">local</span> obj,push,the = _.obj,_.push,_.the</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-2">&#x00a7;</a>
+              </div>
+              <p><strong>SYM( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :SYM</strong> <br> Summarize a stream of non-numerics.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> SYM = obj(<span class="hljs-string">&quot;SYM&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,at,txt)</span></span>
+  i.at, i.txt, i.n, i.kept =  at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-number">0</span>, {} <span class="hljs-keyword">end</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-3">&#x00a7;</a>
+              </div>
+              <p><strong>SOME( <code>max</code>:  ?int) :SOME</strong> <br> collect, at most, <code>some</code> numbers.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> SOME = obj(<span class="hljs-string">&quot;SOME&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,max)</span></span> 
+  i.kept, i.ok, i.<span class="hljs-built_in">max</span>, i.n = {}, <span class="hljs-literal">true</span>, <span class="hljs-built_in">max</span>, <span class="hljs-number">0</span>  <span class="hljs-keyword">end</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-4">&#x00a7;</a>
+              </div>
+              <p><strong>NUM( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :NUM</strong> <br> Summarize a stream of numbers.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> NUM = obj(<span class="hljs-string">&quot;NUM&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,at,txt)</span></span> 
+  i.at, i.txt, i.n, i.kept =  at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-number">0</span>, SOME(the.Some)
+  i.ok, i.w =  <span class="hljs-literal">true</span>, i.txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span>  <span class="hljs-keyword">end</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-5">&#x00a7;</a>
+              </div>
+              <p><strong>COLS( <code>names</code>:  [str]) :COLS</strong> <br> Factory. Turns a list of names into NUMs or SYMs.
+Goal columns get added to <code>i.y</code> and others to <code>i.x (unless denoted </code>ignored<code>).  A klass column goes to </code>i.klass`.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> COLS = obj(<span class="hljs-string">&quot;COLS&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,names)</span></span> 
+  i.names, i.x, i.y, i.all,i.klass, i.names = names, {}, {},  {}
+  <span class="hljs-keyword">for</span> at,txt <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(names) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">local</span> col = (txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[A-Z]&quot;</span> <span class="hljs-keyword">and</span> NUM <span class="hljs-keyword">or</span> SYM)(at,txt) 
+    push(i.all, col)
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> col.txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;:$&quot;</span> <span class="hljs-keyword">then</span>
+      push(col.txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;[!+-]$&quot;</span> <span class="hljs-keyword">and</span> i.y <span class="hljs-keyword">or</span> i.x, col)
+      <span class="hljs-keyword">if</span> col.txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;!$&quot;</span> <span class="hljs-keyword">then</span> i.klass=col <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> )</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-6">&#x00a7;</a>
+              </div>
+              <p><strong>ROW( <code>of</code>:  ROWS,  <code>cells</code>:  tab) :ROW</strong> <br> Place to store one record
+(and stats on how it is used; e.g. <code>i.evaled=true</code> if we touch the y values.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> ROW = obj(<span class="hljs-string">&quot;ROW&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,of,cells)</span></span> 
+  i._of,i.cells,i.evaled = of,cells,<span class="hljs-literal">false</span> <span class="hljs-keyword">end</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-7">&#x00a7;</a>
+              </div>
+              <p><strong>ROWS( <code>names</code>:  [str]) :ROWS</strong> <br> Place to store many ROWS
+ and summarize them (in <code>i.cols</code>).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> ROWS = obj(<span class="hljs-string">&quot;ROWS&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,names)</span></span> 
+  i.overall,i.cols,i.rows = <span class="hljs-literal">nil</span>,<span class="hljs-literal">nil</span>,{} <span class="hljs-keyword">end</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-8">&#x00a7;</a>
+              </div>
+              <p><strong>ROWS.clone( <code>names</code>:  [str]) :ROWS</strong> <br> Place to store many ROWS</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.clone</span><span class="hljs-params">(i,init)</span></span>
+  <span class="hljs-keyword">local</span> j=ROWS()
+  j:add(i.cols.names);<span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(init <span class="hljs-keyword">or</span>{}) <span class="hljs-keyword">do</span> j:add(row) <span class="hljs-keyword">end</span>;<span class="hljs-keyword">return</span> j <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-9">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-10">&#x00a7;</a>
+              </div>
+              <h3 id="return">Return</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">return</span> {SOME=SOME, SYM=SYM, NUM=NUM, COLS=COLS, ROW=ROW, ROWS=ROWS}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

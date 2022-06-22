@@ -6,26 +6,26 @@ local obj,push,the = _.obj,_.push,_.the
 local SYM = obj("SYM", function(i,at,txt)
   i.at, i.txt, i.n, i.kept =  at or 0, txt or "", 0, {} end)
 
---> SOME(max:?int) :SOME -> collect, at most, `max` numbers.
+--> SOME(max:?int) :SOME -> collect, at most, `some` numbers.
 local SOME = obj("SOME", function(i,max) 
-  i.kept, i.ok, i.max = {}, true, max  end)
+  i.kept, i.ok, i.max, i.n = {}, true, max, 0  end)
 
 --> NUM(at:?int, txt:?str) :NUM -> Summarize a stream of numbers.
 local NUM = obj("NUM", function(i,at,txt) 
-  i.at, i.txt, i.n, i.kept =  at or 0, txt or "", 0, {}
-  i.some, i.ok, i.w = SOME(the.some), true, i.txt:find"-$"  end)
+  i.at, i.txt, i.n, i.kept =  at or 0, txt or "", 0, SOME(the.Some)
+  i.ok, i.w =  true, i.txt:find"-$"  end)
 
 --> COLS(names:[str]) :COLS -> Factory. Turns a list of names into NUMs or SYMs.
 -- Goal columns get added to `i.y` and others to `i.x (unless denoted `ignored`). 
--- A klass column gots to `i.klass`.
+-- A klass column goes to `i.klass`.
 local COLS = obj("COLS", function(i,names) 
   i.names, i.x, i.y, i.all,i.klass, i.names = names, {}, {},  {}
   for at,txt in pairs(names) do
-    col = (name:find"^[A-Z]" and NUM or SYM)(at,txt) end
+    local col = (txt:find"^[A-Z]" and NUM or SYM)(at,txt) 
     push(i.all, col)
     if not col.txt:find":$" then
       push(col.txt:find"[!+-]$" and i.y or i.x, col)
-      if col.txt:find"!$" then i.klass=col end end end ) 
+      if col.txt:find"!$" then i.klass=col end end end end ) 
 
 --> ROW(of:ROWS, cells:tab) :ROW -> Place to store one record
 -- (and stats on how it is used; e.g. `i.evaled=true` if we touch the y values.
@@ -37,5 +37,11 @@ local ROW = obj("ROW", function(i,of,cells)
 local ROWS = obj("ROWS", function(i,names) 
   i.overall,i.cols,i.rows = nil,nil,{} end)
 
+--> ROWS.clone(names:[str]) :ROWS -> Place to store many ROWS
+function ROWS.clone(i,init)
+  local j=ROWS()
+  j:add(i.cols.names);for _,row in pairs(init or{}) do j:add(row) end;return j end
+
+-----
 -- ### Return
 return {SOME=SOME, SYM=SYM, NUM=NUM, COLS=COLS, ROW=ROW, ROWS=ROWS}

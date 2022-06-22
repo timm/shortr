@@ -6,6 +6,15 @@ local m={}
 local _b4={}; for k,v in pairs(_ENV) do _b4[k]=k end
 function m.rogues()
   for k,v in pairs(_ENV) do if not _b4[k] then print("?",k,type(v)) end end end
+-- ### Maths
+
+-- R(max:?num=1):num -> return a random number `0..max`.
+m.R = math.random
+
+-- rnd(x:num, places:int):num -> return `x` rounded to some number of `places`.
+function m.rnd(x, places)
+  local mult = 10^(places or 2)
+  return math.floor(x * mult + 0.5) / mult end
 -- ###  Lists
 
 --> sort(t:tab, f:fun) :tab -> Return `t`, sorted of function `f` (default "<").
@@ -80,11 +89,12 @@ function m.opts(x)
 function m.cli(t)
   for key,x in pairs(t) do 
     x = tostring(x)
+    local long, short = "--"..key, "-"..key:sub(1,1)
     for n,flag in ipairs(arg) do 
-      if flag=="-"..key:sub(1,1) or flag=="--"..key  then
-        x = x=="false" and"true" or x=="true" and"false" or arg[n+1] 
-        t[k] = m.thing(x) end end end
-    if t.help then print(t._HELP:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"") end
+      if flag==short or flag==long then
+        x = x=="false" and "true" or x=="true" and "false" or arg[n+1] 
+        t[key] = m.thing(x) end end end
+  if t.help then os.exit(print(t._HELP:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"")) end 
   return t end
 -- ### Tests
 
@@ -94,11 +104,13 @@ function m.goes(settings,tests)
   local fails, old = 0, {}
   for k,v in pairs(settings) do old[k]=v end
   local tmp = settings.go=="all" and tests or {[settings.go]=tests[settings.go]}
-  for k,v in pairs(tmp) do
-    for k,v in pairs(old) do settings[k]=v end end -- reset settings to default
-    math.randomseed(settings.seed or 10019)        -- reset seed to default
-    local out = v()
-    if out ~= true then fails = fails+1; print(fmt("FAIL: [%s] %s",k,out or "")) end
+  for txt,fun in pairs(tmp) do
+    for k,v in pairs(old) do settings[k]=v end -- reset settings to default
+    math.randomseed(settings.seed or 10019)    -- reset seed to default
+    print(">> ",txt)
+    local out = fun()
+    if out ~= true then fails=fails+1; print(m.fmt("FAIL: [%s] %s",txt,out or "")) end end
+  m.rogues()
   os.exit(fails) end -- if fails==0 then our return code to the OS will be zero.
 -- ### Objects
 
@@ -109,6 +121,7 @@ function m.obj(name,fun,    t,new,x)
   function new(kl,...) _id=_id+1; x=setmetatable({_id=_id},kl);fun(x,...); return x end 
   t = {__tostring=m.cat,_is=name}; t.__index=t
   return setmetatable(t, {__call=new}) end
+-----
 -- ### Return
 
 return m
