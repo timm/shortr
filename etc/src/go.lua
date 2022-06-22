@@ -1,9 +1,8 @@
 -- ## Define demos / tests
 
 local _=require"about"
-local chat,cli,csv,goes,maps
+local chat,cli,csv,goes,maps = _.chat,_.cli,_.csv,_/maps
 local settings,sort = _.settings, _.sort
-local the = cli(opts(require"about"))
 
 -- To disable a test, rename it from `go` to `no`.
 local go,no = {},{}

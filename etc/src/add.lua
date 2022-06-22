@@ -8,7 +8,7 @@ local COLS,NUM,SOME,SYM,ROWS = kl.COLS, kl.NUM, kl.SOME, kl.SYM, kl.ROWS
 function SOME.add(i,x)
   if x ~= "?" then 
     i.n = i.n + 1
-    if   #i.kept < i.some   then i.ok=false; push(i.kept,x) 
+    if #i.kept < i.some     then i.ok=false; push(i.kept,x) 
     elseif R() < i.some/i.n then i.ok=false; i.kept[R(#i.kept)]=x end end end 
 
 --> add(i:NUM: x:num, n:?int=1) -> `n` times,update `i`.
