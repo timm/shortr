@@ -1,19 +1,17 @@
 -- <span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
--- LUA is a "batteries-not-included" language.<br>Here are my favorite batteries (for AI).<br>
--- <i  class="fa-solid fa-car-battery fa-3x"></i>
--- <img align=left width=150  src="ada.png"><br>
+-- <img align=left width=175   src="ada.png"><br>
+-- LUA is a "batteries-not-included" language.<br>Here are my favorite b(Ai)tteries (for AI).
+--   
 -- [about](about.html)
 -- :: [new](new.html)
 -- :: [lib](lib.html)
 -- :: [stats](stats.html)
--- :: [go](go.html)
+-- :: [go](go.html)     
 -- 
 --  **Ada Lovelace:**    
--- _"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation."_
---    
--- <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
--- <br>
---  <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a>
---
--- (c) 2022 Tim Menzies <br><timm@ieee.org>
+-- _"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation."_ 
+-- 
+-- <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a>   
+-- <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br>
+-- (c) 2022 Tim Menzies, <timm@ieee.org>
 -- <br clear=all>

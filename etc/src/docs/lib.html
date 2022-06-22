@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>lib.lua</title>
+  <title>b(Ai)tteries ⤑ lib.lua</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -15,7 +15,7 @@
         
           <li id="title">
               <div class="annotation">
-                  <h1>lib.lua</h1>
+                  <h1>b(Ai)tteries ⤑ lib.lua</h1>
               </div>
           </li>
         
@@ -28,19 +28,16 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
-LUA is a “batteries-not-included” language.<br>Here are my favorite batteries (for AI).<br>
-<i  class="fa-solid fa-car-battery fa-3x"></i>
-<img align=left width=150  src="ada.png"><br>
-<a href="about.html">about</a>
+<img align=left width=175   src="ada.png"><br>
+LUA is a “batteries-not-included” language.<br>Here are my favorite b(Ai)tteries (for AI).</p>
+<p><a href="about.html">about</a>
 :: <a href="new.html">new</a>
 :: <a href="lib.html">lib</a>
 :: <a href="stats.html">stats</a>
-:: <a href="go.html">go</a></p>
-<p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em></p>
-<p><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a>
-<br>
- <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a></p>
-<p>(c) 2022 Tim Menzies <br><a href="mailto:&#116;&#105;&#x6d;&#x6d;&#64;&#x69;&#x65;&#x65;&#101;&#x2e;&#x6f;&#x72;&#x67;">&#116;&#105;&#x6d;&#x6d;&#64;&#x69;&#x65;&#x65;&#101;&#x2e;&#x6f;&#x72;&#x67;</a>
+:: <a href="go.html">go</a>     </p>
+<p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em> </p>
+<p><a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a><br><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br>
+(c) 2022 Tim Menzies, <a href="mailto:&#116;&#x69;&#x6d;&#x6d;&#x40;&#x69;&#x65;&#x65;&#101;&#x2e;&#111;&#x72;&#x67;">&#116;&#x69;&#x6d;&#x6d;&#x40;&#x69;&#x65;&#x65;&#101;&#x2e;&#111;&#x72;&#x67;</a>
 <br clear=all></p>
 <h2 id="misc-library-routines">Misc library routines</h2>
 
@@ -240,7 +237,8 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
   <span class="hljs-keyword">local</span> file = <span class="hljs-built_in">io</span>.<span class="hljs-built_in">input</span>(file)
   <span class="hljs-keyword">while</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">do</span>
     <span class="hljs-keyword">local</span> line = <span class="hljs-built_in">io</span>.<span class="hljs-built_in">read</span>()
-    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> line <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">io</span>.<span class="hljs-built_in">close</span>(file) <span class="hljs-keyword">else</span> fun(m.words(line, <span class="hljs-string">&quot;,&quot;</span>,m.thing)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> line <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">io</span>.<span class="hljs-built_in">close</span>(file) <span class="hljs-keyword">else</span> 
+      fun(m.words(line, <span class="hljs-string">&quot;,&quot;</span>, m.thing)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -353,8 +351,8 @@ Other keys need <code>--flag value</code>.  Print the help
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">m.cli</span><span class="hljs-params">(the)</span></span>
-  <span class="hljs-keyword">for</span> key,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(the) <span class="hljs-keyword">do</span> 
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">m.cli</span><span class="hljs-params">(t)</span></span>
+  <span class="hljs-keyword">for</span> key,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> 
     x = <span class="hljs-built_in">tostring</span>(x)
     <span class="hljs-keyword">for</span> n,flag <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>(<span class="hljs-built_in">arg</span>) <span class="hljs-keyword">do</span> 
       <span class="hljs-keyword">if</span> flag==<span class="hljs-string">&quot;-&quot;</span>..key:<span class="hljs-built_in">sub</span>(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>) <span class="hljs-keyword">or</span> flag==<span class="hljs-string">&quot;--&quot;</span>..key  <span class="hljs-keyword">then</span>

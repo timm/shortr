@@ -23,7 +23,7 @@ docs/%.html: %.lua ## make html
       1' $^ ) > tmp.lua
 	echo "docco: $< -> $@"
 	docco -l classic  tmp.lua > /dev/null
-	gawk 'sub(/>tmp.lua</,">$<<") 1 ' docs/tmp.html > $@
+	gawk 'sub(/>tmp.lua</,">b(Ai)tteries ⤑ $<<") 1 ' docs/tmp.html > $@
 	rm tmp.lua 
 	cp $R/etc/docco.css docs/docco.css
 
