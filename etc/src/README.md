@@ -1,7 +1,7 @@
--- <img width=150 align=left src="ada.png">
--- 
 -- <span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
---  
+-- LUA is a "batteries-not-included" language.<br>Here are my favorite batteries (for AI).<br>
+-- <i  class="fa-solid fa-car-battery fa-3x"></i>
+-- <img align=left width=150  src="ada.png"><br>
 -- [about](about.html)
 -- :: [new](new.html)
 -- :: [lib](lib.html)

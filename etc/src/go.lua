@@ -1,6 +1,6 @@
 -- ## Define demos / tests
 
-local _=require"lib"
+local _=require"about"
 local chat,cli,csv,goes,maps
 local settings,sort = _.settings, _.sort
 local the = cli(opts(require"about"))

@@ -3,9 +3,9 @@ local m={}
 -- ### Linting
 
 --> rogues() -> Find rogue locals. Run `rogues()` _last_ after everything else.
-local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
+local _b4={}; for k,v in pairs(_ENV) do _b4[k]=k end
 function m.rogues()
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
+  for k,v in pairs(_ENV) do if not _b4[k] then print("?",k,type(v)) end end end
 -- ###  Lists
 
 --> sort(t:tab, f:fun) :tab -> Return `t`, sorted of function `f` (default "<").
@@ -47,7 +47,8 @@ function m.csv(file, fun)
   local file = io.input(file)
   while true do
     local line = io.read()
-    if not line then return io.close(file) else fun(m.words(line, ",",m.thing)) end end end
+    if not line then return io.close(file) else 
+      fun(m.words(line, ",", m.thing)) end end end
 -- ### Thing to string
 
 --> fmt(s:str,...) :str -> emulate prinft
@@ -76,8 +77,8 @@ function m.opts(x)
 -- Other keys need `--flag value`.  Print the help
 -- (if `-h` appears on command line). Return a table with setting `key`s and
 -- `value`s.
-function m.cli(the)
-  for key,x in pairs(the) do 
+function m.cli(t)
+  for key,x in pairs(t) do 
     x = tostring(x)
     for n,flag in ipairs(arg) do 
       if flag=="-"..key:sub(1,1) or flag=="--"..key  then
