@@ -8,10 +8,10 @@ function m.rogues()
   for k,v in pairs(_ENV) do if not _b4[k] then print("?",k,type(v)) end end end
 -- ### Maths
 
--- R(max:?num=1):num -> return a random number `0..max`.
+--> R(max:?num=1):num -> return a random number `0..max`.
 m.R = math.random
 
--- rnd(x:num, places:int):num -> return `x` rounded to some number of `places`.
+--> rnd(x:num, places:int):num -> return `x` rounded to some number of `places`.
 function m.rnd(x, places)
   local mult = 10^(places or 2)
   return math.floor(x * mult + 0.5) / mult end
