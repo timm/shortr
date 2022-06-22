@@ -32,15 +32,20 @@ local COLS = obj("COLS", function(i,names)
 local ROW = obj("ROW", function(i,of,cells) 
   i._of,i.cells,i.evaled = of,cells,false end)
 
---> ROWS(names:[str]) :ROWS -> Place to store many ROWS
+--> ROWS(names:?[str], rows:?[ROW}) :ROWS -> Place to store many ROWS
 --  and summarize them (in `i.cols`).
-local ROWS = obj("ROWS", function(i,names) 
-  i.overall,i.cols,i.rows = nil,nil,{} end)
+local ROWS = obj("ROWS", function(i,names,rows) 
+  i.overall,i.cols,i.rows = nil,nil,{}
+  if names then i.cols = COLS(names) end 
+  for _,row in pairs(rows or {}) do i:add(row) end
+  end)
 
---> ROWS.clone(names:[str]) :ROWS -> Place to store many ROWS
+--> ROWS.clone(init:?[ROW]) :ROWS -> Return a ROWS with same structure as `i`. 
+-- Optionally, `init`ialize it with some rows.
 function ROWS.clone(i,init)
-  local j=ROWS()
-  j:add(i.cols.names);for _,row in pairs(init or{}) do j:add(row) end;return j end
+  local j=ROWS(i.cols.names,init)
+  j.overall = i.overall or i
+  return j end
 
 -----
 -- ### Return

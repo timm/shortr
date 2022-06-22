@@ -15,7 +15,7 @@ docs/index.html: docs/shortr.html ##  commit to main
 ready:  ##  commit to main
 	git add *;git commit -am save;git push;git status
 
-docs/%.html: %.lua ## make html
+docs/%.html: %.lua  ## make html
 	(cat README.md ; gawk '\
      BEGIN            { FS="(-|[ \t]*)?->[ \t]*"}\
      NF==3 && /^-->/ { $$2=gensub(/([A-Za-z0-9_]+):/," `\\1`:  ","g",$$2);\
@@ -23,7 +23,7 @@ docs/%.html: %.lua ## make html
       1' $^ ) > tmp.lua
 	echo "docco: $< -> $@"
 	docco -l classic  tmp.lua > /dev/null
-	gawk 'sub(/>tmp.lua</,">b(Ai)tteries ⤑ $<<") 1 ' docs/tmp.html > $@
+	gawk 'sub(/>tmp.lua</,">b(Ai)ttery ⤑ $<<") 1 ' docs/tmp.html > $@
 	rm tmp.lua 
 	cp $R/etc/docco.css docs/docco.css
 

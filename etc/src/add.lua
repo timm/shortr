@@ -6,14 +6,15 @@ local COLS,NUM,SOME,SYM = kl.COLS, kl.NUM, kl.SOME, kl.SYM
 local ROW,ROWS          = kl.ROW, kl.ROWS
 
 --> add(i:SOME: x:num)-> `n` times,update `i`.
--- If full then at odss `i.some/i.x`, keep `x`, replace anything a random.
+-- Helper function for NUM. If full then at odds `i.some/i.x`, keep `x`
+-- (replacing some older item, at random).
 function SOME.add(i,x)
   if x ~= "?" then 
     i.n = i.n + 1
     if #i.kept < i.max     then i.ok=false; push(i.kept,x) 
     elseif R() < i.max/i.n then i.ok=false; i.kept[R(#i.kept)]=x end end end 
 
---> add(i:NUM: x:num, n:?int=1) -> `n` times,update `i`.
+--> add(i:NUM: x:num, n:?int=1) -> `n` times,update `i`'s SOME object.
 function NUM.add(i,x,n)
   if x ~="? " then 
     for _ = 1,(n or 1) do i.n=i.n+1; i.kept:add(x) end end end
@@ -30,7 +31,8 @@ function COLS.add(i,row)
 
 --> adds(i:ROWS: src:(str|tab)):ROWS -> copy the data from `src` into `i`.
 function ROWS.adds(i,src)
-  (type(src)=="table" and map or csv)(src, function(t) i:add(t) end) 
+  local what2do = type(src)=="table" and map or csv
+  what2do(src, function(t) i:add(t) end) 
   return i end
 
 --> add(i:ROWS: row:ROW) -> add ROW to ROWS, update the summaries in `i.cols`.
