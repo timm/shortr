@@ -1,8 +1,8 @@
 -- <span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
--- <img align=left width=150   src="ada.png"><br>
 -- LUA is a "batteries-not-included" language.   
 -- So I've coded up all my fav AI "batteries" into B(Ai)TTERY.
 --   
+--
 -- [about](about.html)
 -- :: [obj](obj.html)
 -- :: [add](add.html)
@@ -10,6 +10,8 @@
 -- :: [lib](lib.html)
 -- :: [stats](stats.html)
 -- :: [go](go.html)     
+-- 
+-- <img align=left width=150   src="ada.png">
 -- 
 --  **Ada Lovelace:**    
 -- _"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation."_ 
