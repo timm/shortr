@@ -6,7 +6,7 @@ local obj,push,the = _.obj,_.push,_.the
 local SYM = obj("SYM", function(i,at,txt)
   i.at, i.txt, i.n, i.kept =  at or 0, txt or "", 0, {} end)
 
---> SOME(max:?int) :SOME -> collect, at most, `some` numbers.
+--> SOME(max:?int) :SOME -> collect, at most, `max` numbers.
 local SOME = obj("SOME", function(i,max) 
   i.kept, i.ok, i.max, i.n = {}, true, max, 0  end)
 

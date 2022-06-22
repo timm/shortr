@@ -41,7 +41,9 @@ return m
 -- Before reading this, it might  be best to    
 -- review these [local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
 -- ## Why this code?
---  This code is an experiment in "less-is-more"
+--  This code is an experiment in "less-is-more". Death to mash-ups and their associated 
+--  problems with technical debt and security problems that leak in from all 
+--  the parts used in the assembly.
 --
 -- <b>Tony Hoare:</b><br>
 -- <em>"Inside every large program is a small program struggling to get out."</em><p>
