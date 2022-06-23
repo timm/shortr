@@ -1,11 +1,12 @@
--- ## Misc library routines
+-----
+-- Misc library routines
 local m={}
 -- ### Linting
 
 --> rogues() -> Find rogue locals. Run `rogues()` _last_ after everything else.
-local _b4={}; for k,v in pairs(_ENV) do _b4[k]=k end
+local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 function m.rogues()
-  for k,v in pairs(_ENV) do if not _b4[k] then print("?",k,type(v)) end end end
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 -- ### Maths
 
 --> R(max:?num=1):num -> return a random number `0..max`.

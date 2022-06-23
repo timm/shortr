@@ -1,23 +1,27 @@
 -- <span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
+-- <img align=left width=150   src="ada.png">
+-- 
 -- LUA is a "batteries-not-included" language.   
--- So I've coded up all my fav AI "batteries" into B(Ai)TTERY.
---   
+-- So I built "b(Ai)tteries" (for XAI), optimizing for brevity.  Enjoy!
 --
 -- [about](about.html)
 -- :: [obj](obj.html)
--- :: [add](add.html)
--- :: [query](query.html)
+-- :: [bin](bin.html)
+-- :: [cols](cols.html)
 -- :: [lib](lib.html)
--- :: [stats](stats.html)
+-- :: [nb](nb.html)
+-- :: [num](num.html)
+-- :: [row](row.html)
+-- :: [rows](rows.html)
+-- :: [some](some.html)
+-- :: [sym](sym.html)
 -- :: [go](go.html)     
--- 
--- <img align=left width=150   src="ada.png">
--- 
---  **Ada Lovelace:**    
--- _"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation."_ 
 -- 
 -- (c) 2022, Tim Menzies, <timm@ieee.org>
 --
 -- <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a>   
 -- <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br>
+-- 
+--  **Ada Lovelace:**    
+-- _"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation."_ 
 -- <br clear=all>

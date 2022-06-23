@@ -28,19 +28,18 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
-LUA is a “batteries-not-included” language.<br>So I’ve coded up all my fav AI “batteries” into B(Ai)TTERY.</p>
+<img align=left width=150   src="ada.png"></p>
+<p>LUA is a “batteries-not-included” language.<br>So I built “b(Ai)tteries” (for XAI), optimizing for brevity.  Enjoy!</p>
 <p><a href="about.html">about</a>
 :: <a href="obj.html">obj</a>
-:: <a href="add.html">add</a>
+:: <a href="summary.html">summary</a>
 :: <a href="query.html">query</a>
 :: <a href="lib.html">lib</a>
 :: <a href="stats.html">stats</a>
 :: <a href="go.html">go</a>     </p>
-<img align=left width=150   src="ada.png">
-
-<p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em> </p>
-<p>(c) 2022, Tim Menzies, <a href="mailto:&#116;&#105;&#109;&#x6d;&#64;&#x69;&#101;&#x65;&#101;&#x2e;&#111;&#114;&#x67;">&#116;&#105;&#109;&#x6d;&#64;&#x69;&#101;&#x65;&#101;&#x2e;&#111;&#114;&#x67;</a></p>
-<p><a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a><br><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br>
+<p>(c) 2022, Tim Menzies, <a href="mailto:&#x74;&#x69;&#109;&#x6d;&#x40;&#x69;&#101;&#x65;&#x65;&#46;&#111;&#x72;&#x67;">&#x74;&#x69;&#109;&#x6d;&#x40;&#x69;&#101;&#x65;&#x65;&#46;&#111;&#x72;&#x67;</a></p>
+<p><a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a><br><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br></p>
+<p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em> 
 <br clear=all></p>
 <h2 id="define-demos--tests">Define demos / tests</h2>
 
@@ -54,7 +53,7 @@ LUA is a “batteries-not-included” language.<br>So I’ve coded up all my fav
 <span class="hljs-keyword">local</span> klass=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;obj&quot;</span>
 <span class="hljs-keyword">local</span> COLS,NUM, ROWS = klass.COLS,klass.NUM, klass.ROWS
 <span class="hljs-keyword">local</span> SOME, SYM      = klass.SOME, klass.SYM
-<span class="hljs-built_in">require</span><span class="hljs-string">&quot;add&quot;</span>
+<span class="hljs-built_in">require</span><span class="hljs-string">&quot;summary&quot;</span>
 <span class="hljs-built_in">require</span><span class="hljs-string">&quot;query&quot;</span></pre></div></div>
             
         </li>
@@ -133,7 +132,7 @@ LUA is a “batteries-not-included” language.<br>So I’ve coded up all my fav
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.NUMS</span><span class="hljs-params">()</span></span> 
-  <span class="hljs-keyword">local</span> n=NUM(); <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">1000</span> <span class="hljs-keyword">do</span> n:add(i) <span class="hljs-keyword">end</span>; chat(n)
+  <span class="hljs-keyword">local</span> n=NUM(); <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">1000</span> <span class="hljs-keyword">do</span> n:summarize(i) <span class="hljs-keyword">end</span>; chat(n)
   <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
@@ -150,7 +149,7 @@ LUA is a “batteries-not-included” language.<br>So I’ve coded up all my fav
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.SOME</span><span class="hljs-params">()</span></span> 
-  <span class="hljs-keyword">local</span> s=SOME(<span class="hljs-number">32</span>); <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">1000</span> <span class="hljs-keyword">do</span> s:add(i) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">local</span> s=SOME(<span class="hljs-number">32</span>); <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">1000</span> <span class="hljs-keyword">do</span> s:summarize(i) <span class="hljs-keyword">end</span>
   chat(<span class="hljs-built_in">sort</span>(s.kept)); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
@@ -168,7 +167,7 @@ LUA is a “batteries-not-included” language.<br>So I’ve coded up all my fav
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.SYM</span><span class="hljs-params">()</span></span> 
   <span class="hljs-keyword">local</span> s=SYM()
-  <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">1000</span> <span class="hljs-keyword">do</span> <span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>} <span class="hljs-keyword">do</span> s:add(c) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> i=<span class="hljs-number">1</span>,<span class="hljs-number">1000</span> <span class="hljs-keyword">do</span> <span class="hljs-keyword">for</span> _,c <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>} <span class="hljs-keyword">do</span> s:summarize(c) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
   chat(<span class="hljs-built_in">sort</span>(s.kept)); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
@@ -214,7 +213,8 @@ LUA is a “batteries-not-included” language.<br>So I’ve coded up all my fav
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.ROWS</span><span class="hljs-params">()</span></span> chat(ROWS():adds(the.file).cols.y); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.ROWS</span><span class="hljs-params">()</span></span> 
+  chat(ROWS():fill(the.file).cols.y); <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -225,9 +225,16 @@ LUA is a “batteries-not-included” language.<br>So I’ve coded up all my fav
               <div class="sswrap ">
                 <a class="ss" href="#section-12">&#x00a7;</a>
               </div>
-              <hr>
+              <p>Print klass names</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.KLASS</span><span class="hljs-params">()</span></span> 
+  <span class="hljs-keyword">local</span> file = <span class="hljs-string">&quot;../../data/diabetes.csv&quot;</span>
+  <span class="hljs-keyword">local</span> s=SYM()
+  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(ROWS():fill(file).rows) <span class="hljs-keyword">do</span> s:summarize(row:klass()) <span class="hljs-keyword">end</span>
+  chat(s.kept)
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -237,6 +244,19 @@ LUA is a “batteries-not-included” language.<br>So I’ve coded up all my fav
               
               <div class="sswrap ">
                 <a class="ss" href="#section-13">&#x00a7;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-14">&#x00a7;</a>
               </div>
               <h3 id="start">Start</h3>
 
