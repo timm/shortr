@@ -1,8 +1,8 @@
 -----
 -- Summarize a stream of numbers.
+
 local _=require"about"
 local obj,push,the = _.obj,_.push,_.the
-
 --> SYM(at:?int, txt:?str) :SYM -> Summarize a stream of non-numerics.
 local SYM = obj("SYM", function(i,at,txt)
   i.at, i.txt, i.n, i.kept =  at or 0, txt or "", 0, {} end)
@@ -12,7 +12,7 @@ function SYM.add(i,x,n)
   if x ~= "?" then 
     i.kept[x] = (n or 1) + (i.kept[x] or 0) end end
 
---> clone(i:(SYM|NUM)) :(SYM|NUM) -> Return a class of the same structure.
+--> clone(i:SYM) :SYM -> Return a class of the same structure.
 function SYM.clone(i) return SYM(i.at, i.txt) end
 
 function SYM.like(i,x,prior)

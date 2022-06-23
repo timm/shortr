@@ -21,18 +21,14 @@ function NUM.clone(i) return NUM(i.at, i.txt) end
 -- (its tendency _not_ to be a its central tendency).
 function NUM.div(i,p) 
   local a=i.kept:has(); return rnd( (per(a,.9) - per(a,.1))/2.56, p or 2) end
- 
+
+--> like(i:NUM, x:any) -> Return the likelihood that `x` belongs to `i`.
 function NUM.like(i,x,...)
   local sd,mu=i:div(), i:mid()
   if sd==0 then return x==mu and 1 or 1/big end
   return math.exp(-.5*((x - mu)/sd)^2) / (sd*((2*math.pi)^0.5)) end  
 
 --> mid(i:NUM),p:?float=.5):tab -> Return a columns' `mid`ddle
--- (central tendency), rounded to `p` places.
-function NUM.mid(i,p) 
-  local a=i.kept:has(); return rnd(per(a,.5),p or 2) end
-
---> mids(i:(NUM|SYM),p:?float=.5):tab -> Return a columns' `mid`ddle
 -- (central tendency), rounded to `p` places.
 function NUM.mid(i,p) 
   local a=i.kept:has(); return rnd(per(a,.5),p or 2) end
