@@ -16,7 +16,7 @@
 -- <sup>c</sup>apps, 
 -- <sup>d</sup>tests   
 -- <hr>
--- <img align=left width=175   src="ada.png">
+-- <img align=left width=165   src="ada.png">
 -- 
 -- LUA is a "batteries-not-included" language.   
 -- So I built "b(Ai)tteries" (for XAI), optimizing for brevity.  Enjoy!
