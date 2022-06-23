@@ -8,17 +8,18 @@
 -- [about](about.html)<sup>a</sup>
 -- :: [bin](bin.html)
 -- :: [cols](cols.html)
--- :: [lib](lib.html)
--- :: [nb](nb.html)<sup>b</sup>
+-- :: [lib](lib.html)<sup>b</sup>
+-- :: [nb](nb.html)<sup>c</sup>
 -- :: [num](num.html)    
 --    [row](row.html)
 -- :: [rows](rows.html)
 -- :: [some](some.html)
 -- :: [sym](sym.html)
--- :: [go](go.html)<sup>c</sup>    
--- **KEY:** <sup>a</sup>config, 
--- <sup>b</sup>apps, 
--- <sup>c</sup>tests   
+-- :: [go](go.html)<sup>d</sup>    
+-- **KEY:** <sup>a</sup> config, 
+-- <sup>a</sup> functions, 
+-- <sup>c</sup> apps, 
+-- <sup>d</sup> tests   
 -- 
 -- (c) 2022, Tim Menzies, <timm@ieee.org>
 --
