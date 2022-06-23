@@ -28,34 +28,32 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span></p>
-<p>LUA is a “batteries-not-included” language.<br>So I built “b(Ai)tteries” (for XAI), optimizing for brevity.  Enjoy!</p>
+<p><a href="about.html">about</a><sup>a</sup>
+| <a href="bin.html">bin</a>
+| <a href="cols.html">cols</a>
+| <a href="lib.html">lib</a><sup>b</sup>
+| <a href="nb.html">nb</a><sup>c</sup>
+| <a href="num.html">num</a> 
+| <a href="row.html">row</a>
+| <a href="rows.html">rows</a>
+| <a href="some.html">some</a>
+| <a href="sym.html">sym</a>
+| <a href="go.html">go</a><sup>d</sup>  <br>
+<strong>KEY:</strong> <sup>a</sup>config, 
+<sup>a</sup>functions, 
+<sup>c</sup>apps, 
+<sup>d</sup>tests   </p>
+<hr>
 <img align=left width=175   src="ada.png">
 
-<p><a href="about.html">about</a><sup>a</sup>
-:: <a href="bin.html">bin</a>
-:: <a href="cols.html">cols</a>
-:: <a href="lib.html">lib</a>
-:: <a href="nb.html">nb</a><sup>b</sup>
-:: <a href="num.html">num</a><br>   <a href="row.html">row</a>
-:: <a href="rows.html">rows</a>
-:: <a href="some.html">some</a>
-:: <a href="sym.html">sym</a>
-:: <a href="go.html">go</a><sup>c</sup><br><strong>KEY:</strong> <sup>a</sup>config, 
-<sup>b</sup>apps, 
-<sup>c</sup>tests   </p>
-<p>(c) 2022, Tim Menzies, <a href="mailto:&#116;&#105;&#109;&#x6d;&#x40;&#x69;&#x65;&#x65;&#x65;&#x2e;&#x6f;&#114;&#x67;">&#116;&#105;&#109;&#x6d;&#x40;&#x69;&#x65;&#x65;&#x65;&#x2e;&#x6f;&#114;&#x67;</a></p>
+<p>LUA is a “batteries-not-included” language.<br>So I built “b(Ai)tteries” (for XAI), optimizing for brevity.  Enjoy!</p>
+<p>(c) 2022, Tim Menzies, <a href="mailto:&#x74;&#x69;&#x6d;&#x6d;&#64;&#105;&#101;&#x65;&#101;&#46;&#x6f;&#114;&#103;">&#x74;&#x69;&#x6d;&#x6d;&#64;&#105;&#101;&#x65;&#101;&#46;&#x6f;&#114;&#103;</a></p>
 <p><a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a><br><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br></p>
 <p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em> 
 <br clear=all></p>
-<h2 id="update">Update</h2>
+<hr>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>
-<span class="hljs-keyword">local</span> o=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;obj&quot;</span>
-<span class="hljs-keyword">local</span> fmt = _.fmt
-<span class="hljs-keyword">local</span> COLS,NUM,SOME,SYM = o.COLS, o.NUM, o.SOME, o.SYM
-<span class="hljs-keyword">local</span> ROW,ROWS          = o.ROW, o.ROWS</pre></div></div>
             
         </li>
         
@@ -66,9 +64,13 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
               </div>
-              <h3 id="extend-info-on-2-columns">Extend Info on 2 Columns</h3>
+              <p> Information of two columns</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>
+<span class="hljs-keyword">local</span> o=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;obj&quot;</span>
+<span class="hljs-keyword">local</span> big, fmt = _.big, _.fmt</pre></div></div>
             
         </li>
         
@@ -79,35 +81,13 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-3">&#x00a7;</a>
               </div>
-              <p>extend(i:Bin, x:num, y:(num|str) -&gt; Ensure <code>lo</code>,<code>hi</code> covers <code>x</code>. Add <code>y</code> to <code>ys</code>.</p>
+              <p><strong>BIN( <code>xlo</code>:  num, <code>xhi</code>:  num, <code>ys</code>:  (NUM|SYM)):BIN</strong> <br> 
+<code>ys</code> stores values seen from <code>xlo to </code>xhi`.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.extend</span><span class="hljs-params">(i,x,y)</span></span>
-  i.lo = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(i.lo, x)
-  i.hi = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(i.hi, x)
-  ys:summarize(y) <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.show</span><span class="hljs-params">(i)</span></span>
-  <span class="hljs-keyword">local</span> x,lo,hi = i.ys.txt, i.lo, i.hi
-  <span class="hljs-keyword">if</span>     lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x, lo)
-  <span class="hljs-keyword">elseif</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x, lo)
-  <span class="hljs-keyword">elseif</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s&quot;</span>, x, hi)
-  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s &lt; %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.hold</span><span class="hljs-params">(i, row)</span></span>
-  <span class="hljs-keyword">local</span> x = row.cells[i.ys.at]
-  <span class="hljs-keyword">return</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">or</span> i.lo==i.hi <span class="hljs-keyword">or</span> i.lo&lt;x <span class="hljs-keyword">and</span> x&lt;=i.hi <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.holds</span><span class="hljs-params">(i, rows)</span></span>
-  <span class="hljs-keyword">return</span> map(rows,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">if</span> Bin.hold(i,row) <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> row <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
-
-<span class="hljs-keyword">local</span> _merge
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.merge</span><span class="hljs-params">(i,j, min)</span></span>
-  <span class="hljs-keyword">local</span> iy,jy = i.ys,j.ys
-  <span class="hljs-keyword">local</span> ky    = _merge(iy,jy)
-  <span class="hljs-keyword">if</span> iy.n &lt; <span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> jy.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> Col.simpler(ky,iy,jy) <span class="hljs-keyword">then</span>
-    <span class="hljs-keyword">return</span> Bin.NEW(i.lo, j.hi, ky) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> BIN = obj(<span class="hljs-string">&quot;BIN&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xlo, xhi, ys)</span></span>
+  i.lo, i.hi, i.ys = xlo, xhi, ys <span class="hljs-keyword">end</span>)</pre></div></div>
             
         </li>
         
@@ -118,13 +98,44 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <p><strong>simpler( <code>i</code>:  col, <code>this</code>:  col, <code>that</code>:  col):bool</strong> <br> am <code>i</code> simpler
-than <code>this</code> and <code>that</code>?</p>
+              <p>add(i:Bin, x:num, y:(num|str) -&gt; Ensure <code>lo</code>,<code>hi</code> covers <code>x</code>. Add <code>y</code> to <code>ys</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_simpler</span><span class="hljs-params">(i,this,that)</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.add</span><span class="hljs-params">(i,x,y)</span></span>
+  i.lo = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(i.lo, x)
+  i.hi = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(i.hi, x)
+  ys:add(y) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.hold</span><span class="hljs-params">(i, row)</span></span>
+  <span class="hljs-keyword">local</span> x = row.cells[i.ys.at]
+  <span class="hljs-keyword">return</span> x==<span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">or</span> i.lo==i.hi <span class="hljs-keyword">or</span> i.lo&lt;x <span class="hljs-keyword">and</span> x&lt;=i.hi <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.holds</span><span class="hljs-params">(i, rows)</span></span>
+  <span class="hljs-keyword">return</span> map(rows,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">if</span> Bin.hold(i,row) <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> row <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.show</span><span class="hljs-params">(i)</span></span>
+  <span class="hljs-keyword">local</span> x,lo,hi = i.ys.txt, i.lo, i.hi
+  <span class="hljs-keyword">if</span>     lo ==  hi  <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s == %s&quot;</span>,x, lo)
+  <span class="hljs-keyword">elseif</span> hi ==  big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &gt;= %s&quot;</span>,x, lo)
+  <span class="hljs-keyword">elseif</span> lo == -big <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt; %s&quot;</span>, x, hi)
+  <span class="hljs-keyword">else</span>                   <span class="hljs-keyword">return</span> fmt(<span class="hljs-string">&quot;%s &lt;= %s &lt; %s&quot;</span>,lo,x,hi) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> _merge, _simpler
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_merge</span><span class="hljs-params">(i,j, min)</span></span>
+  <span class="hljs-keyword">local</span> iy,jy = i.ys,j.ys
+  <span class="hljs-keyword">local</span> ky    = _merge(iy,jy)
+  <span class="hljs-keyword">if</span> iy.n &lt; <span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> jy.n&lt;<span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> _simpler(ky,iy,jy) <span class="hljs-keyword">then</span>
+    <span class="hljs-keyword">return</span> BIN(i.lo, j.hi, ky) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_simpler</span><span class="hljs-params">(i,this,that)</span></span>
   <span class="hljs-keyword">return</span> i:div(i) &lt;= (this.n*this:div() + that.n*that:div()) / i.n <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_merge</span><span class="hljs-params">(i,j,     k)</span></span>
+  k = i:clone()
+  <span class="hljs-keyword">for</span> _,kept <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{i.kept, j.kept} <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">for</span> v,inc <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(kept) <span class="hljs-keyword">do</span> k:add(v,inc) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.BINS</span><span class="hljs-params">(rows,col,y,yKlass)</span></span>
   y      = y <span class="hljs-keyword">or</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">return</span> row:klass() <span class="hljs-keyword">end</span>
@@ -138,17 +149,17 @@ than <code>this</code> and <code>that</code>?</p>
       dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, Bin(v,v,yKlass:clone()))
       Bin.add(dict[pos], v, y(row)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
   list = <span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;lo&quot;</span>)
-  list = col.nums <span class="hljs-keyword">and</span> Bin.MERGES(list, small(n)) <span class="hljs-keyword">or</span> list
+  list = col_is ==<span class="hljs-string">&quot;NUMS&quot;</span> <span class="hljs-keyword">and</span> _merges(list, small(n)) <span class="hljs-keyword">or</span> list
   <span class="hljs-keyword">return</span> {bins= list,
           div = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> Col.div(z.ys)*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.MERGES</span><span class="hljs-params">(b4, min)</span></span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_merges</span><span class="hljs-params">(b4, min)</span></span>
   <span class="hljs-keyword">local</span> n,now = <span class="hljs-number">1</span>,{}
   <span class="hljs-keyword">while</span> n &lt;= #b4 <span class="hljs-keyword">do</span>
     <span class="hljs-keyword">local</span> merged = n&lt;#b4 <span class="hljs-keyword">and</span> Bin.merge(b4[n], b4[n+<span class="hljs-number">1</span>], <span class="hljs-built_in">min</span>)
     now[#now+<span class="hljs-number">1</span>]  = merged <span class="hljs-keyword">or</span> b4[n]
     n            = n + (merged <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)  <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> #now &lt; #b4 <span class="hljs-keyword">and</span> Bin.MERGES(now,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> Bin.XPAND(now) <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">return</span> #now &lt; #b4 <span class="hljs-keyword">and</span> _merges(now,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> _xpand(now) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -163,19 +174,11 @@ than <code>this</code> and <code>that</code>?</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bin.XPAND</span><span class="hljs-params">(bins)</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_xpand</span><span class="hljs-params">(bins)</span></span>
   <span class="hljs-keyword">if</span> #bins&gt;<span class="hljs-number">1</span> <span class="hljs-keyword">then</span>
     <span class="hljs-keyword">for</span> n=<span class="hljs-number">2</span>,#bins <span class="hljs-keyword">do</span> bins[n].lo = bins[n<span class="hljs-number">-1</span>].hi <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
   bins[<span class="hljs-number">1</span>].lo, bins[#bins].hi = -big, big
-  <span class="hljs-keyword">return</span> bins <span class="hljs-keyword">end</span> 
-
-
-
-<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_merge</span><span class="hljs-params">(i,j,     k)</span></span>
-  k = i:clone()
-  <span class="hljs-keyword">for</span> _,kept <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{i.kept, j.kept} <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">for</span> v,inc <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(kept) <span class="hljs-keyword">do</span> k:add(v,inc) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">return</span> bins <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         

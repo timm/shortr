@@ -1,25 +1,25 @@
 -- <span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
 -- 
--- LUA is a "batteries-not-included" language.   
--- So I built "b(Ai)tteries" (for XAI), optimizing for brevity.  Enjoy!
---
+-- [about](about.html)<sup>a</sup>
+-- | [bin](bin.html)
+-- | [cols](cols.html)
+-- | [lib](lib.html)<sup>b</sup>
+-- | [nb](nb.html)<sup>c</sup>
+-- | [num](num.html) 
+-- | [row](row.html)
+-- | [rows](rows.html)
+-- | [some](some.html)
+-- | [sym](sym.html)
+-- | [go](go.html)<sup>d</sup>  <br>
+-- **KEY:** <sup>a</sup>config, 
+-- <sup>a</sup>functions, 
+-- <sup>c</sup>apps, 
+-- <sup>d</sup>tests   
+-- <hr>
 -- <img align=left width=175   src="ada.png">
 -- 
--- [about](about.html)<sup>a</sup>
--- :: [bin](bin.html)
--- :: [cols](cols.html)
--- :: [lib](lib.html)<sup>b</sup>
--- :: [nb](nb.html)<sup>c</sup>
--- :: [num](num.html)    
---    [row](row.html)
--- :: [rows](rows.html)
--- :: [some](some.html)
--- :: [sym](sym.html)
--- :: [go](go.html)<sup>d</sup>    
--- **KEY:** <sup>a</sup> config, 
--- <sup>a</sup> functions, 
--- <sup>c</sup> apps, 
--- <sup>d</sup> tests   
+-- LUA is a "batteries-not-included" language.   
+-- So I built "b(Ai)tteries" (for XAI), optimizing for brevity.  Enjoy!
 -- 
 -- (c) 2022, Tim Menzies, <timm@ieee.org>
 --
