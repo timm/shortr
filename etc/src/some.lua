@@ -1,5 +1,5 @@
 local _=require"about"
-local obj,sort,the = _.obj,_.sort,_.the
+local obj,push,R,sort,the = _.obj,_.push,_.R, _.sort,_.the
 
 --> SOME(max:?int) :SOME -> collect, at most, `max` numbers.
 local SOME = obj("SOME", function(i,max) 

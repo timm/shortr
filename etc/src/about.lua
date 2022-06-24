@@ -21,6 +21,13 @@ return m
 -- This code contains 
 -- B(Ai)TTERY (a set of AI-related classes) and 
 --  various AI tools, coded on top of B(Ai)TTERY. 
+-- 
+-- One of the  idea here is that that there the thing we call "data 
+-- mining" shares many of its internal data structures and algorithms
+-- with the thing we call "optimization". So once we build those
+-- internal things, then building "data miners" or "optimizers"
+-- is a  pretty trivial extension. 
+--
 -- ### Apps
 --  Naive Bays Classifier
 -- 
@@ -88,5 +95,3 @@ return m
 --   ([Paul Graham](http://www.paulgraham.com/onlisp.html)<br>
 --     ([Peter Norvig](http://norvig.com/lispy.html)
 --       ([Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y)))))).
---
-

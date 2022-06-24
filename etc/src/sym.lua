@@ -15,6 +15,7 @@ function SYM.add(i,x,n)
 --> clone(i:SYM) :SYM -> Return a class of the same structure.
 function SYM.clone(i) return SYM(i.at, i.txt) end
 
+--> like(i:SYN,x:any,prior:num):num -> return how much `x` might belong to `i`.
 function SYM.like(i,x,prior)
    return ((i.kept[x] or 0)+the.m*prior) / (i.n+the.m) end
 

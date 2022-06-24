@@ -1,8 +1,8 @@
 -----
 -- Store data from multiple records.
 local _=require"about"
-local obj,rnd,the = _.obj,_.rnd,_.the
-local COLS=require"COLS"
+local csv,map,obj,push,rnd,the = _.csv,_.map,_.obj,_.push,_.rnd,_.the
+local COLS,ROW = require"COLS",require"ROW"
 
 --> ROWS(names:?[str], rows:?[ROW}) :ROWS -> Place to store many ROWS
 --  and summarize them (in `i.cols`).

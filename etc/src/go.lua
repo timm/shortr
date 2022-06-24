@@ -4,7 +4,6 @@ local _ = require"about"
 local chat,cli,csv,maps,on = _.chat, _.cli, _.csv,  _.maps, _.on
 local settings,sort,the    = _.settings, _.sort, _.the
 
-local klass=require"obj"
 local COLS,NUM, ROWS = require"COLS", require"NUM", require"ROWS"
 local SOME, SYM      = require"SOME", require"SYM"
 
@@ -52,7 +51,7 @@ function go.ROWS()
 function go.KLASS() 
   local file = "../../data/diabetes.csv"
   local s=SYM()
-  for _,row in pairs(ROWS():fill(file).rows) do s:summarize(row:klass()) end
+  for _,row in pairs(ROWS():fill(file).rows) do s:add(row:klass()) end
   chat(s.kept)
   return true end
 

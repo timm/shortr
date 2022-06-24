@@ -2,8 +2,7 @@
 -- Factory, to make NUMs or SYMs
 
 local _=require"about"
-local o=require"obj"
-local push = _.push
+local obj, push = _.obj, _.push
 local NUM, SYM = require"NUM", require"SYM"
 
 --> COLS(names:[str]) :COLS -> Factory. Turns a list of names into NUMs or SYMs.
