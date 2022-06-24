@@ -85,7 +85,8 @@ h2 {
   border-top: 2px solid #ccc;
 }
 h3 {
-  font-size: 1.7em; }
+   color: #954121;
+   font-size: 1.7em; }
 
 h4 {
   text-decoration: italic;
@@ -93,11 +94,12 @@ h4 {
 h3,h4,h5,h6 {text-align:right;}
 
 hr {
-  border: 0;
-  background: 1px rgb(15,25,68);
-  height: 1px;
-  xmargin: 20px 0;
-  margin-color: rgb(15,25,68); 
+  order: 0;
+    height: 1px;
+    xborder-top: 1px solid rgba(0, 0, 0, 0.1);
+    xborder-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #ccc;
+    border-bottom: 1px solid white;
 }
 
 pre, tt, code {

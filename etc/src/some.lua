@@ -1,3 +1,4 @@
+-- ## Keep, at most, "max" items
 local _=require"about"
 local obj,push,R,sort,the = _.obj,_.push,_.R, _.sort,_.the
 

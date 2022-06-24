@@ -1,5 +1,4 @@
------
--- Store data from one record.
+-- ## Store one record.
 local _=require"about"
 local obj = _.obj
 

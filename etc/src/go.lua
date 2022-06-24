@@ -1,5 +1,4 @@
------
--- Test suite.
+-- ## Test suite.
 local _ = require"about"
 local chat,cli,csv,maps,on = _.chat, _.cli, _.csv,  _.maps, _.on
 local settings,sort,the    = _.settings, _.sort, _.the

@@ -1,5 +1,4 @@
---------
---  Information of two columns
+--  ## Info on 2 columns
 local _=require"about"
 local o=require"obj"
 local big, fmt = _.big, _.fmt

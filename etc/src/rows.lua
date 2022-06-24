@@ -1,5 +1,4 @@
------
--- Store data from multiple records.
+-- ## Store  Many Rows
 local _=require"about"
 local csv,map,obj,push,rnd,the = _.csv,_.map,_.obj,_.push,_.rnd,_.the
 local COLS,ROW = require"COLS",require"ROW"
@@ -29,6 +28,9 @@ function ROWS.fill(i,src)
   what2do(src, function(t) i:add(t) end) 
   return i end
 
+--> like(i:ROWS,row;ROW,nklasses:num,nrows:num):num -> Return 
+-- P(H)*&prod;<sub>i</sub> (P(E<sub>i</sub>|H)). Do it with logs
+-- to handle very small numbers.
 function ROWS.like(i,row, nklasses, nrows)
   local prior,like,inc,x
   prior = (#i.rows + the.k) / (nrows + the.k * nklasses)

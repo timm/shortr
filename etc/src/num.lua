@@ -1,5 +1,4 @@
------
--- Summarize stream of numbers.
+-- ## Summarize Numbers.
 local _=require"about"
 local obj,push,the = _.obj,_.push,_.the
 local SOME = require"some"

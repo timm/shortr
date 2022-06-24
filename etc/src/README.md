@@ -1,20 +1,21 @@
 -- <span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
 -- 
--- [about](about.html)<sup>a</sup>
--- | [bin](bin.html)
--- | [cols](cols.html)
--- | [lib](lib.html)<sup>b</sup>
--- | [nb](nb.html)<sup>c</sup>
--- | [num](num.html) 
--- | [row](row.html)
--- | [rows](rows.html)
--- | [some](some.html)
--- | [sym](sym.html)
--- | [go](go.html)<sup>d</sup>  <br>
--- **KEY:** <sup>a</sup>config, 
--- <sup>a</sup>functions, 
--- <sup>c</sup>apps, 
--- <sup>d</sup>tests   
+-- [about](about.html)<sup>c</sup>
+-- :: [bin](bin.html)
+-- :: [cols](cols.html)
+-- :: [lib](lib.html)<sup>f</sup>
+-- :: [nb](nb.html)<sup>a</sup>
+-- :: [num](num.html) 
+-- :: [row](row.html)
+-- :: [rows](rows.html)
+-- :: [some](some.html)
+-- :: [sym](sym.html)
+-- :: [go](go.html)<sup>t</sup>  <br>
+-- **KEY:**
+-- <sup>a</sup>apps, 
+-- <sup>c</sup>config, 
+-- <sup>f</sup>functions, 
+-- <sup>t</sup>tests   
 -- <hr>
 -- <img align=left width=165   src="ada.png">
 -- 
