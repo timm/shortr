@@ -1,12 +1,10 @@
 -- ## About XAI and b(Ai)ttery
 -- Explainable AI (XAI) is a subset of AI that tries
--- to build models that people can understand. B(Ai)ttery
+-- to build models that people can read and understand and critique and easily change. B(Ai)ttery
 -- is a small set of classes that implements a few interesting
 -- XAI tools. 
 -- 
--- For the "big picture" on XAI, see 
--- [Explainable Artificial Intelligence: a Systematic Review](https://arxiv.org/pdf/2006.00093.pdf)
--- and [Why Heuristics Work](https://pure.mpg.de/rest/items/item_2100099/component/file_2100098/content).
+-- For the "big picture" on XAI, see the Vilone and Logno' 2020 systematic review.
 --
 -- For a small set of really useful XAI tactics, see below.
 --
@@ -30,11 +28,11 @@
 -- most important parts of the data.)
 -- 
 -- XAI should be designed with an understanding of human
--- cognitive processes. People are clever but
--- they  have [fixed and limited attention spans](https://ubiquity.acm.org/article.cfm?id=376626)
+-- cognitive processes. People are clever, as Davenport and Beck remind us,
+-- they  have [fixed and limited attention spans
 -- which they  hoard and use sparingly.
--- Hence, humans  use heuristic "short cuts" that let 
--- them [satisfy the demands of their work, just enough](https://uk.sagepub.com/sites/default/files/upm-binaries/25239_Chater~Vol_1~Ch_03.pdf), 
+-- Herbert Simon say that humans  use heuristic "short cuts" that let 
+-- them satisfy the demands of their work, just enough
 -- before rushing off to their next
 -- task.
 -- 
@@ -42,12 +40,25 @@
 -- of some variable that most effects the outcome. Feature
 -- extraction and weighting  is the process of finding
 -- those cues. This code can be summarized as "the hunt
--- for 'cues'".
+-- for 'cues'". 
 -- 
 -- Another short-cut is sampling; i.e. don't look at 
 -- everything, just a few things. There are many ways to
--- sample and this code exploits them all: random, 
--- across, extreme.
+-- sample and this code exploits them all (random, 
+-- reservoir, extreme).
+--
+-- ### References
+-- - Thomas H. Davenport and John C. Beck. (2001). 
+--   [The Attention economy](https://ubiquity.acm.org/article.cfm?id=376626). 
+--   Ubiquity 2001, May (May 1 - May 31, 2001), 
+-- - Gigerenzer, G. (2008). 
+--   [Why Heuristics Work](https://pure.mpg.de/rest/items/item_2100099/component/file_2100098/content).
+--   Perspectives on Psychological Science, 3(1), 20–29. 
+-- - Vilone, Giulia & Longo, Luca. (2020). 
+--   [Explainable Artificial Intelligence: a Systematic Review](https://arxiv.org/pdf/2006.00093.pdf)
+-- - Simon, Herbert A. (1956). 
+--   [Rational Choice and the Structure of the Environment](https://uk.sagepub.com/sites/default/files/upm-binaries/25239_Chater~Vol_1~Ch_03.pdf)
+--   Psychological Review. 63 (2): 129–138.
 all=require"lib"
 all.the = all.opts( [[
 BAITTERY: semi-supervised multi-objective optimization XAI
