@@ -1,7 +1,10 @@
 -- ## About XAI and b(Ai)ttery
 -- Explainable AI (XAI) is a subset of AI that tries
--- to build models that people can understand.
+-- to build models that people can understand. B(Ai)ttery
+-- is a small set of classes that implements some interesting
+-- XAI tools.
 --
+-- ### About XAI
 -- For years
 -- I used   XAI to _augment_ other more opaque AI tools.
 -- But that meant I was not explaining the real inference
