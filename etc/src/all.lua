@@ -1,8 +1,14 @@
 -- ## About XAI and b(Ai)ttery
 -- Explainable AI (XAI) is a subset of AI that tries
 -- to build models that people can understand. B(Ai)ttery
--- is a small set of classes that implements some interesting
--- XAI tools.
+-- is a small set of classes that implements a few interesting
+-- XAI tools. 
+-- 
+-- For the "big picture" on XAI, see 
+-- [Explainable Artificial Intelligence: a Systematic Review](https://arxiv.org/pdf/2006.00093.pdf)
+-- and [Why Heuristics Work](https://pure.mpg.de/rest/items/item_2100099/component/file_2100098/content).
+--
+-- For a small set of really useful XAI tactics, see below.
 --
 -- ### About XAI
 -- For years
@@ -25,10 +31,10 @@
 -- 
 -- XAI should be designed with an understanding of human
 -- cognitive processes. People are clever but
--- they  have fixed and limited attention spans
+-- they  have [fixed and limited attention spans](https://ubiquity.acm.org/article.cfm?id=376626)
 -- which they  hoard and use sparingly.
 -- Hence, humans  use heuristic "short cuts" that let 
--- them satisfy the demands of their work, just enough, 
+-- them [satisfy the demands of their work, just enough](https://uk.sagepub.com/sites/default/files/upm-binaries/25239_Chater~Vol_1~Ch_03.pdf), 
 -- before rushing off to their next
 -- task.
 -- 

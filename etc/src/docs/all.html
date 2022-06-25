@@ -32,7 +32,7 @@
 <p>LUA is a “batteries-not-included” language.
 But LUA makes it easy to add in the  missing bits.
 E.g. here are some “b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#x74;&#x69;&#x6d;&#109;&#64;&#105;&#101;&#101;&#101;&#46;&#111;&#114;&#x67;">&#x74;&#x69;&#x6d;&#109;&#64;&#105;&#101;&#101;&#101;&#46;&#111;&#114;&#x67;</a></p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#x69;&#x6d;&#x6d;&#64;&#x69;&#101;&#101;&#101;&#46;&#x6f;&#x72;&#103;">&#116;&#x69;&#x6d;&#x6d;&#64;&#x69;&#101;&#101;&#101;&#46;&#x6f;&#x72;&#103;</a></p>
 <p><strong>config:</strong> <a href="all.html">all</a></p>
 <p><strong>demos:</strong> <a href="go.html">go</a></p>
 <p><strong>apps:</strong> <a href="nb.html">nb</a></p>
@@ -49,8 +49,12 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
 <h2 id="about-xai-and-baittery">About XAI and b(Ai)ttery</h2>
 <p>Explainable AI (XAI) is a subset of AI that tries
 to build models that people can understand. B(Ai)ttery
-is a small set of classes that implements some interesting
-XAI tools.</p>
+is a small set of classes that implements a few interesting
+XAI tools. </p>
+<p>For the “big picture” on XAI, see 
+<a href="https://arxiv.org/pdf/2006.00093.pdf">Explainable Artificial Intelligence: a Systematic Review</a>
+and <a href="https://pure.mpg.de/rest/items/item_2100099/component/file_2100098/content">Why Heuristics Work</a>.</p>
+<p>For a small set of really useful XAI tactics, see below.</p>
 <h3 id="about-xai">About XAI</h3>
 <p>For years
 I used   XAI to <em>augment</em> other more opaque AI tools.
@@ -69,10 +73,10 @@ just runs a few what-of queries on the
 most important parts of the data.)</p>
 <p>XAI should be designed with an understanding of human
 cognitive processes. People are clever but
-they  have fixed and limited attention spans
+they  have <a href="https://ubiquity.acm.org/article.cfm?id=376626">fixed and limited attention spans</a>
 which they  hoard and use sparingly.
 Hence, humans  use heuristic “short cuts” that let 
-them satisfy the demands of their work, just enough, 
+them <a href="https://uk.sagepub.com/sites/default/files/upm-binaries/25239_Chater~Vol_1~Ch_03.pdf">satisfy the demands of their work, just enough</a>, 
 before rushing off to their next
 task.</p>
 <p>Once such short-cut is the “cue”; i.e. a small range
