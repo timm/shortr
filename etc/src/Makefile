@@ -18,7 +18,7 @@ docs/index.html: docs/all.html ##  commit to main
 ready:  ##  commit to main
 	git add *;git commit -am save;git push;git status
 
-LUAS = $(wildcard *.lua)
+LUAS = $(wildcard [a-z]*.lua)
 
 htmls:  $(subst .lua,.html,docs/$(subst lua ,html docs/,$(LUAS))) ## make all htmls
 
