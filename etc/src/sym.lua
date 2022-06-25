@@ -1,4 +1,4 @@
--- ## Summarize Symbols
+-- ## class SYM: summarize symbols
 
 local _=require"about"
 local obj,push,the = _.obj,_.push,_.the
@@ -18,18 +18,17 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 function SYM.like(i,x,prior)
    return ((i.kept[x] or 0)+the.m*prior) / (i.n+the.m) end
 
---> mid(i:SYM),p:?float=.5):tab -> Return a columns' `mid`ddle
--- (central tendency), rounded to `p` places.
+--> mid(i:SYM):tab -> Return a columns' `mid`ddle (central tendency).
 function SYM.mid(i,p)
   local max,mode=-1,nil
   for x,n in pairs(i.kept) do if n > most then most,mode = n,x end end
-  return rnd(mode, p or 2) end
+  return mode end
 
---> div(i:SYM,p:?float=.5):tab -> Return `div`ersity of a column
+--> div(i:SYM):tab -> Return `div`ersity of a column
 -- (its tendency _not_ to be a its central tendency).
 function SYM.div(i,p)
-  local ent,log=0,function(x) return math.log(x,2) end
+  local ent, log = 0, function(x) return math.log(x,2) end
   for x,n in pairs(i.kept) do if n > 0 then ent=ent - n/i.n*log(n/i.n) end end
-  return rnd(ent,p or 2) end
+  return ent end
  
 return SYM

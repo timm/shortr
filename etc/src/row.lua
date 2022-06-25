@@ -1,4 +1,4 @@
--- ## Store one record.
+-- ## class ROW:hold 1 record
 local _=require"about"
 local obj = _.obj
 

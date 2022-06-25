@@ -1,32 +1,30 @@
 -- <span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
+-- <img align=left width=140   src="battery.png">
+--  
+-- LUA is a "batteries-not-included" language.   
+-- But LUA makes it 
+-- easy to add in the  missing bits.
 -- 
--- [about](about.html)<sup>c</sup>
--- :: [bin](bin.html)
+-- E.g. here are some
+-- "b(Ai)tteries" for XAI.
+-- 
+-- (c) 2022, Tim Menzies<br><timm@ieee.org>
+--
+-- **config:** [about](about.html)
+--
+-- **demos:** [go](go.html)
+--
+-- **apps:** [nb](nb.html)
+--
+-- **functions:** [lib](lib.html)
+--
+-- **klasses:** [bin](bin.html)
 -- :: [cols](cols.html)
--- :: [lib](lib.html)<sup>f</sup>
--- :: [nb](nb.html)<sup>a</sup>
--- :: [num](num.html) 
+-- :: [num](num.html)
 -- :: [row](row.html)
 -- :: [rows](rows.html)
 -- :: [some](some.html)
 -- :: [sym](sym.html)
--- :: [go](go.html)<sup>t</sup>  <br>
--- **KEY:**
--- <sup>a</sup>apps, 
--- <sup>c</sup>config, 
--- <sup>f</sup>functions, 
--- <sup>t</sup>tests   
--- <hr>
--- <img align=left width=165   src="ada.png">
 -- 
--- LUA is a "batteries-not-included" language.   
--- So I built "b(Ai)tteries" (for XAI), optimizing for brevity.  Enjoy!
--- 
--- (c) 2022, Tim Menzies, <timm@ieee.org>
---
--- <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a>   
--- <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br>
--- 
---  **Ada Lovelace:**    
--- _"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation."_ 
--- <br clear=all>
+-- <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
+-- <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a>

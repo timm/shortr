@@ -1,4 +1,4 @@
--- ## Store  Many Rows
+-- ## class ROWS: store many ROW
 local _=require"about"
 local csv,map,obj,push,rnd,the = _.csv,_.map,_.obj,_.push,_.rnd,_.the
 local COLS,ROW = require"COLS",require"ROW"

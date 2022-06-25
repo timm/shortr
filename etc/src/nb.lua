@@ -1,4 +1,4 @@
--- ## Naive Bayes Classifier
+-- ## class NB: classifier
 local _=require"about"
 local obj,push,the = _.obj,_.push,_.the
 

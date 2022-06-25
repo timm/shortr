@@ -1,4 +1,4 @@
--- ## Factory: make NUMs or SYMs
+-- ## class COLS:  make NUMs or SYMs
 
 local _=require"about"
 local obj, push = _.obj, _.push

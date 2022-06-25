@@ -1,4 +1,4 @@
---  ## Info on 2 columns
+--  ## class BIN: info on 2 cols
 local _=require"about"
 local o=require"obj"
 local big, fmt = _.big, _.fmt

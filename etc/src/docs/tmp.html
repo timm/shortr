@@ -27,38 +27,33 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span></p>
-<p><a href="about.html">about</a><sup>c</sup>
-:: <a href="bin.html">bin</a>
+              <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
+<img align=left width=140   src="battery.png"></p>
+<p>LUA is a “batteries-not-included” language.<br>But LUA makes it 
+easy to add in the  missing bits.</p>
+<p>E.g. here are some
+“b(Ai)tteries” for XAI.</p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#105;&#109;&#x6d;&#64;&#105;&#101;&#101;&#101;&#x2e;&#x6f;&#114;&#x67;">&#116;&#105;&#109;&#x6d;&#64;&#105;&#101;&#101;&#101;&#x2e;&#x6f;&#114;&#x67;</a></p>
+<p><strong>config:</strong> <a href="about.html">about</a></p>
+<p><strong>demos:</strong> <a href="go.html">go</a></p>
+<p><strong>apps:</strong> <a href="nb.html">nb</a></p>
+<p><strong>functions:</strong> <a href="lib.html">lib</a></p>
+<p><strong>klasses:</strong> <a href="bin.html">bin</a>
 :: <a href="cols.html">cols</a>
-:: <a href="lib.html">lib</a><sup>f</sup>
-:: <a href="nb.html">nb</a><sup>a</sup>
-:: <a href="num.html">num</a> 
+:: <a href="num.html">num</a>
 :: <a href="row.html">row</a>
 :: <a href="rows.html">rows</a>
 :: <a href="some.html">some</a>
-:: <a href="sym.html">sym</a>
-:: <a href="go.html">go</a><sup>t</sup>  <br>
-<strong>KEY:</strong>
-<sup>a</sup>apps, 
-<sup>c</sup>config, 
-<sup>f</sup>functions, 
-<sup>t</sup>tests   </p>
-<hr>
-<img align=left width=165   src="ada.png">
-
-<p>LUA is a “batteries-not-included” language.<br>So I built “b(Ai)tteries” (for XAI), optimizing for brevity.  Enjoy!</p>
-<p>(c) 2022, Tim Menzies, <a href="mailto:&#116;&#x69;&#x6d;&#109;&#64;&#105;&#x65;&#x65;&#101;&#x2e;&#111;&#114;&#x67;">&#116;&#x69;&#x6d;&#109;&#64;&#105;&#x65;&#x65;&#101;&#x2e;&#111;&#114;&#x67;</a></p>
-<p><a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a><br><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> <br></p>
-<p> <strong>Ada Lovelace:</strong><br><em>“One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em> 
-<br clear=all></p>
-<h2 id="store--many-rows">Store  Many Rows</h2>
+:: <a href="sym.html">sym</a></p>
+<p><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
+<a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a></p>
+<h2 id="class-sym-summarize-symbols">class SYM: summarize symbols</h2>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>
-<span class="hljs-keyword">local</span> csv,map,obj,push,rnd,the = _.csv,_.map,_.obj,_.push,_.rnd,_.the
-<span class="hljs-keyword">local</span> COLS,ROW = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;COLS&quot;</span>,<span class="hljs-built_in">require</span><span class="hljs-string">&quot;ROW&quot;</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">local</span> _=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>
+<span class="hljs-keyword">local</span> obj,push,the = _.obj,_.push,_.the</pre></div></div>
             
         </li>
         
@@ -69,14 +64,12 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
               </div>
-              <p><strong>ROWS( <code>names</code>:  ?[str],  <code>rows</code>:  ?[ROW}) :ROWS</strong> <br> Place to store many ROWS
- and summarize them (in <code>i.cols</code>).</p>
+              <p><strong>SYM( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :SYM</strong> <br> Summarize a stream of non-numerics.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> ROWS = obj(<span class="hljs-string">&quot;ROWS&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,names,rows)</span></span> 
-  i.rows, i.cols = {}, (names <span class="hljs-keyword">and</span> COLS(names) <span class="hljs-keyword">or</span> <span class="hljs-literal">nil</span>)
-  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> i:summarize(row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>)</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> SYM = obj(<span class="hljs-string">&quot;SYM&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,at,txt)</span></span>
+  i.at, i.txt, i.n, i.kept =  at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-number">0</span>, {} <span class="hljs-keyword">end</span>)</pre></div></div>
             
         </li>
         
@@ -87,13 +80,13 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-3">&#x00a7;</a>
               </div>
-              <p><strong>add( <code>i</code>:   <code>ROWS</code>:    <code>row</code>:  ROW)</strong> <br> add ROW to ROWS, update the summaries in <code>i.cols</code>.</p>
+              <p><strong>add( <code>i</code>:   <code>SYM</code>:    <code>x</code>:  sum,  <code>n</code>:  ?int=1)</strong> <br> Add <code>n</code> count to <code>i.kept[n]</code> .</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.add</span><span class="hljs-params">(i,t)</span></span> 
-  t = t.cells <span class="hljs-keyword">and</span> t <span class="hljs-keyword">or</span> ROW(i,t)
-  <span class="hljs-keyword">if</span> i.cols <span class="hljs-keyword">then</span> i.cols:add(push(i.rows, t)) <span class="hljs-keyword">else</span> i.cols=COLS(t.cells) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.add</span><span class="hljs-params">(i,x,n)</span></span>
+  <span class="hljs-keyword">if</span> x ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> 
+    i.kept[x] = (n <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>) + (i.kept[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -104,16 +97,11 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <p><strong>ROWS.clone( <code>init</code>:  ?[ROW]) :ROWS</strong> <br> Return a ROWS with same structure as <code>i</code>. 
-Optionally, <code>init</code>ialize it with some rows. Add a pointer back to the 
-original table that spawned <code>eve</code>rything else (useful for some distance calcs).</p>
+              <p><strong>clone( <code>i</code>:  SYM) :SYM</strong> <br> Return a class of the same structure.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.clone</span><span class="hljs-params">(i,init)</span></span>
-  <span class="hljs-keyword">local</span> j=ROWS(i.cols.names,init)
-  j._eve = i._eve <span class="hljs-keyword">or</span> i 
-  <span class="hljs-keyword">return</span> j <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.clone</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> SYM(i.at, i.txt) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -124,14 +112,12 @@ original table that spawned <code>eve</code>rything else (useful for some distan
               <div class="sswrap ">
                 <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
-              <p><strong>fill( <code>i</code>:   <code>ROWS</code>:    <code>src</code>:  (str|tab)):ROWS</strong> <br> copy the data from <code>src</code> into <code>i</code>.</p>
+              <p><strong>like( <code>i</code>:  SYN, <code>x</code>:  any, <code>prior</code>:  num):num</strong> <br> return how much <code>x</code> might belong to <code>i</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.fill</span><span class="hljs-params">(i,src)</span></span>
-  <span class="hljs-keyword">local</span> what2do = <span class="hljs-built_in">type</span>(src)==<span class="hljs-string">&quot;table&quot;</span> <span class="hljs-keyword">and</span> map <span class="hljs-keyword">or</span> csv
-  what2do(src, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(t)</span></span> i:add(t) <span class="hljs-keyword">end</span>) 
-  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.like</span><span class="hljs-params">(i,x,prior)</span></span>
+   <span class="hljs-keyword">return</span> ((i.kept[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>)+the.m*prior) / (i.n+the.m) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -142,23 +128,15 @@ original table that spawned <code>eve</code>rything else (useful for some distan
               <div class="sswrap ">
                 <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
-              <p><strong>like( <code>i</code>:  ROWS,row;ROW, <code>nklasses</code>:  num, <code>nrows</code>:  num):num</strong> <br> Return 
-P(H)*&prod;<sub>i</sub> (P(E<sub>i</sub>|H)). Do it with logs
-to handle very small numbers.</p>
+              <p><strong>mid( <code>i</code>:  SYM), <code>p</code>:  ?float=.5):tab</strong> <br> Return a columns’ <code>mid</code>ddle
+(central tendency), rounded to <code>p</code> places.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.like</span><span class="hljs-params">(i,row, nklasses, nrows)</span></span>
-  <span class="hljs-keyword">local</span> prior,like,inc,x
-  prior = (#i.rows + the.k) / (nrows + the.k * nklasses)
-  like  = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(prior)
-  row   = row.cells <span class="hljs-keyword">and</span> row.cells <span class="hljs-keyword">or</span> row
-  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.x) <span class="hljs-keyword">do</span>
-    x = row[col.at]
-    <span class="hljs-keyword">if</span> x <span class="hljs-keyword">and</span> x ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
-      inc  = col:like(x,prior)
-      like = like + <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(inc) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> like <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.mid</span><span class="hljs-params">(i,p)</span></span>
+  <span class="hljs-keyword">local</span> <span class="hljs-built_in">max</span>,mode=<span class="hljs-number">-1</span>,<span class="hljs-literal">nil</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kept) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n &gt; most <span class="hljs-keyword">then</span> most,mode = n,x <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> rnd(mode, p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -169,17 +147,17 @@ to handle very small numbers.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-7">&#x00a7;</a>
               </div>
-              <p><strong>mids( <code>i</code>:  ROW, <code>p</code>:  ?int=2,cols=?[COL]=i.cols.y):tab</strong> <br> Return <code>mid</code> of columnss
-rounded to <code>p</code> places.</p>
+              <p><strong>div( <code>i</code>:  SYM, <code>p</code>:  ?float=.5):tab</strong> <br> Return <code>div</code>ersity of a column
+(its tendency <em>not</em> to be a its central tendency).</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.mids</span><span class="hljs-params">(i,p,cols,    t)</span></span> 
-  t={}
-  <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(cols <span class="hljs-keyword">or</span> i.cols.y) <span class="hljs-keyword">do</span> t[col.txt]=col:mid(p) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> rnd(t,p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
-
-<span class="hljs-keyword">return</span> ROWS</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.div</span><span class="hljs-params">(i,p)</span></span>
+  <span class="hljs-keyword">local</span> ent,<span class="hljs-built_in">log</span>=<span class="hljs-number">0</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(x,<span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kept) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> ent=ent - n/i.n*<span class="hljs-built_in">log</span>(n/i.n) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> rnd(ent,p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
+ 
+<span class="hljs-keyword">return</span> SYM</pre></div></div>
             
         </li>
         
