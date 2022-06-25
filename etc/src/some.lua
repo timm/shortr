@@ -1,6 +1,6 @@
 -- ## class SOME: keep some nums
-local _=require"about"
-local obj,push,R,sort,the = _.obj,_.push,_.R, _.sort,_.the
+local all=require"all"
+local obj,push,R,sort,the= all.obj, all.push, all.R, all.sort, all.the
 
 --> SOME(max:?int) :SOME -> collect, at most, `max` numbers.
 local SOME = obj("SOME", function(i,max) 

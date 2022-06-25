@@ -1,6 +1,6 @@
 --  ## class BIN: info on 2 cols
-local _=require"about"
-local o=require"obj"
+local all=require"all"
+local obj=require"obj"
 local big, fmt = _.big, _.fmt
 
 --> BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN ->

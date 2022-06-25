@@ -2,15 +2,13 @@
 -- <img align=left width=140   src="battery.png">
 --  
 -- LUA is a "batteries-not-included" language.   
--- But LUA makes it 
--- easy to add in the  missing bits.
+-- But LUA makes it easy to add in the  missing bits.
 -- 
--- E.g. here are some
--- "b(Ai)tteries" for XAI.
--- 
+-- E.g. here are some "b(Ai)tteries" for XAI.
+--
 -- (c) 2022, Tim Menzies<br><timm@ieee.org>
 --
--- **config:** [about](about.html)
+-- **config:** [all](all.html)
 --
 -- **demos:** [go](go.html)
 --

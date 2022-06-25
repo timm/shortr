@@ -29,12 +29,10 @@
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
 <img align=left width=140   src="battery.png"></p>
-<p>LUA is a “batteries-not-included” language.<br>But LUA makes it 
-easy to add in the  missing bits.</p>
-<p>E.g. here are some
-“b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#105;&#x6d;&#109;&#x40;&#x69;&#x65;&#x65;&#101;&#x2e;&#x6f;&#114;&#x67;">&#116;&#105;&#x6d;&#109;&#x40;&#x69;&#x65;&#x65;&#101;&#x2e;&#x6f;&#114;&#x67;</a></p>
-<p><strong>config:</strong> <a href="about.html">about</a></p>
+<p>LUA is a “batteries-not-included” language.<br>But LUA makes it easy to add in the  missing bits.</p>
+<p>E.g. here are some “b(Ai)tteries” for XAI.</p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#x74;&#x69;&#x6d;&#109;&#64;&#x69;&#101;&#101;&#x65;&#x2e;&#x6f;&#114;&#x67;">&#x74;&#x69;&#x6d;&#109;&#64;&#x69;&#101;&#101;&#x65;&#x2e;&#x6f;&#114;&#x67;</a></p>
+<p><strong>config:</strong> <a href="all.html">all</a></p>
 <p><strong>demos:</strong> <a href="go.html">go</a></p>
 <p><strong>apps:</strong> <a href="nb.html">nb</a></p>
 <p><strong>functions:</strong> <a href="lib.html">lib</a></p>
@@ -51,9 +49,9 @@ easy to add in the  missing bits.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> _ = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>
-<span class="hljs-keyword">local</span> chat,cli,csv,maps,on = _.chat, _.cli, _.csv,  _.maps, _.on
-<span class="hljs-keyword">local</span> settings,<span class="hljs-built_in">sort</span>,the    = _.settings, _.<span class="hljs-built_in">sort</span>, _.the
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> about = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;about&quot;</span>
+<span class="hljs-keyword">local</span> chat,cli,csv,maps,on = about.chat,about.cli,about.csv,about.maps,about.on
+<span class="hljs-keyword">local</span> settings,<span class="hljs-built_in">sort</span>,the    = about.settings, about.<span class="hljs-built_in">sort</span>, about.the
 
 <span class="hljs-keyword">local</span> COLS,NUM, ROWS = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;COLS&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;NUM&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;ROWS&quot;</span>
 <span class="hljs-keyword">local</span> SOME, SYM      = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;SOME&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;SYM&quot;</span></pre></div></div>

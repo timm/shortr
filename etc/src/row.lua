@@ -1,6 +1,6 @@
 -- ## class ROW:hold 1 record
-local _=require"about"
-local obj = _.obj
+local all = require"all"
+local obj = all.obj
 
 --> ROW(of:ROWS, cells:tab) :ROW -> Place to store one record
 -- (and stats on how it is used; e.g. `i.evaled=true` if we touch the y values.

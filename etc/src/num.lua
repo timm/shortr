@@ -1,6 +1,6 @@
 -- ## class NUM: summarize numbers
-local _=require"about"
-local obj,push,the = _.obj,_.push,_.the
+local all = require"all"
+local obj,push,the = all.obj, all.push, all.the
 local SOME = require"some"
 
 --> NUM(at:?int, txt:?str) :NUM -> Summarize a stream of numbers.

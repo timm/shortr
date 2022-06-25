@@ -1,7 +1,7 @@
 -- ## Test suite.
-local _ = require"about"
-local chat,cli,csv,maps,on = _.chat, _.cli, _.csv,  _.maps, _.on
-local settings,sort,the    = _.settings, _.sort, _.the
+local all = require"all"
+local chat,cli,csv,maps,on = all.chat, all.cli, all.csv, all.maps, all.on
+local settings,sort,the    = all.settings, all.sort, all.the
 
 local COLS,NUM, ROWS = require"COLS", require"NUM", require"ROWS"
 local SOME, SYM      = require"SOME", require"SYM"

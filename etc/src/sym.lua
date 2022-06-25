@@ -1,7 +1,7 @@
 -- ## class SYM: summarize symbols
 
-local _=require"about"
-local obj,push,the = _.obj,_.push,_.the
+local all = require"all"
+local obj,push,the = all.obj, all.push, all.the
 --> SYM(at:?int, txt:?str) :SYM -> Summarize a stream of non-numerics.
 local SYM = obj("SYM", function(i,at,txt)
   i.at, i.txt, i.n, i.kept =  at or 0, txt or "", 0, {} end)

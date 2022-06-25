@@ -1,6 +1,6 @@
 -- ## class NB: classifier
-local _=require"about"
-local obj,push,the = _.obj,_.push,_.the
+local all=require"all"
+local obj,push,the = all.obj, all.push, all.the
 
 local NB = obj("NB", function (i,src,report)
   i.overall, i.dict, i.list = nil, {},{}

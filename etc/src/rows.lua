@@ -1,6 +1,7 @@
 -- ## class ROWS: store many ROW
-local _=require"about"
-local csv,map,obj,push,rnd,the = _.csv,_.map,_.obj,_.push,_.rnd,_.the
+local all = require"all"
+local csv,map,obj  = all.csv, all.map,  all.obj
+local push,rnd,the = all.push, all.rnd, all.the
 local COLS,ROW = require"COLS",require"ROW"
 
 --> ROWS(names:?[str], rows:?[ROW}) :ROWS -> Place to store many ROWS

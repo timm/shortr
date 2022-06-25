@@ -1,7 +1,7 @@
 -- ## class COLS:  make NUMs or SYMs
 
-local _=require"about"
-local obj, push = _.obj, _.push
+local all=require"all"
+local obj, push = all.obj, all.push
 local NUM, SYM = require"NUM", require"SYM"
 
 --> COLS(names:[str]) :COLS -> Factory. Turns a list of names into NUMs or SYMs.

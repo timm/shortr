@@ -1,7 +1,7 @@
 -- ## About
        
-local m=require"lib"
-m.the =  m.opts( [[
+local all=require"lib"
+all.the = all.opts( [[
   
 B(AI)TTERY:  (c) 2022 Tim Menzies, BSD2
 LUA is a “batteries-not-included” language. So here, we add
@@ -16,7 +16,7 @@ OPTIONS (other):
   -g  --go      start up action  =  nothing,
   -h  --help    show help        =  false
 ]])
-return m
+return all
 
 -- This code contains 
 -- B(Ai)TTERY (a set of AI-related classes) and 
