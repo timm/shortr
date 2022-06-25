@@ -21,6 +21,13 @@ function lib.rnds(t, places)
   u={};for k,x in pairs(t) do u[k] = rnd(x,places or 2) end; return u end
 -- ###  Lists
 
+--> splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t -> pull items
+-- `start` to `stop`, stepping by `step`. 
+function lib.splice(t, start, stop, step)
+  u={}
+  for n=(start or 1)//1,(stop or #t)//1,(step or 1)//1 do u[1+#u]=t[n] end
+  return u end
+
 --> sort(t:tab, f:fun) :tab -> Return `t`, sorted of function `f` (default "<").
 function lib.sort(t,f) table.sort(t,f); return t end
 --> push(t:tab, x:any) :x -> Add `x` to end of `t`; return `t`.

@@ -22,18 +22,18 @@ function go.MAPS()
 
 --  Summarize stream of numbers
 function go.NUMS() 
-  local n=NUM(); for i=1,1000 do n:summarize(i) end; chat(n)
+  local n=NUM(); for i=1,1000 do n:add(i) end; chat(n)
   return true end
 
 -- Keep a sample of 32 nums (out of 1000).
 function go.SOME() 
-  local s=SOME(32); for i=1,1000 do s:summarize(i) end
+  local s=SOME(32); for i=1,1000 do s:add(i) end
   chat(sort(s.kept)); return true end 
 
 --  Summarize stream of symbols
 function go.SYM() 
   local s=SYM()
-  for i=1,1000 do for _,c in pairs{"a","a","b"} do s:summarize(c) end end
+  for i=1,1000 do for _,c in pairs{"a","a","b"} do s:add(c) end end
   chat(sort(s.kept)); return true end 
 
 -- Print CSV file.
@@ -43,8 +43,10 @@ function go.CSV() csv(the.file, chat); return true end
 function go.COLS() chat(COLS{"aa","Bb","Cc-"}.x); return true end
 
 -- Load data from a csv file to a ROWS object.
-function go.ROWS() 
-  chat(ROWS():fill(the.file).cols.y); return true end
+function go.ROWS( rs) 
+  rs=ROWS():fill(the.file)
+  chat(rs.cols.x[1])
+  chat(rs.cols.y); return true end
 
 -- Print klass names
 function go.KLASS() 

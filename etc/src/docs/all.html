@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>b(Ai)ttery ⤑ about.lua</title>
+  <title>b(Ai)ttery ⤑ all.lua</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -15,7 +15,7 @@
         
           <li id="title">
               <div class="annotation">
-                  <h1>b(Ai)ttery ⤑ about.lua</h1>
+                  <h1>b(Ai)ttery ⤑ all.lua</h1>
               </div>
           </li>
         
@@ -28,13 +28,11 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
-<img align=left width=140   src="battery.png"></p>
-<p>LUA is a “batteries-not-included” language.<br>But LUA makes it 
-easy to add in the  missing bits.</p>
-<p>E.g. here are some
-“b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#105;&#109;&#x6d;&#64;&#105;&#101;&#x65;&#x65;&#x2e;&#x6f;&#x72;&#103;">&#116;&#105;&#109;&#x6d;&#64;&#105;&#101;&#x65;&#x65;&#x2e;&#x6f;&#x72;&#103;</a></p>
-<p><strong>config:</strong> <a href="about.html">about</a></p>
+<img align=left width=125   src="battery.png"></p>
+<p>LUA is a “batteries-not-included” language.<br>But LUA makes it easy to add in the  missing bits.</p>
+<p>E.g. here are some “b(Ai)tteries” for XAI.</p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#x74;&#105;&#x6d;&#109;&#x40;&#x69;&#x65;&#101;&#101;&#46;&#x6f;&#x72;&#x67;">&#x74;&#105;&#x6d;&#109;&#x40;&#x69;&#x65;&#101;&#101;&#46;&#x6f;&#x72;&#x67;</a></p>
+<p><strong>config:</strong> <a href="all.html">all</a></p>
 <p><strong>demos:</strong> <a href="go.html">go</a></p>
 <p><strong>apps:</strong> <a href="nb.html">nb</a></p>
 <p><strong>functions:</strong> <a href="lib.html">lib</a></p>
@@ -52,23 +50,38 @@ easy to add in the  missing bits.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>       
-<span class="hljs-keyword">local</span> m=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
-m.the =  m.opts( <span class="hljs-string">[[
-  
-B(AI)TTERY:  (c) 2022 Tim Menzies, BSD2
-LUA is a “batteries-not-included” language. So here, we add
-some &quot;batteries&quot; to power some AI apps (focusing on XAI)
-  
+<span class="hljs-keyword">local</span> all=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
+all.the = all.opts( <span class="hljs-string">[[
+BAITTERY: semi-supervised multi-objective optimization XAI
+(c) 2022 Tim Menzies &lt;timm@ieee.org&gt; BSD2 license
+   
+From N items, find and explain the best ones, using just log(N) evals.
+PASS1 (guess): eval two distant items on multi-objective criteria.
+      Prune everything nearest the worst one. Recurse on rest.  
+PASS2 (guess again): do it again, using better items from first pass.  
+PASS3 (explain): recursively discretize attributes on how well they
+      distinguish the best and worst items (seen in second pass).
+
+USAGE:
+  lua go.lua [OPTIONS]
+
 OPTIONS:
-  -s  --seed    random number seed = 10019
-  -S  --Some    max nums to keep   = 256
-  
+  -M  --Min    min size of space                    =  .5
+  -b  --bins   max number of bins                   =  16
+  -F  --Far    how far to look for remove points    =  .9
+  -k  --k      Bayes hack: low attribute frequency  =  2
+  -m  --m      Bayes hack: low class frequency      =  1
+  -p  --p      distance coefficient (2=Euclidean)   =  2
+  -s  --seed   random number seed                   =  10019
+  -S  --Some   max number of nums to keep           =  256
+  -w  --wait   wait this number before testing      =  10
+
 OPTIONS (other):
-  -f  --file    data file        = ../../data/auto93.csv
-  -g  --go      start up action  =  nothing,
-  -h  --help    show help        =  false
-]]</span>)
-<span class="hljs-keyword">return</span> m</pre></div></div>
+  -f  --file   file           =  ../../data/auto93.csv
+  -g  --go     start-up goal  =  nothing
+  -h  --help   show help      =  false ]]</span>)
+
+<span class="hljs-keyword">return</span> all</pre></div></div>
             
         </li>
         

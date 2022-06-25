@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>b(Ai)ttery ⤑ all.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>b(Ai)ttery ⤑ all.lua</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
+<img align=left width=140   src="battery.png"></p>
+<p>LUA is a “batteries-not-included” language.<br>But LUA makes it easy to add in the  missing bits.</p>
+<p>E.g. here are some “b(Ai)tteries” for XAI.</p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#x74;&#x69;&#109;&#109;&#64;&#105;&#x65;&#x65;&#101;&#x2e;&#x6f;&#114;&#x67;">&#x74;&#x69;&#109;&#109;&#64;&#105;&#x65;&#x65;&#101;&#x2e;&#x6f;&#114;&#x67;</a></p>
+<p><strong>config:</strong> <a href="all.html">all</a></p>
+<p><strong>demos:</strong> <a href="go.html">go</a></p>
+<p><strong>apps:</strong> <a href="nb.html">nb</a></p>
+<p><strong>functions:</strong> <a href="lib.html">lib</a></p>
+<p><strong>klasses:</strong> <a href="bin.html">bin</a>
+:: <a href="cols.html">cols</a>
+:: <a href="num.html">num</a>
+:: <a href="row.html">row</a>
+:: <a href="rows.html">rows</a>
+:: <a href="some.html">some</a>
+:: <a href="sym.html">sym</a></p>
+<p><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
+<a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a></p>
+<h2 id="about">About</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>       
+<span class="hljs-keyword">local</span> all=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
+all.the = all.opts( <span class="hljs-string">[[
+  
+B(AI)TTERY:  (c) 2022 Tim Menzies, BSD2
+LUA is a “batteries-not-included” language. So here, we add
+some &quot;batteries&quot; to power some AI apps (focusing on XAI)
+  
+OPTIONS:
+  -s  --seed    random number seed = 10019
+  -S  --Some    max nums to keep   = 256
+  
+OPTIONS (other):
+  -f  --file    data file        = ../../data/auto93.csv
+  -g  --go      start up action  =  nothing,
+  -h  --help    show help        =  false
+]]</span>)
+<span class="hljs-keyword">return</span> all</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-2">&#x00a7;</a>
+              </div>
+              <p>This code contains 
+B(Ai)TTERY (a set of AI-related classes) and 
+ various AI tools, coded on top of B(Ai)TTERY. </p>
+<p>One of the  idea here is that that there the thing we call “data 
+mining” shares many of its internal data structures and algorithms
+with the thing we call “optimization”. So once we build those
+internal things, then building “data miners” or “optimizers”
+is a  pretty trivial extension. </p>
+<h3 id="apps">Apps</h3>
+<p> Naive Bays Classifier</p>
+<p>Trees (regression and decision)</p>
+<p> Recursive random projections</p>
+<p>SHORTR:
+Semi-supervised multi-objective optimization XAI
+(from N items, find and explain the best ones, using just log(N) evals).
+PASS1 (guess): eval two distant items on multi-objective criteria.
+       Prune everything nearest the worst one. Recurse on rest.
+PASS2 (guess again): do it again, using better items from first pass.
+PASS3 (explain): recursively discretize attributes on how well they
+      distinguish the best and worst items (seen in second pass).</p>
+<h3 id="coding-conventions">Coding conventions</h3>
+<p>Before reading this, it might  be best to<br>review these <a href="https://github.com/timm/shortr/blob/master/CONTRIBUTE.md">local coding conventions</a>.</p>
+<h2 id="why-this-code">Why this code?</h2>
+<p> This code is an experiment in “less-is-more”. Death to mash-ups and their associated 
+ problems with technical debt and security problems that leak in from all 
+ the parts used in the assembly.</p>
+<p><b>Tony Hoare:</b><br>
+<em>“Inside every large program is a small program struggling to get out.”</em><p>
+<b>Alan Perlis:</b><br><em>“Simplicity does not precede complexity, but follows it.”</em><p>
+<b>Dieter Rams:</b><br><em>“Less, but better.”</em></p>
+<p>Now that you’ve done <em>it</em>, did you really understand <em>it</em>? Let’s check.</p>
+<p>Can you do <em>it</em> better?
+Can you now
+write <em>it</em> in fewer lines and do you know how to make <em>it</em> run faster?
+Can you see how <em>it</em> is same/different to other things?
+And can you use those similarities to do more things with  <em>it</em>?
+Finally, can you teach <em>it</em> quickly to newcomers?</p>
+<p>E.g. do I understand a multi-objective semi-supervised explanation algorithms?
+Well, Let’s check. </p>
+<p>Here’s all that, most of which is coded in B(Ai)TTERY
+that could be used for other learners.  </p>
+<p>Also included here is literate programming,
+self-documenting code and support for test-driven development.
+All in around 500 lines of LUA: <br></p>
+<p><code>awk &#39;!/^(--|[ \t]*$)/{n++}</code><br><code>END {print n&quot; lines&quot;}&#39; *.lua</code><br>=&gt; 500 lines</p>
+<p>Share and enjoy.</p>
+<h3 id="role-models">Role Models</h3>
+<p>People that inspire me to code less, but better:<br>
+<a href="https://www.youtube.com/watch?v=o9pEzgHorH0">Jack Diederich</a>, <a href="https://www.youtube.com/watch?v=l2btv0yUPNQ">Hilary Mason</a>,
+<a href="https://brianmcfee.net/papers/ismir2011_sptree.pdf">Brian McFee</a>,<br><a href="https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html">Brian Kernighan</a>,
+<a href="https://github.com/joelgrus/data-science-from-scratch">Joel Grus</a>.<p>
+Especially the LISPers: <br>
+(<a href="https://gigamonkeys.com/book/">Peter Seibel</a>
+  (<a href="https://doc.lagout.org/programmation/Lisp/Land%20of%20Lisp_%20Learn%20to%20Program%20in%20Lisp%2C%20One%20Game%20at%20a%20Time%20%5BBarski%202010-11-15%5D.pdf">Conrad Barski</a>
+  (<a href="http://www.paulgraham.com/onlisp.html">Paul Graham</a><br>
+    (<a href="http://norvig.com/lispy.html">Peter Norvig</a>
+      (<a href="https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&amp;isAllowed=y">Guy Steele</a>))))).</p>
+
+            </div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

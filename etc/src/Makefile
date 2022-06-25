@@ -9,11 +9,18 @@ help : Makefile
            "  \033[36m%-25s\033[0m %s\n","make " $$1,$$2}'  $< \
 	| grep -v awk
 
-docs/index.html: docs/shortr.html ##  commit to main
-	cp docs/shortr.html docs/index.html
+loc:
+	gawk '!/^(--|[ \t]*$$)/{n++} END {print n" lines"}' *.lua
+
+docs/index.html: docs/all.html ##  commit to main
+	cp docs/all.html docs/index.html
 
 ready:  ##  commit to main
 	git add *;git commit -am save;git push;git status
+
+LUAS = $(wildcard *.lua)
+
+htmls:  $(subst .lua,.html,docs/$(subst lua ,html docs/,$(LUAS))) ## make all htmls
 
 docs/%.html: %.lua  README.md ## make html
 	(cat README.md ; gawk '\
@@ -27,16 +34,44 @@ docs/%.html: %.lua  README.md ## make html
 	rm tmp.lua 
 	cp $R/etc/docco.css docs/docco.css
 
+docs/_all.pdf:  ## make all pdf
+	-rm tmp.lua
+	$(foreach d,$(LUAS),(cat $d; echo "")>>tmp.lua;)
+	@mkdir -p docs
+	@echo "pdf-ing $@ ... "
+	@a2ps -KBjr             \
+		-q                    \
+		-L 125                 \
+		--line-numbers=1        \
+		--highlight-level=normal \
+		--borders=no              \
+		--pro=color                \
+		--right-footer=""            \
+		--left-footer=""              \
+		--pretty-print=$R/etc/lua.ssh  \
+		--footer="page %p."             \
+		-M letter                        \
+		--rows 1 --columns 3              \
+		-o $@.ps tmp.lua
+	rm tmp.lua
+	@ps2pdf $@.ps $@; rm $@.ps; git add $@
+
+
 docs/%.pdf : %.lua  ## make pdf
 	@mkdir -p docs
 	@echo "pdf-ing $@ ... "
-	@a2ps -Bjr    -q                        \
-		-L 125 \
-		--line-numbers=1                    \
-		--highlight-level=normal  \
-		--borders=no --pro=color --columns 3 \
-		--right-footer="" --left-footer=""    \
-		--pretty-print=$R/etc/lua.ssh             \
-		--footer="page %p."                     \
-		-M letter -o $@.ps $<
+	@a2ps -Bjr             \
+		-q                    \
+		-L 125                 \
+		--line-numbers=1        \
+		--highlight-level=normal \
+		--borders=no              \
+		--pro=color                \
+		--columns 3                 \
+		--right-footer=""            \
+		--left-footer=""              \
+		--pretty-print=$R/etc/lua.ssh  \
+		--footer="page %p."             \
+		-M letter                        \
+		-o $@.ps $<
 	@ps2pdf $@.ps $@; rm $@.ps; git add $@
