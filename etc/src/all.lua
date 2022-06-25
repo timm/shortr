@@ -9,6 +9,7 @@
 -- I used   XAI to _augment_ other more opaque AI tools.
 -- But that meant I was not explaining the real inference
 -- process, just some frail copy of what was really going on.
+-- 
 -- Then I found that XAI can (sometimes) actually 
 -- _replace_ other AI tools since, at least in the domains
 -- I've explored, XAI tools can make better conclusions, 
