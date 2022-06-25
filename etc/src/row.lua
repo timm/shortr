@@ -1,4 +1,7 @@
 -- ## class ROW:hold 1 record
+-- See also [ROWS](rows.html) that holds multiple records.  
+-- And [NUM](num.html) and [SYM](sym.html) that summarize the 
+-- columns of the records.
 local all = require"all"
 local lt,map,obj,sort = all.lt, all.map, all.obj, all.sort
 

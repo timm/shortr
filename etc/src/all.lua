@@ -1,20 +1,58 @@
--- ## About
-       
-local all=require"lib"
+-- ## About XAI and b(Ai)ttery
+-- Explainable AI (XAI) is a subset of AI that tries
+-- to build models that people can understand.
+--
+-- For years
+-- I used   XAI to _augment_ other more opaque AI tools.
+-- But that meant I was not explaining the real inference
+-- process, just some frail copy of what was really going on.
+-- Then I found that XAI can (sometimes) actually 
+-- _replace_ other AI tools since, at least in the domains
+-- I've explored, XAI tools can make better conclusions, 
+-- faster, and those conclusions are explicable to people.
+--
+-- (Not always of course. If you gave me 10,000 wavelets
+-- from a signal processing package then of course I'd 
+-- reach for a deep learner.
+-- But if you wanted to _tune_ that deep
+-- learner, then I'd still use this code since it
+-- just runs a few what-of queries on the
+-- most important parts of the data.)
+-- 
+-- XAI should be designed with an understanding of human
+-- cognitive processes. People are clever but
+-- they  have fixed and limited attention spans
+-- which they  hoard and use sparingly.
+-- Hence, humans  use heuristic "short cuts" that let 
+-- them satisfy the demands of their work, just enough, 
+-- before rushing off to their next
+-- task.
+-- 
+-- Once such short-cut is the "cue"; i.e. a small range
+-- of some variable that most effects the outcome. Feature
+-- extraction and weighting  is the process of finding
+-- those cues. This code can be summarized as "the hunt
+-- for 'cues'".
+-- 
+-- Another short-cut is sampling; i.e. don't look at 
+-- everything, just a few things. There are many ways to
+-- sample and this code exploits them all: random, 
+-- across, extreme.
+all=require"lib"
 all.the = all.opts( [[
 BAITTERY: semi-supervised multi-objective optimization XAI
 (c) 2022 Tim Menzies <timm@ieee.org> BSD2 license
-   
+     
 From N items, find and explain the best ones, using just log(N) evals.
 PASS1 (guess): eval two distant items on multi-objective criteria.
       Prune everything nearest the worst one. Recurse on rest.  
 PASS2 (guess again): do it again, using better items from first pass.  
 PASS3 (explain): recursively discretize attributes on how well they
       distinguish the best and worst items (seen in second pass).
-
+   
 USAGE:
   lua go.lua [OPTIONS]
-
+   
 OPTIONS:
   -M  --Min    min size of space                    =  .5
   -b  --bins   max number of bins                   =  16
@@ -25,14 +63,14 @@ OPTIONS:
   -s  --seed   random number seed                   =  10019
   -S  --Some   max number of nums to keep           =  256
   -w  --wait   wait this number before testing      =  10
-
+   
 OPTIONS (other):
   -f  --file   file           =  ../../data/auto93.csv
   -g  --go     start-up goal  =  nothing
   -h  --help   show help      =  false ]])
-
+   
 return all
-
+-- XX
 -- This code contains 
 -- B(Ai)TTERY (a set of AI-related classes) and 
 --  various AI tools, coded on top of B(Ai)TTERY. 
