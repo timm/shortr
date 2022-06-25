@@ -32,8 +32,9 @@
 <p>LUA is a “batteries-not-included” language.
 But LUA makes it easy to add in the  missing bits.
 E.g. here are some “b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#x69;&#x6d;&#x6d;&#64;&#x69;&#101;&#101;&#101;&#46;&#x6f;&#x72;&#103;">&#116;&#x69;&#x6d;&#x6d;&#64;&#x69;&#101;&#101;&#101;&#46;&#x6f;&#x72;&#103;</a></p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#105;&#x6d;&#x6d;&#x40;&#x69;&#x65;&#101;&#101;&#46;&#111;&#114;&#103;">&#116;&#105;&#x6d;&#x6d;&#x40;&#x69;&#x65;&#101;&#101;&#46;&#111;&#114;&#103;</a></p>
 <p><strong>config:</strong> <a href="all.html">all</a></p>
+<p><strong>build:</strong> <a href="https://github.com/timm/shortr/blob/master/etc/src/Makefile">Makefile</a><br>(just used for the doco)</p>
 <p><strong>demos:</strong> <a href="go.html">go</a></p>
 <p><strong>apps:</strong> <a href="nb.html">nb</a></p>
 <p><strong>functions:</strong> <a href="lib.html">lib</a></p>
@@ -46,153 +47,16 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
 :: <a href="sym.html">sym</a></p>
 <p><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a></p>
-<h2 id="about-xai-and-baittery">About XAI and b(Ai)ttery</h2>
-<p>Explainable AI (XAI) is a subset of AI that tries
-to build models that people can understand. B(Ai)ttery
-is a small set of classes that implements a few interesting
-XAI tools. </p>
-<p>For the “big picture” on XAI, see 
-<a href="https://arxiv.org/pdf/2006.00093.pdf">Explainable Artificial Intelligence: a Systematic Review</a>
-and <a href="https://pure.mpg.de/rest/items/item_2100099/component/file_2100098/content">Why Heuristics Work</a>.</p>
-<p>For a small set of really useful XAI tactics, see below.</p>
-<h3 id="about-xai">About XAI</h3>
-<p>For years
-I used   XAI to <em>augment</em> other more opaque AI tools.
-But that meant I was not explaining the real inference
-process, just some frail copy of what was really going on.</p>
-<p>Then I found that XAI can (sometimes) actually 
-<em>replace</em> other AI tools since, at least in the domains
-I’ve explored, XAI tools can make better conclusions, 
-faster, and those conclusions are explicable to people.</p>
-<p>(Not always of course. If you gave me 10,000 wavelets
-from a signal processing package then of course I’d 
-reach for a deep learner.
-But if you wanted to <em>tune</em> that deep
-learner, then I’d still use this code since it
-just runs a few what-of queries on the
-most important parts of the data.)</p>
-<p>XAI should be designed with an understanding of human
-cognitive processes. People are clever but
-they  have <a href="https://ubiquity.acm.org/article.cfm?id=376626">fixed and limited attention spans</a>
-which they  hoard and use sparingly.
-Hence, humans  use heuristic “short cuts” that let 
-them <a href="https://uk.sagepub.com/sites/default/files/upm-binaries/25239_Chater~Vol_1~Ch_03.pdf">satisfy the demands of their work, just enough</a>, 
-before rushing off to their next
-task.</p>
-<p>Once such short-cut is the “cue”; i.e. a small range
-of some variable that most effects the outcome. Feature
-extraction and weighting  is the process of finding
-those cues. This code can be summarized as “the hunt
-for ‘cues’”.</p>
-<p>Another short-cut is sampling; i.e. don’t look at 
-everything, just a few things. There are many ways to
-sample and this code exploits them all: random, 
-across, extreme.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>all=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;lib&quot;</span>
-all.the = all.opts( <span class="hljs-string">[[
-BAITTERY: semi-supervised multi-objective optimization XAI
-(c) 2022 Tim Menzies &lt;timm@ieee.org&gt; BSD2 license
-     
-From N items, find and explain the best ones, using just log(N) evals.
-PASS1 (guess): eval two distant items on multi-objective criteria.
-      Prune everything nearest the worst one. Recurse on rest.  
-PASS2 (guess again): do it again, using better items from first pass.  
-PASS3 (explain): recursively discretize attributes on how well they
-      distinguish the best and worst items (seen in second pass).
-   
-USAGE:
-  lua go.lua [OPTIONS]
-   
-OPTIONS:
-  -M  --Min    min size of space                    =  .5
-  -b  --bins   max number of bins                   =  16
-  -F  --Far    how far to look for remove points    =  .95
-  -k  --k      Bayes hack: low attribute frequency  =  2
-  -m  --m      Bayes hack: low class frequency      =  1
-  -p  --p      distance coefficient (2=Euclidean)   =  2
-  -s  --seed   random number seed                   =  10019
-  -S  --Some   max number of nums to keep           =  256
-  -w  --wait   wait this number before testing      =  10
-   
-OPTIONS (other):
-  -f  --file   file           =  ../../data/auto93.csv
-  -g  --go     start-up goal  =  nothing
-  -h  --help   show help      =  false ]]</span>)
-   
-<span class="hljs-keyword">return</span> all</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-2">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-2">&#x00a7;</a>
-              </div>
-              <p>XX
-This code contains 
-B(Ai)TTERY (a set of AI-related classes) and 
- various AI tools, coded on top of B(Ai)TTERY. </p>
-<p>One of the  idea here is that that there the thing we call “data 
-mining” shares many of its internal data structures and algorithms
-with the thing we call “optimization”. So once we build those
-internal things, then building “data miners” or “optimizers”
-is a  pretty trivial extension. </p>
-<h3 id="apps">Apps</h3>
-<p> Naive Bays Classifier</p>
-<p>Trees (regression and decision)</p>
-<p> Recursive random projections</p>
-<p>SHORTR:
-Semi-supervised multi-objective optimization XAI
-(from N items, find and explain the best ones, using just log(N) evals).
-PASS1 (guess): eval two distant items on multi-objective criteria.
-       Prune everything nearest the worst one. Recurse on rest.
-PASS2 (guess again): do it again, using better items from first pass.
-PASS3 (explain): recursively discretize attributes on how well they
-      distinguish the best and worst items (seen in second pass).</p>
-<h3 id="coding-conventions">Coding conventions</h3>
-<p>Before reading this, it might  be best to<br>review these <a href="https://github.com/timm/shortr/blob/master/CONTRIBUTE.md">local coding conventions</a>.</p>
-<h2 id="why-this-code">Why this code?</h2>
-<p> This code is an experiment in “less-is-more”. Death to mash-ups and their associated 
- problems with technical debt and security problems that leak in from all 
- the parts used in the assembly.</p>
-<p><b>Tony Hoare:</b><br>
-<em>“Inside every large program is a small program struggling to get out.”</em><p>
-<b>Alan Perlis:</b><br><em>“Simplicity does not precede complexity, but follows it.”</em><p>
-<b>Dieter Rams:</b><br><em>“Less, but better.”</em></p>
-<p>Now that you’ve done <em>it</em>, did you really understand <em>it</em>? Let’s check.</p>
-<p>Can you do <em>it</em> better?
-Can you now
-write <em>it</em> in fewer lines and do you know how to make <em>it</em> run faster?
-Can you see how <em>it</em> is same/different to other things?
-And can you use those similarities to do more things with  <em>it</em>?
-Finally, can you teach <em>it</em> quickly to newcomers?</p>
-<p>E.g. do I understand a multi-objective semi-supervised explanation algorithms?
-Well, Let’s check. </p>
-<p>Here’s all that, most of which is coded in B(Ai)TTERY
-that could be used for other learners.  </p>
-<p>Also included here is literate programming,
-self-documenting code and support for test-driven development.
-All in around 500 lines of LUA: <br></p>
-<p><code>awk &#39;!/^(--|[ \t]*$)/{n++}</code><br><code>END {print n&quot; lines&quot;}&#39; *.lua</code><br>=&gt; 500 lines</p>
-<p>Share and enjoy.</p>
-<h3 id="role-models">Role Models</h3>
-<p>People that inspire me to code less, but better:<br>
-<a href="https://www.youtube.com/watch?v=o9pEzgHorH0">Jack Diederich</a>, <a href="https://www.youtube.com/watch?v=l2btv0yUPNQ">Hilary Mason</a>,
-<a href="https://brianmcfee.net/papers/ismir2011_sptree.pdf">Brian McFee</a>,<br><a href="https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html">Brian Kernighan</a>,
-<a href="https://github.com/joelgrus/data-science-from-scratch">Joel Grus</a>.<p>
-Especially the LISPers: <br>
-(<a href="https://gigamonkeys.com/book/">Peter Seibel</a>
-  (<a href="https://doc.lagout.org/programmation/Lisp/Land%20of%20Lisp_%20Learn%20to%20Program%20in%20Lisp%2C%20One%20Game%20at%20a%20Time%20%5BBarski%202010-11-15%5D.pdf">Conrad Barski</a>
-  (<a href="http://www.paulgraham.com/onlisp.html">Paul Graham</a><br>
-    (<a href="http://norvig.com/lispy.html">Peter Norvig</a>
-      (<a href="https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&amp;isAllowed=y">Guy Steele</a>))))).</p>
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">print</span>(<span class="hljs-number">1</span>)
 
-            </div>
+<span class="hljs-keyword">return</span> <span class="hljs-number">1</span>
+
+<span class="hljs-built_in">print</span>(<span class="hljs-number">2</span>)
+
+<span class="hljs-keyword">return</span> <span class="hljs-number">3</span></pre></div></div>
             
         </li>
         

@@ -9,6 +9,9 @@
 --
 -- **config:** [all](all.html)
 --
+-- **build:** [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)  
+-- (just used for the doco)
+-- 
 -- **demos:** [go](go.html)
 --
 -- **apps:** [nb](nb.html)
