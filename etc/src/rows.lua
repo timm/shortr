@@ -1,8 +1,8 @@
 -- ## class ROWS: store many ROW
 local all = require"all"
-local csv,map,obj  = all.csv, all.map,  all.obj
-local push,rnd,the = all.push, all.rnd, all.the
-local COLS,ROW = require"COLS",require"ROW"
+local csv,map,obj       = all.csv, all.map,  all.obj
+local push,rnd,rnds,the = all.push, all.rnd, all.rnds, all.the
+local COLS,ROW          = require"COLS",require"ROW"
 
 --> ROWS(names:?[str], rows:?[ROW}) :ROWS -> Place to store many ROWS
 --  and summarize them (in `i.cols`).
@@ -20,7 +20,6 @@ function ROWS.add(i,t)
 -- original table that spawned `eve`rything else (useful for some distance calcs).
 function ROWS.clone(i,init)
   local j=ROWS(i.cols.names,init)
-  j._eve = i._eve or i 
   return j end
 
 --> fill(i:ROWS: src:(str|tab)):ROWS -> copy the data from `src` into `i`.
@@ -49,6 +48,6 @@ function ROWS.like(i,row, nklasses, nrows)
 function ROWS.mids(i,p,cols,    t) 
   t={}
   for _,col in pairs(cols or i.cols.y) do t[col.txt]=col:mid(p) end
-  return rnd(t,p or 2) end
+  return rnds(t,p or 2) end
 
 return ROWS

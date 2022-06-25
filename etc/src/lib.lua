@@ -6,6 +6,14 @@ local lib={}
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 function lib.rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
+-- ### Meta
+
+--> lt(x:str):function -> Returns a function that sorts on `x`
+function lib.lt(x) return function(a,b) return a[x] < b[x] end end
+
+--> same(x:any):any -> Return x, unchanged.
+lib.same=function(x) return x end
+
 -- ### Maths
 
 --> R(max:?num=1):num -> return a random number `0..max`.
@@ -18,13 +26,13 @@ function lib.rnd(x, places)
 
 --> rnds(t:num, places:?int=2):t -> return items in `t` rounds to `places`.
 function lib.rnds(t, places)
-  u={};for k,x in pairs(t) do u[k] = rnd(x,places or 2) end; return u end
+  local u={};for k,x in pairs(t) do u[k] = rnd(x,places or 2) end; return u end
 -- ###  Lists
 
 --> splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t -> pull items
 -- `start` to `stop`, stepping by `step`. 
 function lib.splice(t, start, stop, step)
-  u={}
+  local u={}
   for n=(start or 1)//1,(stop or #t)//1,(step or 1)//1 do u[1+#u]=t[n] end
   return u end
 
@@ -34,10 +42,6 @@ function lib.sort(t,f) table.sort(t,f); return t end
 function lib.push(t,x) t[1+#t] = x; return x end
 --> per(t:tab, p:?float=.5) :x -> Return `p`-th ranked item from `t`.
 function lib.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
-
---> same(x:any):any -> Return x, unchanged.
-lib.same=function(x) return x end
-
 --> map(t:tab, f:fun): tab -> 
 --> kap(t:tab, f:fun): tab -> 
 --> maps(list1:tab, list2:tab, f:fun): tab -> 

@@ -36,7 +36,7 @@ docs/%.html: %.lua  README.md ## make html
 
 docs/_all.pdf:  ## make all pdf
 	-rm tmp.lua
-	$(foreach d,$(LUAS),(cat $d; echo "")>>tmp.lua;)
+	$(foreach d,$(LUAS),(figlet -W -f larry3d $d; echo ""; cat $d; echo "")>>tmp.lua;)
 	@mkdir -p docs
 	@echo "pdf-ing $@ ... "
 	@a2ps -KBjr             \

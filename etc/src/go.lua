@@ -56,6 +56,10 @@ function go.KLASS()
   chat(s.kept)
   return true end
 
+-- Load data from a csv file to a ROWS object.
+function go.BETTERS( rs) 
+  rs=ROWS():fill(the.file)
+  sort(rs.rows) end
 -------
 -- ### Start
 the = cli(the)

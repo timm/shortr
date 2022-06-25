@@ -19,9 +19,9 @@ function NB.train(i,row)
   i.dict[k]:add(row) end                  -- update klass with row
 
 function NB.keymax(i,row)
-  most,out = -1, nil
+  local most,out = -1, nil
   for key,rows in pairs(i.dict) do
-    tmp = rows:like(row,#i.list,#i.overall.rows)
+    tmp = rows:like(row, #i.list,#i.overall.rows)
     if tmp > most then most,out = tmp,key end end
   return key end
 
