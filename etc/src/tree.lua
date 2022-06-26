@@ -19,7 +19,7 @@ local Tree = obj("TREE", function(i,listOfRows)
     if #j.rows >= 2*small(total) then
       j.kids = map(sort(map(j.cols.x, bins),lt"div")[1].bins, down) end
     return j end
-  return mapSortedBins(i:clone(rows)) end
+  return mapSortedBins(i:clone(rows)) end)
    
 function Tree.show(i,lvl)
   lvl = lvl or 0
