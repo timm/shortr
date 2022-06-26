@@ -2,6 +2,8 @@ MAKEFLAGS += --silent
 SHELL:= /bin/bash#
 R=$(shell git rev-parse --show-toplevel)
 
+WEB=$(HOME)/gits/baittery/baittery.github.io
+
 help : Makefile
 	echo ""; printf "usage: make [OPTIONS]\n\n"
 	@gawk 'BEGIN {FS="[ \t]*:.*##[ \t]*"}  \
@@ -21,6 +23,8 @@ ready:  ##  commit to main
 LUAS = $(wildcard [a-z]*.lua)
 
 htmls:  $(subst .lua,.html,docs/$(subst lua ,html docs/,$(LUAS))) ## make all htmls
+	cp -r docs/* $(WEB)/
+	(cd $(WEB)/*; git -q add *; git commit -am save)
 
 docs/%.html: %.lua  README.md ## make html
 	(cat README.md ; gawk '\
