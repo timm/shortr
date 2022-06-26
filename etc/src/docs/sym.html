@@ -28,11 +28,11 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
-<img align=left width=225   src="bat2.png"></p>
-<p>LUA is a “batteries-not-included” language.
+ <img align=left width=250   src="bat2.png">
+LUA is a “batteries-not-included” language.
 But LUA makes it easy to add in the  missing bits.
 E.g. here are some “b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#x74;&#x69;&#x6d;&#109;&#x40;&#x69;&#101;&#x65;&#x65;&#46;&#111;&#x72;&#x67;">&#x74;&#x69;&#x6d;&#109;&#x40;&#x69;&#101;&#x65;&#x65;&#46;&#111;&#x72;&#x67;</a></p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#105;&#109;&#109;&#64;&#x69;&#101;&#101;&#101;&#46;&#x6f;&#114;&#x67;">&#116;&#105;&#109;&#109;&#64;&#x69;&#101;&#101;&#101;&#46;&#x6f;&#114;&#x67;</a></p>
 <p><strong>config:</strong> <a href="all.html">all</a></p>
 <p><strong>build:</strong> <a href="https://github.com/timm/shortr/blob/master/etc/src/Makefile">Makefile</a><br>(just used for the doco)</p>
 <p><strong>demos:</strong> <a href="go.html">go</a></p>
@@ -53,7 +53,7 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
             
             <div class="content"><div class='highlight'><pre>
 <span class="hljs-keyword">local</span> all = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;all&quot;</span>
-<span class="hljs-keyword">local</span> obj,push,the = all.obj, all.push, all.the</pre></div></div>
+<span class="hljs-keyword">local</span> chat,obj,push,the = all.chat, all.obj, all.push, all.the</pre></div></div>
             
         </li>
         
@@ -80,12 +80,13 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-3">&#x00a7;</a>
               </div>
-              <p><strong>add( <code>i</code>:   <code>SYM</code>:    <code>x</code>:  sum,  <code>n</code>:  ?int=1)</strong> <br> Add <code>n</code> count to <code>i.kept[n]</code> .</p>
+              <p><strong>add( <code>i</code>:   <code>SYM</code>:    <code>x</code>:  any,  <code>n</code>:  ?int=1)</strong> <br> Add <code>n</code> count to <code>i.kept[n]</code> .</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.add</span><span class="hljs-params">(i,x,n)</span></span>
   <span class="hljs-keyword">if</span> x ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span> 
+    i.n = i.n+<span class="hljs-number">1</span>
     i.kept[x] = (n <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>) + (i.kept[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
@@ -97,11 +98,11 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <p><strong>clone( <code>i</code>:  SYM) :SYM</strong> <br> Return a class of the same structure.</p>
+              <p><strong>bin( <code>i</code>:   <code>SYM</code>:    <code>x</code>:  any)</strong> <br> return <code>x</code> mapped to a finite range (just return x)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.clone</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> SYM(i.at, i.txt) <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.bin</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -111,6 +112,21 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
               
               <div class="sswrap ">
                 <a class="ss" href="#section-5">&#x00a7;</a>
+              </div>
+              <p><strong>clone( <code>i</code>:  SYM) :SYM</strong> <br> Return a class of the same structure.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.clone</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> SYM(i.at, i.txt) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
               <p><strong>like( <code>i</code>:  SYN, <code>x</code>:  any, <code>prior</code>:  num):num</strong> <br> return how much <code>x</code> might belong to <code>i</code>.</p>
 
@@ -122,11 +138,45 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-6">&#x00a7;</a>
+                <a class="ss" href="#section-7">&#x00a7;</a>
+              </div>
+              <p><strong>merge( <code>i</code>:  SYM, <code>j</code>:  SYM):SYM</strong> <br> combine two symbols</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.merge</span><span class="hljs-params">(i,j,     k)</span></span>
+  k = i:clone()
+  <span class="hljs-keyword">for</span> _,kept <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{i.kept, j.kept} <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(kept) <span class="hljs-keyword">do</span> k:add(x,n) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-8">&#x00a7;</a>
+              </div>
+              <p><strong>merge( <code>i</code>:  SYM, <code>t</code>:  tab):tab</strong> <br> merge a list of bins (for symbolic y-values)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SYM.merges</span><span class="hljs-params">(i,t,...)</span></span> <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-9">&#x00a7;</a>
               </div>
               <p><strong>mid( <code>i</code>:  SYM):tab</strong> <br> Return a columns’ <code>mid</code>ddle (central tendency).</p>
 
@@ -140,11 +190,11 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-7">&#x00a7;</a>
+                <a class="ss" href="#section-10">&#x00a7;</a>
               </div>
               <p><strong>div( <code>i</code>:  SYM):tab</strong> <br> Return <code>div</code>ersity of a column
 (its tendency <em>not</em> to be a its central tendency).</p>

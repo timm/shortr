@@ -28,11 +28,11 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
-<img align=left width=225   src="bat2.png"></p>
-<p>LUA is a “batteries-not-included” language.
+ <img align=left width=250   src="bat2.png">
+LUA is a “batteries-not-included” language.
 But LUA makes it easy to add in the  missing bits.
 E.g. here are some “b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#x74;&#105;&#x6d;&#x6d;&#x40;&#105;&#101;&#101;&#x65;&#46;&#x6f;&#x72;&#103;">&#x74;&#105;&#x6d;&#x6d;&#x40;&#105;&#101;&#101;&#x65;&#46;&#x6f;&#x72;&#103;</a></p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#x74;&#x69;&#109;&#x6d;&#64;&#x69;&#101;&#101;&#x65;&#x2e;&#111;&#114;&#x67;">&#x74;&#x69;&#109;&#x6d;&#64;&#x69;&#101;&#101;&#x65;&#x2e;&#111;&#114;&#x67;</a></p>
 <p><strong>config:</strong> <a href="all.html">all</a></p>
 <p><strong>build:</strong> <a href="https://github.com/timm/shortr/blob/master/etc/src/Makefile">Makefile</a><br>(just used for the doco)</p>
 <p><strong>demos:</strong> <a href="go.html">go</a></p>
@@ -52,7 +52,7 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> all = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;all&quot;</span>
-<span class="hljs-keyword">local</span> obj,push,the = all.obj, all.push, all.the
+<span class="hljs-keyword">local</span> big,obj,per,push,the = all.big,all.obj,all.per,all.push,all.the
 <span class="hljs-keyword">local</span> SOME = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;some&quot;</span></pre></div></div>
             
         </li>
@@ -70,7 +70,7 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> NUM = obj(<span class="hljs-string">&quot;NUM&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,at,txt)</span></span> 
   i.at, i.txt, i.n, i.kept =  at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-number">0</span>, SOME(the.Some)
-  i.w =  i.txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span>  <span class="hljs-keyword">end</span>)</pre></div></div>
+  i.w = i.txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>)</pre></div></div>
             
         </li>
         
@@ -87,7 +87,7 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.add</span><span class="hljs-params">(i,x,n)</span></span>
   <span class="hljs-keyword">if</span> x ~=<span class="hljs-string">&quot;? &quot;</span> <span class="hljs-keyword">then</span> 
-    <span class="hljs-keyword">for</span> _ = <span class="hljs-number">1</span>,(n <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>) <span class="hljs-keyword">do</span> i.n=i.n+<span class="hljs-number">1</span>; i.kept:add(x) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+   <span class="hljs-keyword">for</span> _ = <span class="hljs-number">1</span>,(n <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>) <span class="hljs-keyword">do</span> i.n=i.n+<span class="hljs-number">1</span>; i.kept:add(x) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -98,11 +98,14 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <p><strong>clone( <code>i</code>:  (SYM|NUM)) :(SYM|NUM)</strong> <br> Return a class of the same structure.</p>
+              <p><strong>bin( <code>i</code>:   <code>NUM</code>:    <code>x</code>:  any)</strong> <br> return <code>x</code> mapped to a finite range</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.clone</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> NUM(i.at, i.txt) <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.bin</span><span class="hljs-params">(i,x)</span></span>
+  <span class="hljs-keyword">local</span> a = i.some:has()
+  <span class="hljs-keyword">local</span> b = (a[#a] - a[<span class="hljs-number">1</span>])/the.bins
+  <span class="hljs-keyword">return</span> a[#a]==a[<span class="hljs-number">1</span>] <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">floor</span>(x/b+<span class="hljs-number">.5</span>)*b <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -113,7 +116,22 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
-              <p><strong>div( <code>i</code>:  NUM):tab</strong> <br> Return <code>div</code>ersity of a column
+              <p><strong>clone( <code>i</code>:  (SYM|NUM)) :(SYM|NUM)</strong> <br> Return a class of the same structure.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.clone</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> NUM(i.at, i.txt) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-6">&#x00a7;</a>
+              </div>
+              <p><strong>div( <code>i</code>:  NUM) :tab</strong> <br> Return <code>div</code>ersity of a column
 (its tendency <em>not</em> to be a its central tendency). To understand this code
 recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob. In between,
 at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.</p>
@@ -126,11 +144,11 @@ at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.</p>
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-6">&#x00a7;</a>
+                <a class="ss" href="#section-7">&#x00a7;</a>
               </div>
               <p><strong>like( <code>i</code>:  NUM,  <code>x</code>:  any)</strong> <br> Return the likelihood that <code>x</code> belongs to <code>i</code>.</p>
 
@@ -144,13 +162,61 @@ at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.</p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-7">&#x00a7;</a>
+                <a class="ss" href="#section-8">&#x00a7;</a>
               </div>
-              <p><strong>mid( <code>i</code>:  NUM)):tab</strong> <br> Return a columns’ <code>mid</code>ddle</p>
+              <p><strong>merge( <code>i</code>:  NUM, <code>j</code>:  NUM) :NUM</strong> <br> combine two numerics</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.merge</span><span class="hljs-params">(i,j,     k)</span></span>
+  k = i:clone()
+  <span class="hljs-keyword">for</span> _,kept <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{i.kept, j.kept} <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">for</span> _,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(kept) <span class="hljs-keyword">do</span> k:add(x) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-9">&#x00a7;</a>
+              </div>
+              <p><strong>merge( <code>i</code>:  NUM, <code>t</code>:  [BIN]) :[BIN]</strong> <br> merge a list of bins (for numeric y-values)
+If anything merged, then loop again looking for other merges.
+At the end, expand bins to cover all gaps across the number line.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.merges</span><span class="hljs-params">(i,b4, min)</span></span> 
+  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fillInTheGaps</span><span class="hljs-params">(bins)</span></span>
+    bins[<span class="hljs-number">1</span>].lo, bins[#bins].hi = -big, big
+    <span class="hljs-keyword">if</span> #bins&gt;<span class="hljs-number">1</span> <span class="hljs-keyword">then</span>
+      <span class="hljs-keyword">for</span> n=<span class="hljs-number">2</span>,#bins <span class="hljs-keyword">do</span> bins[n].lo = bins[n<span class="hljs-number">-1</span>].hi <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">return</span> bins 
+  <span class="hljs-keyword">end</span> <span class="hljs-comment">------------- </span>
+  <span class="hljs-keyword">local</span> n,now = <span class="hljs-number">1</span>,{}
+  <span class="hljs-keyword">while</span> n &lt;= #b4 <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">local</span> merged = n&lt;#b4 <span class="hljs-keyword">and</span> b4[n]:merged(b4[n+<span class="hljs-number">1</span>], <span class="hljs-built_in">min</span>)
+    now[#now+<span class="hljs-number">1</span>]  = merged <span class="hljs-keyword">or</span> b4[n]
+    n            = n + (merged <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)  <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> #now &lt; #b4 <span class="hljs-keyword">and</span> i:merges(now,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> fillInTheGaps(now) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-10">&#x00a7;</a>
+              </div>
+              <p><strong>mid( <code>i</code>:  NUM)) :tab</strong> <br> Return a columns’ <code>mid</code>ddle</p>
 
             </div>
             
@@ -160,13 +226,13 @@ at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.</p>
         </li>
         
         
-        <li id="section-8">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-8">&#x00a7;</a>
+                <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
-              <p><strong>norm( <code>i</code>:  NUM,  <code>x</code>:  num):num</strong> <br> Normalize <code>x</code> 0..1 for lo..hi,</p>
+              <p><strong>norm( <code>i</code>:  NUM,  <code>x</code>:  num) :num</strong> <br> Normalize <code>x</code> 0..1 for lo..hi,</p>
 
             </div>
             

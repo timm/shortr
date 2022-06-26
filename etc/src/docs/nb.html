@@ -28,11 +28,11 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
-<img align=left width=225   src="bat2.png"></p>
-<p>LUA is a “batteries-not-included” language.
+ <img align=left width=250   src="bat2.png">
+LUA is a “batteries-not-included” language.
 But LUA makes it easy to add in the  missing bits.
 E.g. here are some “b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#105;&#109;&#109;&#x40;&#x69;&#101;&#101;&#101;&#46;&#x6f;&#114;&#x67;">&#116;&#105;&#109;&#109;&#x40;&#x69;&#101;&#101;&#101;&#46;&#x6f;&#114;&#x67;</a></p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#x69;&#x6d;&#x6d;&#x40;&#105;&#x65;&#101;&#x65;&#46;&#x6f;&#x72;&#x67;">&#116;&#x69;&#x6d;&#x6d;&#x40;&#105;&#x65;&#101;&#x65;&#46;&#x6f;&#x72;&#x67;</a></p>
 <p><strong>config:</strong> <a href="all.html">all</a></p>
 <p><strong>build:</strong> <a href="https://github.com/timm/shortr/blob/master/etc/src/Makefile">Makefile</a><br>(just used for the doco)</p>
 <p><strong>demos:</strong> <a href="go.html">go</a></p>
@@ -52,30 +52,74 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> all=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;all&quot;</span>
-<span class="hljs-keyword">local</span> obj,push,the = all.obj, all.push, all.the
+<span class="hljs-keyword">local</span> big,cat,chat,csv = all.big,all.cat,all.chat,all.csv
+<span class="hljs-keyword">local</span> map,obj,push,the = all.map, all.obj, all.push, all.the
+<span class="hljs-keyword">local</span> ROWS = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;ROWS&quot;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-2">&#x00a7;</a>
+              </div>
+              <p><strong>NB(src=(str|tab), report=?function=print)</strong> <br> classify examples
+(but hold off till we’ve seen at least <code>the.wait</code> examples).</p>
 
-<span class="hljs-keyword">local</span> NB = obj(<span class="hljs-string">&quot;NB&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(i,src,report)</span></span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> NB = obj(<span class="hljs-string">&quot;NB&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(i,src,report)</span></span>
   i.overall, i.dict, i.list = <span class="hljs-literal">nil</span>, {},{}
+  chat(i)
   report = report <span class="hljs-keyword">or</span> <span class="hljs-built_in">print</span>
-  Data.ROWS(src, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span>
+  <span class="hljs-keyword">local</span> iterate = <span class="hljs-built_in">type</span>(src)==<span class="hljs-string">&quot;table&quot;</span> <span class="hljs-keyword">and</span> map <span class="hljs-keyword">or</span> csv
+  iterate(src, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span>
     <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> i.overall <span class="hljs-keyword">then</span> i.overall = ROWS(row)  <span class="hljs-keyword">else</span> <span class="hljs-comment">-- (0) eat row1</span>
-      row = i.overall:summarize(row)  <span class="hljs-comment">-- XX add to overall</span>
-      <span class="hljs-keyword">if</span> #i.overall.rows &gt; the.wait <span class="hljs-keyword">then</span> report(Row.klass(row), NB.guess(i,row)) <span class="hljs-keyword">end</span>
-      NB.train(i,row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>)              <span class="hljs-comment">-- add tp rows&#x27;s klass</span>
-  <span class="hljs-keyword">end</span>)
+      row = i.overall:add(row)  <span class="hljs-comment">-- XX add to overall</span>
+      <span class="hljs-keyword">if</span> #i.overall.rows &gt; the.wait <span class="hljs-keyword">then</span> report(row:klass(), i:guess(row)) <span class="hljs-keyword">end</span>
+      i:train(row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>)              <span class="hljs-comment">-- add tp rows&#x27;s klass</span>
+  <span class="hljs-keyword">end</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-3">&#x00a7;</a>
+              </div>
+              <p><strong>train( <code>i</code>:  NB, <code>row</code>:  ROW):atom</strong> <br> ensure klass exists, add <code>row</code> to that klass</p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.train</span><span class="hljs-params">(i,row)</span></span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.train</span><span class="hljs-params">(i,row)</span></span>
   <span class="hljs-keyword">local</span> kl = row:klass()
-  i.dict[kl]     = i.dict[kl] <span class="hljs-keyword">or</span> push(i.list,i.overall.clone()) <span class="hljs-comment">--klass is known</span>
+  i.dict[kl]     = i.dict[kl] <span class="hljs-keyword">or</span> push(i.list,i.overall:clone()) <span class="hljs-comment">--klass is known</span>
   i.dict[kl].txt = kl                     <span class="hljs-comment">-- each klass knows its name</span>
-  i.dict[k]:add(row) <span class="hljs-keyword">end</span>                  <span class="hljs-comment">-- update klass with row</span>
+  i.dict[kl]:add(row) <span class="hljs-keyword">end</span>                  <span class="hljs-comment">-- update klass with row</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-4">&#x00a7;</a>
+              </div>
+              <p><strong>guess( <code>i</code>:  NB, <code>row</code>:  ROW):atom</strong> <br> return symbol of klass with max likelihood</p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.keymax</span><span class="hljs-params">(i,row)</span></span>
-  <span class="hljs-keyword">local</span> most,out = <span class="hljs-number">-1</span>, <span class="hljs-literal">nil</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NB.guess</span><span class="hljs-params">(i,row)</span></span>
+  <span class="hljs-keyword">local</span> most,out = -big, <span class="hljs-literal">nil</span>
   <span class="hljs-keyword">for</span> key,rows <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.dict) <span class="hljs-keyword">do</span>
-    tmp = rows:like(row, #i.list,#i.overall.rows)
+    <span class="hljs-keyword">local</span> tmp = rows:like(row, #i.list,#i.overall.rows)
     <span class="hljs-keyword">if</span> tmp &gt; most <span class="hljs-keyword">then</span> most,out = tmp,key <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> key <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span>
 
 <span class="hljs-keyword">return</span> NB</pre></div></div>
             

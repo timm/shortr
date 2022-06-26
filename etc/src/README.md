@@ -1,6 +1,5 @@
 -- <span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
--- <img align=left width=225   src="bat2.png">
---  
+--  <img align=left width=250   src="bat2.png">
 -- LUA is a "batteries-not-included" language.
 -- But LUA makes it easy to add in the  missing bits.
 -- E.g. here are some "b(Ai)tteries" for XAI.

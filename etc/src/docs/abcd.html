@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>b(Ai)ttery ⤑ abcd</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>b(Ai)ttery ⤑ abcd</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
+ <img align=left width=250   src="bat2.png">
+LUA is a “batteries-not-included” language.
+But LUA makes it easy to add in the  missing bits.
+E.g. here are some “b(Ai)tteries” for XAI.</p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#x69;&#109;&#109;&#64;&#105;&#x65;&#101;&#101;&#x2e;&#x6f;&#x72;&#x67;">&#116;&#x69;&#109;&#109;&#64;&#105;&#x65;&#101;&#101;&#x2e;&#x6f;&#x72;&#x67;</a></p>
+<p><strong>config:</strong> <a href="all.html">all</a></p>
+<p><strong>build:</strong> <a href="https://github.com/timm/shortr/blob/master/etc/src/Makefile">Makefile</a><br>(just used for the doco)</p>
+<p><strong>demos:</strong> <a href="go.html">go</a></p>
+<p><strong>apps:</strong> <a href="nb.html">nb</a></p>
+<p><strong>functions:</strong> <a href="lib.html">lib</a></p>
+<p><strong>klasses:</strong> <a href="bin.html">bin</a>
+:: <a href="cols.html">cols</a>
+:: <a href="num.html">num</a>
+:: <a href="row.html">row</a>
+:: <a href="rows.html">rows</a>
+:: <a href="some.html">some</a>
+:: <a href="sym.html">sym</a></p>
+<p><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
+<a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> all = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;all&quot;</span>
+<span class="hljs-keyword">local</span> fmt, obj = all.fmt, all.obj
+
+<span class="hljs-keyword">local</span> ABCD = obj(<span class="hljs-string">&quot;ABCD&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(i,data,rx)</span></span>
+  i.data, i.rx =data <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, rx <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>
+  i.yes, i.no = <span class="hljs-number">0</span>,<span class="hljs-number">0</span>
+  i.known,i.a,i.b,i.c,i.d = {},{},{},{},{} <span class="hljs-keyword">end</span>)
+
+
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">inc</span><span class="hljs-params">(f,a,n)</span></span> f=f <span class="hljs-keyword">or</span> {};f[a]=(f[a] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>) + (n <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span> f <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">slots</span><span class="hljs-params">(t, u)</span></span>
+  u={}; <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> u[<span class="hljs-number">1</span>+#u]=k <span class="hljs-keyword">end</span>; <span class="hljs-built_in">table</span>.<span class="hljs-built_in">sort</span>(u); <span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ABCD.exists</span><span class="hljs-params">(i,x)</span></span>
+  <span class="hljs-keyword">local</span> new = <span class="hljs-keyword">not</span> i.known[x]
+  inc(i.known,x)
+  <span class="hljs-keyword">if</span> new <span class="hljs-keyword">then</span>
+    i.a[x]=i.yes + i.no; i.b[x]=<span class="hljs-number">0</span>; i.c[x]=<span class="hljs-number">0</span>; i.d[x]=<span class="hljs-number">0</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ABCD.report</span><span class="hljs-params">(i,    p,out,a,b,c,d,pd,pf,pn,f,acc,g,prec)</span></span>
+  p = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">floor</span>(<span class="hljs-number">100</span>*z + <span class="hljs-number">0.5</span>) <span class="hljs-keyword">end</span>
+  out= {}
+  <span class="hljs-keyword">for</span> x,xx <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>( i.known ) <span class="hljs-keyword">do</span>
+    pd,pf,pn,prec,g,f,acc = <span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>
+    a= (i.a[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>); b= (i.b[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>); 
+    c= (i.c[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>); d= (i.d[x] <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>);
+    <span class="hljs-keyword">if</span> b+d &gt; <span class="hljs-number">0</span>     <span class="hljs-keyword">then</span> pd   = d     / (b+d)        <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> a+c &gt; <span class="hljs-number">0</span>     <span class="hljs-keyword">then</span> pf   = c     / (a+c)        <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> a+c &gt; <span class="hljs-number">0</span>     <span class="hljs-keyword">then</span> pn   = (b+d) / (a+c)        <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> c+d &gt; <span class="hljs-number">0</span>     <span class="hljs-keyword">then</span> prec = d     / (c+d)        <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-number">1</span>-pf+pd &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> g=<span class="hljs-number">2</span>*(<span class="hljs-number">1</span>-pf) * pd / (<span class="hljs-number">1</span>-pf+pd) <span class="hljs-keyword">end</span> 
+    <span class="hljs-keyword">if</span> prec+pd &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> f=<span class="hljs-number">2</span>*prec*pd / (prec + pd)   <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> i.yes + i.no &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> 
+       acc= i.yes /(i.yes + i.no) <span class="hljs-keyword">end</span>
+    out[x] = {data=i.data,rx=i.rx,num=i.yes+i.no,
+              a=a,b=b,c=c,d=d,acc=p(acc),
+              prec=p(prec), pd=p(pd), pf=p(pf),f=p(f), g=p(g), class=x} <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ABCD.pretty</span><span class="hljs-params">(i,t)</span></span>
+  <span class="hljs-built_in">print</span><span class="hljs-string">&quot;&quot;</span>
+  <span class="hljs-keyword">local</span> s1  = <span class="hljs-string">&quot;%10s | %10s | %4s | %4s | %4s | %4s &quot;</span>
+  <span class="hljs-keyword">local</span> s2  = <span class="hljs-string">&quot;| %3s | %3s| %3s | %4s | %3s | %3s |&quot;</span>
+  <span class="hljs-keyword">local</span> d,s = <span class="hljs-string">&quot;---&quot;</span>, (s1 .. s2)
+  <span class="hljs-built_in">print</span>(fmt(s,<span class="hljs-string">&quot;db&quot;</span>,<span class="hljs-string">&quot;rx&quot;</span>,<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>,<span class="hljs-string">&quot;c&quot;</span>,<span class="hljs-string">&quot;d&quot;</span>,<span class="hljs-string">&quot;acc&quot;</span>,<span class="hljs-string">&quot;pd&quot;</span>,<span class="hljs-string">&quot;pf&quot;</span>,<span class="hljs-string">&quot;prec&quot;</span>,<span class="hljs-string">&quot;f&quot;</span>,<span class="hljs-string">&quot;g&quot;</span>))
+  <span class="hljs-built_in">print</span>(fmt(s,d,d,d,d,d,d,d,d,d,d,d,d))
+  <span class="hljs-keyword">for</span> key,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(slots(t)) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">local</span> u = t[x]
+    <span class="hljs-built_in">print</span>(fmt(s..<span class="hljs-string">&quot; %s&quot;</span>, u.data,u.rx,u.a, u.b, u.c, u.d,
+                         u.acc, u.pd, u.pf, u.prec, u.f, u.g, x)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ABCD.add</span><span class="hljs-params">(i,got,want)</span></span>
+  i:exists(want) 
+  i:exists(got)  
+  <span class="hljs-keyword">if</span> want == got <span class="hljs-keyword">then</span> i.yes=i.yes+<span class="hljs-number">1</span> <span class="hljs-keyword">else</span> i.no=i.no+<span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">for</span> x,xx <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.known) <span class="hljs-keyword">do</span> 
+    <span class="hljs-keyword">if</span>   want == x
+    <span class="hljs-keyword">then</span> inc(want == got <span class="hljs-keyword">and</span> i.d <span class="hljs-keyword">or</span> i.b, x)
+    <span class="hljs-keyword">else</span> inc(got  == x   <span class="hljs-keyword">and</span> i.c <span class="hljs-keyword">or</span> i.a, x) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+
+<span class="hljs-keyword">return</span> ABCD</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

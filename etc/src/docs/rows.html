@@ -28,11 +28,11 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
-<img align=left width=225   src="bat2.png"></p>
-<p>LUA is a “batteries-not-included” language.
+ <img align=left width=250   src="bat2.png">
+LUA is a “batteries-not-included” language.
 But LUA makes it easy to add in the  missing bits.
 E.g. here are some “b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#x69;&#109;&#x6d;&#x40;&#x69;&#x65;&#101;&#101;&#46;&#x6f;&#114;&#x67;">&#116;&#x69;&#109;&#x6d;&#x40;&#x69;&#x65;&#101;&#101;&#46;&#x6f;&#114;&#x67;</a></p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#x74;&#105;&#x6d;&#109;&#64;&#105;&#101;&#x65;&#101;&#46;&#x6f;&#114;&#x67;">&#x74;&#105;&#x6d;&#109;&#64;&#105;&#101;&#x65;&#101;&#46;&#x6f;&#114;&#x67;</a></p>
 <p><strong>config:</strong> <a href="all.html">all</a></p>
 <p><strong>build:</strong> <a href="https://github.com/timm/shortr/blob/master/etc/src/Makefile">Makefile</a><br>(just used for the doco)</p>
 <p><strong>demos:</strong> <a href="go.html">go</a></p>
@@ -52,7 +52,7 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> all = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;all&quot;</span>
-<span class="hljs-keyword">local</span> csv,map,obj       = all.csv, all.map,  all.obj
+<span class="hljs-keyword">local</span> chat,csv,map,obj  = all.chat, all.csv, all.map,  all.obj
 <span class="hljs-keyword">local</span> push,rnd,rnds,the = all.push, all.rnd, all.rnds, all.the
 <span class="hljs-keyword">local</span> COLS,ROW          = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;COLS&quot;</span>,<span class="hljs-built_in">require</span><span class="hljs-string">&quot;ROW&quot;</span></pre></div></div>
             
@@ -72,7 +72,7 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> ROWS = obj(<span class="hljs-string">&quot;ROWS&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,names,rows)</span></span> 
   i.rows, i.cols = {}, (names <span class="hljs-keyword">and</span> COLS(names) <span class="hljs-keyword">or</span> <span class="hljs-literal">nil</span>)
-  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> i:summarize(row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>)</pre></div></div>
+  <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> i:add(row) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>)</pre></div></div>
             
         </li>
         
@@ -89,7 +89,8 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.add</span><span class="hljs-params">(i,t)</span></span> 
   t = t.cells <span class="hljs-keyword">and</span> t <span class="hljs-keyword">or</span> ROW(i,t)
-  <span class="hljs-keyword">if</span> i.cols <span class="hljs-keyword">then</span> i.cols:add(push(i.rows, t)) <span class="hljs-keyword">else</span> i.cols=COLS(t.cells) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">if</span> i.cols <span class="hljs-keyword">then</span> i.cols:add(push(i.rows, t)) <span class="hljs-keyword">else</span> i.cols=COLS(t.cells) <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> t <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -124,8 +125,8 @@ original table that spawned <code>eve</code>rything else (useful for some distan
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.fill</span><span class="hljs-params">(i,src)</span></span>
-  <span class="hljs-keyword">local</span> what2do = <span class="hljs-built_in">type</span>(src)==<span class="hljs-string">&quot;table&quot;</span> <span class="hljs-keyword">and</span> map <span class="hljs-keyword">or</span> csv
-  what2do(src, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(t)</span></span> i:add(t) <span class="hljs-keyword">end</span>) 
+  <span class="hljs-keyword">local</span> iterate = <span class="hljs-built_in">type</span>(src)==<span class="hljs-string">&quot;table&quot;</span> <span class="hljs-keyword">and</span> map <span class="hljs-keyword">or</span> csv
+  iterate(src, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(t)</span></span> i:add(t) <span class="hljs-keyword">end</span>) 
   <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
@@ -147,10 +148,10 @@ to handle very small numbers.</p>
   <span class="hljs-keyword">local</span> prior,like,inc,x
   prior = (#i.rows + the.k) / (nrows + the.k * nklasses)
   like  = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(prior)
-  row   = row.cells <span class="hljs-keyword">and</span> row.cells <span class="hljs-keyword">or</span> row
+  row = row.cells <span class="hljs-keyword">and</span> row.cells <span class="hljs-keyword">or</span> row
   <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.cols.x) <span class="hljs-keyword">do</span>
     x = row[col.at]
-    <span class="hljs-keyword">if</span> x <span class="hljs-keyword">and</span> x ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
+    <span class="hljs-keyword">if</span> x ~= <span class="hljs-literal">nil</span> <span class="hljs-keyword">and</span> x ~= <span class="hljs-string">&quot;?&quot;</span> <span class="hljs-keyword">then</span>
       inc  = col:like(x,prior)
       like = like + <span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(inc) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> like <span class="hljs-keyword">end</span></pre></div></div>
@@ -169,8 +170,8 @@ rounded to <code>p</code> places.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.mids</span><span class="hljs-params">(i,p,cols,    t)</span></span> 
-  t={}
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.mids</span><span class="hljs-params">(i,p,cols)</span></span> 
+  <span class="hljs-keyword">local</span> t={}
   <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(cols <span class="hljs-keyword">or</span> i.cols.y) <span class="hljs-keyword">do</span> t[col.txt]=col:mid(p) <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> rnds(t,p <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>
 

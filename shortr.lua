@@ -195,10 +195,7 @@ function Col.simpler(i,this,that)
 -- ### For Naive Bayes 
 
 function Col.like(i,x,prior)
-  if  not i.nums then 
-      oo{i.kept[x] , the.m, prior,i.n,the.m}
-      return ((i.kept[x] or 0)+the.m*prior) / (i.n+the.m) 
-  else
+  if  not i.nums then return ((i.kept[x] or 0)+the.m*prior)/(i.n+the.m) else
     local sd,mu=Col.div(i), Col.mid(i)
     if sd==0 then return x==mu and 1 or 1/big end
     return math.exp(-.5*((x - mu)/sd)^2) / (sd*((2*math.pi)^0.5)) end  end

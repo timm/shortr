@@ -28,11 +28,11 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
-<img align=left width=225   src="bat2.png"></p>
-<p>LUA is a “batteries-not-included” language.
+ <img align=left width=250   src="bat2.png">
+LUA is a “batteries-not-included” language.
 But LUA makes it easy to add in the  missing bits.
 E.g. here are some “b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#x69;&#109;&#x6d;&#x40;&#x69;&#x65;&#x65;&#x65;&#x2e;&#x6f;&#114;&#103;">&#116;&#x69;&#109;&#x6d;&#x40;&#x69;&#x65;&#x65;&#x65;&#x2e;&#x6f;&#114;&#103;</a></p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#105;&#109;&#x6d;&#x40;&#x69;&#x65;&#101;&#101;&#x2e;&#x6f;&#x72;&#103;">&#116;&#105;&#109;&#x6d;&#x40;&#x69;&#x65;&#101;&#101;&#x2e;&#x6f;&#x72;&#103;</a></p>
 <p><strong>config:</strong> <a href="all.html">all</a></p>
 <p><strong>build:</strong> <a href="https://github.com/timm/shortr/blob/master/etc/src/Makefile">Makefile</a><br>(just used for the doco)</p>
 <p><strong>demos:</strong> <a href="go.html">go</a></p>
@@ -53,10 +53,11 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> all = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;all&quot;</span>
 <span class="hljs-keyword">local</span> chat,cli,csv,maps,on = all.chat, all.cli, all.csv, all.maps, all.on
-<span class="hljs-keyword">local</span> settings,<span class="hljs-built_in">sort</span>,the    = all.settings, all.<span class="hljs-built_in">sort</span>, all.the
+<span class="hljs-keyword">local</span> settings,<span class="hljs-built_in">sort</span>,splice, the = all.settings, all.<span class="hljs-built_in">sort</span>, all.splice, all.the
 
 <span class="hljs-keyword">local</span> COLS,NUM, ROWS = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;COLS&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;NUM&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;ROWS&quot;</span>
-<span class="hljs-keyword">local</span> SOME, SYM      = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;SOME&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;SYM&quot;</span></pre></div></div>
+<span class="hljs-keyword">local</span> SOME, SYM, NB  = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;SOME&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;SYM&quot;</span>, <span class="hljs-built_in">require</span><span class="hljs-string">&quot;NB&quot;</span>
+<span class="hljs-keyword">local</span> ABCD           = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;ABCD&quot;</span></pre></div></div>
             
         </li>
         
@@ -253,9 +254,25 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.BETTERS</span><span class="hljs-params">( rs)</span></span> 
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.BETTERS</span><span class="hljs-params">( rs,best,m,rest)</span></span> 
   rs=ROWS():fill(the.file)
-  <span class="hljs-built_in">sort</span>(rs.rows) <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-built_in">sort</span>(rs.rows) 
+  m    = (#rs.rows)^<span class="hljs-number">.5</span>
+  best = splice(rs.rows,<span class="hljs-number">1</span>,m)  <span class="hljs-comment">--(m^.5)) </span>
+  rest = splice(rs.rows,<span class="hljs-number">1</span>,#rs.rows - m) <span class="hljs-comment">--#rs.rows - 30) --(m^.5)) </span>
+  chat(rs:clone(best):mids())
+  chat(rs:clone(rest):mids())
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.DIABETES</span><span class="hljs-params">(f,  a)</span></span> <span class="hljs-comment">--   i,t,a) </span>
+  a = ABCD()
+  NB(f <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;../../data/diabetes.csv&quot;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(got,want)</span></span> a:add(got,want) <span class="hljs-keyword">end</span>)
+  a:pretty( a:report() )
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go.SOYBEAN</span><span class="hljs-params">()</span></span>  
+  go.DIABETES(<span class="hljs-string">&quot;../../data/soybean.csv&quot;</span>) 
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         

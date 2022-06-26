@@ -28,11 +28,11 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
-<img align=left width=225   src="bat2.png"></p>
-<p>LUA is a “batteries-not-included” language.
+ <img align=left width=250   src="bat2.png">
+LUA is a “batteries-not-included” language.
 But LUA makes it easy to add in the  missing bits.
 E.g. here are some “b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#105;&#109;&#109;&#64;&#105;&#x65;&#101;&#101;&#x2e;&#x6f;&#x72;&#103;">&#116;&#105;&#109;&#109;&#64;&#105;&#x65;&#101;&#101;&#x2e;&#x6f;&#x72;&#103;</a></p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#x74;&#x69;&#109;&#x6d;&#x40;&#x69;&#101;&#x65;&#x65;&#46;&#x6f;&#x72;&#x67;">&#x74;&#x69;&#109;&#x6d;&#x40;&#x69;&#101;&#x65;&#x65;&#46;&#x6f;&#x72;&#x67;</a></p>
 <p><strong>config:</strong> <a href="all.html">all</a></p>
 <p><strong>build:</strong> <a href="https://github.com/timm/shortr/blob/master/etc/src/Makefile">Makefile</a><br>(just used for the doco)</p>
 <p><strong>demos:</strong> <a href="go.html">go</a></p>
@@ -54,7 +54,8 @@ columns of the records.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> all = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;all&quot;</span>
-<span class="hljs-keyword">local</span> lt,map,obj,<span class="hljs-built_in">sort</span> = all.lt, all.map, all.obj, all.<span class="hljs-built_in">sort</span></pre></div></div>
+<span class="hljs-keyword">local</span> big,chat,lt,map  = all.big, all.chat, all.lt, all.map
+<span class="hljs-keyword">local</span> obj,rnds,<span class="hljs-built_in">sort</span>    = all.obj, all.rnds, all.<span class="hljs-built_in">sort</span></pre></div></div>
             
         </li>
         
@@ -86,7 +87,7 @@ columns of the records.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROW.__lt</span><span class="hljs-params">(i,j)</span></span> 
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROW.__sub</span><span class="hljs-params">(i,j)</span></span> 
   <span class="hljs-keyword">local</span> d, cols = <span class="hljs-number">0</span>, i._of.cols.x
   <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(cols) <span class="hljs-keyword">do</span>
     <span class="hljs-keyword">local</span> inc = col:dist(i.cells[col.at], j.cells[col.at]) 
@@ -124,11 +125,11 @@ sorted by distance to <code>i</code>. <code>rows</code> defaults to the rows of 
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROW.better</span><span class="hljs-params">(i,j)</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROW.__lt</span><span class="hljs-params">(i,j)</span></span>
   i.evaled, j.evaled = <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>
   <span class="hljs-keyword">local</span> s1, s2, ys = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, i._of.cols.y
   <span class="hljs-keyword">for</span> _,col <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(ys) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">local</span> x,y =  i.cells[c.at], j.cells[c.at]
+    <span class="hljs-keyword">local</span> x,y =  i.cells[col.at], j.cells[col.at]
     x,y = col:norm(x), col:norm(y)
     s1  = s1 - <span class="hljs-number">2.7183</span>^(col.w * (x-y)/#ys)
     s2  = s2 - <span class="hljs-number">2.7183</span>^(col.w * (y-x)/#ys) <span class="hljs-keyword">end</span>

@@ -28,11 +28,11 @@
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
               <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
-<img align=left width=225   src="bat2.png"></p>
-<p>LUA is a “batteries-not-included” language.
+ <img align=left width=250   src="bat2.png">
+LUA is a “batteries-not-included” language.
 But LUA makes it easy to add in the  missing bits.
 E.g. here are some “b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#x74;&#x69;&#x6d;&#x6d;&#64;&#x69;&#x65;&#x65;&#x65;&#x2e;&#111;&#x72;&#x67;">&#x74;&#x69;&#x6d;&#x6d;&#64;&#x69;&#x65;&#x65;&#x65;&#x2e;&#111;&#x72;&#x67;</a></p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#105;&#x6d;&#109;&#x40;&#x69;&#101;&#x65;&#101;&#46;&#111;&#114;&#x67;">&#116;&#105;&#x6d;&#109;&#x40;&#x69;&#101;&#x65;&#101;&#46;&#111;&#114;&#x67;</a></p>
 <p><strong>config:</strong> <a href="all.html">all</a></p>
 <p><strong>build:</strong> <a href="https://github.com/timm/shortr/blob/master/etc/src/Makefile">Makefile</a><br>(just used for the doco)</p>
 <p><strong>demos:</strong> <a href="go.html">go</a></p>
@@ -148,11 +148,11 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-8">&#x00a7;</a>
               </div>
-              <p><strong>R( <code>max</code>:  ?num=1):num</strong> <br> return a random number <code>0..max</code>.</p>
+              <p>** <code>big</code>:  num** <br> return a big number</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>lib.R = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>lib.big = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span></pre></div></div>
             
         </li>
         
@@ -162,6 +162,21 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
               
               <div class="sswrap ">
                 <a class="ss" href="#section-9">&#x00a7;</a>
+              </div>
+              <p><strong>R( <code>max</code>:  ?num=1):num</strong> <br> return a random number <code>0..max</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>lib.R = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-10">&#x00a7;</a>
               </div>
               <p><strong>rnd( <code>x</code>:  num,  <code>places</code>:  int):num</strong> <br> return <code>x</code> rounded to some number of <code>places</code>.</p>
 
@@ -174,31 +189,18 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
         </li>
         
         
-        <li id="section-10">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-10">&#x00a7;</a>
-              </div>
-              <p><strong>rnds( <code>t</code>:  num,  <code>places</code>:  ?int=2):t</strong> <br> return items in <code>t</code> rounds to <code>places</code>.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.rnds</span><span class="hljs-params">(t, places)</span></span>
-  <span class="hljs-keyword">local</span> u={};<span class="hljs-keyword">for</span> k,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> u[k] = rnd(x,places <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>) <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
         <li id="section-11">
             <div class="annotation">
               
               <div class="sswrap ">
                 <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
-              <h3 id="lists">Lists</h3>
+              <p><strong>rnds( <code>t</code>:  num,  <code>places</code>:  ?int=2):t</strong> <br> return items in <code>t</code> rounds to <code>places</code>.</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.rnds</span><span class="hljs-params">(t, places)</span></span>
+  <span class="hljs-keyword">local</span> u={};<span class="hljs-keyword">for</span> k,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(t) <span class="hljs-keyword">do</span> u[k]=lib.rnd(x,places <span class="hljs-keyword">or</span> <span class="hljs-number">2</span>)<span class="hljs-keyword">end</span>;<span class="hljs-keyword">return</span> u <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -208,6 +210,19 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
               
               <div class="sswrap ">
                 <a class="ss" href="#section-12">&#x00a7;</a>
+              </div>
+              <h3 id="lists">Lists</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-13">&#x00a7;</a>
               </div>
               <p><strong>splice( <code>t</code>:  tab,start=?int=1, <code>stop</code>:  ?num=#t, <code>step</code>:  ?num=1):t</strong> <br> pull items
 <code>start</code> to <code>stop</code>, stepping by <code>step</code>. </p>
@@ -222,11 +237,11 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
         </li>
         
         
-        <li id="section-13">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-13">&#x00a7;</a>
+                <a class="ss" href="#section-14">&#x00a7;</a>
               </div>
               <p><strong>sort( <code>t</code>:  tab,  <code>f</code>:  fun) :tab</strong> <br> Return <code>t</code>, sorted of function <code>f</code> (default “&lt;”).</p>
 
@@ -237,11 +252,11 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
         </li>
         
         
-        <li id="section-14">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-14">&#x00a7;</a>
+                <a class="ss" href="#section-15">&#x00a7;</a>
               </div>
               <p><strong>push( <code>t</code>:  tab,  <code>x</code>:  any) :x</strong> <br> Add <code>x</code> to end of <code>t</code>; return <code>t</code>.</p>
 
@@ -252,11 +267,11 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
         </li>
         
         
-        <li id="section-15">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-15">&#x00a7;</a>
+                <a class="ss" href="#section-16">&#x00a7;</a>
               </div>
               <p><strong>per( <code>t</code>:  tab,  <code>p</code>:  ?float=.5) :x</strong> <br> Return <code>p</code>-th ranked item from <code>t</code>.</p>
 
@@ -267,11 +282,11 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
         </li>
         
         
-        <li id="section-16">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-16">&#x00a7;</a>
+                <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
               <p><strong>map( <code>t</code>:  tab,  <code>f</code>:  fun): tab</strong> <br> 
 <strong>kap( <code>t</code>:  tab,  <code>f</code>:  fun): tab</strong> <br> 
@@ -290,11 +305,11 @@ key and value to <code>f</code>. <code>maps</code> and <code>kaps</code> pass it
         </li>
         
         
-        <li id="section-17">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-17">&#x00a7;</a>
+                <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
               <h3 id="string-to-thing">String to thing</h3>
 
@@ -303,11 +318,11 @@ key and value to <code>f</code>. <code>maps</code> and <code>kaps</code> pass it
         </li>
         
         
-        <li id="section-18">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-18">&#x00a7;</a>
+                <a class="ss" href="#section-19">&#x00a7;</a>
               </div>
               <p><strong>thing( <code>s</code>:  str):any</strong> <br> Coerce string to whatever
 is simplest (boolean or integer or float or, if all else fails, a string).</p>
@@ -322,11 +337,11 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-19">&#x00a7;</a>
+                <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
               <p><strong>words( <code>s</code>:  str,  <code>sep</code>:  str,  <code>fun</code>:  fun):tab</strong> <br> Return <code>t</code> filled with <code>s</code>, split  on <code>sep</code>.</p>
 
@@ -339,11 +354,11 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
         </li>
         
         
-        <li id="section-20">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-20">&#x00a7;</a>
+                <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
               <p><strong>csv( <code>file</code>:  str,   <code>fun</code>:  fun):tab</strong> <br> Call <code>fun</code> with lines, split on “,”.</p>
 
@@ -359,11 +374,11 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
         </li>
         
         
-        <li id="section-21">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-21">&#x00a7;</a>
+                <a class="ss" href="#section-22">&#x00a7;</a>
               </div>
               <h3 id="thing-to-string">Thing to string</h3>
 
@@ -372,11 +387,11 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
         </li>
         
         
-        <li id="section-22">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-22">&#x00a7;</a>
+                <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
               <p><strong>fmt( <code>s</code>:  str,…) :str</strong> <br> emulate prinft</p>
 
@@ -387,11 +402,11 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
         </li>
         
         
-        <li id="section-23">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-23">&#x00a7;</a>
+                <a class="ss" href="#section-24">&#x00a7;</a>
               </div>
               <p><strong>cat( <code>t</code>:  tab):str</strong> <br> Return table as string. For key-indexed lists, show keys (sorted).</p>
 
@@ -405,11 +420,11 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
         </li>
         
         
-        <li id="section-24">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-24">&#x00a7;</a>
+                <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
               <p><strong>chat( <code>t</code>:  tab):t</strong> <br> Print table (as string). Return <code>t</code>.</p>
 
@@ -420,11 +435,11 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
         </li>
         
         
-        <li id="section-25">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-25">&#x00a7;</a>
+                <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
               <h3 id="settings">Settings</h3>
 
@@ -433,11 +448,11 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
         </li>
         
         
-        <li id="section-26">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-26">&#x00a7;</a>
+                <a class="ss" href="#section-27">&#x00a7;</a>
               </div>
               <p><strong>opts( <code>x</code>:  str) :tab</strong> <br> Parse <code>str</code> for lines with <code>--</code>; then pull keys+defaults. </p>
 
@@ -453,11 +468,11 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
         </li>
         
         
-        <li id="section-27">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-27">&#x00a7;</a>
+                <a class="ss" href="#section-28">&#x00a7;</a>
               </div>
               <p><strong>cli( <code>t</code>:  tab) :tab</strong> <br> For keys in <code>t</code>, look for updates on command-line. 
 Things with boolean defaults are flipped via <code>--flag</code>. 
@@ -483,11 +498,11 @@ to <code>t</code>.</p>
         </li>
         
         
-        <li id="section-28">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-28">&#x00a7;</a>
+                <a class="ss" href="#section-29">&#x00a7;</a>
               </div>
               <h3 id="tests">Tests</h3>
 
@@ -496,11 +511,11 @@ to <code>t</code>.</p>
         </li>
         
         
-        <li id="section-29">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-29">&#x00a7;</a>
+                <a class="ss" href="#section-30">&#x00a7;</a>
               </div>
               <p><strong>on( <code>opts</code>:  tab,  <code>tests</code>:  [fun])</strong> <br> Run some tests.
 If  <code>opt.go==&quot;all&quot;</code>, then run all tests, sorted on their name.
@@ -527,11 +542,11 @@ Before each test, reset random seed and the options `opts.</p>
         </li>
         
         
-        <li id="section-30">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-30">&#x00a7;</a>
+                <a class="ss" href="#section-31">&#x00a7;</a>
               </div>
               <h3 id="objects">Objects</h3>
 
@@ -540,11 +555,11 @@ Before each test, reset random seed and the options `opts.</p>
         </li>
         
         
-        <li id="section-31">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-31">&#x00a7;</a>
+                <a class="ss" href="#section-32">&#x00a7;</a>
               </div>
               <p><strong>obj( <code>name</code>:  str,  <code>fun</code>:  fun):object</strong> <br> Return a klass <code>name</code> with constructor <code>fun</code>.
 Add a unique <code>id</code> and a <code>tosting</code> method (that uses <code>cat</code> (above).</p>
@@ -560,11 +575,11 @@ Add a unique <code>id</code> and a <code>tosting</code> method (that uses <code>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-32">&#x00a7;</a>
+                <a class="ss" href="#section-33">&#x00a7;</a>
               </div>
               <hr>
 
@@ -573,11 +588,11 @@ Add a unique <code>id</code> and a <code>tosting</code> method (that uses <code>
         </li>
         
         
-        <li id="section-33">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-33">&#x00a7;</a>
+                <a class="ss" href="#section-34">&#x00a7;</a>
               </div>
               <h3 id="return">Return</h3>
 
