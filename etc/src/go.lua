@@ -1,10 +1,10 @@
 -- ## Test suite.
 local all = require"all"
 local chat,cli,csv,maps,on = all.chat, all.cli, all.csv, all.maps, all.on
-local settings,sort,the    = all.settings, all.sort, all.the
+local settings,sort,splice, the = all.settings, all.sort, all.splice, all.the
 
 local COLS,NUM, ROWS = require"COLS", require"NUM", require"ROWS"
-local SOME, SYM      = require"SOME", require"SYM"
+local SOME, SYM, NB  = require"SOME", require"SYM", require"NB"
 
 -- To disable a test, rename it from `go` to `no`.
 local go,no = {},{}
@@ -57,9 +57,24 @@ function go.KLASS()
   return true end
 
 -- Load data from a csv file to a ROWS object.
-function go.BETTERS( rs) 
+function go.BETTERS( rs,best,m,rest) 
   rs=ROWS():fill(the.file)
-  sort(rs.rows) end
+  sort(rs.rows) 
+  m    = (#rs.rows)^.5
+  best = splice(rs.rows,1,m)  --(m^.5)) 
+  rest = splice(rs.rows,1,#rs.rows - m) --#rs.rows - 30) --(m^.5)) 
+  chat(rs:clone(best):mids())
+  chat(rs:clone(rest):mids())
+  return true end
+
+function go.DIABETES(f) --   i,t,a) 
+  --a = Abcd.NEW()
+  NB(f or "../../data/diabetes.csv")
+  return true end
+
+function go.SOYBEAN()  
+  go.DIABETES("../../data/soybean.csv") 
+  return true end
 -------
 -- ### Start
 the = cli(the)

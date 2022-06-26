@@ -59,7 +59,7 @@
 -- - Simon, Herbert A. (1956). 
 --   [Rational Choice and the Structure of the Environment](https://uk.sagepub.com/sites/default/files/upm-binaries/25239_Chater~Vol_1~Ch_03.pdf)
 --   Psychological Review. 63 (2): 129–138.
-all=require"lib"
+local all=require"lib"
 all.the = all.opts( [[
 BAITTERY: semi-supervised multi-objective optimization XAI
 (c) 2022 Tim Menzies <timm@ieee.org> BSD2 license

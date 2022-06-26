@@ -16,6 +16,9 @@ lib.same=function(x) return x end
 
 -- ### Maths
 
+--> big:num -> return a big number
+lib.big = math.huge
+
 --> R(max:?num=1):num -> return a random number `0..max`.
 lib.R = math.random
 
@@ -26,7 +29,7 @@ function lib.rnd(x, places)
 
 --> rnds(t:num, places:?int=2):t -> return items in `t` rounds to `places`.
 function lib.rnds(t, places)
-  local u={};for k,x in pairs(t) do u[k] = rnd(x,places or 2) end; return u end
+  local u={};for k,x in pairs(t) do u[k]=lib.rnd(x,places or 2)end;return u end
 -- ###  Lists
 
 --> splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t -> pull items

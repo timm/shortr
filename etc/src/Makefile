@@ -22,9 +22,9 @@ ready:  ##  commit to main
 
 LUAS = $(wildcard [a-z]*.lua)
 
-htmls:  $(subst .lua,.html,docs/$(subst lua ,html docs/,$(LUAS))) ## make all htmls
+htmls:  $(subst .lua,.html,$(WEB)/$(subst lua ,html $(WEB)/,$(LUAS))) ## make all htmls
 	cp -r docs/* $(WEB)/
-	(cd $(WEB)/*; git -q add *; git commit -am save)
+	(cd $(WEB); git  add *; git commit -am save; git push)
 
 docs/%.html: %.lua  README.md ## make html
 	(cat README.md ; gawk '\

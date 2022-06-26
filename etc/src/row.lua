@@ -3,7 +3,8 @@
 -- And [NUM](num.html) and [SYM](sym.html) that summarize the 
 -- columns of the records.
 local all = require"all"
-local lt,map,obj,sort = all.lt, all.map, all.obj, all.sort
+local big,chat,lt,map  = all.big, all.chat, all.lt, all.map
+local obj,rnds,sort    = all.obj, all.rnds, all.sort
 
 --> ROW(of:ROWS, cells:tab) :ROW -> Place to store one record
 -- (and stats on how it is used; e.g. `i.evaled=true` if we touch the y values.
@@ -11,7 +12,7 @@ local ROW = obj("ROW", function(i,of,cells)
   i._of,i.cells,i.evaled = of,cells,false end)
 
 --> i:ROW - j:ROW -> return distance between `i` and `j`
-function ROW.__lt(i,j) 
+function ROW.__sub(i,j) 
   local d, cols = 0, i._of.cols.x
   for _,col in pairs(cols) do
     local inc = col:dist(i.cells[col.at], j.cells[col.at]) 
@@ -25,11 +26,11 @@ function ROW.around(i, rows)
   return sort(map(rows or i._of.rows, rowGap), lt"gap") end
 
 --> better(i:ROW, j:ROW):boolean -> should `i` proceed before `j`?
-function ROW.better(i,j)
+function ROW.__lt(i,j)
   i.evaled, j.evaled = true, true
   local s1, s2, ys = 0, 0, i._of.cols.y
   for _,col in pairs(ys) do
-    local x,y =  i.cells[c.at], j.cells[c.at]
+    local x,y =  i.cells[col.at], j.cells[col.at]
     x,y = col:norm(x), col:norm(y)
     s1  = s1 - 2.7183^(col.w * (x-y)/#ys)
     s2  = s2 - 2.7183^(col.w * (y-x)/#ys) end

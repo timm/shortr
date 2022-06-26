@@ -1,12 +1,12 @@
 -- ## class NUM: summarize numbers
 local all = require"all"
-local obj,push,the = all.obj, all.push, all.the
+local big,obj,per,push,the = all.big,all.obj,all.per,all.push,all.the
 local SOME = require"some"
 
 --> NUM(at:?int, txt:?str) :NUM -> Summarize a stream of numbers.
 local NUM = obj("NUM", function(i,at,txt) 
   i.at, i.txt, i.n, i.kept =  at or 0, txt or "", 0, SOME(the.Some)
-  i.w =  i.txt:find"-$"  end)
+  i.w = i.txt:find"-$" and -1 or 1 end)
 
 --> add(i:NUM: x:num, n:?int=1) -> `n` times,update `i`'s SOME object.
 function NUM.add(i,x,n)

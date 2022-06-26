@@ -8,12 +8,13 @@ local COLS,ROW          = require"COLS",require"ROW"
 --  and summarize them (in `i.cols`).
 local ROWS = obj("ROWS", function(i,names,rows) 
   i.rows, i.cols = {}, (names and COLS(names) or nil)
-  for _,row in pairs(rows or {}) do i:summarize(row) end end)
+  for _,row in pairs(rows or {}) do i:add(row) end end)
 
 --> add(i:ROWS: row:ROW) -> add ROW to ROWS, update the summaries in `i.cols`.
 function ROWS.add(i,t) 
   t = t.cells and t or ROW(i,t)
-  if i.cols then i.cols:add(push(i.rows, t)) else i.cols=COLS(t.cells) end end
+  if i.cols then i.cols:add(push(i.rows, t)) else i.cols=COLS(t.cells) end 
+  return t end
 
 --> ROWS.clone(init:?[ROW]) :ROWS -> Return a ROWS with same structure as `i`. 
 -- Optionally, `init`ialize it with some rows. Add a pointer back to the 
@@ -24,8 +25,8 @@ function ROWS.clone(i,init)
 
 --> fill(i:ROWS: src:(str|tab)):ROWS -> copy the data from `src` into `i`.
 function ROWS.fill(i,src)
-  local what2do = type(src)=="table" and map or csv
-  what2do(src, function(t) i:add(t) end) 
+  local iterate = type(src)=="table" and map or csv
+  iterate(src, function(t) i:add(t) end) 
   return i end
 
 --> like(i:ROWS,row;ROW,nklasses:num,nrows:num):num -> Return 
@@ -45,8 +46,8 @@ function ROWS.like(i,row, nklasses, nrows)
 
 --> mids(i:ROW,p:?int=2,cols=?[COL]=i.cols.y):tab -> Return `mid` of columnss
 -- rounded to `p` places.
-function ROWS.mids(i,p,cols,    t) 
-  t={}
+function ROWS.mids(i,p,cols) 
+  local t={}
   for _,col in pairs(cols or i.cols.y) do t[col.txt]=col:mid(p) end
   return rnds(t,p or 2) end
 
