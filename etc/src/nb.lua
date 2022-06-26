@@ -1,7 +1,7 @@
 -- ## class NB: classifier
 local all=require"all"
-local big,cat,chat,csv = all.big,all.cat,all.chat,all.csv
-local map,obj,push,the = all.map, all.obj, all.push, all.the
+local big,cat,chat,csv,gt = all.big,all.cat,all.chat,all.csv,all.gt
+local map,obj,push,sort,the = all.map, all.obj, all.push, all.sort, all.the
 local ROWS = require"ROWS"
 
 --> NB(src=(str|tab), report=?function=print) -> classify examples
@@ -31,6 +31,8 @@ function NB.guess(i,row)
   for key,rows in pairs(i.dict) do
     local tmp = rows:like(row, #i.list,#i.overall.rows)
     if tmp > most then most,out = tmp,key end end
+  if not out then out = sort(i.list,
+                             function(a,b) return #a.rows>#b.rows end)[1].txt end
   return out end
 
 return NB

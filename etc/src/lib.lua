@@ -8,8 +8,10 @@ function lib.rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 -- ### Meta
 
---> lt(x:str):function -> Returns a function that sorts on `x`
+--> lt(x:str):function -> 
+--> gt(x:str):function -> Returns functions that sorts on `x`
 function lib.lt(x) return function(a,b) return a[x] < b[x] end end
+function lib.gt(x) return function(a,b) return a[x] > b[x] end end
 
 --> same(x:any):any -> Return x, unchanged.
 lib.same=function(x) return x end

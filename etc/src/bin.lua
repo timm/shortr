@@ -15,10 +15,10 @@ function BIN.add(i,x,y)
 
 function BIN.hold(i, row)
   local x = row.cells[i.ys.at]
-  return x=="?" or i.lo==i.hi or i.lo<x and x<=i.hi end
+  if x=="?" or i.lo==i.hi or i.lo<x and x<=i.hi then return row end end
 
 function BIN.holds(i, rows)
-  return map(rows,function(row) if i:hold(row) then return row end end) end
+  return map(rows, function(row) return i:hold(row) end) end
 
 function BIN.merged(i,j, min)
   local iy, jy, ky = i.ys, j.ys, i.ys:merge(j.ys)
