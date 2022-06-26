@@ -5,6 +5,7 @@ local settings,sort,splice, the = all.settings, all.sort, all.splice, all.the
 
 local COLS,NUM, ROWS = require"COLS", require"NUM", require"ROWS"
 local SOME, SYM, NB  = require"SOME", require"SYM", require"NB"
+local ABCD           = require"ABCD"
 
 -- To disable a test, rename it from `go` to `no`.
 local go,no = {},{}
@@ -67,9 +68,10 @@ function go.BETTERS( rs,best,m,rest)
   chat(rs:clone(rest):mids())
   return true end
 
-function go.DIABETES(f) --   i,t,a) 
-  --a = Abcd.NEW()
-  NB(f or "../../data/diabetes.csv")
+function go.DIABETES(f,  a) --   i,t,a) 
+  a = ABCD()
+  NB(f or "../../data/diabetes.csv",function(got,want) a:add(got,want) end)
+  a:pretty( a:report() )
   return true end
 
 function go.SOYBEAN()  

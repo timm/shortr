@@ -1,6 +1,6 @@
 -- ## class ROWS: store many ROW
 local all = require"all"
-local csv,map,obj       = all.csv, all.map,  all.obj
+local chat,csv,map,obj  = all.chat, all.csv, all.map,  all.obj
 local push,rnd,rnds,the = all.push, all.rnd, all.rnds, all.the
 local COLS,ROW          = require"COLS",require"ROW"
 
@@ -36,10 +36,10 @@ function ROWS.like(i,row, nklasses, nrows)
   local prior,like,inc,x
   prior = (#i.rows + the.k) / (nrows + the.k * nklasses)
   like  = math.log(prior)
-  row   = row.cells and row.cells or row
+  row = row.cells and row.cells or row
   for _,col in pairs(i.cols.x) do
     x = row[col.at]
-    if x and x ~= "?" then
+    if x ~= nil and x ~= "?" then
       inc  = col:like(x,prior)
       like = like + math.log(inc) end end
   return like end
