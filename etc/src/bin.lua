@@ -33,7 +33,7 @@ function BIN.show(i)
   else                   return fmt("%s <  %s <= %s", lo,x,hi) end end
 
 -- ----
-function BIN.BINS(rows,col,y,yKlass)
+function BIN.BINS(rows,col,yKlass,y)
   y      = y or function(row) return row:klass() end
   yKlass = yKlass or SYM
   local n,list, dict = 0,{}, {}
