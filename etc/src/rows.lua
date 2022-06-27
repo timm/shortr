@@ -1,4 +1,4 @@
--- ## class ROWS: store many ROW
+-- ## store many ROWs
 local all = require"all"
 local chat,csv,map,obj  = all.chat, all.csv, all.map,  all.obj
 local push,rnd,rnds,the = all.push, all.rnd, all.rnds, all.the

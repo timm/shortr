@@ -1,4 +1,4 @@
--- ## class COLS:  make NUMs or SYMs
+-- ##  How to make NUMs or SYMs
 
 local all=require"all"
 local obj, push = all.obj, all.push

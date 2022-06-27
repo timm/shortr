@@ -1,3 +1,4 @@
+-- ## Categorical performance stats
 local all = require"all"
 local fmt, obj = all.fmt, all.obj
 

@@ -32,7 +32,7 @@
 LUA is a “batteries-not-included” language.
 But LUA makes it easy to add in the  missing bits.
 E.g. here are some “b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#105;&#x6d;&#109;&#x40;&#x69;&#101;&#x65;&#101;&#46;&#111;&#114;&#x67;">&#116;&#105;&#x6d;&#109;&#x40;&#x69;&#101;&#x65;&#101;&#46;&#111;&#114;&#x67;</a></p>
+<p>(c) 2022, Tim Menzies<br><a href="mailto:&#116;&#105;&#x6d;&#x6d;&#64;&#x69;&#x65;&#x65;&#x65;&#x2e;&#x6f;&#x72;&#103;">&#116;&#105;&#x6d;&#x6d;&#64;&#x69;&#x65;&#x65;&#x65;&#x2e;&#x6f;&#x72;&#103;</a></p>
 <p><strong>config:</strong> <a href="all.html">all</a></p>
 <p><strong>build:</strong> <a href="https://github.com/timm/shortr/blob/master/etc/src/Makefile">Makefile</a><br>(just used for the doco)</p>
 <p><strong>demos:</strong> <a href="go.html">go</a></p>
@@ -105,11 +105,13 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
-              <p><strong>lt( <code>x</code>:  str):function</strong> <br> Returns a function that sorts on <code>x</code></p>
+              <p><strong>lt( <code>x</code>:  str):function</strong> <br> 
+<strong>gt( <code>x</code>:  str):function</strong> <br> Returns functions that sorts on <code>x</code></p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.lt</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> a[x] &lt; b[x] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.lt</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> a[x] &lt; b[x] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lib.gt</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span></span> <span class="hljs-keyword">return</span> a[x] &gt; b[x] <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         

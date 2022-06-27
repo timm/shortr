@@ -1,4 +1,4 @@
--- ## class NB: classifier
+-- ## Bayes classifier
 local all=require"all"
 local big,cat,chat,csv,gt = all.big,all.cat,all.chat,all.csv,all.gt
 local map,obj,push,sort,the = all.map, all.obj, all.push, all.sort, all.the

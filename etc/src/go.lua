@@ -1,4 +1,4 @@
--- ## Test suite.
+-- ## Test suite
 local all = require"all"
 local chat,cli,csv,maps,on = all.chat, all.cli, all.csv, all.maps, all.on
 local settings,sort,splice, the = all.settings, all.sort, all.splice, all.the

@@ -1,4 +1,4 @@
---  ## class BIN: info on 2 cols
+--  ##  info on 2 cols
 local all=require"all"
 local big,fmt,lt,obj,sort = all.big,all.fmt,all.lt,all.obj,all.sort
 

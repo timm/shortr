@@ -1,4 +1,4 @@
--- ## class SYM: summarize symbols
+-- ## Summarize symbols
 
 local all = require"all"
 local chat,obj,push,the = all.chat, all.obj, all.push, all.the
@@ -41,8 +41,8 @@ function SYM.mid(i,p)
 --> div(i:SYM):tab -> Return `div`ersity of a column
 -- (its tendency _not_ to be a its central tendency).
 function SYM.div(i,p)
-  local ent, log = 0, function(x) return math.log(x,2) end
-  for x,n in pairs(i.kept) do if n > 0 then ent=ent - n/i.n*log(n/i.n) end end
+  local ent, fun = 0, function(p) return -p*math.log(p,2) end
+  for x,n in pairs(i.kept) do if n > 0 then ent=ent + fun(n/i.n) end end
   return ent end
  
 return SYM

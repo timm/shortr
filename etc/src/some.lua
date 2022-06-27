@@ -1,4 +1,4 @@
--- ## class SOME: keep some nums
+-- ## Keep some nums
 local all=require"all"
 local obj,push,R,sort,the= all.obj, all.push, all.R, all.sort, all.the
 

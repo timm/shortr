@@ -1,4 +1,4 @@
--- ## class NUM: summarize numbers
+-- ## Summarize numbers
 local all = require"all"
 local big,obj,per,push,the = all.big,all.obj,all.per,all.push,all.the
 local SOME = require"some"
