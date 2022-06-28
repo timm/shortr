@@ -7,9 +7,9 @@ function ROWS.tree(i, listOfRows)
   for label,rows1 in pairs(listOfRows) do
     for _,row in pairs(rows1) do
       root:add(row)
-      labels[row._id]=label end end
-  return root:kids(2 * small(the.Min, #root.rows),
-                   function(row) return labels[row._id] end) end 
+      labels[row._id]=label end end                 -- set label
+  local function y(row) return labels[rows._id] end -- get label
+  return root:kids(2 * small(the.Min, #root.rows), y) end
 
 function ROWS.kids(i, stop, y)
   if #j.rows >=stop then
