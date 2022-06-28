@@ -1,6 +1,7 @@
 --  ##  info on 2 cols
 local all=require"all"
-local big,fmt,lt,obj,sort = all.big,all.fmt,all.lt,all.obj,all.sort
+local big,fmt,lt,obj = all.big,all.fmt,all.lt,all.obj,all
+local small,sort = all.small,all.sort
 
 --> BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN ->
 -- `ys` stores values seen from `xlo to `xhi`.
@@ -21,9 +22,9 @@ function BIN.holds(i, rows)
   return map(rows, function(row) return i:hold(row) end) end
 
 function BIN.merged(i,j, min)
-  local iy, jy, ky = i.ys, j.ys, i.ys:merge(j.ys)
-  if iy.n < min or jy.n < min or ab:div(i) <= (a.n*a:div() + b.n*b:div())/ab.n then
-    return BIN(i.lo, j.hi, ky) end end
+  local a, b, c = i.ys, j.ys, i.ys:merge(j.ys)
+  if a.n < min or b.n < min or c:div() <= (a.n*a:div() + b.n*b:div())/c.n then
+    return BIN(i.lo, j.hi, c) end end
 
 function BIN.show(i)
   local x,lo,hi = i.ys.txt, i.lo, i.hi
@@ -44,6 +45,6 @@ function BIN.BINS(rows,col,yKlass,y)
       local pos = col:bin(v)
       dict[pos] = dict[pos] or push(list, BIN(v,v,yKlass(col.at, col.txt)))
       dict[pos]:add(v, y(row)) end end
-  list = col:merges(sort(list, lt"lo"), small(n))
+  list = col:merges(sort(list, lt"lo"), small(the.Min, n))
   return {bins= list,
           div = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end

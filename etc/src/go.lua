@@ -68,10 +68,11 @@ function go.BETTERS( rs,best,m,rest)
   chat(rs:clone(rest):mids())
   return true end
 
-function go.DIABETES(f,  a) --   i,t,a) 
+function go.DIABETES(f,  a,n) --   i,t,a) 
   a = ABCD()
-  NB(f or "../../data/diabetes.csv",function(got,want) a:add(got,want) end)
-  a:pretty( a:report() )
+  n= NB(f or "../../data/diabetes.csv",function(got,want) a:add(got,want) end)
+  for _,row in pairs(n.overall.rows) do print(row._eden._id) end
+  --a:pretty( a:report() )
   return true end
 
 function go.SOYBEAN()  
