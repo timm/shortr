@@ -73,13 +73,17 @@ function lib.words(s,sep,fun,      t)
    fun = fun or lib.same
    t={};for x in s:gmatch(lib.fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
 
---> csv(file:str,  fun:fun):tab -> Call `fun` with lines, split on ",".
-function lib.csv(file, fun)
+--> lines(file:str,  fun:fun):tab -> Call `fun` with lines
+function lib.lines(file, fun)
   local file = io.input(file)
   while true do
     local line = io.read()
-    if not line then return io.close(file) else 
-      fun(lib.words(line, ",", lib.thing)) end end end
+    if not line then return io.close(file) else fun(line) end end end
+
+--> csv(file:str,  fun:fun):tab -> Call `fun` with lines, split on ",", 
+-- coercing strings to nums, bools, etc (where appropriate).
+function lib.csv(file,fun)
+  lib.lines(file, function(line) fun(lib.words(line, ",", lib.thing)) end) end 
 -- ### Thing to string
 
 --> fmt(s:str,...) :str -> emulate prinft
