@@ -19,7 +19,6 @@ E.g. here are some "b(Ai)tteries" for XAI.
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 
 
-row.lua
 ## hold 1 record
 See also [ROWS](rows.html) that holds multiple records.  
 And [NUM](num.html) and [SYM](sym.html) that summarize the 

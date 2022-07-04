@@ -19,7 +19,6 @@ E.g. here are some "b(Ai)tteries" for XAI.
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 
 
-all.lua
 ## About XAI and b(Ai)ttery
 Explainable AI (XAI) is a subset of AI that tries
 to build models that people can read and understand and critique and easily change. B(Ai)ttery

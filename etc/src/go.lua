@@ -81,7 +81,6 @@ function go.SOYBEAN()
   return true end
 
 function go.CHUNKS()
-  print(the.file)
   chunks(the.file); return true end
 -------
 -- ### Start
