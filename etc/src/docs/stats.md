@@ -23,7 +23,6 @@ independent and dependent columns, respectively). Pairs of (x,y) columns are sum
 are merged). Decision **TREE**s are built by recursively finding the **BIN**s that best distinguish different **ROW**s. Finally, **SOME** is a helper
 class for **NUM**s that retains some sample of all the numerics in that column.
 
-<br clear=all>
 <p align=center>
 <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
 <a href=".."><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black"></a>
