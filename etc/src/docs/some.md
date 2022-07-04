@@ -13,8 +13,7 @@ E.g. here are some "b(Ai)tteries" for XAI.
 (just for doco);
 **demos:** [go](go.html);
 **apps:** [nb](nb.html);
-**functions:** [lib](lib.html)
-
+**functions:** [lib](lib.html)    
 **klasses:** [bin](bin.html)
 :: [cols](cols.html)
 :: [num](num.html)
