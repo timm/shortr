@@ -22,8 +22,9 @@ E.g. here are some "b(Ai)tteries" for XAI.
 :: [some](some.html)
 :: [sym](sym.html)
 
-<a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a>
+<img src="https://img.shields.io/badge/lua-%232C2D72.svg?logo=lua&logoColor=white">
+<a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 
 
 sym.lua
