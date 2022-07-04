@@ -50,46 +50,94 @@ for `NUM`s that holds just some sample of the numerics in that column.
 ```lua
 local all = require"all"
 local chat,obj,push,the = all.chat, all.obj, all.push, all.the
---> SYM(at:?int, txt:?str) :SYM -> Summarize a stream of non-numerics.
+```
+
+
+> *** SYM(`at` :?int, `txt` :?str) :SYM***<br>  Summarize a stream of non-numerics.
+
+
+
+```lua
 local SYM = obj("SYM", function(i,at,txt)
   i.at, i.txt, i.n, i.kept =  at or 0, txt or "", 0, {} end)
+```
 
---> add(i:SYM: x:any, n:?int=1) -> Add `n` count to `i.kept[n]` .
+
+> *** add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>  Add `n` count to `i.kept[n]` .
+
+
+
+```lua
 function SYM.add(i,x,n)
   if x ~= "?" then 
     i.n = i.n+1
     i.kept[x] = (n or 1) + (i.kept[x] or 0) end end
+```
 
---> bin(i:SYM: x:any) -> return `x` mapped to a finite range (just return x)
+
+> *** bin(`i` :`SYM` : `x` :any)***<br>  return `x` mapped to a finite range (just return x)
+
+
+
+```lua
 function SYM.bin(x) return x end
+```
 
---> clone(i:SYM) :SYM -> Return a class of the same structure.
+
+> *** clone(`i` :SYM) :SYM***<br>  Return a class of the same structure.
+
+
+
+```lua
 function SYM.clone(i) return SYM(i.at, i.txt) end
+```
 
---> like(i:SYN,x:any,prior:num):num -> return how much `x` might belong to `i`.
+
+> *** like(`i` :SYN,`x` :any,`prior` :num):num***<br>  return how much `x` might belong to `i`.
+
+
+
+```lua
 function SYM.like(i,x,prior)
    return ((i.kept[x] or 0)+the.m*prior) / (i.n+the.m) end
+```
 
---> merge(i:SYM,j:SYM):SYM -> combine two symbols
+
+> *** merge(`i` :SYM,`j` :SYM):SYM***<br>  combine two symbols
+
+
+
+```lua
 function SYM.merge(i,j,     k)
   k = i:clone()
   for _,kept in pairs{i.kept, j.kept} do
     for x,n in pairs(kept) do k:add(x,n) end end
   return k end
+```
 
---> merge(i:SYM,t:tab):tab -> merge a list of bins (for symbolic y-values)
+
+> *** merge(`i` :SYM,`t` :tab):tab***<br>  merge a list of bins (for symbolic y-values)
+
+
+
+```lua
 function SYM.merges(i,t,...) return t end
- 
---> mid(i:SYM):tab -> Return a columns' `mid`ddle (central tendency).
+```
+
+
+> *** mid(`i` :SYM):tab***<br>  Return a columns' `mid`ddle (central tendency).
+
+
+
+```lua
 function SYM.mid(i,p)
   local max,mode=-1,nil
   for x,n in pairs(i.kept) do if n > most then most,mode = n,x end end
   return mode end
-
---> div(i:SYM):tab -> Return `div`ersity of a column
 ```
 
 
+> *** div(`i` :SYM):tab***<br>  Return `div`ersity of a column
 (its tendency _not_ to be a its central tendency).
 
 
