@@ -2,57 +2,57 @@
 local m={}
 -- ### Linting
 
---> rogues() -> Find rogue locals. Run `rogues()` _last_ after everything else.
+-- rogues() --> Find rogue locals. Run `rogues()` _last_ after everything else.
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 function m.rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 -- ### Meta
 
---> lt(x:str):function -> 
---> gt(x:str):function -> Returns functions that sorts on `x`
+-- lt(x:str):function --> 
+-- gt(x:str):function --> Returns functions that sorts on `x`
 function m.lt(x) return function(a,b) return a[x] < b[x] end end
 function m.gt(x) return function(a,b) return a[x] > b[x] end end
 
---> same(x:any):any -> Return x, unchanged.
+-- same(x:any):any --> Return x, unchanged.
 m.same=function(x) return x end
 
 -- ### Maths
 
---> big:num -> return a big number
+-- big:num --> return a big number
 m.big = math.huge
 
---> R(max:?num=1):num -> return a random number `0..max`.
+-- R(max:?num=1):num --> return a random number `0..max`.
 m.R = math.random
 
---> rnd(x:num, places:int):num -> return `x` rounded to some number of `places`.
+-- rnd(x:num, places:int):num --> return `x` rounded to some number of `places`.
 function m.rnd(x, places)
   local mult = 10^(places or 2)
   return math.floor(x * mult + 0.5) / mult end
 
 function m.small(min,x) return min<1 and n^min or x end
 
---> rnds(t:num, places:?int=2):t -> return items in `t` rounds to `places`.
+-- rnds(t:num, places:?int=2):t --> return items in `t` rounds to `places`.
 function m.rnds(t, places)
   local u={};for k,x in pairs(t) do u[k]=m.rnd(x,places or 2)end;return u end
 -- ###  Lists
 
---> splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t -> pull items
+-- splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t --> pull items
 -- `start` to `stop`, stepping by `step`. 
 function m.splice(t, start, stop, step)
   local u={}
   for n=(start or 1)//1,(stop or #t)//1,(step or 1)//1 do u[1+#u]=t[n] end
   return u end
 
---> sort(t:tab, f:fun) :tab -> Return `t`, sorted of function `f` (default "<").
+-- sort(t:tab, f:fun) :tab --> Return `t`, sorted of function `f` (default "<").
 function m.sort(t,f) table.sort(t,f); return t end
---> push(t:tab, x:any) :x -> Add `x` to end of `t`; return `t`.
+-- push(t:tab, x:any) :x --> Add `x` to end of `t`; return `t`.
 function m.push(t,x) t[1+#t] = x; return x end
---> per(t:tab, p:?float=.5) :x -> Return `p`-th ranked item from `t`.
+-- per(t:tab, p:?float=.5) :x --> Return `p`-th ranked item from `t`.
 function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
---> map(t:tab, f:fun): tab -> 
---> kap(t:tab, f:fun): tab -> 
---> maps(list1:tab, list2:tab, f:fun): tab -> 
---> kaps(list1:tab, list2:tab, f:fun): tab -> Return items in `t`, filtered thru `f`.
+-- map(t:tab, f:fun): tab --> 
+-- kap(t:tab, f:fun): tab --> 
+-- maps(list1:tab, list2:tab, f:fun): tab --> 
+-- kaps(list1:tab, list2:tab, f:fun): tab --> Return items in `t`, filtered thru `f`.
 -- If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
 -- key and value to `f`. `maps` and `kaps` pass items from two lists.
 function m.map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x) end;return u end
@@ -61,50 +61,57 @@ function m.maps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(x,u[k]) end;ret
 function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;return v end
 -- ### String to thing
 
---> thing(s:str):any -> Coerce string to whatever
+-- thing(s:str):any --> Coerce string to whatever
 -- is simplest (boolean or integer or float or, if all else fails, a string).
 function m.thing(x)
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false else
     return math.tointeger(x) or tonumber(x) or x end  end
 
---> words(s:str, sep:str, fun:fun):tab -> Return `t` filled with `s`, split  on `sep`.
+-- words(s:str, sep:str, fun:fun):tab --> Return `t` filled with `s`, split  on `sep`.
 function m.words(s,sep,fun,      t)
    fun = fun or m.same
    t={};for x in s:gmatch(m.fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
 
---> lines(file:str,  fun:fun):tab -> Call `fun` with lines
+-- lines(file:str,  fun:fun):tab ---> Call `fun` with lines
 function m.lines(file, fun)
   local file = io.input(file)
   while true do
     local line = io.read()
     if not line then return io.close(file) else fun(line) end end end
 
---> csv(file:str,  fun:fun):tab -> Call `fun` with lines, split on ",", 
+-- csv(file:str,  fun:fun):tab ---> Call `fun` with lines, split on ",", 
 -- coercing strings to nums, bools, etc (where appropriate).
 function m.csv(file,fun)
   m.lines(file, function(line) fun(m.words(line, ",", m.thing)) end) end 
 -- ### Thing to string
 
---> fmt(s:str,...) :str -> emulate prinft
+-- fmt(s:str,...) :str ---> emulate prinft
 m.fmt=string.format
 
---> cat(t:tab):str -> Return table as string. For key-indexed lists, show keys (sorted).
+-- cat(t:tab):str ---> Return table as string. For key-indexed lists, show keys (sorted).
 function m.cat(t,    key,u)
   function key(k,v) if (tostring(k)):sub(1,1)~="_" then return m.fmt(":%s %s",k,v) end end
   u=  #t>1 and m.map(t,f or tostring) or m.sort(m.kap(t,key))
   return (t._is or "").."{"..table.concat(u," ").."}" end
 
---> chat(t:tab):t -> Print table (as string). Return `t`.
+-- chat(t:tab):t ---> Print table (as string). Return `t`.
 function m.chat(t) print(m.cat(t)); return t end
 
---> chunks(file:str) -> divide source code into comments and code.
+-- chunks(file:str) --> divide source code into comments and code.
 function m.chunks(file)
   local b4,now,t = 0,0,{}
+  local hints=function(s) 
+     return s:gsub("([%w]+):","`%1` :") 
+             :gsub("([^\n]+) [-][-]>([^\n]+)","> ***%1***<br>:mag: %2") 
+  end ------------------------
   local show = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end
     local s= table.concat(t,"\n") 
-    print(what==0 and (s.."\n") or ("```lua\n" ..s.."\n```\n")) end
+    print(what==0 and (hints(s).."\n") or (
+          "\n<details><summary></summary>\n\n```lua\n" 
+          ..s.."\n```\n\n</details>\n\n")) 
+  end --------------------
   m.lines(file, function(s)
     now = b4
     if s:sub(1,3)=="-- " then now=0; s=s:sub(4) elseif s:find"^%S" then now=1 end
@@ -114,7 +121,7 @@ function m.chunks(file)
 
 -- ### Settings
 
---> opts(x:str) :tab -> Parse `str` for lines with `--`; then pull keys+defaults. 
+-- opts(x:str) :tab --> Parse `str` for lines with `--`; then pull keys+defaults. 
 function m.opts(x)
   local t = {}
   x:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",
@@ -122,7 +129,7 @@ function m.opts(x)
   t._HELP = x
   return t end
 
---> cli(t:tab) :tab -> For keys in `t`, look for updates on command-line. 
+-- cli(t:tab) :tab --> For keys in `t`, look for updates on command-line. 
 -- Things with boolean defaults are flipped via `--flag`. 
 -- Other keys need `--flag value`.  Print the help
 -- (if `-h` appears on command line). Return a table with setting `key`s and
@@ -141,7 +148,7 @@ function m.cli(t)
   return t end
 -- ### Tests
 
---> on(opts:tab, tests:[fun]) -> Run some tests.
+-- on(opts:tab, tests:[fun]) --> Run some tests.
 -- If  `opt.go=="all"`, then run all tests, sorted on their name.
 -- Before each test, reset random seed and the options `opts.
 function m.on(opts,tests)
@@ -160,7 +167,7 @@ function m.on(opts,tests)
   os.exit(fails) end -- if fails==0 then our return code to the OS will be zero.
 -- ### Objects
 
---> obj(name:str, fun:fun):object -> Return a klass `name` with constructor `fun`.
+-- obj(name:str, fun:fun):object --> Return a klass `name` with constructor `fun`.
 -- Add a unique `id` and a `tosting` method (that uses `cat` (above).
 local _id = 0
 function m.obj(name,fun,    t,new,x)

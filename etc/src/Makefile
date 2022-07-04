@@ -38,6 +38,12 @@ docs/%.html: %.lua  README.md ## make html
 	rm tmp.lua 
 	cp $R/etc/docco.css docs/docco.css
 
+mds:   $(subst .lua,.md,docs/$(subst lua ,md docs/,$(LUAS))) ## make all htmls
+
+docs/%.md: %.lua  README.md ## make mds
+	echo $<
+	(cat README.md ; lua go.lua -f $< -g CHUNKS ) > $@
+
 docs/_all.pdf:  ## make all pdf
 	-rm tmp.lua
 	$(foreach d,$(LUAS),(figlet -W -f larry3d $d; echo ""; cat $d; echo "")>>tmp.lua;)

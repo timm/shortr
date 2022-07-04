@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>b(Ai)ttery ⤑ doc</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>b(Ai)ttery ⤑ doc</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>&lt;span id=<span class="hljs-string">&quot;forkongithub&quot;</span>&gt;&lt;a href=<span class="hljs-string">&quot;https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes&quot;</span>&gt;Fork me on GitHub&lt;/a&gt;&lt;/span&gt;
+&lt;img align=left width=<span class="hljs-number">250</span>   src=<span class="hljs-string">&quot;bat2.png&quot;</span>&gt;
+LUA is a <span class="hljs-string">&quot;batteries-not-included&quot;</span> language.
+But LUA makes it easy to add <span class="hljs-keyword">in</span> the  missing bits.
+E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <span class="hljs-keyword">for</span> XAI.
+
+(c) <span class="hljs-number">2022</span>, Tim Menzies&lt;br&gt;&lt;timm@ieee.org&gt;
+
+**<span class="hljs-built_in">config</span>:** [all](all.html)
+
+**build:** [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)  
+(just used <span class="hljs-keyword">for</span> the doco)
+
+**demos:** [go](go.html)
+
+**apps:** [nb](nb.html)
+
+**functions:** [lib](lib.html)
+
+**klasses:** [bin](bin.html)
+:: [cols](cols.html)
+:: [num](num.html)
+:: [row](row.html)
+:: [rows](rows.html)
+:: [some](some.html)
+:: [sym](sym.html)
+
+&lt;a href=<span class="hljs-string">&quot;https://zenodo.org/badge/latestdoi/206205826&quot;</span>&gt; &lt;img  src=<span class="hljs-string">&quot;https://zenodo.org/badge/206205826.svg&quot;</span> alt=<span class="hljs-string">&quot;DOI&quot;</span>&gt;&lt;/a&gt; 
+&lt;a href=<span class="hljs-string">&quot;https://opensource.org/licenses/BSD-2-Clause&quot;</span>&gt;&lt;img  src=<span class="hljs-string">&quot;https://img.shields.io/badge/License-BSD%202--Clause-orange.svg&quot;</span>&gt;&lt;/a&gt;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-2">&#x00a7;</a>
+              </div>
+              <h2 id="lua-to-narkdiwn">Lua to Narkdiwn</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> all=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;all&quot;</span>
+<span class="hljs-keyword">local</span> chunkscat,<span class="hljs-built_in">lines</span>,push = all.cat, all.<span class="hljs-built_in">lines</span>, all.push</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-3">&#x00a7;</a>
+              </div>
+              <p>asdas
+asdasaa  asdas
+adasa s</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-4">&#x00a7;</a>
+              </div>
+              <p>asda</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">local</span> doc={}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">doc.chunks</span><span class="hljs-params">(file)</span></span>
+  <span class="hljs-keyword">local</span> prep=<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(t)</span></span> 
+    <span class="hljs-keyword">if</span> t[#t]:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[%s]*$&quot;</span> <span class="hljs-keyword">then</span> t[#t]=<span class="hljs-literal">nil</span> <span class="hljs-keyword">end</span>; <span class="hljs-keyword">return</span> <span class="hljs-built_in">table</span>.<span class="hljs-built_in">concat</span>(t,<span class="hljs-string">&quot;\n&quot;</span>) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">local</span> b4,now,t,out=<span class="hljs-number">0</span>, <span class="hljs-number">0</span>,{},{}
+  <span class="hljs-built_in">lines</span>(file, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(s)</span></span>
+    now=b4
+    <span class="hljs-keyword">if</span> s:<span class="hljs-built_in">sub</span>(<span class="hljs-number">1</span>,<span class="hljs-number">3</span>)==<span class="hljs-string">&quot;-- &quot;</span> <span class="hljs-keyword">then</span> now=<span class="hljs-number">0</span>; s=s:<span class="hljs-built_in">sub</span>(<span class="hljs-number">4</span>) <span class="hljs-keyword">elseif</span> s:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^%S&quot;</span> <span class="hljs-keyword">then</span> now=<span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> now==b4 <span class="hljs-keyword">then</span> push(t,s) <span class="hljs-keyword">else</span> push(out, {what=now, txt=prep(t)}) ; t={s} <span class="hljs-keyword">end</span>
+    b4 = now <span class="hljs-keyword">end</span>)
+  <span class="hljs-keyword">if</span> #t&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">then</span> push(out,{what=now, txt=prep(t)}) <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> out <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">for</span> n,chunk <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(doc.chunks(<span class="hljs-string">&quot;doc.lua&quot;</span>)) <span class="hljs-keyword">do</span> <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&quot;</span>); <span class="hljs-built_in">print</span>(n,chunk.what,<span class="hljs-string">&quot;[[&quot;</span>..chunk.txt..<span class="hljs-string">&quot;]]&quot;</span>) <span class="hljs-keyword">end</span>
+
+asdas=<span class="hljs-number">2</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-5">&#x00a7;</a>
+              </div>
+              <p>asdas
+saas</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>asdas = asda</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

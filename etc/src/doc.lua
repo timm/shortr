@@ -9,6 +9,7 @@ local chunkscat,lines,push = all.cat, all.lines, all.push
 -- asda
 
 local doc={}
+-- chunks(x:int, y:[fred]) :int --> asdads
 function doc.chunks(file)
   local prep=function(t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end; return table.concat(t,"\n") end
