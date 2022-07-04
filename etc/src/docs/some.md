@@ -30,69 +30,62 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 </p>
 
 
-## Lua to Narkdiwn
+## Keep some nums
+Given a finite buffer of some small size `max`, then after reading 
+a very large set of `n` numbers, we should only be keeping `max/n` of those nums.
 
 
 <details><summary></summary>
 
 ```lua
 local all=require"all"
-local chunkscat,lines,push = all.cat, all.lines, all.push
+local obj,push,R,sort,the= all.obj, all.push, all.R, all.sort, all.the
 ```
 
 </details>
 
 
-asdas
-asdasaa  asdas
-adasa s
-
-asda
+> ***SOME(`max` :?int) :SOME***<br>  collect, at most, `max` numbers.
 
 
 <details><summary></summary>
 
 ```lua
-local doc={}
+local SOME = obj("SOME", function(i,max) 
+  i.kept, i.ok, i.max, i.n = {}, true, max, 0  end)
 ```
 
 </details>
 
 
-> ***chunks(`x` :int, `y` :[fred]) :int***<br>  asdads
+> ***add(`i` :`SOME` : `x` :num)***<br>  `n` times,update `i`.
+Helper function for NUM. If full then at odds `i.some/i.x`, keep `x`
+(replacing some older item, at random).
 
 
 <details><summary></summary>
 
 ```lua
-function doc.chunks(file)
-  local prep=function(t) 
-    if t[#t]:find"^[%s]*$" then t[#t]=nil end; return table.concat(t,"\n") end
-  local b4,now,t,out=0, 0,{},{}
-  lines(file, function(s)
-    now=b4
-    if s:sub(1,3)=="-- " then now=0; s=s:sub(4) elseif s:find"^%S" then now=1 end
-    if now==b4 then push(t,s) else push(out, {what=now, txt=prep(t)}) ; t={s} end
-    b4 = now end)
-  if #t>0 then push(out,{what=now, txt=prep(t)}) end
-  return out end
-
-for n,chunk in pairs(doc.chunks("doc.lua")) do print(""); print(n,chunk.what,"[["..chunk.txt.."]]") end
-
-asdas=2
+function SOME.add(i,x)
+  if x ~= "?" then 
+    i.n = i.n + 1
+    if #i.kept < i.max     then i.ok=false; push(i.kept,x) 
+    elseif R() < i.max/i.n then i.ok=false; i.kept[R(#i.kept)]=x end end end 
 ```
 
 </details>
 
 
-asdas
-saas
+> ***has(`i` :SOME):tab***<br>  Ensure contents are sorted. Return those contents.
 
 
 <details><summary></summary>
 
 ```lua
-asdas = asda
+function SOME.has(i)
+  i.kept = i.ok and i.kept or sort(i.kept); i.ok=true; return i.kept ; end
+
+return SOME
 ```
 
 </details>

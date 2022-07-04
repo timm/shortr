@@ -30,69 +30,76 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 </p>
 
 
-## Lua to Narkdiwn
+## hold 1 record
+See also [ROWS](rows.html) that holds multiple records.  
+And [NUM](num.html) and [SYM](sym.html) that summarize the 
+columns of the records.
 
 
 <details><summary></summary>
 
 ```lua
-local all=require"all"
-local chunkscat,lines,push = all.cat, all.lines, all.push
+local all = require"all"
+local big,chat,lt,map  = all.big, all.chat, all.lt, all.map
+local obj,rnds,sort    = all.obj, all.rnds, all.sort
+
+--> ROW(of:ROWS, cells:tab) :ROW -> Place to store one record
 ```
 
 </details>
 
 
-asdas
-asdasaa  asdas
-adasa s
-
-asda
+(and stats on how it is used; e.g. `i.evaled=true` if we touch the y values.
 
 
 <details><summary></summary>
 
 ```lua
-local doc={}
+local ROW = obj("ROW", function(i,of,cells) 
+  i._of,i.cells,i.evaled = of,cells,false end)
+
+--> i:ROW - j:ROW -> return distance between `i` and `j`
+function ROW.__sub(i,j) 
+  local d, cols = 0, i._of.cols.x
+  for _,col in pairs(cols) do
+    local inc = col:dist(i.cells[col.at], j.cells[col.at]) 
+    d         = d + inc^the.p end
+  return (d / #cols) ^ (1/the.p) end
+
+--> around(i:ROW, rows:?[ROW]):tab ->  return rows in this table
 ```
 
 </details>
 
 
-> ***chunks(`x` :int, `y` :[fred]) :int***<br>  asdads
+sorted by distance to `i`. `rows` defaults to the rows of this ROWS.
 
 
 <details><summary></summary>
 
 ```lua
-function doc.chunks(file)
-  local prep=function(t) 
-    if t[#t]:find"^[%s]*$" then t[#t]=nil end; return table.concat(t,"\n") end
-  local b4,now,t,out=0, 0,{},{}
-  lines(file, function(s)
-    now=b4
-    if s:sub(1,3)=="-- " then now=0; s=s:sub(4) elseif s:find"^%S" then now=1 end
-    if now==b4 then push(t,s) else push(out, {what=now, txt=prep(t)}) ; t={s} end
-    b4 = now end)
-  if #t>0 then push(out,{what=now, txt=prep(t)}) end
-  return out end
+function ROW.around(i, rows)
+  local function rowGap(j) return {row=j, gap=i - j} end
+  return sort(map(rows or i._of.rows, rowGap), lt"gap") end
 
-for n,chunk in pairs(doc.chunks("doc.lua")) do print(""); print(n,chunk.what,"[["..chunk.txt.."]]") end
+--> better(i:ROW, j:ROW):boolean -> should `i` proceed before `j`?
+function ROW.__lt(i,j)
+  i.evaled, j.evaled = true, true
+  local s1, s2, ys = 0, 0, i._of.cols.y
+  for _,col in pairs(ys) do
+    local x,y =  i.cells[col.at], j.cells[col.at]
+    x,y = col:norm(x), col:norm(y)
+    s1  = s1 - 2.7183^(col.w * (x-y)/#ys)
+    s2  = s2 - 2.7183^(col.w * (y-x)/#ys) end
+  return s1/#ys < s2/#ys  end
 
-asdas=2
-```
+--> far(i:ROW,rows:?[ROW]):ROW -> find something `far` away.
+function ROW.far(i,rows) return per(Row.around(i,rows), the.Far).row end
 
-</details>
+--> klass(i:ROW):any -> Return the class value of this record.
+function ROW.klass(i) return i.cells[i._of.cols.klass.at] end
 
-
-asdas
-saas
-
-
-<details><summary></summary>
-
-```lua
-asdas = asda
+return ROW
 ```
 
 </details>

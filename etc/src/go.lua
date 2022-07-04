@@ -80,7 +80,8 @@ function go.SOYBEAN()
   return true end
 
 function go.CHUNKS()
-  chunks("doc.lua"); return true end
+  if the.file:find".lua$" then
+    chunks(the.file); return true end end
 -------
 -- ### Start
 the = cli(the)
