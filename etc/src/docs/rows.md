@@ -1,4 +1,4 @@
-# B(Ai)ttery :electric_plug:
+# B(Ai)ttery :high_brightness:
 
 <img align=left width=400 src="bat2.png">
 
