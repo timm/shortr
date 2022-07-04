@@ -31,6 +31,7 @@ for `NUM`s that holds just some sample of the numerics in that column.
   - When clustering, each cluster is its own `ROWS`.
   - `NB` classifiers create one `ROWS` per class in the training data.
   - Decision `TREE`s are built by recursively finding the `BIN`s that best distinguish different `ROW`s. 
+  - etc.
 
 <p align=center>
 <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
