@@ -27,7 +27,9 @@ are merged.
 for `NUM`s that holds just some sample of the numerics in that column. 
 
 Everything else is just tiny extensions to the above object model. e.g. 
-decision `TREE`s are built by recursively finding the `BIN`s that best distinguish different `ROW`s. 
+- When clustering, each cluster is its own `ROWS`.
+- `NB` classifiers create one `ROWS` per class in the training data.
+- Decision `TREE`s are built by recursively finding the `BIN`s that best distinguish different `ROW`s. 
 
 <p align=center>
 <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
