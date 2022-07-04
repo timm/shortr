@@ -97,7 +97,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <p><strong>rogues()</strong> <br> Find rogue locals. Run <code>rogues()</code> <em>last</em> after everything else.</p>
+              <p>rogues() –&gt; Find rogue locals. Run <code>rogues()</code> <em>last</em> after everything else.</p>
 
             </div>
             
@@ -127,8 +127,8 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
-              <p><strong>lt( <code>x</code>:  str):function</strong> <br> 
-<strong>gt( <code>x</code>:  str):function</strong> <br> Returns functions that sorts on <code>x</code></p>
+              <p>lt(x:str):function –&gt; 
+gt(x:str):function –&gt; Returns functions that sorts on <code>x</code></p>
 
             </div>
             
@@ -144,7 +144,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-7">&#x00a7;</a>
               </div>
-              <p><strong>same( <code>x</code>:  any):any</strong> <br> Return x, unchanged.</p>
+              <p>same(x:any):any –&gt; Return x, unchanged.</p>
 
             </div>
             
@@ -172,7 +172,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-9">&#x00a7;</a>
               </div>
-              <p>** <code>big</code>:  num** <br> return a big number</p>
+              <p>big:num –&gt; return a big number</p>
 
             </div>
             
@@ -187,7 +187,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-10">&#x00a7;</a>
               </div>
-              <p><strong>R( <code>max</code>:  ?num=1):num</strong> <br> return a random number <code>0..max</code>.</p>
+              <p>R(max:?num=1):num –&gt; return a random number <code>0..max</code>.</p>
 
             </div>
             
@@ -202,7 +202,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
-              <p><strong>rnd( <code>x</code>:  num,  <code>places</code>:  int):num</strong> <br> return <code>x</code> rounded to some number of <code>places</code>.</p>
+              <p>rnd(x:num, places:int):num –&gt; return <code>x</code> rounded to some number of <code>places</code>.</p>
 
             </div>
             
@@ -221,7 +221,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-12">&#x00a7;</a>
               </div>
-              <p><strong>rnds( <code>t</code>:  num,  <code>places</code>:  ?int=2):t</strong> <br> return items in <code>t</code> rounds to <code>places</code>.</p>
+              <p>rnds(t:num, places:?int=2):t –&gt; return items in <code>t</code> rounds to <code>places</code>.</p>
 
             </div>
             
@@ -250,7 +250,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-14">&#x00a7;</a>
               </div>
-              <p><strong>splice( <code>t</code>:  tab,start=?int=1, <code>stop</code>:  ?num=#t, <code>step</code>:  ?num=1):t</strong> <br> pull items
+              <p>splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t –&gt; pull items
 <code>start</code> to <code>stop</code>, stepping by <code>step</code>. </p>
 
             </div>
@@ -269,7 +269,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-15">&#x00a7;</a>
               </div>
-              <p><strong>sort( <code>t</code>:  tab,  <code>f</code>:  fun) :tab</strong> <br> Return <code>t</code>, sorted of function <code>f</code> (default “&lt;”).</p>
+              <p>sort(t:tab, f:fun) :tab –&gt; Return <code>t</code>, sorted of function <code>f</code> (default “&lt;”).</p>
 
             </div>
             
@@ -284,7 +284,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-16">&#x00a7;</a>
               </div>
-              <p><strong>push( <code>t</code>:  tab,  <code>x</code>:  any) :x</strong> <br> Add <code>x</code> to end of <code>t</code>; return <code>t</code>.</p>
+              <p>push(t:tab, x:any) :x –&gt; Add <code>x</code> to end of <code>t</code>; return <code>t</code>.</p>
 
             </div>
             
@@ -299,7 +299,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-17">&#x00a7;</a>
               </div>
-              <p><strong>per( <code>t</code>:  tab,  <code>p</code>:  ?float=.5) :x</strong> <br> Return <code>p</code>-th ranked item from <code>t</code>.</p>
+              <p>per(t:tab, p:?float=.5) :x –&gt; Return <code>p</code>-th ranked item from <code>t</code>.</p>
 
             </div>
             
@@ -314,10 +314,10 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-18">&#x00a7;</a>
               </div>
-              <p><strong>map( <code>t</code>:  tab,  <code>f</code>:  fun): tab</strong> <br> 
-<strong>kap( <code>t</code>:  tab,  <code>f</code>:  fun): tab</strong> <br> 
-<strong>maps( <code>list1</code>:  tab,  <code>list2</code>:  tab,  <code>f</code>:  fun): tab</strong> <br> 
-<strong>kaps( <code>list1</code>:  tab,  <code>list2</code>:  tab,  <code>f</code>:  fun): tab</strong> <br> Return items in <code>t</code>, filtered thru <code>f</code>.
+              <p>map(t:tab, f:fun): tab –&gt; 
+kap(t:tab, f:fun): tab –&gt; 
+maps(list1:tab, list2:tab, f:fun): tab –&gt; 
+kaps(list1:tab, list2:tab, f:fun): tab –&gt; Return items in <code>t</code>, filtered thru <code>f</code>.
 If <code>f</code> returns nil, then the output table shrinks. <code>kap</code> and <code>kaps</code> pass the
 key and value to <code>f</code>. <code>maps</code> and <code>kaps</code> pass items from two lists.</p>
 
@@ -350,7 +350,7 @@ key and value to <code>f</code>. <code>maps</code> and <code>kaps</code> pass it
               <div class="sswrap ">
                 <a class="ss" href="#section-20">&#x00a7;</a>
               </div>
-              <p><strong>thing( <code>s</code>:  str):any</strong> <br> Coerce string to whatever
+              <p>thing(s:str):any –&gt; Coerce string to whatever
 is simplest (boolean or integer or float or, if all else fails, a string).</p>
 
             </div>
@@ -369,7 +369,7 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-21">&#x00a7;</a>
               </div>
-              <p><strong>words( <code>s</code>:  str,  <code>sep</code>:  str,  <code>fun</code>:  fun):tab</strong> <br> Return <code>t</code> filled with <code>s</code>, split  on <code>sep</code>.</p>
+              <p>words(s:str, sep:str, fun:fun):tab –&gt; Return <code>t</code> filled with <code>s</code>, split  on <code>sep</code>.</p>
 
             </div>
             
@@ -386,7 +386,7 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-22">&#x00a7;</a>
               </div>
-              <p><strong>lines( <code>file</code>:  str,   <code>fun</code>:  fun):tab</strong> <br> Call <code>fun</code> with lines</p>
+              <p>lines(file:str,  fun:fun):tab —&gt; Call <code>fun</code> with lines</p>
 
             </div>
             
@@ -405,7 +405,7 @@ is simplest (boolean or integer or float or, if all else fails, a string).</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-23">&#x00a7;</a>
               </div>
-              <p><strong>csv( <code>file</code>:  str,   <code>fun</code>:  fun):tab</strong> <br> Call <code>fun</code> with lines, split on “,”, 
+              <p>csv(file:str,  fun:fun):tab —&gt; Call <code>fun</code> with lines, split on “,”, 
 coercing strings to nums, bools, etc (where appropriate).</p>
 
             </div>
@@ -435,7 +435,7 @@ coercing strings to nums, bools, etc (where appropriate).</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-25">&#x00a7;</a>
               </div>
-              <p><strong>fmt( <code>s</code>:  str,…) :str</strong> <br> emulate prinft</p>
+              <p>fmt(s:str,…) :str —&gt; emulate prinft</p>
 
             </div>
             
@@ -450,7 +450,7 @@ coercing strings to nums, bools, etc (where appropriate).</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-26">&#x00a7;</a>
               </div>
-              <p><strong>cat( <code>t</code>:  tab):str</strong> <br> Return table as string. For key-indexed lists, show keys (sorted).</p>
+              <p>cat(t:tab):str —&gt; Return table as string. For key-indexed lists, show keys (sorted).</p>
 
             </div>
             
@@ -468,7 +468,7 @@ coercing strings to nums, bools, etc (where appropriate).</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-27">&#x00a7;</a>
               </div>
-              <p><strong>chat( <code>t</code>:  tab):t</strong> <br> Print table (as string). Return <code>t</code>.</p>
+              <p>chat(t:tab):t —&gt; Print table (as string). Return <code>t</code>.</p>
 
             </div>
             
@@ -483,16 +483,23 @@ coercing strings to nums, bools, etc (where appropriate).</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-28">&#x00a7;</a>
               </div>
-              <p><strong>chunks( <code>file</code>:  str)</strong> <br> divide source code into comments and code.</p>
+              <p>chunks(file:str) –&gt; divide source code into comments and code.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">m.chunks</span><span class="hljs-params">(file)</span></span>
   <span class="hljs-keyword">local</span> b4,now,t = <span class="hljs-number">0</span>,<span class="hljs-number">0</span>,{}
+  <span class="hljs-keyword">local</span> hints=<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(s)</span></span> 
+     <span class="hljs-keyword">return</span> s:<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;([%w]+):&quot;</span>,<span class="hljs-string">&quot;`%1` :&quot;</span>) 
+             :<span class="hljs-built_in">gsub</span>(<span class="hljs-string">&quot;([^\n]+) [-][-]&gt;([^\n]+)&quot;</span>,<span class="hljs-string">&quot;&gt; ***%1***&lt;br&gt;:mag: %2&quot;</span>) 
+  <span class="hljs-keyword">end</span> <span class="hljs-comment">------------------------</span>
   <span class="hljs-keyword">local</span> show = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(what,t)</span></span> 
     <span class="hljs-keyword">if</span> t[#t]:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^[%s]*$&quot;</span> <span class="hljs-keyword">then</span> t[#t]=<span class="hljs-literal">nil</span> <span class="hljs-keyword">end</span>
     <span class="hljs-keyword">local</span> s= <span class="hljs-built_in">table</span>.<span class="hljs-built_in">concat</span>(t,<span class="hljs-string">&quot;\n&quot;</span>) 
-    <span class="hljs-built_in">print</span>(what==<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> (s..<span class="hljs-string">&quot;\n&quot;</span>) <span class="hljs-keyword">or</span> (<span class="hljs-string">&quot;```lua\n&quot;</span> ..s..<span class="hljs-string">&quot;\n```\n&quot;</span>)) <span class="hljs-keyword">end</span>
+    <span class="hljs-built_in">print</span>(what==<span class="hljs-number">0</span> <span class="hljs-keyword">and</span> (hints(s)..<span class="hljs-string">&quot;\n&quot;</span>) <span class="hljs-keyword">or</span> (
+          <span class="hljs-string">&quot;\n&lt;details&gt;&lt;summary&gt;&lt;/summary&gt;\n\n```lua\n&quot;</span> 
+          ..s..<span class="hljs-string">&quot;\n```\n\n&lt;/details&gt;\n\n&quot;</span>)) 
+  <span class="hljs-keyword">end</span> <span class="hljs-comment">--------------------</span>
   m.<span class="hljs-built_in">lines</span>(file, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(s)</span></span>
     now = b4
     <span class="hljs-keyword">if</span> s:<span class="hljs-built_in">sub</span>(<span class="hljs-number">1</span>,<span class="hljs-number">3</span>)==<span class="hljs-string">&quot;-- &quot;</span> <span class="hljs-keyword">then</span> now=<span class="hljs-number">0</span>; s=s:<span class="hljs-built_in">sub</span>(<span class="hljs-number">4</span>) <span class="hljs-keyword">elseif</span> s:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;^%S&quot;</span> <span class="hljs-keyword">then</span> now=<span class="hljs-number">1</span> <span class="hljs-keyword">end</span>
@@ -522,7 +529,7 @@ coercing strings to nums, bools, etc (where appropriate).</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-30">&#x00a7;</a>
               </div>
-              <p><strong>opts( <code>x</code>:  str) :tab</strong> <br> Parse <code>str</code> for lines with <code>--</code>; then pull keys+defaults. </p>
+              <p>opts(x:str) :tab –&gt; Parse <code>str</code> for lines with <code>--</code>; then pull keys+defaults. </p>
 
             </div>
             
@@ -542,7 +549,7 @@ coercing strings to nums, bools, etc (where appropriate).</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-31">&#x00a7;</a>
               </div>
-              <p><strong>cli( <code>t</code>:  tab) :tab</strong> <br> For keys in <code>t</code>, look for updates on command-line. 
+              <p>cli(t:tab) :tab –&gt; For keys in <code>t</code>, look for updates on command-line. 
 Things with boolean defaults are flipped via <code>--flag</code>. 
 Other keys need <code>--flag value</code>.  Print the help
 (if <code>-h</code> appears on command line). Return a table with setting <code>key</code>s and
@@ -585,7 +592,7 @@ to <code>t</code>.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-33">&#x00a7;</a>
               </div>
-              <p><strong>on( <code>opts</code>:  tab,  <code>tests</code>:  [fun])</strong> <br> Run some tests.
+              <p>on(opts:tab, tests:[fun]) –&gt; Run some tests.
 If  <code>opt.go==&quot;all&quot;</code>, then run all tests, sorted on their name.
 Before each test, reset random seed and the options `opts.</p>
 
@@ -628,7 +635,7 @@ Before each test, reset random seed and the options `opts.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-35">&#x00a7;</a>
               </div>
-              <p><strong>obj( <code>name</code>:  str,  <code>fun</code>:  fun):object</strong> <br> Return a klass <code>name</code> with constructor <code>fun</code>.
+              <p>obj(name:str, fun:fun):object –&gt; Return a klass <code>name</code> with constructor <code>fun</code>.
 Add a unique <code>id</code> and a <code>tosting</code> method (that uses <code>cat</code> (above).</p>
 
             </div>

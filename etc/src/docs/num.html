@@ -86,7 +86,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-3">&#x00a7;</a>
               </div>
-              <p><strong>NUM( <code>at</code>:  ?int,  <code>txt</code>:  ?str) :NUM</strong> <br> Summarize a stream of numbers.</p>
+              <p>NUM(at:?int, txt:?str) :NUM –&gt; Summarize a stream of numbers.</p>
 
             </div>
             
@@ -103,7 +103,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
-              <p><strong>add( <code>i</code>:   <code>NUM</code>:    <code>x</code>:  num,  <code>n</code>:  ?int=1)</strong> <br> <code>n</code> times,update <code>i</code>‘s SOME object.</p>
+              <p>add(i:NUM: x:num, n:?int=1) –&gt; <code>n</code> times,update <code>i</code>‘s SOME object.</p>
 
             </div>
             
@@ -120,7 +120,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
-              <p><strong>bin( <code>i</code>:   <code>NUM</code>:    <code>x</code>:  any)</strong> <br> return <code>x</code> mapped to a finite range</p>
+              <p>bin(i:NUM: x:any) –&gt; return <code>x</code> mapped to a finite range</p>
 
             </div>
             
@@ -138,7 +138,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
-              <p><strong>clone( <code>i</code>:  (SYM|NUM)) :(SYM|NUM)</strong> <br> Return a class of the same structure.</p>
+              <p>clone(i:(SYM|NUM)) :(SYM|NUM) –&gt; Return a class of the same structure.</p>
 
             </div>
             
@@ -153,7 +153,7 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-7">&#x00a7;</a>
               </div>
-              <p><strong>div( <code>i</code>:  NUM) :tab</strong> <br> Return <code>div</code>ersity of a column
+              <p>div(i:NUM) :tab –&gt; Return <code>div</code>ersity of a column
 (its tendency <em>not</em> to be a its central tendency). To understand this code
 recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob. In between,
 at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.</p>
@@ -172,7 +172,7 @@ at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-8">&#x00a7;</a>
               </div>
-              <p><strong>like( <code>i</code>:  NUM,  <code>x</code>:  any)</strong> <br> Return the likelihood that <code>x</code> belongs to <code>i</code>.</p>
+              <p>like(i:NUM, x:any) –&gt; Return the likelihood that <code>x</code> belongs to <code>i</code>.</p>
 
             </div>
             
@@ -190,7 +190,7 @@ at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-9">&#x00a7;</a>
               </div>
-              <p><strong>merge( <code>i</code>:  NUM, <code>j</code>:  NUM) :NUM</strong> <br> combine two numerics</p>
+              <p>merge(i:NUM,j:NUM) :NUM –&gt; combine two numerics</p>
 
             </div>
             
@@ -209,7 +209,7 @@ at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-10">&#x00a7;</a>
               </div>
-              <p><strong>merge( <code>i</code>:  NUM, <code>t</code>:  [BIN]) :[BIN]</strong> <br> merge a list of bins (for numeric y-values)
+              <p>merge(i:NUM,t:[BIN]) :[BIN] –&gt; merge a list of bins (for numeric y-values)
 If anything merged, then loop again looking for other merges.
 At the end, expand bins to cover all gaps across the number line.</p>
 
@@ -238,7 +238,7 @@ At the end, expand bins to cover all gaps across the number line.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-11">&#x00a7;</a>
               </div>
-              <p><strong>mid( <code>i</code>:  NUM)) :tab</strong> <br> Return a columns’ <code>mid</code>ddle</p>
+              <p>mid(i:NUM)) :tab –&gt; Return a columns’ <code>mid</code>ddle</p>
 
             </div>
             
@@ -254,7 +254,7 @@ At the end, expand bins to cover all gaps across the number line.</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-12">&#x00a7;</a>
               </div>
-              <p><strong>norm( <code>i</code>:  NUM,  <code>x</code>:  num) :num</strong> <br> Normalize <code>x</code> 0..1 for lo..hi,</p>
+              <p>norm(i:NUM, x:num) :num –&gt; Normalize <code>x</code> 0..1 for lo..hi,</p>
 
             </div>
             

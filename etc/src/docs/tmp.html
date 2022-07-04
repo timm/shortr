@@ -69,40 +69,199 @@ E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <sp
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
               </div>
-              <h2 id="rows-to-tree">ROWS to tree</h2>
+              <h2 id="summarize-numbers">Summarize numbers</h2>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> all = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;all&quot;</span>
-<span class="hljs-keyword">local</span> ROWS = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;ROWS&quot;</span>
+<span class="hljs-keyword">local</span> big,obj,per,push,the = all.big,all.obj,all.per,all.push,all.the
+<span class="hljs-keyword">local</span> SOME = <span class="hljs-built_in">require</span><span class="hljs-string">&quot;some&quot;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-3">&#x00a7;</a>
+              </div>
+              <p>NUM(at:?int, txt:?str) :NUM –&gt; Summarize a stream of numbers.</p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.tree</span><span class="hljs-params">(i, listOfRows)</span></span>
-  <span class="hljs-keyword">local</span> labels, root = {}, i:clone()
-  <span class="hljs-keyword">for</span> label,rows1 <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(listOfRows) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">for</span> _,row <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(rows1) <span class="hljs-keyword">do</span>
-      root:add(row)
-      labels[row._id]=label <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>                 <span class="hljs-comment">-- set label</span>
-  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">y</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">return</span> labels[rows._id] <span class="hljs-keyword">end</span> <span class="hljs-comment">-- get label</span>
-  <span class="hljs-keyword">return</span> root:kids(<span class="hljs-number">2</span> * small(the.Min, #root.rows), y) <span class="hljs-keyword">end</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> NUM = obj(<span class="hljs-string">&quot;NUM&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i,at,txt)</span></span> 
+  i.at, i.txt, i.n, i.kept =  at <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>, txt <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-number">0</span>, SOME(the.Some)
+  i.w = i.txt:<span class="hljs-built_in">find</span><span class="hljs-string">&quot;-$&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-4">&#x00a7;</a>
+              </div>
+              <p>add(i:NUM: x:num, n:?int=1) –&gt; <code>n</code> times,update <code>i</code>‘s SOME object.</p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.kids</span><span class="hljs-params">(i, stop, y)</span></span>
-  <span class="hljs-keyword">if</span> #j.rows &gt;=stop <span class="hljs-keyword">then</span>
-    <span class="hljs-keyword">local</span> all  = map(i.cols.x, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xcol)</span></span> 
-                                 <span class="hljs-keyword">return</span> BIN.BINS(j.rows,xcol,SYM,y) <span class="hljs-keyword">end</span>) 
-    <span class="hljs-keyword">local</span> best = <span class="hljs-built_in">sort</span>(all, lt<span class="hljs-string">&quot;div&quot;</span>)[<span class="hljs-number">1</span>]
-    i.kids     = map(best.bins, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(bin)</span></span>
-                                  <span class="hljs-keyword">local</span> new = i:clone(bin:holds(i.rows))
-                                  <span class="hljs-keyword">if</span> #new.rows &lt; #i.rows <span class="hljs-keyword">then</span>
-                                    new.gaurd = bin
-                                    <span class="hljs-keyword">return</span> new:kids(stop, y) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> i <span class="hljs-keyword">end</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.add</span><span class="hljs-params">(i,x,n)</span></span>
+  <span class="hljs-keyword">if</span> x ~=<span class="hljs-string">&quot;? &quot;</span> <span class="hljs-keyword">then</span> 
+   <span class="hljs-keyword">for</span> _ = <span class="hljs-number">1</span>,(n <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>) <span class="hljs-keyword">do</span> i.n=i.n+<span class="hljs-number">1</span>; i.kept:add(x) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-5">&#x00a7;</a>
+              </div>
+              <p>bin(i:NUM: x:any) –&gt; return <code>x</code> mapped to a finite range</p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ROWS.branches</span><span class="hljs-params">(i,lvl)</span></span>
-  lvl = lvl <span class="hljs-keyword">or</span> <span class="hljs-number">0</span>
-  <span class="hljs-keyword">local</span> gaurd = i.gaurd <span class="hljs-keyword">and</span> i.gaurd:show()
-  <span class="hljs-built_in">print</span>(fmt(<span class="hljs-string">&quot;%-40s&quot;</span>, cat(i:mids(i))), (<span class="hljs-string">&quot;| &quot;</span>):<span class="hljs-built_in">rep</span>(lvl) .. (gaurd <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;&quot;</span>))
-  <span class="hljs-keyword">for</span> _,kid <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(i.kids <span class="hljs-keyword">or</span> {}) <span class="hljs-keyword">do</span> 
-    kid:branches(<span class="hljs-number">1</span>+lvl) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span></pre></div></div>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.bin</span><span class="hljs-params">(i,x)</span></span>
+  <span class="hljs-keyword">local</span> a = i.some:has()
+  <span class="hljs-keyword">local</span> b = (a[#a] - a[<span class="hljs-number">1</span>])/the.bins
+  <span class="hljs-keyword">return</span> a[#a]==a[<span class="hljs-number">1</span>] <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">floor</span>(x/b+<span class="hljs-number">.5</span>)*b <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-6">&#x00a7;</a>
+              </div>
+              <p>clone(i:(SYM|NUM)) :(SYM|NUM) –&gt; Return a class of the same structure.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.clone</span><span class="hljs-params">(i)</span></span> <span class="hljs-keyword">return</span> NUM(i.at, i.txt) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-7">&#x00a7;</a>
+              </div>
+              <p>div(i:NUM) :tab –&gt; Return <code>div</code>ersity of a column
+(its tendency <em>not</em> to be a its central tendency). To understand this code
+recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob. In between,
+at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.div</span><span class="hljs-params">(i)</span></span> 
+  <span class="hljs-keyword">local</span> a=i.kept:has(); <span class="hljs-keyword">return</span> (per(a,<span class="hljs-number">.9</span>) - per(a,<span class="hljs-number">.1</span>))/<span class="hljs-number">2.56</span> <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-8">&#x00a7;</a>
+              </div>
+              <p>like(i:NUM, x:any) –&gt; Return the likelihood that <code>x</code> belongs to <code>i</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.like</span><span class="hljs-params">(i,x,...)</span></span>
+  <span class="hljs-keyword">local</span> sd,mu=i:div(), i:mid()
+  <span class="hljs-keyword">if</span> sd==<span class="hljs-number">0</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">return</span> x==mu <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>/big <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">math</span>.<span class="hljs-built_in">exp</span>(<span class="hljs-number">-.5</span>*((x - mu)/sd)^<span class="hljs-number">2</span>) / (sd*((<span class="hljs-number">2</span>*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">pi</span>)^<span class="hljs-number">0.5</span>)) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-9">&#x00a7;</a>
+              </div>
+              <p>merge(i:NUM,j:NUM) :NUM –&gt; combine two numerics</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.merge</span><span class="hljs-params">(i,j,     k)</span></span>
+  k = i:clone()
+  <span class="hljs-keyword">for</span> _,kept <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>{i.kept, j.kept} <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">for</span> _,x <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(kept) <span class="hljs-keyword">do</span> k:add(x) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> k <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-10">&#x00a7;</a>
+              </div>
+              <p>merge(i:NUM,t:[BIN]) :[BIN] –&gt; merge a list of bins (for numeric y-values)
+If anything merged, then loop again looking for other merges.
+At the end, expand bins to cover all gaps across the number line.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.merges</span><span class="hljs-params">(i,b4, min)</span></span> 
+  <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fillInTheGaps</span><span class="hljs-params">(bins)</span></span>
+    bins[<span class="hljs-number">1</span>].lo, bins[#bins].hi = -big, big
+    <span class="hljs-keyword">if</span> #bins&gt;<span class="hljs-number">1</span> <span class="hljs-keyword">then</span>
+      <span class="hljs-keyword">for</span> n=<span class="hljs-number">2</span>,#bins <span class="hljs-keyword">do</span> bins[n].lo = bins[n<span class="hljs-number">-1</span>].hi <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">return</span> bins 
+  <span class="hljs-keyword">end</span> <span class="hljs-comment">------------- </span>
+  <span class="hljs-keyword">local</span> n,now = <span class="hljs-number">1</span>,{}
+  <span class="hljs-keyword">while</span> n &lt;= #b4 <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">local</span> merged = n&lt;#b4 <span class="hljs-keyword">and</span> b4[n]:merged(b4[n+<span class="hljs-number">1</span>], <span class="hljs-built_in">min</span>)
+    now[#now+<span class="hljs-number">1</span>]  = merged <span class="hljs-keyword">or</span> b4[n]
+    n            = n + (merged <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>)  <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> #now &lt; #b4 <span class="hljs-keyword">and</span> i:merges(now,<span class="hljs-built_in">min</span>) <span class="hljs-keyword">or</span> fillInTheGaps(now) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-11">&#x00a7;</a>
+              </div>
+              <p>mid(i:NUM)) :tab –&gt; Return a columns’ <code>mid</code>ddle</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.mid</span><span class="hljs-params">(i)</span></span> 
+  <span class="hljs-keyword">local</span> a=i.kept:has(); <span class="hljs-keyword">return</span> per(a,<span class="hljs-number">.5</span>) <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-12">&#x00a7;</a>
+              </div>
+              <p>norm(i:NUM, x:num) :num –&gt; Normalize <code>x</code> 0..1 for lo..hi,</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NUM.norm</span><span class="hljs-params">(i,x)</span></span>
+  <span class="hljs-keyword">local</span> a=i.kept:has(); <span class="hljs-keyword">return</span> (a[#a]-a[<span class="hljs-number">1</span>])&lt;<span class="hljs-number">1E-9</span> <span class="hljs-keyword">or</span> (x-a[<span class="hljs-number">1</span>])/(a[#a]-a[<span class="hljs-number">1</span>]) <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">return</span> NUM</pre></div></div>
             
         </li>
         
