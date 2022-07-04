@@ -10,12 +10,12 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence)
 
 |what          | where |
 |:-------------|:------|
-|**config**    | [all](all.html)   |
+|**config**    | [all](all.md)   |
 |**build**     | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)  | 
-|**demos**     | [go](go.html)  |
-|**apps**      | [nb](nb.html)  |
-|**functions** | [lib](lib.html) |  
-|**methods**   | [bin](bin.html) :: [cols](cols.html) :: [num](num.html) :: [row](row.html) :: [rows](rows.html) :: [some](some.html) :: [sym](sym.html) |
+|**demos**     | [go](go.md)  |
+|**apps**      | [nb](nb.md)  |
+|**functions** | [lib](lib.md) |  
+|**methods**   | [bin](bin.md) :: [cols](cols.md) :: [num](num.md) :: [row](row.md) :: [rows](rows.md) :: [some](some.md) :: [sym](sym.md) |
 
 <br clear=all>
 <p align=center>
