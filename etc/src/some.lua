@@ -23,4 +23,5 @@ function SOME.add(i,x)
 function SOME.has(i)
   i.kept = i.ok and i.kept or sort(i.kept); i.ok=true; return i.kept ; end
 
+-- Done.
 return SOME

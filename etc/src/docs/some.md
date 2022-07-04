@@ -81,7 +81,14 @@ function SOME.add(i,x)
 ```lua
 function SOME.has(i)
   i.kept = i.ok and i.kept or sort(i.kept); i.ok=true; return i.kept ; end
+```
 
+
+Done.
+
+
+
+```lua
 return SOME
 ```
 
