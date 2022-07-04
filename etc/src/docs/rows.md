@@ -8,9 +8,12 @@ E.g. here are some "b(Ai)tteries" for XAI.
 (c) 2022, Tim Menzies<br><timm@ieee.org>
 <br clear=all>
 
-|config | build | demos | apps | functions | classes |
-|-------|-------|-------|------|-----------|---------|
-|[all](all.html)|[Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)<br>(just for doco)|[go](go.html)|[nb](nb.html)|[lib](lib.html)|[bin](bin.html) :: [cols](cols.html) :: [num](num.html) :: [row](row.html) :: [rows](rows.html) :: [some](some.html) :: [sym](sym.html)|
+**config**: [all](all.html)  
+**build**: [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)   
+**demos**: [go](go.html)  
+**apps**:  [nb](nb.html)  
+**functions**: [lib](lib.html)   
+**methods**:  [bin](bin.html) :: [cols](cols.html) :: [num](num.html) :: [row](row.html) :: [rows](rows.html) :: [some](some.html) :: [sym](sym.html)
 
 <a href=".."><img src="https://img.shields.io/badge/Language--lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
 <a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow"></a>
