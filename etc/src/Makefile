@@ -41,7 +41,7 @@ docs/%.html: %.lua  README.md ## make html
 mds:   $(subst .lua,.md,docs/$(subst lua ,md docs/,$(LUAS))) ## make all htmls
 
 docs/%.md: %.lua  README.md ## make mds
-	echo $<
+	echo $< 2>&1
 	(cat README.md ; lua go.lua -f $< -g CHUNKS ) > $@
 
 docs/_all.pdf:  ## make all pdf
