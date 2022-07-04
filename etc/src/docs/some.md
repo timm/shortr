@@ -35,7 +35,7 @@ class for **NUM**s that retains some sample of all the numerics in that column.
 </p>
 
 
-## Keep some nums
+## `SOME` : keep some nums
 Given a finite buffer of some small size `max`, then after reading 
 a very large set of `n` numbers, we should only be keeping `max/n` of those nums.
 
