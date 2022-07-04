@@ -117,8 +117,7 @@ function SYM.mid(i,p)
 ```
 
 
-> ***div(`i` :SYM):tab***&nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :speech_balloon:  Return `div`ersity of a column  
-(its tendency _not_ to be a its central tendency).
+> ***div(`i` :SYM):tab***&nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :speech_balloon:  Return `div`ersity of a column (its tendency _not_ to be a its central tendency).  
 
 
 

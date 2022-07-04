@@ -38,8 +38,7 @@ function SYM.mid(i,p)
   for x,n in pairs(i.kept) do if n > most then most,mode = n,x end end
   return mode end
 
--- div(i:SYM):tab --> Return `div`ersity of a column
--- (its tendency _not_ to be a its central tendency).
+-- div(i:SYM):tab --> Return `div`ersity of a column (its tendency _not_ to be a its central tendency).
 function SYM.div(i,p)
   local ent, fun = 0, function(p) return -p*math.log(p,2) end
   for x,n in pairs(i.kept) do if n > 0 then ent=ent + fun(n/i.n) end end
