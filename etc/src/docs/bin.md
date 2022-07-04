@@ -1,6 +1,6 @@
 # [:high_brightness: B(Ai)ttery](all.md)
 
-<a href="all.md"><img align=left width=400 src="bat2.png"></a>
+<a href="all.md"><img align=left width=300 src="bat2.png"></a>
 
 LUA is a "batteries-not-included" language.   
 But LUA makes it easy to add in the  missing bits.   
