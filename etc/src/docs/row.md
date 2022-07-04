@@ -21,7 +21,7 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 
 In this code,  `ROWS` holds many `ROW`s (and each `ROW` holds one record).  `ROWS` summarize their numeric
 or symbolic  columns in `NUM`s or `SYM`s (respectively). Summaries are held in `COLS`, divided into  (x,y) sets for
-independent and dependent columns (respectively). Pairs of (x,y) columns are summarized in `BIN`s. Adjacent `BIN`s that have similar y distributions
+independent and dependent columns (respectively). Pairs of (x,y) columns are summarized in `BIN`s. Adjacent `BIN`s with  similar y distributions
 are merged. 
 `SOME` is a helper
 for `NUM`s that holds just some sample of the numerics in that column. 
