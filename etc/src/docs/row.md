@@ -16,6 +16,7 @@ E.g. here are some "b(Ai)tteries" for XAI.
 |**functions** | [lib](lib.html) |  
 |**methods**   | [bin](bin.html) :: [cols](cols.html) :: [num](num.html) :: [row](row.html) :: [rows](rows.html) :: [some](some.html) :: [sym](sym.html) |
 
+<br clear=all>
 <center>
 <a href=".."><img src="https://img.shields.io/badge/Language--lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
 <a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow"></a>
@@ -23,7 +24,6 @@ E.g. here are some "b(Ai)tteries" for XAI.
 <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a>
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 </center>
-
 ## hold 1 record
 See also [ROWS](rows.html) that holds multiple records.  
 And [NUM](num.html) and [SYM](sym.html) that summarize the 
