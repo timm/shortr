@@ -6,7 +6,7 @@
 local all=require"all"
 local obj,push,R,sort,the= all.obj, all.push, all.R, all.sort, all.the
 
--- SOME(max:?int) :SOME --> collect, at most, `max` numbers.
+-- SOME(max:?int) :SOME --> Constructor. Collector for, at most, `max` numbers.
 local SOME = obj("SOME", function(i,max) 
   i.kept, i.ok, i.max, i.n = {}, true, max, 0  end)
 
