@@ -6,8 +6,8 @@ But LUA makes it easy to add in the  missing bits.
 E.g. here are some "b(Ai)tteries" for XAI.
 
 (c) 2022, Tim Menzies<br><timm@ieee.org>
-
 <br clear=all>
+
 **config:** [all](all.html);
 **build:** [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)  
 (just for doco);
