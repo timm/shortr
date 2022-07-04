@@ -1,6 +1,8 @@
 -- ## Keep some nums
 -- Given a finite buffer of some small size `max`, then after reading 
 -- a very large set of `n` numbers, we should only be keeping `max/n` of those nums.
+
+-- Requires:
 local all=require"all"
 local obj,push,R,sort,the= all.obj, all.push, all.R, all.sort, all.the
 
