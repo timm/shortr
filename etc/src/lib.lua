@@ -99,11 +99,12 @@ function m.cat(t,    key,u)
 function m.chat(t) print(m.cat(t)); return t end
 
 -- chunks(file:str) --> divide source code into comments and code.
+local _sep="&nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :speech_balloon:" 
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
      return s:gsub("([%w]+):","`%1` :") 
-             :gsub("([^\n]+) [-][-]>([^\n]+)","> **%1**. &nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :speech_balloon:     %2") 
+             :gsub("([^\n]+) [-][-]>([^\n]+)","> **%1**".._sep .." %2") 
   end ------------------------
   local dump = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
