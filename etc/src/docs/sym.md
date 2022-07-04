@@ -126,7 +126,14 @@ function SYM.div(i,p)
   local ent, fun = 0, function(p) return -p*math.log(p,2) end
   for x,n in pairs(i.kept) do if n > 0 then ent=ent + fun(n/i.n) end end
   return ent end
- 
+```
+
+
+That's all folks.
+
+
+
+```lua
 return SYM
 ```
 
