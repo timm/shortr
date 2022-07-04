@@ -37,7 +37,7 @@ local SOME = require"some"
 </details>
 
 
-> ***NUM(`at` :?int, `txt` :?str) :NUM***<br>:mag:  Summarize a stream of numbers.
+> ***NUM(`at` :?int, `txt` :?str) :NUM***<br>  Summarize a stream of numbers.
 
 
 <details><summary></summary>
@@ -51,7 +51,7 @@ local NUM = obj("NUM", function(i,at,txt)
 </details>
 
 
-> ***add(`i` :`NUM` : `x` :num, `n` :?int=1)***<br>:mag:  `n` times,update `i`'s SOME object.
+> ***add(`i` :`NUM` : `x` :num, `n` :?int=1)***<br>  `n` times,update `i`'s SOME object.
 
 
 <details><summary></summary>
@@ -65,7 +65,7 @@ function NUM.add(i,x,n)
 </details>
 
 
-> ***bin(`i` :`NUM` : `x` :any)***<br>:mag:  return `x` mapped to a finite range
+> ***bin(`i` :`NUM` : `x` :any)***<br>  return `x` mapped to a finite range
 
 
 <details><summary></summary>
@@ -80,7 +80,7 @@ function NUM.bin(i,x)
 </details>
 
 
-> ***clone(`i` :(SYM|NUM)) :(SYM|NUM)***<br>:mag:  Return a class of the same structure.
+> ***clone(`i` :(SYM|NUM)) :(SYM|NUM)***<br>  Return a class of the same structure.
 
 
 <details><summary></summary>
@@ -92,7 +92,7 @@ function NUM.clone(i) return NUM(i.at, i.txt) end
 </details>
 
 
-> ***div(`i` :NUM) :tab***<br>:mag:  Return `div`ersity of a column
+> ***div(`i` :NUM) :tab***<br>  Return `div`ersity of a column
 (its tendency _not_ to be a its central tendency). To understand this code
 recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob. In between,
 at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.
@@ -108,7 +108,7 @@ function NUM.div(i)
 </details>
 
 
-> ***like(`i` :NUM, `x` :any)***<br>:mag:  Return the likelihood that `x` belongs to `i`.
+> ***like(`i` :NUM, `x` :any)***<br>  Return the likelihood that `x` belongs to `i`.
 
 
 <details><summary></summary>
@@ -123,7 +123,7 @@ function NUM.like(i,x,...)
 </details>
 
 
-> ***merge(`i` :NUM,`j` :NUM) :NUM***<br>:mag:  combine two numerics
+> ***merge(`i` :NUM,`j` :NUM) :NUM***<br>  combine two numerics
 
 
 <details><summary></summary>
@@ -139,7 +139,7 @@ function NUM.merge(i,j,     k)
 </details>
 
 
-> ***merge(`i` :NUM,`t` :[BIN]) :[BIN]***<br>:mag:  merge a list of bins (for numeric y-values)
+> ***merge(`i` :NUM,`t` :[BIN]) :[BIN]***<br>  merge a list of bins (for numeric y-values)
 If anything merged, then loop again looking for other merges.
 At the end, expand bins to cover all gaps across the number line.
 
@@ -165,7 +165,7 @@ function NUM.merges(i,b4, min)
 </details>
 
 
-> ***mid(`i` :NUM)) :tab***<br>:mag:  Return a columns' `mid`ddle
+> ***mid(`i` :NUM)) :tab***<br>  Return a columns' `mid`ddle
 
 
 <details><summary></summary>
@@ -178,7 +178,7 @@ function NUM.mid(i)
 </details>
 
 
-> ***norm(`i` :NUM, `x` :num) :num***<br>:mag:  Normalize `x` 0..1 for lo..hi,
+> ***norm(`i` :NUM, `x` :num) :num***<br>  Normalize `x` 0..1 for lo..hi,
 
 
 <details><summary></summary>

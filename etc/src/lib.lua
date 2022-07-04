@@ -103,7 +103,7 @@ function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s) 
      return s:gsub("([%w]+):","`%1` :") 
-             :gsub("([^\n]+) [-][-]>([^\n]+)","> ***%1***<br>:mag: %2") 
+             :gsub("([^\n]+) [-][-]>([^\n]+)","> ***%1***<br> %2") 
   end ------------------------
   local show = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end

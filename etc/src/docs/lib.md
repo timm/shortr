@@ -37,7 +37,7 @@ local m={}
 
 ### Linting
 
-> ***rogues()***<br>:mag:  Find rogue locals. Run `rogues()` _last_ after everything else.
+> ***rogues()***<br>  Find rogue locals. Run `rogues()` _last_ after everything else.
 
 
 <details><summary></summary>
@@ -53,8 +53,8 @@ function m.rogues()
 
 ### Meta
 
-> ***lt(`x` :str):function***<br>:mag:  
-> ***gt(`x` :str):function***<br>:mag:  Returns functions that sorts on `x`
+> ***lt(`x` :str):function***<br>  
+> ***gt(`x` :str):function***<br>  Returns functions that sorts on `x`
 
 
 <details><summary></summary>
@@ -67,7 +67,7 @@ function m.gt(x) return function(a,b) return a[x] > b[x] end end
 </details>
 
 
-> ***same(`x` :any):any***<br>:mag:  Return x, unchanged.
+> ***same(`x` :any):any***<br>  Return x, unchanged.
 
 
 <details><summary></summary>
@@ -81,7 +81,7 @@ m.same=function(x) return x end
 
 ### Maths
 
-> ***`big` :num***<br>:mag:  return a big number
+> ***`big` :num***<br>  return a big number
 
 
 <details><summary></summary>
@@ -93,7 +93,7 @@ m.big = math.huge
 </details>
 
 
-> ***R(`max` :?num=1):num***<br>:mag:  return a random number `0..max`.
+> ***R(`max` :?num=1):num***<br>  return a random number `0..max`.
 
 
 <details><summary></summary>
@@ -105,7 +105,7 @@ m.R = math.random
 </details>
 
 
-> ***rnd(`x` :num, `places` :int):num***<br>:mag:  return `x` rounded to some number of `places`.
+> ***rnd(`x` :num, `places` :int):num***<br>  return `x` rounded to some number of `places`.
 
 
 <details><summary></summary>
@@ -121,7 +121,7 @@ function m.small(min,x) return min<1 and n^min or x end
 </details>
 
 
-> ***rnds(`t` :num, `places` :?int=2):t***<br>:mag:  return items in `t` rounds to `places`.
+> ***rnds(`t` :num, `places` :?int=2):t***<br>  return items in `t` rounds to `places`.
 
 
 <details><summary></summary>
@@ -136,7 +136,7 @@ function m.rnds(t, places)
 
 ###  Lists
 
-> ***splice(`t` :tab,start=?int=1,`stop` :?num=#t,`step` :?num=1):t***<br>:mag:  pull items
+> ***splice(`t` :tab,start=?int=1,`stop` :?num=#t,`step` :?num=1):t***<br>  pull items
 `start` to `stop`, stepping by `step`. 
 
 
@@ -152,7 +152,7 @@ function m.splice(t, start, stop, step)
 </details>
 
 
-> ***sort(`t` :tab, `f` :fun) :tab***<br>:mag:  Return `t`, sorted of function `f` (default "<").
+> ***sort(`t` :tab, `f` :fun) :tab***<br>  Return `t`, sorted of function `f` (default "<").
 
 
 <details><summary></summary>
@@ -164,7 +164,7 @@ function m.sort(t,f) table.sort(t,f); return t end
 </details>
 
 
-> ***push(`t` :tab, `x` :any) :x***<br>:mag:  Add `x` to end of `t`; return `t`.
+> ***push(`t` :tab, `x` :any) :x***<br>  Add `x` to end of `t`; return `t`.
 
 
 <details><summary></summary>
@@ -176,7 +176,7 @@ function m.push(t,x) t[1+#t] = x; return x end
 </details>
 
 
-> ***per(`t` :tab, `p` :?float=.5) :x***<br>:mag:  Return `p`-th ranked item from `t`.
+> ***per(`t` :tab, `p` :?float=.5) :x***<br>  Return `p`-th ranked item from `t`.
 
 
 <details><summary></summary>
@@ -188,10 +188,10 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 </details>
 
 
-> ***map(`t` :tab, `f` :fun): tab***<br>:mag:  
-> ***kap(`t` :tab, `f` :fun): tab***<br>:mag:  
-> ***maps(`list1` :tab, `list2` :tab, `f` :fun): tab***<br>:mag:  
-> ***kaps(`list1` :tab, `list2` :tab, `f` :fun): tab***<br>:mag:  Return items in `t`, filtered thru `f`.
+> ***map(`t` :tab, `f` :fun): tab***<br>  
+> ***kap(`t` :tab, `f` :fun): tab***<br>  
+> ***maps(`list1` :tab, `list2` :tab, `f` :fun): tab***<br>  
+> ***kaps(`list1` :tab, `list2` :tab, `f` :fun): tab***<br>  Return items in `t`, filtered thru `f`.
 If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
 key and value to `f`. `maps` and `kaps` pass items from two lists.
 
@@ -210,7 +210,7 @@ function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;r
 
 ### String to thing
 
-> ***thing(`s` :str):any***<br>:mag:  Coerce string to whatever
+> ***thing(`s` :str):any***<br>  Coerce string to whatever
 is simplest (boolean or integer or float or, if all else fails, a string).
 
 
@@ -226,7 +226,7 @@ function m.thing(x)
 </details>
 
 
-> ***words(`s` :str, `sep` :str, `fun` :fun):tab***<br>:mag:  Return `t` filled with `s`, split  on `sep`.
+> ***words(`s` :str, `sep` :str, `fun` :fun):tab***<br>  Return `t` filled with `s`, split  on `sep`.
 
 
 <details><summary></summary>
@@ -311,7 +311,7 @@ function m.chat(t) print(m.cat(t)); return t end
 </details>
 
 
-> ***chunks(`file` :str)***<br>:mag:  divide source code into comments and code.
+> ***chunks(`file` :str)***<br>  divide source code into comments and code.
 
 
 <details><summary></summary>
@@ -321,7 +321,7 @@ function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s) 
      return s:gsub("([%w]+):","`%1` :") 
-             :gsub("([^\n]+) [-][-]>([^\n]+)","> ***%1***<br>:mag: %2") 
+             :gsub("([^\n]+) [-][-]>([^\n]+)","> ***%1***<br> %2") 
   end ------------------------
   local show = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end
@@ -343,7 +343,7 @@ function m.chunks(file)
 
 ### Settings
 
-> ***opts(`x` :str) :tab***<br>:mag:  Parse `str` for lines with `--`; then pull keys+defaults. 
+> ***opts(`x` :str) :tab***<br>  Parse `str` for lines with `--`; then pull keys+defaults. 
 
 
 <details><summary></summary>
@@ -360,7 +360,7 @@ function m.opts(x)
 </details>
 
 
-> ***cli(`t` :tab) :tab***<br>:mag:  For keys in `t`, look for updates on command-line. 
+> ***cli(`t` :tab) :tab***<br>  For keys in `t`, look for updates on command-line. 
 Things with boolean defaults are flipped via `--flag`. 
 Other keys need `--flag value`.  Print the help
 (if `-h` appears on command line). Return a table with setting `key`s and
@@ -389,7 +389,7 @@ function m.cli(t)
 
 ### Tests
 
-> ***on(`opts` :tab, `tests` :[fun])***<br>:mag:  Run some tests.
+> ***on(`opts` :tab, `tests` :[fun])***<br>  Run some tests.
 If  `opt.go=="all"`, then run all tests, sorted on their name.
 Before each test, reset random seed and the options `opts.
 
@@ -418,7 +418,7 @@ function m.on(opts,tests)
 
 ### Objects
 
-> ***obj(`name` :str, `fun` :fun):object***<br>:mag:  Return a klass `name` with constructor `fun`.
+> ***obj(`name` :str, `fun` :fun):object***<br>  Return a klass `name` with constructor `fun`.
 Add a unique `id` and a `tosting` method (that uses `cat` (above).
 
 

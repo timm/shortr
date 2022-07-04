@@ -52,7 +52,7 @@ local doc={}
 </details>
 
 
-> ***chunks(`x` :int, `y` :[fred]) :int***<br>:mag:  asdads
+> ***chunks(`x` :int, `y` :[fred]) :int***<br>  asdads
 
 
 <details><summary></summary>
