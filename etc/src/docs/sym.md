@@ -15,7 +15,7 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence)
 |**demos**     | [go](go.md)  |
 |**apps**      | [nb](nb.md)  |
 |**functions** | [lib](lib.md) |  
-|**methods**   | [bin](bin.md) :: [cols](cols.md) :: [num](num.md) :: [row](row.md) :: [rows](rows.md) :: [some](some.md) :: [sym](sym.md) |
+|**methods**   | [bin](bin.md), [cols](cols.md), [num](num.md), [row](row.md), [rows](rows.md), [some](some.md), [sym](sym.md) |
 
 <br clear=all>
 <p align=center>
