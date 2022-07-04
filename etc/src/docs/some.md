@@ -84,7 +84,7 @@ function SOME.has(i)
 ```
 
 
-Done.
+That's all folks.
 
 
 
