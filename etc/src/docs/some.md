@@ -38,7 +38,7 @@ local obj,push,R,sort,the= all.obj, all.push, all.R, all.sort, all.the
 ```
 
 
-> ***SOME(`max` :?int) :SOME***&nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :speech_balloon:  Constructor of a collector for, at most, `max` numbers.  
+> ***SOME(`max` :?int) :SOME***&nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :left_speech_bubble:  Constructor of a collector for, at most, `max` numbers.  
 
 
 
@@ -63,7 +63,7 @@ function SOME.add(i,x)
 ```
 
 
-> ***has(`i` :SOME):tab***&nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :speech_balloon:  Ensure contents are sorted. Return those contents.  
+> ***has(`i` :SOME):tab***&nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :left_speech_bubble:  Ensure contents are sorted. Return those contents.  
 
 
 
