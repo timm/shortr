@@ -1,18 +1,19 @@
 --  ##  info on 2 cols
 local all=require"all"
-local big,fmt,lt,obj = all.big,all.fmt,all.lt,all.obj,all
+local the=all.the
+local big,fmt,lt,obj,push = all.big, all.fmt, all.lt, all.obj, all.push
 local small,sort = all.small,all.sort
 
 --> BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN ->
 -- `ys` stores values seen from `xlo to `xhi`.
-local BIN = obj("BIN", function(xlo, xhi, ys)
+local BIN = obj("BIN", function(i, xlo, xhi, ys)
   i.lo, i.hi, i.ys = xlo, xhi, ys end)
 
 -- add(i:Bin, x:num, y:(num|str) -> Ensure `lo`,`hi` covers `x`. Add `y` to `ys`.
 function BIN.add(i,x,y)
   i.lo = math.min(i.lo, x)
   i.hi = math.max(i.hi, x)
-  ys:add(y) end
+  i.ys:add(y) end
 
 function BIN.hold(i, row)
   local x = row.cells[i.ys.at]
@@ -33,7 +34,6 @@ function BIN.show(i)
   elseif lo == -big then return fmt("%s <= %s", x, hi)
   else                   return fmt("%s <  %s <= %s", lo,x,hi) end end
 
--- ----
 function BIN.BINS(rows,col,yKlass,y)
   y      = y or function(row) return row:klass() end
   yKlass = yKlass or SYM
@@ -48,3 +48,6 @@ function BIN.BINS(rows,col,yKlass,y)
   list = col:merges(sort(list, lt"lo"), small(the.Min, n))
   return {bins= list,
           div = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
+
+-- That's all folks.
+return BIN

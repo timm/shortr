@@ -29,7 +29,7 @@ function m.rnd(x, places)
   local mult = 10^(places or 2)
   return math.floor(x * mult + 0.5) / mult end
 
-function m.small(min,x) return min<1 and n^min or x end
+function m.small(min,x) return min<1 and x^min or x end
 
 -- rnds(t:num, places:?int=2):t --> return items in `t` rounds to `places`.
 function m.rnds(t, places)

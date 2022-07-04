@@ -15,7 +15,7 @@ function NUM.add(i,x,n)
 
 -- bin(i:NUM: x:any) --> return `x` mapped to a finite range
 function NUM.bin(i,x)
-  local a = i.some:has()
+  local a = i.kept:has()
   local b = (a[#a] - a[1])/the.bins
   return a[#a]==a[1] and 1 or math.floor(x/b+.5)*b end
 

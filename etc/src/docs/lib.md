@@ -116,7 +116,7 @@ function m.rnd(x, places)
   local mult = 10^(places or 2)
   return math.floor(x * mult + 0.5) / mult end
 
-function m.small(min,x) return min<1 and n^min or x end
+function m.small(min,x) return min<1 and x^min or x end
 ```
 
 
