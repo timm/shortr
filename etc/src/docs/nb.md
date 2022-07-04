@@ -12,12 +12,12 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 
 |what          | where |
 |-------------:|:------|
-|**config**    | [all](all.md)   |
+|**config**    | [all](all.md#top)   |
 |**build**     | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)  | 
-|**demos**     | [go](go.md)  |
-|**apps**      | [nb](nb.md), [tree](tree.md)  |
-|**functions** | [lib](lib.md) |  
-|**methods**   | [bin](bin.md), [cols](cols.md), [num](num.md), [row](row.md), [rows](rows.md), [some](some.md), [sym](sym.md) |
+|**demos**     | [go](go.md#top)  |
+|**apps**      | [nb](nb.md#top), [tree](tree.md#top)  |
+|**functions** | [lib](lib.md#top) |  
+|**methods**   | [bin](bin.md#top), [cols](cols.md#top), [num](num.md#top), [row](row.md#top), [rows](rows.md#top), [some](some.md#top), [sym](sym.md#top) |
 
 In this code,  **ROW** holds one record while **ROWS** holds lots of **ROWs**. Each **ROWS** summarizes numeric
 or symbolic  columns in **NUM**s or **SYM**s, respectively. These summaries are held in **COLS** which divide the columns into (x,y) sets (for
