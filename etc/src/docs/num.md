@@ -14,7 +14,7 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 |-------------:|:------|
 |**config**    | [all](all.md#top)   |
 |**build**     | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)  | 
-|**demos**     | [go](https://github.com/timm/shortr/blob/master/etc/src/go.md#top)  |
+|**demos**     | [go](https://github.com/timm/shortr/blob/master/etc/src/docs/go.md#top)  |
 |**apps**      | [nb](nb.md#top), [tree](tree.md#top)  |
 |**functions** | [lib](lib.md#top) |  
 |**methods**   | [bin](bin.md#top), [cols](cols.md#top), [num](num.md#top), [row](row.md#top), [rows](rows.md#top), [some](some.md#top), [sym](sym.md#top) |
