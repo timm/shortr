@@ -247,7 +247,7 @@ function m.words(s,sep,fun,      t)
 </details>
 
 
-lines(`file` :str,  `fun` :fun):tab ---> Call `fun` with lines
+> ***lines(`file` :str,  `fun` :fun):tab***<br>  Call `fun` with lines
 
 
 <details><summary></summary>
@@ -263,7 +263,7 @@ function m.lines(file, fun)
 </details>
 
 
-csv(`file` :str,  `fun` :fun):tab ---> Call `fun` with lines, split on ",", 
+> ***csv(`file` :str,  `fun` :fun):tab***<br>  Call `fun` with lines, split on ",", 
 coercing strings to nums, bools, etc (where appropriate).
 
 
@@ -279,7 +279,7 @@ function m.csv(file,fun)
 
 ### Thing to string
 
-fmt(`s` :str,...) :str ---> emulate prinft
+> ***fmt(`s` :str,...) :str***<br>  emulate prinft
 
 
 <details><summary></summary>
@@ -291,7 +291,7 @@ m.fmt=string.format
 </details>
 
 
-cat(`t` :tab):str ---> Return table as string. For key-indexed lists, show keys (sorted).
+> ***cat(`t` :tab):str***<br>  Return table as string. For key-indexed lists, show keys (sorted).
 
 
 <details><summary></summary>
@@ -306,7 +306,7 @@ function m.cat(t,    key,u)
 </details>
 
 
-chat(`t` :tab):t ---> Print table (as string). Return `t`.
+> ***chat(`t` :tab):t***<br>  Print table (as string). Return `t`.
 
 
 <details><summary></summary>
@@ -437,13 +437,12 @@ function m.obj(name,fun,    t,new,x)
   function new(kl,...) _id=_id+1; x=setmetatable({_id=_id},kl);fun(x,...); return x end 
   t = {__tostring=m.cat,_is=name}; t.__index=t
   return setmetatable(t, {__call=new}) end
------
 ```
 
 </details>
 
 
-### Return
+Return
 
 
 <details><summary></summary>

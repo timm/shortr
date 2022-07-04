@@ -73,29 +73,29 @@ function m.words(s,sep,fun,      t)
    fun = fun or m.same
    t={};for x in s:gmatch(m.fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
 
--- lines(file:str,  fun:fun):tab ---> Call `fun` with lines
+-- lines(file:str,  fun:fun):tab --> Call `fun` with lines
 function m.lines(file, fun)
   local file = io.input(file)
   while true do
     local line = io.read()
     if not line then return io.close(file) else fun(line) end end end
 
--- csv(file:str,  fun:fun):tab ---> Call `fun` with lines, split on ",", 
+-- csv(file:str,  fun:fun):tab --> Call `fun` with lines, split on ",", 
 -- coercing strings to nums, bools, etc (where appropriate).
 function m.csv(file,fun)
   m.lines(file, function(line) fun(m.words(line, ",", m.thing)) end) end 
 -- ### Thing to string
 
--- fmt(s:str,...) :str ---> emulate prinft
+-- fmt(s:str,...) :str --> emulate prinft
 m.fmt=string.format
 
--- cat(t:tab):str ---> Return table as string. For key-indexed lists, show keys (sorted).
+-- cat(t:tab):str --> Return table as string. For key-indexed lists, show keys (sorted).
 function m.cat(t,    key,u)
   function key(k,v) if (tostring(k)):sub(1,1)~="_" then return m.fmt(":%s %s",k,v) end end
   u=  #t>1 and m.map(t,f or tostring) or m.sort(m.kap(t,key))
   return (t._is or "").."{"..table.concat(u," ").."}" end
 
--- chat(t:tab):t ---> Print table (as string). Return `t`.
+-- chat(t:tab):t --> Print table (as string). Return `t`.
 function m.chat(t) print(m.cat(t)); return t end
 
 -- chunks(file:str) --> divide source code into comments and code.
@@ -174,7 +174,6 @@ function m.obj(name,fun,    t,new,x)
   function new(kl,...) _id=_id+1; x=setmetatable({_id=_id},kl);fun(x,...); return x end 
   t = {__tostring=m.cat,_is=name}; t.__index=t
   return setmetatable(t, {__call=new}) end
------
--- ### Return
 
+-- Return
 return m
