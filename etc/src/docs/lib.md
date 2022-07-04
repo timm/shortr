@@ -47,7 +47,8 @@ function m.rogues()
 
 ### Meta
 
-> **> **lt(`x` :str):function**gt(`x` :str):function**&nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :speech_balloon:  Returns functions that sorts on `x`
+> **lt(`x` :str):function**  
+> **gt(`x` :str):function**&nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :speech_balloon:  Returns functions that sorts on `x`
 
 
 
@@ -151,7 +152,10 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
-> **> **map(`t` :tab, `f` :fun): tab**> **kap(`t` :tab, `f` :fun): tab**> **maps(`list1` :tab, `list2` :tab, `f` :fun): tab**kaps(`list1` :tab, `list2` :tab, `f` :fun): tab**&nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :speech_balloon:  Return items in `t`, filtered thru `f`.
+> **map(`t` :tab, `f` :fun): tab**  
+> **kap(`t` :tab, `f` :fun): tab**  
+> **maps(`list1` :tab, `list2` :tab, `f` :fun): tab**  
+> **kaps(`list1` :tab, `list2` :tab, `f` :fun): tab**&nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :speech_balloon:  Return items in `t`, filtered thru `f`.
 If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
 key and value to `f`. `maps` and `kaps` pass items from two lists.
 
@@ -257,7 +261,7 @@ function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
      return s:gsub("([%w]+):","`%1` :") 
-             :gsub("([^\n]+) [-][-]>([%s]+)\n","> **%1**") 
+             :gsub("([^\n]+) [-][-]>([%s]+)\n","> **%1**  \n") 
              :gsub("([^\n]+) [-][-]>([^\n]+)","> **%1**".._sep .." %2") 
   end ------------------------
   local dump = function(what,t) 

@@ -104,7 +104,7 @@ function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
      return s:gsub("([%w]+):","`%1` :") 
-             :gsub("([^\n]+) [-][-]>([%s]+)\n","> **%1**") 
+             :gsub("([^\n]+) [-][-]>([%s]+)\n","> **%1**  \n") 
              :gsub("([^\n]+) [-][-]>([^\n]+)","> **%1**".._sep .." %2") 
   end ------------------------
   local dump = function(what,t) 
