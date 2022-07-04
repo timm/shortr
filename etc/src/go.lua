@@ -4,9 +4,9 @@ local chat,chunks,cli,csv = all.chat, all.chunks, all.cli, all.csv
 local maps,on = all.maps, all.on
 local settings,sort,splice, the = all.settings, all.sort, all.splice, all.the
 
-local COLS,NUM, ROWS = require"cols", require"num", require"rows"
+local COLS,NUM = require"cols", require"num"
 local SOME, SYM, NB  = require"some", require"sym", require"nb"
-local ABCD,TREE      = require"abcd", require"tree"
+local ABCD,ROWS      = require"abcd", require"tree"
 
 -- To disable a test, rename it from `go` to `no`.
 local go,no = {},{}
@@ -81,7 +81,19 @@ function go.SOYBEAN()
 
 function go.CHUNKS()
   if the.file:find".lua$" then
-    chunks(the.file); return true end end
+    chunks(the.file); return true end
+  return true end
+
+function go.BINS( rs, m,best,rest)
+  rs=ROWS():fill(the.file)
+  sort(rs.rows) 
+  m    = (#rs.rows)^.5
+  best = splice(rs.rows,1,m)  --(m^.5)) 
+  rest = splice(rs.rows,1,#rs.rows - m) --#rs.rows - 30) --(m^.5)) 
+  rs:tree{best,rest}
+  return true
+end
+
 -------
 -- ### Start
 the = cli(the)
