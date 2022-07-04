@@ -53,6 +53,7 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 -- kap(t:tab, f:fun): tab --> 
 -- maps(list1:tab, list2:tab, f:fun): tab --> 
 -- kaps(list1:tab, list2:tab, f:fun): tab --> Return items in `t`, filtered thru `f`.
+
 -- If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
 -- key and value to `f`. `maps` and `kaps` pass items from two lists.
 function m.map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x) end;return u end
