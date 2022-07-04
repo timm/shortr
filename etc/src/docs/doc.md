@@ -66,7 +66,7 @@ local doc={}
 ```
 
 
-> ***chunks(`x` :int, `y` :[fred]) :int***. &nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :information_source:    asdads
+> ***chunks(`x` :int, `y` :[fred]) :int***. &nbsp;  &nbsp;  &nbsp;   &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp; :triangular_flag_on_post:     asdads
 
 
 
