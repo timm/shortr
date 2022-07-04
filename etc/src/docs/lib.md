@@ -54,7 +54,7 @@ local m={}
 
 ### Linting
 
-> ***rogues()*** :point_right:  Find rogue locals. Run `rogues()` _last_ after everything else.
+> ***rogues()*** :arrow_right:  Find rogue locals. Run `rogues()` _last_ after everything else.
 
 
 
@@ -67,8 +67,8 @@ function m.rogues()
 
 ### Meta
 
-> ***lt(`x` :str):function*** :point_right:  
-> ***gt(`x` :str):function*** :point_right:  Returns functions that sorts on `x`
+> ***lt(`x` :str):function*** :arrow_right:  
+> ***gt(`x` :str):function*** :arrow_right:  Returns functions that sorts on `x`
 
 
 
@@ -78,7 +78,7 @@ function m.gt(x) return function(a,b) return a[x] > b[x] end end
 ```
 
 
-> ***same(`x` :any):any*** :point_right:  Return x, unchanged.
+> ***same(`x` :any):any*** :arrow_right:  Return x, unchanged.
 
 
 
@@ -89,7 +89,7 @@ m.same=function(x) return x end
 
 ### Maths
 
-> ***`big` :num*** :point_right:  return a big number
+> ***`big` :num*** :arrow_right:  return a big number
 
 
 
@@ -98,7 +98,7 @@ m.big = math.huge
 ```
 
 
-> ***R(`max` :?num=1):num*** :point_right:  return a random number `0..max`.
+> ***R(`max` :?num=1):num*** :arrow_right:  return a random number `0..max`.
 
 
 
@@ -107,7 +107,7 @@ m.R = math.random
 ```
 
 
-> ***rnd(`x` :num, `places` :int):num*** :point_right:  return `x` rounded to some number of `places`.
+> ***rnd(`x` :num, `places` :int):num*** :arrow_right:  return `x` rounded to some number of `places`.
 
 
 
@@ -120,7 +120,7 @@ function m.small(min,x) return min<1 and x^min or x end
 ```
 
 
-> ***rnds(`t` :num, `places` :?int=2):t*** :point_right:  return items in `t` rounds to `places`.
+> ***rnds(`t` :num, `places` :?int=2):t*** :arrow_right:  return items in `t` rounds to `places`.
 
 
 
@@ -132,7 +132,7 @@ function m.rnds(t, places)
 
 ###  Lists
 
-> ***splice(`t` :tab,start=?int=1,`stop` :?num=#t,`step` :?num=1):t*** :point_right:  pull items
+> ***splice(`t` :tab,start=?int=1,`stop` :?num=#t,`step` :?num=1):t*** :arrow_right:  pull items
 `start` to `stop`, stepping by `step`. 
 
 
@@ -145,7 +145,7 @@ function m.splice(t, start, stop, step)
 ```
 
 
-> ***sort(`t` :tab, `f` :fun) :tab*** :point_right:  Return `t`, sorted of function `f` (default "<").
+> ***sort(`t` :tab, `f` :fun) :tab*** :arrow_right:  Return `t`, sorted of function `f` (default "<").
 
 
 
@@ -154,7 +154,7 @@ function m.sort(t,f) table.sort(t,f); return t end
 ```
 
 
-> ***push(`t` :tab, `x` :any) :x*** :point_right:  Add `x` to end of `t`; return `t`.
+> ***push(`t` :tab, `x` :any) :x*** :arrow_right:  Add `x` to end of `t`; return `t`.
 
 
 
@@ -163,7 +163,7 @@ function m.push(t,x) t[1+#t] = x; return x end
 ```
 
 
-> ***per(`t` :tab, `p` :?float=.5) :x*** :point_right:  Return `p`-th ranked item from `t`.
+> ***per(`t` :tab, `p` :?float=.5) :x*** :arrow_right:  Return `p`-th ranked item from `t`.
 
 
 
@@ -172,10 +172,10 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
-> ***map(`t` :tab, `f` :fun): tab*** :point_right:  
-> ***kap(`t` :tab, `f` :fun): tab*** :point_right:  
-> ***maps(`list1` :tab, `list2` :tab, `f` :fun): tab*** :point_right:  
-> ***kaps(`list1` :tab, `list2` :tab, `f` :fun): tab*** :point_right:  Return items in `t`, filtered thru `f`.
+> ***map(`t` :tab, `f` :fun): tab*** :arrow_right:  
+> ***kap(`t` :tab, `f` :fun): tab*** :arrow_right:  
+> ***maps(`list1` :tab, `list2` :tab, `f` :fun): tab*** :arrow_right:  
+> ***kaps(`list1` :tab, `list2` :tab, `f` :fun): tab*** :arrow_right:  Return items in `t`, filtered thru `f`.
 If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
 key and value to `f`. `maps` and `kaps` pass items from two lists.
 
@@ -191,7 +191,7 @@ function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;r
 
 ### String to thing
 
-> ***thing(`s` :str):any*** :point_right:  Coerce string to whatever
+> ***thing(`s` :str):any*** :arrow_right:  Coerce string to whatever
 is simplest (boolean or integer or float or, if all else fails, a string).
 
 
@@ -204,7 +204,7 @@ function m.thing(x)
 ```
 
 
-> ***words(`s` :str, `sep` :str, `fun` :fun):tab*** :point_right:  Return `t` filled with `s`, split  on `sep`.
+> ***words(`s` :str, `sep` :str, `fun` :fun):tab*** :arrow_right:  Return `t` filled with `s`, split  on `sep`.
 
 
 
@@ -215,7 +215,7 @@ function m.words(s,sep,fun,      t)
 ```
 
 
-> ***lines(`file` :str,  `fun` :fun):tab*** :point_right:  Call `fun` with lines
+> ***lines(`file` :str,  `fun` :fun):tab*** :arrow_right:  Call `fun` with lines
 
 
 
@@ -228,7 +228,7 @@ function m.lines(file, fun)
 ```
 
 
-> ***csv(`file` :str,  `fun` :fun):tab*** :point_right:  Call `fun` with lines, split on ",", 
+> ***csv(`file` :str,  `fun` :fun):tab*** :arrow_right:  Call `fun` with lines, split on ",", 
 coercing strings to nums, bools, etc (where appropriate).
 
 
@@ -241,7 +241,7 @@ function m.csv(file,fun)
 
 ### Thing to string
 
-> ***fmt(`s` :str,...) :str*** :point_right:  emulate prinft
+> ***fmt(`s` :str,...) :str*** :arrow_right:  emulate prinft
 
 
 
@@ -250,7 +250,7 @@ m.fmt=string.format
 ```
 
 
-> ***cat(`t` :tab):str*** :point_right:  Return table as string. For key-indexed lists, show keys (sorted).
+> ***cat(`t` :tab):str*** :arrow_right:  Return table as string. For key-indexed lists, show keys (sorted).
 
 
 
@@ -262,7 +262,7 @@ function m.cat(t,    key,u)
 ```
 
 
-> ***chat(`t` :tab):t*** :point_right:  Print table (as string). Return `t`.
+> ***chat(`t` :tab):t*** :arrow_right:  Print table (as string). Return `t`.
 
 
 
@@ -271,7 +271,7 @@ function m.chat(t) print(m.cat(t)); return t end
 ```
 
 
-> ***chunks(`file` :str)*** :point_right:  divide source code into comments and code.
+> ***chunks(`file` :str)*** :arrow_right:  divide source code into comments and code.
 
 
 
@@ -280,7 +280,7 @@ function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
      return s:gsub("([%w]+):","`%1` :") 
-             :gsub("([^\n]+) [-][-]>([^\n]+)","> ***%1*** :point_right: %2") 
+             :gsub("([^\n]+) [-][-]>([^\n]+)","> ***%1*** :arrow_right: %2") 
   end ------------------------
   local dump = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
@@ -299,7 +299,7 @@ function m.chunks(file)
 
 ### Settings
 
-> ***opts(`x` :str) :tab*** :point_right:  Parse `str` for lines with `--`; then pull keys+defaults. 
+> ***opts(`x` :str) :tab*** :arrow_right:  Parse `str` for lines with `--`; then pull keys+defaults. 
 
 
 
@@ -313,7 +313,7 @@ function m.opts(x)
 ```
 
 
-> ***cli(`t` :tab) :tab*** :point_right:  For keys in `t`, look for updates on command-line. 
+> ***cli(`t` :tab) :tab*** :arrow_right:  For keys in `t`, look for updates on command-line. 
 Things with boolean defaults are flipped via `--flag`. 
 Other keys need `--flag value`.  Print the help
 (if `-h` appears on command line). Return a table with setting `key`s and
@@ -339,7 +339,7 @@ function m.cli(t)
 
 ### Tests
 
-> ***on(`opts` :tab, `tests` :[fun])*** :point_right:  Run some tests.
+> ***on(`opts` :tab, `tests` :[fun])*** :arrow_right:  Run some tests.
 If  `opt.go=="all"`, then run all tests, sorted on their name.
 Before each test, reset random seed and the options `opts.
 
@@ -365,7 +365,7 @@ function m.on(opts,tests)
 
 ### Objects
 
-> ***obj(`name` :str, `fun` :fun):object*** :point_right:  Return a klass `name` with constructor `fun`.
+> ***obj(`name` :str, `fun` :fun):object*** :arrow_right:  Return a klass `name` with constructor `fun`.
 Add a unique `id` and a `tosting` method (that uses `cat` (above).
 
 
