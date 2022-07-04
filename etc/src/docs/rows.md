@@ -1,4 +1,4 @@
-# B(Ai)ttery
+# B(Ai)ttery :eyes:
 
 <img align=left width=400 src="bat2.png">
 
