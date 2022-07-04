@@ -66,7 +66,7 @@ local doc={}
 ```
 
 
-> ***chunks(`x` :int, `y` :[fred]) :int*** :arrow_right:  asdads
+> ***chunks(`x` :int, `y` :[fred]) :int*** :large_blue_circle:  asdads
 
 
 

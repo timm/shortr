@@ -57,7 +57,7 @@ local obj,push,R,sort,the= all.obj, all.push, all.R, all.sort, all.the
 ```
 
 
-> ***SOME(`max` :?int) :SOME*** :arrow_right:  Constructor of a collector for, at most, `max` numbers.
+> ***SOME(`max` :?int) :SOME*** :large_blue_circle:  Constructor of a collector for, at most, `max` numbers.
 
 
 
@@ -67,7 +67,7 @@ local SOME = obj("SOME", function(i,max)
 ```
 
 
-> ***add(`i` :`SOME` : `x` :num)*** :arrow_right:  
+> ***add(`i` :`SOME` : `x` :num)*** :large_blue_circle:  
 If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random).
 Otherwise, just add.
 
@@ -82,7 +82,7 @@ function SOME.add(i,x)
 ```
 
 
-> ***has(`i` :SOME):tab*** :arrow_right:  Ensure contents are sorted. Return those contents.
+> ***has(`i` :SOME):tab*** :large_blue_circle:  Ensure contents are sorted. Return those contents.
 
 
 
