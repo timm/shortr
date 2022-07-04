@@ -1,4 +1,4 @@
-<a name=top>
+<a name=top></a>
 
 # :high_brightness: B(Ai)ttery
 
