@@ -19,12 +19,12 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 |**functions** | [lib](lib.md) |  
 |**methods**   | [bin](bin.md), [cols](cols.md), [num](num.md), [row](row.md), [rows](rows.md), [some](some.md), [sym](sym.md) |
 
-In this code,  `ROW` holds one record while `ROWS` holds lots of `ROWs`. Each `ROWS` summarizes numeric
-or symbolic  columns in `NUM`s or `SYM`s, respectively. These summaries are held in `COLS` which divide the columns into (x,y) sets (for
-independent and dependent columns, respectively). Pairs of (x,y) columns are summarized in `BIN`s (and adjacent `BIN`s that have similar y distributions
-are merged). 
+In this code,  `ROWS` holds many ROWs (and ROWs hold one record).  `ROWS` summarize their numeric
+or symbolic  columns in `NUM`s or `SYM`s (respectively). Summaries are held in `COLS`, divided into  (x,y) sets for
+independent and dependent columns (respectively). Pairs of (x,y) columns are summarized in `BIN`s. Adjacent `BIN`s that have similar y distributions
+are merged. 
 `SOME` is a helper
-class for `NUM`s that retains some sample of all the numerics in that column. 
+for `NUM`s that holds just some sample of the numerics in that column. 
 
 Everything else is just tiny extensions to the above object model. e.g. 
 decision `TREE`s are built by recursively finding the `BIN`s that best distinguish different `ROW`s. 
