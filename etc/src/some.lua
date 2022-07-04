@@ -11,7 +11,7 @@ local SOME = obj("SOME", function(i,max)
   i.kept, i.ok, i.max, i.n = {}, true, max, 0  end)
 
 -- add(i:SOME: x:num) --> 
--- If full then at odds `i.some/i.x`, keep `x`(replacing some older item, at random).
+-- If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random).
 -- Otherwise, just add.
 function SOME.add(i,x)
   if x ~= "?" then 
