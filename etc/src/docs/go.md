@@ -33,7 +33,6 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 ## Test suite
 
 
-<details><summary></summary>
 
 ```lua
 local all = require"all"
@@ -46,49 +45,37 @@ local SOME, SYM, NB  = require"some", require"sym", require"nb"
 local ABCD,TREE      = require"abcd", require"tree"
 ```
 
-</details>
-
 
 To disable a test, rename it from `go` to `no`.
 
 
-<details><summary></summary>
 
 ```lua
 local go,no = {},{}
 ```
 
-</details>
-
 
 Print `the`.
 
 
-<details><summary></summary>
 
 ```lua
 function go.THE() chat(the); return true end
 ```
 
-</details>
-
 
 Sort some numbers.
 
 
-<details><summary></summary>
 
 ```lua
 function go.SORT() chat(sort{10,5,1,15,0}); return true end
 ```
 
-</details>
-
 
 Iterate over 2 lists
 
 
-<details><summary></summary>
 
 ```lua
 function go.MAPS() 
@@ -96,13 +83,10 @@ function go.MAPS()
        function(x,y) return x+y end)); return true end
 ```
 
-</details>
-
 
  Summarize stream of numbers
 
 
-<details><summary></summary>
 
 ```lua
 function go.NUMS() 
@@ -110,13 +94,10 @@ function go.NUMS()
   return true end
 ```
 
-</details>
-
 
 Keep a sample of 32 nums (out of 1000).
 
 
-<details><summary></summary>
 
 ```lua
 function go.SOME() 
@@ -124,13 +105,10 @@ function go.SOME()
   chat(sort(s.kept)); return true end 
 ```
 
-</details>
-
 
  Summarize stream of symbols
 
 
-<details><summary></summary>
 
 ```lua
 function go.SYM() 
@@ -139,37 +117,28 @@ function go.SYM()
   chat(sort(s.kept)); return true end 
 ```
 
-</details>
-
 
 Print CSV file.
 
 
-<details><summary></summary>
 
 ```lua
 function go.CSV() csv(the.file, chat); return true end
 ```
 
-</details>
-
 
 Try initializing some columns from a list of names.
 
 
-<details><summary></summary>
 
 ```lua
 function go.COLS() chat(COLS{"aa","Bb","Cc-"}.x); return true end
 ```
 
-</details>
-
 
 Load data from a csv file to a ROWS object.
 
 
-<details><summary></summary>
 
 ```lua
 function go.ROWS( rs) 
@@ -178,13 +147,10 @@ function go.ROWS( rs)
   chat(rs.cols.y); return true end
 ```
 
-</details>
-
 
 Print klass names
 
 
-<details><summary></summary>
 
 ```lua
 function go.KLASS() 
@@ -195,13 +161,10 @@ function go.KLASS()
   return true end
 ```
 
-</details>
-
 
 Load data from a csv file to a ROWS object.
 
 
-<details><summary></summary>
 
 ```lua
 function go.BETTERS( rs,best,m,rest) 
@@ -230,19 +193,14 @@ function go.CHUNKS()
 -------
 ```
 
-</details>
-
 
 ### Start
 
 
-<details><summary></summary>
 
 ```lua
 the = cli(the)
 on(the, go)
 ```
-
-</details>
 
 

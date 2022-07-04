@@ -36,7 +36,6 @@ And [NUM](num.html) and [SYM](sym.html) that summarize the
 columns of the records.
 
 
-<details><summary></summary>
 
 ```lua
 local all = require"all"
@@ -46,13 +45,10 @@ local obj,rnds,sort    = all.obj, all.rnds, all.sort
 --> ROW(of:ROWS, cells:tab) :ROW -> Place to store one record
 ```
 
-</details>
-
 
 (and stats on how it is used; e.g. `i.evaled=true` if we touch the y values.
 
 
-<details><summary></summary>
 
 ```lua
 local ROW = obj("ROW", function(i,of,cells) 
@@ -69,13 +65,10 @@ function ROW.__sub(i,j)
 --> around(i:ROW, rows:?[ROW]):tab ->  return rows in this table
 ```
 
-</details>
-
 
 sorted by distance to `i`. `rows` defaults to the rows of this ROWS.
 
 
-<details><summary></summary>
 
 ```lua
 function ROW.around(i, rows)
@@ -101,7 +94,5 @@ function ROW.klass(i) return i.cells[i._of.cols.klass.at] end
 
 return ROW
 ```
-
-</details>
 
 

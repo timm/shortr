@@ -109,8 +109,7 @@ function m.chunks(file)
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
     local s= table.concat(t,"\n")             -- build text dump
     print(what==0 and (hints(s).."\n") or (   -- dump comment or code
-          "\n<details><summary></summary>\n\n```lua\n" 
-          ..s.."\n```\n\n</details>\n\n")) 
+          "\n\n```lua\n" ..s.."\n```\n\n")) 
   end --------------------
   m.lines(file, function(s)
     now = b4

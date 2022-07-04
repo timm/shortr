@@ -33,7 +33,6 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 ## Categorical performance stats
 
 
-<details><summary></summary>
 
 ```lua
 local all = require"all"
@@ -98,7 +97,5 @@ function ABCD.add(i,got,want)
 
 return ABCD
 ```
-
-</details>
 
 

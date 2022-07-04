@@ -33,7 +33,6 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 ## store many ROWs
 
 
-<details><summary></summary>
 
 ```lua
 local all = require"all"
@@ -44,13 +43,10 @@ local COLS,ROW          = require"COLS",require"ROW"
 --> ROWS(names:?[str], rows:?[ROW}) :ROWS -> Place to store many ROWS
 ```
 
-</details>
-
 
  and summarize them (in `i.cols`).
 
 
-<details><summary></summary>
 
 ```lua
 local ROWS = obj("ROWS", function(i,names,rows) 
@@ -66,14 +62,11 @@ function ROWS.add(i,t)
 --> ROWS.clone(init:?[ROW]) :ROWS -> Return a ROWS with same structure as `i`. 
 ```
 
-</details>
-
 
 Optionally, `init`ialize it with some rows. Add a pointer back to the 
 original table that spawned `eve`rything else (useful for some distance calcs).
 
 
-<details><summary></summary>
 
 ```lua
 function ROWS.clone(i,init)
@@ -89,14 +82,11 @@ function ROWS.fill(i,src)
 --> like(i:ROWS,row;ROW,nklasses:num,nrows:num):num -> Return 
 ```
 
-</details>
-
 
 P(H)*&prod;<sub>i</sub> (P(E<sub>i</sub>|H)). Do it with logs
 to handle very small numbers.
 
 
-<details><summary></summary>
 
 ```lua
 function ROWS.like(i,row, nklasses, nrows)
@@ -114,13 +104,10 @@ function ROWS.like(i,row, nklasses, nrows)
 --> mids(i:ROW,p:?int=2,cols=?[COL]=i.cols.y):tab -> Return `mid` of columnss
 ```
 
-</details>
-
 
 rounded to `p` places.
 
 
-<details><summary></summary>
 
 ```lua
 function ROWS.mids(i,p,cols) 
@@ -130,7 +117,5 @@ function ROWS.mids(i,p,cols)
 
 return ROWS
 ```
-
-</details>
 
 

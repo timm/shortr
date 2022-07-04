@@ -33,7 +33,6 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 ## Summarize data
 
 
-<details><summary></summary>
 
 ```lua
 local the=require"the"
@@ -96,21 +95,16 @@ function go.ALL()
 (go[arg[2]] or same)()  
 ```
 
-</details>
-
 
 local Rows=obj("Row", function(i,row) i.rows={}; i.cols=nil; i.categories={} end)
 function Rows.add(i,row)
   rs.kepts = rs.cols and maps(r.kepts,row,update) or `i` :categorize(kap(row,init) end)
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 function Rows.categorize(i,cols)
@@ -119,13 +113,10 @@ function Rows.categorize(i,cols)
   return end
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 function make(f,rows) 

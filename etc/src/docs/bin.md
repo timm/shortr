@@ -33,7 +33,6 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
  ##  info on 2 cols
 
 
-<details><summary></summary>
 
 ```lua
 local all=require"all"
@@ -43,26 +42,20 @@ local small,sort = all.small,all.sort
 --> BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN ->
 ```
 
-</details>
-
 
 `ys` stores values seen from `xlo to `xhi`.
 
 
-<details><summary></summary>
 
 ```lua
 local BIN = obj("BIN", function(xlo, xhi, ys)
   i.lo, i.hi, i.ys = xlo, xhi, ys end)
 ```
 
-</details>
-
 
 add(`i` :Bin, `x` :num, `y` :(num|str) -> Ensure `lo`,`hi` covers `x`. Add `y` to `ys`.
 
 
-<details><summary></summary>
 
 ```lua
 function BIN.add(i,x,y)
@@ -90,13 +83,10 @@ function BIN.show(i)
   else                   return fmt("%s <  %s <= %s", lo,x,hi) end end
 ```
 
-</details>
-
 
 ----
 
 
-<details><summary></summary>
 
 ```lua
 function BIN.BINS(rows,col,yKlass,y)
@@ -114,7 +104,5 @@ function BIN.BINS(rows,col,yKlass,y)
   return {bins= list,
           div = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
 ```
-
-</details>
 
 

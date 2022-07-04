@@ -33,7 +33,6 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 ## ROWS to tree
 
 
-<details><summary></summary>
 
 ```lua
 local all = require"all"
@@ -67,7 +66,5 @@ function ROWS.branches(i,lvl)
   for _,kid in pairs(i.kids or {}) do 
     kid:branches(1+lvl) end end
 ```
-
-</details>
 
 

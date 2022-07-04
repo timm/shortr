@@ -33,7 +33,6 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 ##  How to make NUMs or SYMs
 
 
-<details><summary></summary>
 
 ```lua
 local all=require"all"
@@ -43,14 +42,11 @@ local NUM, SYM = require"NUM", require"SYM"
 --> COLS(names:[str]) :COLS -> Factory. Turns a list of names into NUMs or SYMs.
 ```
 
-</details>
-
 
 Goal columns get added to `i.y` and others to `i.x` (unless denoted `ignored`). 
 A klass column goes to `i.klass`.
 
 
-<details><summary></summary>
 
 ```lua
 local COLS = obj("COLS", function(i,names) 
@@ -69,7 +65,5 @@ function COLS.add(i,row)
 
 return COLS
 ```
-
-</details>
 
 

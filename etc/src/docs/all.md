@@ -39,25 +39,19 @@ XAI tools.
 For the "big picture" on XAI, see the Vilone and Logno' 2020 systematic review.
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 For a small set of really useful XAI tactics, see below.
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 ### About XAI
@@ -72,13 +66,10 @@ I've explored, XAI tools can make better conclusions,
 faster, and those conclusions are explicable to people.
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 (Not always of course. If you gave me 10,000 wavelets
@@ -110,13 +101,10 @@ sample and this code exploits them all (random,
 reservoir, extreme).
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 ### References
@@ -133,7 +121,6 @@ reservoir, extreme).
   Psychological Review. 63 (2): 129–138.
 
 
-<details><summary></summary>
 
 ```lua
 local all=require"lib"
@@ -170,8 +157,6 @@ OPTIONS (other):
 return all
 ```
 
-</details>
-
 
 XX
 This code contains 
@@ -185,13 +170,10 @@ internal things, then building "data miners" or "optimizers"
 is a  pretty trivial extension. 
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 ### Apps
@@ -219,13 +201,10 @@ review these [local coding conventions](`https` ://github.com/timm/shortr/blob/m
  the parts used in the assembly.
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 <b>Tony `Hoare` :</b><br>
@@ -234,25 +213,19 @@ review these [local coding conventions](`https` ://github.com/timm/shortr/blob/m
 <b>Dieter `Rams` :</b><br><em>"Less, but better."</em>
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 Now that you've done _it_, did you really understand _it_? Let's check.
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 Can you do _it_ better?
@@ -263,26 +236,20 @@ And can you use those similarities to do more things with  _it_?
 Finally, can you teach _it_ quickly to newcomers?
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 E.g. do I understand a multi-objective semi-supervised explanation algorithms?
 Well, Let's check. 
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 Here's all that, most of which is coded in B(Ai)TTERY
@@ -293,13 +260,10 @@ self-documenting code and support for test-driven development.
 All in around 500 lines of `LUA` : <br>
 
 
-<details><summary></summary>
 
 ```lua
 --
 ```
-
-</details>
 
 
 `awk '!/^(--|[ \t]*$)/{n++}`     
@@ -309,14 +273,11 @@ All in around 500 lines of `LUA` : <br>
 Share and enjoy.
 
 
-<details><summary></summary>
 
 ```lua
 --
 --
 ```
-
-</details>
 
 
 ### Role Models

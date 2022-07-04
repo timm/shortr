@@ -33,13 +33,10 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 ## Library Functions
 
 
-<details><summary></summary>
 
 ```lua
 local m={}
 ```
-
-</details>
 
 
 ### Linting
@@ -47,15 +44,12 @@ local m={}
 > ***rogues()***<br>  Find rogue locals. Run `rogues()` _last_ after everything else.
 
 
-<details><summary></summary>
 
 ```lua
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 function m.rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 ```
-
-</details>
 
 
 ### Meta
@@ -64,26 +58,20 @@ function m.rogues()
 > ***gt(`x` :str):function***<br>  Returns functions that sorts on `x`
 
 
-<details><summary></summary>
 
 ```lua
 function m.lt(x) return function(a,b) return a[x] < b[x] end end
 function m.gt(x) return function(a,b) return a[x] > b[x] end end
 ```
 
-</details>
-
 
 > ***same(`x` :any):any***<br>  Return x, unchanged.
 
 
-<details><summary></summary>
 
 ```lua
 m.same=function(x) return x end
 ```
-
-</details>
 
 
 ### Maths
@@ -91,31 +79,24 @@ m.same=function(x) return x end
 > ***`big` :num***<br>  return a big number
 
 
-<details><summary></summary>
 
 ```lua
 m.big = math.huge
 ```
 
-</details>
-
 
 > ***R(`max` :?num=1):num***<br>  return a random number `0..max`.
 
 
-<details><summary></summary>
 
 ```lua
 m.R = math.random
 ```
 
-</details>
-
 
 > ***rnd(`x` :num, `places` :int):num***<br>  return `x` rounded to some number of `places`.
 
 
-<details><summary></summary>
 
 ```lua
 function m.rnd(x, places)
@@ -125,20 +106,15 @@ function m.rnd(x, places)
 function m.small(min,x) return min<1 and n^min or x end
 ```
 
-</details>
-
 
 > ***rnds(`t` :num, `places` :?int=2):t***<br>  return items in `t` rounds to `places`.
 
 
-<details><summary></summary>
 
 ```lua
 function m.rnds(t, places)
   local u={};for k,x in pairs(t) do u[k]=m.rnd(x,places or 2)end;return u end
 ```
-
-</details>
 
 
 ###  Lists
@@ -147,7 +123,6 @@ function m.rnds(t, places)
 `start` to `stop`, stepping by `step`. 
 
 
-<details><summary></summary>
 
 ```lua
 function m.splice(t, start, stop, step)
@@ -156,43 +131,32 @@ function m.splice(t, start, stop, step)
   return u end
 ```
 
-</details>
-
 
 > ***sort(`t` :tab, `f` :fun) :tab***<br>  Return `t`, sorted of function `f` (default "<").
 
 
-<details><summary></summary>
 
 ```lua
 function m.sort(t,f) table.sort(t,f); return t end
 ```
 
-</details>
-
 
 > ***push(`t` :tab, `x` :any) :x***<br>  Add `x` to end of `t`; return `t`.
 
 
-<details><summary></summary>
 
 ```lua
 function m.push(t,x) t[1+#t] = x; return x end
 ```
 
-</details>
-
 
 > ***per(`t` :tab, `p` :?float=.5) :x***<br>  Return `p`-th ranked item from `t`.
 
 
-<details><summary></summary>
 
 ```lua
 function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
-
-</details>
 
 
 > ***map(`t` :tab, `f` :fun): tab***<br>  
@@ -203,7 +167,6 @@ If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
 key and value to `f`. `maps` and `kaps` pass items from two lists.
 
 
-<details><summary></summary>
 
 ```lua
 function m.map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x) end;return u end
@@ -212,8 +175,6 @@ function m.maps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(x,u[k]) end;ret
 function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;return v end
 ```
 
-</details>
-
 
 ### String to thing
 
@@ -221,7 +182,6 @@ function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;r
 is simplest (boolean or integer or float or, if all else fails, a string).
 
 
-<details><summary></summary>
 
 ```lua
 function m.thing(x)
@@ -230,13 +190,10 @@ function m.thing(x)
     return math.tointeger(x) or tonumber(x) or x end  end
 ```
 
-</details>
-
 
 > ***words(`s` :str, `sep` :str, `fun` :fun):tab***<br>  Return `t` filled with `s`, split  on `sep`.
 
 
-<details><summary></summary>
 
 ```lua
 function m.words(s,sep,fun,      t)
@@ -244,13 +201,10 @@ function m.words(s,sep,fun,      t)
    t={};for x in s:gmatch(m.fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
 ```
 
-</details>
-
 
 > ***lines(`file` :str,  `fun` :fun):tab***<br>  Call `fun` with lines
 
 
-<details><summary></summary>
 
 ```lua
 function m.lines(file, fun)
@@ -260,21 +214,16 @@ function m.lines(file, fun)
     if not line then return io.close(file) else fun(line) end end end
 ```
 
-</details>
-
 
 > ***csv(`file` :str,  `fun` :fun):tab***<br>  Call `fun` with lines, split on ",", 
 coercing strings to nums, bools, etc (where appropriate).
 
 
-<details><summary></summary>
 
 ```lua
 function m.csv(file,fun)
   m.lines(file, function(line) fun(m.words(line, ",", m.thing)) end) end 
 ```
-
-</details>
 
 
 ### Thing to string
@@ -282,19 +231,15 @@ function m.csv(file,fun)
 > ***fmt(`s` :str,...) :str***<br>  emulate prinft
 
 
-<details><summary></summary>
 
 ```lua
 m.fmt=string.format
 ```
 
-</details>
-
 
 > ***cat(`t` :tab):str***<br>  Return table as string. For key-indexed lists, show keys (sorted).
 
 
-<details><summary></summary>
 
 ```lua
 function m.cat(t,    key,u)
@@ -303,25 +248,19 @@ function m.cat(t,    key,u)
   return (t._is or "").."{"..table.concat(u," ").."}" end
 ```
 
-</details>
-
 
 > ***chat(`t` :tab):t***<br>  Print table (as string). Return `t`.
 
 
-<details><summary></summary>
 
 ```lua
 function m.chat(t) print(m.cat(t)); return t end
 ```
 
-</details>
-
 
 > ***chunks(`file` :str)***<br>  divide source code into comments and code.
 
 
-<details><summary></summary>
 
 ```lua
 function m.chunks(file)
@@ -334,8 +273,7 @@ function m.chunks(file)
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
     local s= table.concat(t,"\n")             -- build text dump
     print(what==0 and (hints(s).."\n") or (   -- dump comment or code
-          "\n<details><summary></summary>\n\n```lua\n" 
-          ..s.."\n```\n\n</details>\n\n")) 
+          "\n\n```lua\n" ..s.."\n```\n\n")) 
   end --------------------
   m.lines(file, function(s)
     now = b4
@@ -345,15 +283,12 @@ function m.chunks(file)
   dump(now,t) end 
 ```
 
-</details>
-
 
 ### Settings
 
 > ***opts(`x` :str) :tab***<br>  Parse `str` for lines with `--`; then pull keys+defaults. 
 
 
-<details><summary></summary>
 
 ```lua
 function m.opts(x)
@@ -363,8 +298,6 @@ function m.opts(x)
   t._HELP = x
   return t end
 ```
-
-</details>
 
 
 > ***cli(`t` :tab) :tab***<br>  For keys in `t`, look for updates on command-line. 
@@ -376,7 +309,6 @@ that is passed in-- which means that it alters settings for anything pointing
 to `t`.
 
 
-<details><summary></summary>
 
 ```lua
 function m.cli(t)
@@ -391,8 +323,6 @@ function m.cli(t)
   return t end
 ```
 
-</details>
-
 
 ### Tests
 
@@ -401,7 +331,6 @@ If  `opt.go=="all"`, then run all tests, sorted on their name.
 Before each test, reset random seed and the options `opts.
 
 
-<details><summary></summary>
 
 ```lua
 function m.on(opts,tests)
@@ -420,8 +349,6 @@ function m.on(opts,tests)
   os.exit(fails) end -- if fails==0 then our return code to the OS will be zero.
 ```
 
-</details>
-
 
 ### Objects
 
@@ -429,7 +356,6 @@ function m.on(opts,tests)
 Add a unique `id` and a `tosting` method (that uses `cat` (above).
 
 
-<details><summary></summary>
 
 ```lua
 local _id = 0
@@ -439,18 +365,13 @@ function m.obj(name,fun,    t,new,x)
   return setmetatable(t, {__call=new}) end
 ```
 
-</details>
-
 
 Return
 
 
-<details><summary></summary>
 
 ```lua
 return m
 ```
-
-</details>
 
 

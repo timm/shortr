@@ -33,7 +33,6 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 ## Summarize numbers
 
 
-<details><summary></summary>
 
 ```lua
 local all = require"all"
@@ -41,13 +40,10 @@ local big,obj,per,push,the = all.big,all.obj,all.per,all.push,all.the
 local SOME = require"some"
 ```
 
-</details>
-
 
 > ***NUM(`at` :?int, `txt` :?str) :NUM***<br>  Summarize a stream of numbers.
 
 
-<details><summary></summary>
 
 ```lua
 local NUM = obj("NUM", function(i,at,txt) 
@@ -55,13 +51,10 @@ local NUM = obj("NUM", function(i,at,txt)
   i.w = i.txt:find"-$" and -1 or 1 end)
 ```
 
-</details>
-
 
 > ***add(`i` :`NUM` : `x` :num, `n` :?int=1)***<br>  `n` times,update `i`'s SOME object.
 
 
-<details><summary></summary>
 
 ```lua
 function NUM.add(i,x,n)
@@ -69,13 +62,10 @@ function NUM.add(i,x,n)
    for _ = 1,(n or 1) do i.n=i.n+1; i.kept:add(x) end end end
 ```
 
-</details>
-
 
 > ***bin(`i` :`NUM` : `x` :any)***<br>  return `x` mapped to a finite range
 
 
-<details><summary></summary>
 
 ```lua
 function NUM.bin(i,x)
@@ -84,19 +74,14 @@ function NUM.bin(i,x)
   return a[#a]==a[1] and 1 or math.floor(x/b+.5)*b end
 ```
 
-</details>
-
 
 > ***clone(`i` :(SYM|NUM)) :(SYM|NUM)***<br>  Return a class of the same structure.
 
 
-<details><summary></summary>
 
 ```lua
 function NUM.clone(i) return NUM(i.at, i.txt) end
 ```
-
-</details>
 
 
 > ***div(`i` :NUM) :tab***<br>  Return `div`ersity of a column
@@ -105,20 +90,16 @@ recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob. In between,
 at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.
 
 
-<details><summary></summary>
 
 ```lua
 function NUM.div(i) 
   local a=i.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
 ```
 
-</details>
-
 
 > ***like(`i` :NUM, `x` :any)***<br>  Return the likelihood that `x` belongs to `i`.
 
 
-<details><summary></summary>
 
 ```lua
 function NUM.like(i,x,...)
@@ -127,13 +108,10 @@ function NUM.like(i,x,...)
   return math.exp(-.5*((x - mu)/sd)^2) / (sd*((2*math.pi)^0.5)) end  
 ```
 
-</details>
-
 
 > ***merge(`i` :NUM,`j` :NUM) :NUM***<br>  combine two numerics
 
 
-<details><summary></summary>
 
 ```lua
 function NUM.merge(i,j,     k)
@@ -143,15 +121,12 @@ function NUM.merge(i,j,     k)
   return k end
 ```
 
-</details>
-
 
 > ***merge(`i` :NUM,`t` :[BIN]) :[BIN]***<br>  merge a list of bins (for numeric y-values)
 If anything merged, then loop again looking for other merges.
 At the end, expand bins to cover all gaps across the number line.
 
 
-<details><summary></summary>
 
 ```lua
 function NUM.merges(i,b4, min) 
@@ -169,26 +144,20 @@ function NUM.merges(i,b4, min)
   return #now < #b4 and i:merges(now,min) or fillInTheGaps(now) end
 ```
 
-</details>
-
 
 > ***mid(`i` :NUM)) :tab***<br>  Return a columns' `mid`ddle
 
 
-<details><summary></summary>
 
 ```lua
 function NUM.mid(i) 
   local a=i.kept:has(); return per(a,.5) end
 ```
 
-</details>
-
 
 > ***norm(`i` :NUM, `x` :num) :num***<br>  Normalize `x` 0..1 for lo..hi,
 
 
-<details><summary></summary>
 
 ```lua
 function NUM.norm(i,x)
@@ -196,7 +165,5 @@ function NUM.norm(i,x)
 
 return NUM
 ```
-
-</details>
 
 

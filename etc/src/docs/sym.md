@@ -33,7 +33,6 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 ## Summarize symbols
 
 
-<details><summary></summary>
 
 ```lua
 local all = require"all"
@@ -77,13 +76,10 @@ function SYM.mid(i,p)
 --> div(i:SYM):tab -> Return `div`ersity of a column
 ```
 
-</details>
-
 
 (its tendency _not_ to be a its central tendency).
 
 
-<details><summary></summary>
 
 ```lua
 function SYM.div(i,p)
@@ -93,7 +89,5 @@ function SYM.div(i,p)
  
 return SYM
 ```
-
-</details>
 
 

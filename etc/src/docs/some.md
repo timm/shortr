@@ -37,27 +37,21 @@ a very large set of `n` numbers, we should only be keeping `max/n` of those nums
 Requires :
 
 
-<details><summary></summary>
 
 ```lua
 local all=require"all"
 local obj,push,R,sort,the= all.obj, all.push, all.R, all.sort, all.the
 ```
 
-</details>
-
 
 > ***SOME(`max` :?int) :SOME***<br>  collect, at most, `max` numbers.
 
 
-<details><summary></summary>
 
 ```lua
 local SOME = obj("SOME", function(i,max) 
   i.kept, i.ok, i.max, i.n = {}, true, max, 0  end)
 ```
-
-</details>
 
 
 > ***add(`i` :`SOME` : `x` :num)***<br>  `n` times,update `i`.
@@ -65,7 +59,6 @@ Helper function for NUM. If full then at odds `i.some/i.x`, keep `x`
 (replacing some older item, at random).
 
 
-<details><summary></summary>
 
 ```lua
 function SOME.add(i,x)
@@ -75,13 +68,10 @@ function SOME.add(i,x)
     elseif R() < i.max/i.n then i.ok=false; i.kept[R(#i.kept)]=x end end end 
 ```
 
-</details>
-
 
 > ***has(`i` :SOME):tab***<br>  Ensure contents are sorted. Return those contents.
 
 
-<details><summary></summary>
 
 ```lua
 function SOME.has(i)
@@ -89,7 +79,5 @@ function SOME.has(i)
 
 return SOME
 ```
-
-</details>
 
 

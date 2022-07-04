@@ -33,7 +33,6 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 ## Bayes classifier
 
 
-<details><summary></summary>
 
 ```lua
 local all=require"all"
@@ -44,13 +43,10 @@ local ROWS = require"ROWS"
 --> NB(src=(str|tab), report=?function=print) -> classify examples
 ```
 
-</details>
-
 
 (but hold off till we've seen at least `the.wait` examples).
 
 
-<details><summary></summary>
 
 ```lua
 local NB = obj("NB", function (i,src,report)
@@ -84,7 +80,5 @@ function NB.guess(i,row)
 
 return NB
 ```
-
-</details>
 
 

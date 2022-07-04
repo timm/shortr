@@ -33,14 +33,11 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 ## Lua to Narkdiwn
 
 
-<details><summary></summary>
 
 ```lua
 local all=require"all"
 local chunkscat,lines,push = all.cat, all.lines, all.push
 ```
-
-</details>
 
 
 asdas
@@ -50,19 +47,15 @@ adasa s
 asda
 
 
-<details><summary></summary>
 
 ```lua
 local doc={}
 ```
 
-</details>
-
 
 > ***chunks(`x` :int, `y` :[fred]) :int***<br>  asdads
 
 
-<details><summary></summary>
 
 ```lua
 function doc.chunks(file)
@@ -82,19 +75,14 @@ for n,chunk in pairs(doc.chunks("doc.lua")) do print(""); print(n,chunk.what,"[[
 asdas=2
 ```
 
-</details>
-
 
 asdas
 saas
 
 
-<details><summary></summary>
 
 ```lua
 asdas = asda
 ```
-
-</details>
 
 
