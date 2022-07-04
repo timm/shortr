@@ -20,8 +20,12 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 In this code,  **ROW** holds one record while **ROWS** holds lots of **ROWs**. Each **ROWS** summarizes numeric
 or symbolic  columns in **NUM**s or **SYM**s, respectively. These summaries are held in **COLS** which divide the columns into (x,y) sets (for
 independent and dependent columns, respectively). Pairs of (x,y) columns are summarized in **BIN**s (and adjacent **BIN**s that have similar y distributions
-are merged). Decision **TREE**s are built by recursively finding the **BIN**s that best distinguish different **ROW**s. Finally, **SOME** is a helper
-class for **NUM**s that retains some sample of all the numerics in that column.
+are merged). 
+**SOME** is a helper
+class for **NUM**s that retains some sample of all the numerics in that column. i
+
+Everything else are just small extensions to this object model. e.g. 
+Decision **TREE**s are built by recursively finding the **BIN**s that best distinguish different **ROW**s. 
 
 <p align=center>
 <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
