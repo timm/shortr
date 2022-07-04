@@ -5,14 +5,14 @@
 LUA is a "batteries-not-included" language.   But LUA makes it easy to add in the missing bits.
 E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).   
 
-|what          | where |
-|-------------:|:------|
-|**config**    | [all](all.md)   |
-|**build**     | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)  | 
-|**demos**     | [go](go.md)  |
-|**apps**      | [nb](nb.md), [tree](tree.md)  |
-|**functions** | [lib](lib.md) |  
-|**methods**   | [bin](bin.md), [cols](cols.md), [num](num.md), [row](row.md), [rows](rows.md), [some](some.md), [sym](sym.md) |
+|what      | where |
+|---------:|:------|
+|config    | [all](all.md)   |
+|build     | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)  | 
+|demos     | [go](go.md)  |
+|apps      | [nb](nb.md), [tree](tree.md)  |
+|functions | [lib](lib.md) |  
+|methods   | [bin](bin.md), [cols](cols.md), [num](num.md), [row](row.md), [rows](rows.md), [some](some.md), [sym](sym.md) |
 
 <br clear=all>
 <p align=center>
