@@ -49,7 +49,7 @@ local obj,push,R,sort,the= all.obj, all.push, all.R, all.sort, all.the
 ```
 
 
-> ***SOME(`max` :?int) :SOME***<br>  Constructor. Collector for, at most, `max` numbers.
+> ***SOME(`max` :?int) :SOME***<br>  Constructor of a collector for, at most, `max` numbers.
 
 
 
