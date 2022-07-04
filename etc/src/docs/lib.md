@@ -13,7 +13,7 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 |**config**    | [all](all.md)   |
 |**build**     | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)  | 
 |**demos**     | [go](go.md)  |
-|**apps**      | [nb](nb.md)  |
+|**apps**      | [nb](nb.md), [tree](tree.md)  |
 |**functions** | [lib](lib.md) |  
 |**methods**   | [bin](bin.md), [cols](cols.md), [num](num.md), [row](row.md), [rows](rows.md), [some](some.md), [sym](sym.md) |
 
@@ -24,8 +24,8 @@ are merged).
 **SOME** is a helper
 class for **NUM**s that retains some sample of all the numerics in that column. i
 
-Everything else are just small extensions to this object model. e.g. 
-Decision **TREE**s are built by recursively finding the **BIN**s that best distinguish different **ROW**s. 
+Everything else is just tiny extensions to the above object model. e.g. 
+decision **TREE**s are built by recursively finding the **BIN**s that best distinguish different **ROW**s. 
 
 <p align=center>
 <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
