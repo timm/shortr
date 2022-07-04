@@ -30,76 +30,69 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 </p>
 
 
-## hold 1 record
-See also [ROWS](rows.html) that holds multiple records.  
-And [NUM](num.html) and [SYM](sym.html) that summarize the 
-columns of the records.
+## Lua to Narkdiwn
 
 
 <details><summary></summary>
 
 ```lua
-local all = require"all"
-local big,chat,lt,map  = all.big, all.chat, all.lt, all.map
-local obj,rnds,sort    = all.obj, all.rnds, all.sort
-
---> ROW(of:ROWS, cells:tab) :ROW -> Place to store one record
+local all=require"all"
+local chunkscat,lines,push = all.cat, all.lines, all.push
 ```
 
 </details>
 
 
-(and stats on how it is used; e.g. `i.evaled=true` if we touch the y values.
+asdas
+asdasaa  asdas
+adasa s
+
+asda
 
 
 <details><summary></summary>
 
 ```lua
-local ROW = obj("ROW", function(i,eden,cells) 
-  i._eden,i.cells,i.evaled = eden,cells,false end)
-
---> i:ROW - j:ROW -> return distance between `i` and `j`
-function ROW.__sub(i,j) 
-  local d, cols = 0, i._eden.cols.x
-  for _,col in pairs(cols) do
-    local inc = col:dist(i.cells[col.at], j.cells[col.at]) 
-    d         = d + inc^the.p end
-  return (d / #cols) ^ (1/the.p) end
-
---> around(i:ROW, rows:?[ROW]):tab ->  return rows in this table
+local doc={}
 ```
 
 </details>
 
 
-sorted by distance to `i`. `rows` defaults to the rows of this ROWS.
+> ***chunks(`x` :int, `y` :[fred]) :int***<br>  asdads
 
 
 <details><summary></summary>
 
 ```lua
-function ROW.around(i, rows)
-  local function rowGap(j) return {row=j, gap=i - j} end
-  return sort(map(rows or i._eden.rows, rowGap), lt"gap") end
+function doc.chunks(file)
+  local prep=function(t) 
+    if t[#t]:find"^[%s]*$" then t[#t]=nil end; return table.concat(t,"\n") end
+  local b4,now,t,out=0, 0,{},{}
+  lines(file, function(s)
+    now=b4
+    if s:sub(1,3)=="-- " then now=0; s=s:sub(4) elseif s:find"^%S" then now=1 end
+    if now==b4 then push(t,s) else push(out, {what=now, txt=prep(t)}) ; t={s} end
+    b4 = now end)
+  if #t>0 then push(out,{what=now, txt=prep(t)}) end
+  return out end
 
---> better(i:ROW, j:ROW):boolean -> should `i` proceed before `j`?
-function ROW.__lt(i,j)
-  i.evaled, j.evaled = true, true
-  local s1, s2, ys = 0, 0, i._eden.cols.y
-  for _,col in pairs(ys) do
-    local x,y =  i.cells[col.at], j.cells[col.at]
-    x,y = col:norm(x), col:norm(y)
-    s1  = s1 - 2.7183^(col.w * (x-y)/#ys)
-    s2  = s2 - 2.7183^(col.w * (y-x)/#ys) end
-  return s1/#ys < s2/#ys  end
+for n,chunk in pairs(doc.chunks("doc.lua")) do print(""); print(n,chunk.what,"[["..chunk.txt.."]]") end
 
---> far(i:ROW,rows:?[ROW]):ROW -> find something `far` away.
-function ROW.far(i,rows) return per(Row.around(i,rows), the.Far).row end
+asdas=2
+```
 
---> klass(i:ROW):any -> Return the class value of this record.
-function ROW.klass(i) return i.cells[i._eden.cols.klass.at] end
+</details>
 
-return ROW
+
+asdas
+saas
+
+
+<details><summary></summary>
+
+```lua
+asdas = asda
 ```
 
 </details>

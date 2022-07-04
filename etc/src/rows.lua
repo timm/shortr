@@ -8,12 +8,11 @@ local COLS,ROW          = require"COLS",require"ROW"
 --  and summarize them (in `i.cols`).
 local ROWS = obj("ROWS", function(i,names,rows) 
   i.rows, i.cols = {}, (names and COLS(names) or nil)
-  i.eden = i
   for _,row in pairs(rows or {}) do i:add(row) end end)
 
 --> add(i:ROWS: row:ROW) -> add ROW to ROWS, update the summaries in `i.cols`.
 function ROWS.add(i,t) 
-  t = t.cells and t or ROW(i.eden,t)
+  t = t.cells and t or ROW(i,t)
   if i.cols then i.cols:add(push(i.rows, t)) else i.cols=COLS(t.cells) end 
   return t end
 
@@ -22,7 +21,6 @@ function ROWS.add(i,t)
 -- original table that spawned `eve`rything else (useful for some distance calcs).
 function ROWS.clone(i,init)
   local j=ROWS(i.cols.names,init)
-  j.eden = i.eden 
   return j end
 
 --> fill(i:ROWS: src:(str|tab)):ROWS -> copy the data from `src` into `i`.

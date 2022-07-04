@@ -4,9 +4,9 @@ local chat,chunks,cli,csv = all.chat, all.chunks, all.cli, all.csv
 local maps,on = all.maps, all.on
 local settings,sort,splice, the = all.settings, all.sort, all.splice, all.the
 
-local COLS,NUM, ROWS = require"COLS", require"NUM", require"ROWS"
-local SOME, SYM, NB  = require"SOME", require"SYM", require"NB"
-local ABCD           = require"ABCD"
+local COLS,NUM, ROWS = require"cols", require"num", require"rows"
+local SOME, SYM, NB  = require"some", require"sym", require"nb"
+local ABCD,TREE      = require"abcd", require"tree"
 
 -- To disable a test, rename it from `go` to `no`.
 local go,no = {},{}
@@ -72,8 +72,7 @@ function go.BETTERS( rs,best,m,rest)
 function go.DIABETES(f,  a,n) --   i,t,a) 
   a = ABCD()
   n= NB(f or "../../data/diabetes.csv",function(got,want) a:add(got,want) end)
-  for _,row in pairs(n.overall.rows) do print(row._eden._id) end
-  --a:pretty( a:report() )
+  a:pretty( a:report() )
   return true end
 
 function go.SOYBEAN()  
@@ -81,7 +80,7 @@ function go.SOYBEAN()
   return true end
 
 function go.CHUNKS()
-  chunks(the.file); return true end
+  chunks("doc.lua"); return true end
 -------
 -- ### Start
 the = cli(the)

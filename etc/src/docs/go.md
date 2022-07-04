@@ -30,217 +30,69 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 </p>
 
 
-## Test suite
+## Lua to Narkdiwn
 
 
 <details><summary></summary>
 
 ```lua
-local all = require"all"
-local chat,chunks,cli,csv = all.chat, all.chunks, all.cli, all.csv
-local maps,on = all.maps, all.on
-local settings,sort,splice, the = all.settings, all.sort, all.splice, all.the
-
-local COLS,NUM, ROWS = require"COLS", require"NUM", require"ROWS"
-local SOME, SYM, NB  = require"SOME", require"SYM", require"NB"
-local ABCD           = require"ABCD"
+local all=require"all"
+local chunkscat,lines,push = all.cat, all.lines, all.push
 ```
 
 </details>
 
 
-To disable a test, rename it from `go` to `no`.
+asdas
+asdasaa  asdas
+adasa s
+
+asda
 
 
 <details><summary></summary>
 
 ```lua
-local go,no = {},{}
+local doc={}
 ```
 
 </details>
 
 
-Print `the`.
+> ***chunks(`x` :int, `y` :[fred]) :int***<br>  asdads
 
 
 <details><summary></summary>
 
 ```lua
-function go.THE() chat(the); return true end
+function doc.chunks(file)
+  local prep=function(t) 
+    if t[#t]:find"^[%s]*$" then t[#t]=nil end; return table.concat(t,"\n") end
+  local b4,now,t,out=0, 0,{},{}
+  lines(file, function(s)
+    now=b4
+    if s:sub(1,3)=="-- " then now=0; s=s:sub(4) elseif s:find"^%S" then now=1 end
+    if now==b4 then push(t,s) else push(out, {what=now, txt=prep(t)}) ; t={s} end
+    b4 = now end)
+  if #t>0 then push(out,{what=now, txt=prep(t)}) end
+  return out end
+
+for n,chunk in pairs(doc.chunks("doc.lua")) do print(""); print(n,chunk.what,"[["..chunk.txt.."]]") end
+
+asdas=2
 ```
 
 </details>
 
 
-Sort some numbers.
+asdas
+saas
 
 
 <details><summary></summary>
 
 ```lua
-function go.SORT() chat(sort{10,5,1,15,0}); return true end
-```
-
-</details>
-
-
-Iterate over 2 lists
-
-
-<details><summary></summary>
-
-```lua
-function go.MAPS() 
-  chat(maps({1,2,3},{10,20,30}, 
-       function(x,y) return x+y end)); return true end
-```
-
-</details>
-
-
- Summarize stream of numbers
-
-
-<details><summary></summary>
-
-```lua
-function go.NUMS() 
-  local n=NUM(); for i=1,1000 do n:add(i) end; chat(n)
-  return true end
-```
-
-</details>
-
-
-Keep a sample of 32 nums (out of 1000).
-
-
-<details><summary></summary>
-
-```lua
-function go.SOME() 
-  local s=SOME(32); for i=1,1000 do s:add(i) end
-  chat(sort(s.kept)); return true end 
-```
-
-</details>
-
-
- Summarize stream of symbols
-
-
-<details><summary></summary>
-
-```lua
-function go.SYM() 
-  local s=SYM()
-  for i=1,1000 do for _,c in pairs{"a","a","b"} do s:add(c) end end
-  chat(sort(s.kept)); return true end 
-```
-
-</details>
-
-
-Print CSV file.
-
-
-<details><summary></summary>
-
-```lua
-function go.CSV() csv(the.file, chat); return true end
-```
-
-</details>
-
-
-Try initializing some columns from a list of names.
-
-
-<details><summary></summary>
-
-```lua
-function go.COLS() chat(COLS{"aa","Bb","Cc-"}.x); return true end
-```
-
-</details>
-
-
-Load data from a csv file to a ROWS object.
-
-
-<details><summary></summary>
-
-```lua
-function go.ROWS( rs) 
-  rs=ROWS():fill(the.file)
-  chat(rs.cols.x[1])
-  chat(rs.cols.y); return true end
-```
-
-</details>
-
-
-Print klass names
-
-
-<details><summary></summary>
-
-```lua
-function go.KLASS() 
-  local file = "../../data/diabetes.csv"
-  local s=SYM()
-  for _,row in pairs(ROWS():fill(file).rows) do s:add(row:klass()) end
-  chat(s.kept)
-  return true end
-```
-
-</details>
-
-
-Load data from a csv file to a ROWS object.
-
-
-<details><summary></summary>
-
-```lua
-function go.BETTERS( rs,best,m,rest) 
-  rs=ROWS():fill(the.file)
-  sort(rs.rows) 
-  m    = (#rs.rows)^.5
-  best = splice(rs.rows,1,m)  --(m^.5)) 
-  rest = splice(rs.rows,1,#rs.rows - m) --#rs.rows - 30) --(m^.5)) 
-  chat(rs:clone(best):mids())
-  chat(rs:clone(rest):mids())
-  return true end
-
-function go.DIABETES(f,  a,n) --   i,t,a) 
-  a = ABCD()
-  n= NB(f or "../../data/diabetes.csv",function(got,want) a:add(got,want) end)
-  for _,row in pairs(n.overall.rows) do print(row._eden._id) end
-  --a:pretty( a:report() )
-  return true end
-
-function go.SOYBEAN()  
-  go.DIABETES("../../data/soybean.csv") 
-  return true end
-
-function go.CHUNKS()
-  chunks(the.file); return true end
--------
-```
-
-</details>
-
-
-### Start
-
-
-<details><summary></summary>
-
-```lua
-the = cli(the)
-on(the, go)
+asdas = asda
 ```
 
 </details>

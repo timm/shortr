@@ -30,43 +30,69 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 </p>
 
 
-## Keep some nums
+## Lua to Narkdiwn
 
 
 <details><summary></summary>
 
 ```lua
 local all=require"all"
-local obj,push,R,sort,the= all.obj, all.push, all.R, all.sort, all.the
-
---> SOME(max:?int) :SOME -> collect, at most, `max` numbers.
-local SOME = obj("SOME", function(i,max) 
-  i.kept, i.ok, i.max, i.n = {}, true, max, 0  end)
-
---> add(i:SOME: x:num)-> `n` times,update `i`.
+local chunkscat,lines,push = all.cat, all.lines, all.push
 ```
 
 </details>
 
 
-Helper function for NUM. If full then at odds `i.some/i.x`, keep `x`
-(replacing some older item, at random).
+asdas
+asdasaa  asdas
+adasa s
+
+asda
 
 
 <details><summary></summary>
 
 ```lua
-function SOME.add(i,x)
-  if x ~= "?" then 
-    i.n = i.n + 1
-    if #i.kept < i.max     then i.ok=false; push(i.kept,x) 
-    elseif R() < i.max/i.n then i.ok=false; i.kept[R(#i.kept)]=x end end end 
+local doc={}
+```
 
---> has(i:SOME):tab -> Ensure contents are sorted. Return those contents.
-function SOME.has(i)
-  i.kept = i.ok and i.kept or sort(i.kept); i.ok=true; return i.kept ; end
+</details>
 
-return SOME
+
+> ***chunks(`x` :int, `y` :[fred]) :int***<br>  asdads
+
+
+<details><summary></summary>
+
+```lua
+function doc.chunks(file)
+  local prep=function(t) 
+    if t[#t]:find"^[%s]*$" then t[#t]=nil end; return table.concat(t,"\n") end
+  local b4,now,t,out=0, 0,{},{}
+  lines(file, function(s)
+    now=b4
+    if s:sub(1,3)=="-- " then now=0; s=s:sub(4) elseif s:find"^%S" then now=1 end
+    if now==b4 then push(t,s) else push(out, {what=now, txt=prep(t)}) ; t={s} end
+    b4 = now end)
+  if #t>0 then push(out,{what=now, txt=prep(t)}) end
+  return out end
+
+for n,chunk in pairs(doc.chunks("doc.lua")) do print(""); print(n,chunk.what,"[["..chunk.txt.."]]") end
+
+asdas=2
+```
+
+</details>
+
+
+asdas
+saas
+
+
+<details><summary></summary>
+
+```lua
+asdas = asda
 ```
 
 </details>
