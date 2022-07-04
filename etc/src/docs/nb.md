@@ -1,10 +1,10 @@
 # B(Ai)ttery
 
-<img align=left width=400   src="bat2.png">
+<img align=left width=400 src="bat2.png">
 
 LUA is a "batteries-not-included" language.   
 But LUA makes it easy to add in the  missing bits.   
-E.g. here are some "b(Ai)tteries" for XAI.
+E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence)
 
 (c) 2022, Tim Menzies <timm@ieee.org>
 
