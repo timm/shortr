@@ -1,6 +1,4 @@
-<a name=top></a>
-
-# :high_brightness: B(Ai)ttery
+# :high_brightness: [B(Ai)ttery](top)
 
 <img align=left width=400 src="bat2.png">
 
