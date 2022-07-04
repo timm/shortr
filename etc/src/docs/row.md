@@ -19,7 +19,7 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 |**functions** | [lib](lib.md) |  
 |**methods**   | [bin](bin.md), [cols](cols.md), [num](num.md), [row](row.md), [rows](rows.md), [some](some.md), [sym](sym.md) |
 
-In this code,  `ROWS` holds many ROWs (and ROWs hold one record).  `ROWS` summarize their numeric
+In this code,  `ROWS` holds many `ROW`s (and `ROW`s hold one record).  `ROWS` summarize their numeric
 or symbolic  columns in `NUM`s or `SYM`s (respectively). Summaries are held in `COLS`, divided into  (x,y) sets for
 independent and dependent columns (respectively). Pairs of (x,y) columns are summarized in `BIN`s. Adjacent `BIN`s that have similar y distributions
 are merged. 
