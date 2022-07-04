@@ -10,8 +10,7 @@ E.g. here are some "b(Ai)tteries" for XAI.
 
 |config | build | demos | apps | functions | classes |
 |-------|-------|-------|------|-----------|---------|
-|[all](all.html)|[Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)<br>(just for doco)|\
-[go](go.html)|[nb](nb.html)|[lib](lib.html)|[bin](bin.html) :: [cols](cols.html) :: [num](num.html) :: [row](row.html) :: [rows](rows.html) :: [some](some.html) :: [sym](sym.html)|
+|[all](all.html)|[Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)<br>(just for doco)|[go](go.html)|[nb](nb.html)|[lib](lib.html)|[bin](bin.html) :: [cols](cols.html) :: [num](num.html) :: [row](row.html) :: [rows](rows.html) :: [some](some.html) :: [sym](sym.html)|
 
 <a href=".."><img src="https://img.shields.io/badge/Language--lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
 <a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow"></a>
