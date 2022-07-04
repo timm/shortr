@@ -1,6 +1,4 @@
-<a name=top>&nbsp;</a>
-
-# :high_brightness: B(Ai)ttery
+# <a name=top></a> :high_brightness: B(Ai)ttery
 
 <img align=left width=400 src="bat2.png">
 
@@ -24,7 +22,7 @@ or symbolic  columns in `NUM`s or `SYM`s, respectively. These summaries are held
 independent and dependent columns, respectively). Pairs of (x,y) columns are summarized in `BIN`s (and adjacent `BIN`s that have similar y distributions
 are merged). 
 `SOME` is a helper
-class for `NUM`s that retains some sample of all the numerics in that column. i
+class for `NUM`s that retains some sample of all the numerics in that column. 
 
 Everything else is just tiny extensions to the above object model. e.g. 
 decision `TREE`s are built by recursively finding the `BIN`s that best distinguish different `ROW`s. 
