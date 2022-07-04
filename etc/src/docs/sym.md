@@ -53,7 +53,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 ```
 
 
-> ***SYM(`at` :?int, `txt` :?str) :SYM***. &nbsp;  &nbsp;  &nbsp;   Summarize a stream of non-numerics.
+> ***SYM(`at` :?int, `txt` :?str) :SYM***. &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;   Summarize a stream of non-numerics.
 
 
 
@@ -63,7 +63,7 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 
-> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***. &nbsp;  &nbsp;  &nbsp;   Add `n` count to `i.kept[n]` .
+> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***. &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;   Add `n` count to `i.kept[n]` .
 
 
 
@@ -75,7 +75,7 @@ function SYM.add(i,x,n)
 ```
 
 
-> ***bin(`i` :`SYM` : `x` :any)***. &nbsp;  &nbsp;  &nbsp;   return `x` mapped to a finite range (just return x)
+> ***bin(`i` :`SYM` : `x` :any)***. &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;   return `x` mapped to a finite range (just return x)
 
 
 
@@ -84,7 +84,7 @@ function SYM.bin(x) return x end
 ```
 
 
-> ***clone(`i` :SYM) :SYM***. &nbsp;  &nbsp;  &nbsp;   Return a class of the same structure.
+> ***clone(`i` :SYM) :SYM***. &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;   Return a class of the same structure.
 
 
 
@@ -93,7 +93,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 ```
 
 
-> ***like(`i` :SYN,`x` :any,`prior` :num):num***. &nbsp;  &nbsp;  &nbsp;   return how much `x` might belong to `i`.
+> ***like(`i` :SYN,`x` :any,`prior` :num):num***. &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;   return how much `x` might belong to `i`.
 
 
 
@@ -103,7 +103,7 @@ function SYM.like(i,x,prior)
 ```
 
 
-> ***merge(`i` :SYM,`j` :SYM):SYM***. &nbsp;  &nbsp;  &nbsp;   combine two symbols
+> ***merge(`i` :SYM,`j` :SYM):SYM***. &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;   combine two symbols
 
 
 
@@ -116,7 +116,7 @@ function SYM.merge(i,j,     k)
 ```
 
 
-> ***merge(`i` :SYM,`t` :tab):tab***. &nbsp;  &nbsp;  &nbsp;   merge a list of bins (for symbolic y-values)
+> ***merge(`i` :SYM,`t` :tab):tab***. &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;   merge a list of bins (for symbolic y-values)
 
 
 
@@ -125,7 +125,7 @@ function SYM.merges(i,t,...) return t end
 ```
 
 
-> ***mid(`i` :SYM):tab***. &nbsp;  &nbsp;  &nbsp;   Return a columns' `mid`ddle (central tendency).
+> ***mid(`i` :SYM):tab***. &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;   Return a columns' `mid`ddle (central tendency).
 
 
 
@@ -137,7 +137,7 @@ function SYM.mid(i,p)
 ```
 
 
-> ***div(`i` :SYM):tab***. &nbsp;  &nbsp;  &nbsp;   Return `div`ersity of a column
+> ***div(`i` :SYM):tab***. &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;   Return `div`ersity of a column
 (its tendency _not_ to be a its central tendency).
 
 
