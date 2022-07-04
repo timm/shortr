@@ -17,20 +17,6 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 |**functions** | [lib](lib.md) |  
 |**methods**   | [bin](bin.md), [cols](cols.md), [num](num.md), [row](row.md), [rows](rows.md), [some](some.md), [sym](sym.md) |
 
-In this code :
--   `ROWS` holds many `ROW`s (and each `ROW` holds one record).  `ROWS` summarize their numeric
-or symbolic  columns in `NUM`s or `SYM`s (respectively). Summaries are held in `COLS`, divided into  (x,y) sets for
-independent and dependent columns (respectively). 
-- `BIN`s and `SOME` are helper classes. Pairs of (x,y) columns are summarized in `BIN`s. Adjacent `BIN`s with  similar y distributions
-are merged. 
-`SOME` is a helper
-for `NUM`s that holds just some sample of the numerics in that column. 
-- Everything else is just tiny extensions to the above object model. e.g. 
-  - When clustering, each cluster is its own `ROWS`.
-  - `NB` classifiers create one `ROWS` per class in the training data.
-  - Decision `TREE`s are built by recursively finding the `BIN`s that best distinguish different `ROW`s. 
-  - etc.
-
 <p align=center>
 <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
 <a href=".."><img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black"></a>
@@ -168,6 +154,27 @@ OPTIONS (other):
   -h  --help   show help      =  false ]])
 
 return all
+```
+
+
+In this code :
+-   `ROWS` holds many `ROW`s (and each `ROW` holds one record).  `ROWS` summarize their numeric
+or symbolic  columns in `NUM`s or `SYM`s (respectively). Summaries are held in `COLS`, divided into  (x,y) sets for
+independent and dependent columns (respectively). 
+- `BIN`s and `SOME` are helper classes. Pairs of (x,y) columns are summarized in `BIN`s. Adjacent `BIN`s with  similar y distributions
+are merged. 
+`SOME` is a helper
+for `NUM`s that holds just some sample of the numerics in that column. 
+- Everything else is just tiny extensions to the above object model. e.g. 
+  - When clustering, each cluster is its own `ROWS`.
+  - `NB` classifiers create one `ROWS` per class in the training data.
+  - Decision `TREE`s are built by recursively finding the `BIN`s that best distinguish different `ROW`s. 
+  - etc.
+
+
+
+```lua
+--
 ```
 
 
