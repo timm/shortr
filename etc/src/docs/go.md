@@ -17,6 +17,12 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 |**functions** | [lib](lib.md) |  
 |**methods**   | [bin](bin.md), [cols](cols.md), [num](num.md), [row](row.md), [rows](rows.md), [some](some.md), [sym](sym.md) |
 
+In this code,  **ROW** holds one record while **ROWS** holds lots of **ROWs**. Each **ROWS** summarizes numeric
+or symbolic  columns in **NUM**s or **SYM**s, respectively. These summaries are held in **COLS** which divide the columns into (x,y) sets (for
+independent and dependent columns, respectively). Pairs of (x,y) columns are summarized in **BIN**s (and adjacent **BIN**s that have similar y distributions
+are merged). Decision **TREE**s are built by recursively finding the **BIN**s that best distinguish different **ROW**s. Finally, **SOME** is a helper
+class for **NUM**s that retains some sample of all the numerics in that column.
+
 <br clear=all>
 <p align=center>
 <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
@@ -40,9 +46,9 @@ local chat,chunks,cli,csv = all.chat, all.chunks, all.cli, all.csv
 local maps,on = all.maps, all.on
 local settings,sort,splice, the = all.settings, all.sort, all.splice, all.the
 
-local COLS,NUM, ROWS = require"cols", require"num", require"rows"
+local COLS,NUM = require"cols", require"num"
 local SOME, SYM, NB  = require"some", require"sym", require"nb"
-local ABCD,TREE      = require"abcd", require"tree"
+local ABCD,ROWS      = require"abcd", require"tree"
 ```
 
 
@@ -189,7 +195,19 @@ function go.SOYBEAN()
 
 function go.CHUNKS()
   if the.file:find".lua$" then
-    chunks(the.file); return true end end
+    chunks(the.file); return true end
+  return true end
+
+function go.BINS( rs, m,best,rest)
+  rs=ROWS():fill(the.file)
+  sort(rs.rows) 
+  m    = (#rs.rows)^.5
+  best = splice(rs.rows,1,m)  --(m^.5)) 
+  rest = splice(rs.rows,1,#rs.rows - m) --#rs.rows - 30) --(m^.5)) 
+  rs:tree{best,rest}
+  return true
+end
+
 -------
 ```
 

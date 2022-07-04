@@ -17,6 +17,12 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 |**functions** | [lib](lib.md) |  
 |**methods**   | [bin](bin.md), [cols](cols.md), [num](num.md), [row](row.md), [rows](rows.md), [some](some.md), [sym](sym.md) |
 
+In this code,  **ROW** holds one record while **ROWS** holds lots of **ROWs**. Each **ROWS** summarizes numeric
+or symbolic  columns in **NUM**s or **SYM**s, respectively. These summaries are held in **COLS** which divide the columns into (x,y) sets (for
+independent and dependent columns, respectively). Pairs of (x,y) columns are summarized in **BIN**s (and adjacent **BIN**s that have similar y distributions
+are merged). Decision **TREE**s are built by recursively finding the **BIN**s that best distinguish different **ROW**s. Finally, **SOME** is a helper
+class for **NUM**s that retains some sample of all the numerics in that column.
+
 <br clear=all>
 <p align=center>
 <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
@@ -36,11 +42,12 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 
 ```lua
 local all = require"all"
+local small,the = all.small, all.the
 local ROWS = require"ROWS"
 
 function ROWS.tree(i, listOfRows)
   local labels, root = {}, i:clone()
-  for label,rows1 in pairs(listOfRows) do
+  for label,rows1 in ipairs(listOfRows) do
     for _,row in pairs(rows1) do
       root:add(row)
       labels[row._id]=label end end                 -- set label
@@ -48,7 +55,7 @@ function ROWS.tree(i, listOfRows)
   return root:kids(2 * small(the.Min, #root.rows), y) end
 
 function ROWS.kids(i, stop, y)
-  if #j.rows >=stop then
+  if #j.rows >= stop then
     local all  = map(i.cols.x, function(xcol) 
                                  return BIN.BINS(j.rows,xcol,SYM,y) end) 
     local best = sort(all, lt"div")[1]
@@ -59,12 +66,16 @@ function ROWS.kids(i, stop, y)
                                     return new:kids(stop, y) end end) end
   return i end
 
+
 function ROWS.branches(i,lvl)
   lvl = lvl or 0
   local gaurd = i.gaurd and i.gaurd:show()
   print(fmt("%-40s", cat(i:mids(i))), ("| "):rep(lvl) .. (gaurd or ""))
   for _,kid in pairs(i.kids or {}) do 
     kid:branches(1+lvl) end end
+  
+
+return ROWS
 ```
 
 

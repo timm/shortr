@@ -38,7 +38,7 @@ docs/%.html: %.lua  README.md ## make html
 	rm tmp.lua 
 	cp $R/etc/docco.css docs/docco.css
 
-mds:   $(subst .lua,.md,docs/$(subst lua ,md docs/,$(LUAS))) ## make all htmls
+mds:   $(subst .lua,.md,docs/$(subst lua ,md docs/,$(LUAS))) ready ## make all htmls
 
 docs/%.md: %.lua  README.md ## make mds
 	echo $< 2>&1
