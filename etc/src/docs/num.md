@@ -9,7 +9,7 @@ E.g. here are some "b(Ai)tteries" for XAI.
 <br clear=all>
 
 **config:** [all](all.html);
-**build:** [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)  
+**build:** [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)
 (just for doco);
 **demos:** [go](go.html);
 **apps:** [nb](nb.html);
