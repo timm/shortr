@@ -319,23 +319,23 @@ function m.chat(t) print(m.cat(t)); return t end
 ```lua
 function m.chunks(file)
   local b4,now,t = 0,0,{}
-  local hints=function(s) 
+  local hints=function(s)  -- emphasis type hints comments (those with "-->")
      return s:gsub("([%w]+):","`%1` :") 
              :gsub("([^\n]+) [-][-]>([^\n]+)","> ***%1***<br> %2") 
   end ------------------------
-  local show = function(what,t) 
-    if t[#t]:find"^[%s]*$" then t[#t]=nil end
-    local s= table.concat(t,"\n") 
-    print(what==0 and (hints(s).."\n") or (
+  local dump = function(what,t) 
+    if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
+    local s= table.concat(t,"\n")             -- build text dump
+    print(what==0 and (hints(s).."\n") or (   -- dump comment or code
           "\n<details><summary></summary>\n\n```lua\n" 
           ..s.."\n```\n\n</details>\n\n")) 
   end --------------------
   m.lines(file, function(s)
     now = b4
     if s:sub(1,3)=="-- " then now=0; s=s:sub(4) elseif s:find"^%S" then now=1 end
-    if now==b4 then t[1+#t]=s else show(b4,t); t={s} end
+    if now==b4 then t[1+#t]=s else dump(b4,t); t={s} end
     b4 = now end)
-  show(now,t) end 
+  dump(now,t) end 
 ```
 
 </details>
