@@ -59,9 +59,9 @@ local SOME = obj("SOME", function(i,max)
 ```
 
 
-> ***add(`i` :`SOME` : `x` :num)***<br>  `n` times,update `i`.
-Helper function for NUM. If full then at odds `i.some/i.x`, keep `x`
-(replacing some older item, at random).
+> ***add(`i` :`SOME` : `x` :num)***<br>  
+If full then at odds `i.some/i.x`, keep `x`(replacing some older item, at random).
+Otherwise, just add.
 
 
 

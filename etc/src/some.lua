@@ -10,9 +10,9 @@ local obj,push,R,sort,the= all.obj, all.push, all.R, all.sort, all.the
 local SOME = obj("SOME", function(i,max) 
   i.kept, i.ok, i.max, i.n = {}, true, max, 0  end)
 
--- add(i:SOME: x:num) --> `n` times,update `i`.
--- Helper function for NUM. If full then at odds `i.some/i.x`, keep `x`
--- (replacing some older item, at random).
+-- add(i:SOME: x:num) --> 
+-- If full then at odds `i.some/i.x`, keep `x`(replacing some older item, at random).
+-- Otherwise, just add.
 function SOME.add(i,x)
   if x ~= "?" then 
     i.n = i.n + 1
