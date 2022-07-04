@@ -1,6 +1,7 @@
 -- ## Test suite
 local all = require"all"
-local chat,cli,csv,maps,on = all.chat, all.cli, all.csv, all.maps, all.on
+local chat,chunks,cli,csv = all.chat, all.chunks, all.cli, all.csv
+local maps,on = all.maps, all.on
 local settings,sort,splice, the = all.settings, all.sort, all.splice, all.the
 
 local COLS,NUM, ROWS = require"COLS", require"NUM", require"ROWS"
@@ -78,6 +79,10 @@ function go.DIABETES(f,  a,n) --   i,t,a)
 function go.SOYBEAN()  
   go.DIABETES("../../data/soybean.csv") 
   return true end
+
+function go.CHUNKS()
+  print(the.file)
+  chunks(the.file); return true end
 -------
 -- ### Start
 the = cli(the)

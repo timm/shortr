@@ -1,14 +1,31 @@
 -- ## Lua to Narkdiwn
 local all=require"all"
-local big,cat,chat,csv,gt = all.big,all.cat,all.chat,all.csv,all.gt
-local map,obj,push,sort,the = all.map, all.obj, all.push, all.sort, all.the
-local ROWS = require"ROWS"
+local chunkscat,lines,push = all.cat, all.lines, all.push
+
+-- asdas
+-- asdasaa  asdas
+-- adasa s
+
+-- asda
 
 local doc={}
 function doc.chunks(file)
-  lines(file, function(kibe(local file = io.input(file)
-  while true do
-    local line = io.read()
-    if not line then return io.close(file) else fun(line) end end end  
+  local prep=function(t) 
+    if t[#t]:find"^[%s]*$" then t[#t]=nil end; return table.concat(t,"\n") end
+  local b4,now,t,out=0, 0,{},{}
+  lines(file, function(s)
+    now=b4
+    if s:sub(1,3)=="-- " then now=0; s=s:sub(4) elseif s:find"^%S" then now=1 end
+    if now==b4 then push(t,s) else push(out, {what=now, txt=prep(t)}) ; t={s} end
+    b4 = now end)
+  if #t>0 then push(out,{what=now, txt=prep(t)}) end
+  return out end
 
-  return lines(file, function(kibe(doc.doc
+for n,chunk in pairs(doc.chunks("doc.lua")) do print(""); print(n,chunk.what,"[["..chunk.txt.."]]") end
+
+asdas=2
+
+-- asdas
+-- saas
+asdas = asda
+

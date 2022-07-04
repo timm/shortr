@@ -27,32 +27,38 @@
               <div class="sswrap ">
                 <a class="ss" href="#section-1">&#x00a7;</a>
               </div>
-              <p><span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
- <img align=left width=250   src="bat2.png">
-LUA is a “batteries-not-included” language.
-But LUA makes it easy to add in the  missing bits.
-E.g. here are some “b(Ai)tteries” for XAI.</p>
-<p>(c) 2022, Tim Menzies<br><a href="mailto:&#x74;&#105;&#109;&#109;&#64;&#105;&#x65;&#x65;&#x65;&#x2e;&#x6f;&#114;&#103;">&#x74;&#105;&#109;&#109;&#64;&#105;&#x65;&#x65;&#x65;&#x2e;&#x6f;&#114;&#103;</a></p>
-<p><strong>config:</strong> <a href="all.html">all</a></p>
-<p><strong>build:</strong> <a href="https://github.com/timm/shortr/blob/master/etc/src/Makefile">Makefile</a><br>(just used for the doco)</p>
-<p><strong>demos:</strong> <a href="go.html">go</a></p>
-<p><strong>apps:</strong> <a href="nb.html">nb</a></p>
-<p><strong>functions:</strong> <a href="lib.html">lib</a></p>
-<p><strong>klasses:</strong> <a href="bin.html">bin</a>
-:: <a href="cols.html">cols</a>
-:: <a href="num.html">num</a>
-:: <a href="row.html">row</a>
-:: <a href="rows.html">rows</a>
-:: <a href="some.html">some</a>
-:: <a href="sym.html">sym</a></p>
-<p><a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
-<a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg"></a></p>
-<h2 id="info-on-2-cols">info on 2 cols</h2>
-
+              
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> all=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;all&quot;</span>
-<span class="hljs-keyword">local</span> big,fmt,lt,obj,<span class="hljs-built_in">sort</span> = all.big,all.fmt,all.lt,all.obj,all.<span class="hljs-built_in">sort</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>&lt;span id=<span class="hljs-string">&quot;forkongithub&quot;</span>&gt;&lt;a href=<span class="hljs-string">&quot;https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes&quot;</span>&gt;Fork me on GitHub&lt;/a&gt;&lt;/span&gt;
+&lt;img align=left width=<span class="hljs-number">250</span>   src=<span class="hljs-string">&quot;bat2.png&quot;</span>&gt;
+LUA is a <span class="hljs-string">&quot;batteries-not-included&quot;</span> language.
+But LUA makes it easy to add <span class="hljs-keyword">in</span> the  missing bits.
+E.g. here are some <span class="hljs-string">&quot;b(Ai)tteries&quot;</span> <span class="hljs-keyword">for</span> XAI.
+
+(c) <span class="hljs-number">2022</span>, Tim Menzies&lt;br&gt;&lt;timm@ieee.org&gt;
+
+**<span class="hljs-built_in">config</span>:** [all](all.html)
+
+**build:** [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)  
+(just used <span class="hljs-keyword">for</span> the doco)
+
+**demos:** [go](go.html)
+
+**apps:** [nb](nb.html)
+
+**functions:** [lib](lib.html)
+
+**klasses:** [bin](bin.html)
+:: [cols](cols.html)
+:: [num](num.html)
+:: [row](row.html)
+:: [rows](rows.html)
+:: [some](some.html)
+:: [sym](sym.html)
+
+&lt;a href=<span class="hljs-string">&quot;https://zenodo.org/badge/latestdoi/206205826&quot;</span>&gt; &lt;img  src=<span class="hljs-string">&quot;https://zenodo.org/badge/206205826.svg&quot;</span> alt=<span class="hljs-string">&quot;DOI&quot;</span>&gt;&lt;/a&gt; 
+&lt;a href=<span class="hljs-string">&quot;https://opensource.org/licenses/BSD-2-Clause&quot;</span>&gt;&lt;img  src=<span class="hljs-string">&quot;https://img.shields.io/badge/License-BSD%202--Clause-orange.svg&quot;</span>&gt;&lt;/a&gt;</pre></div></div>
             
         </li>
         
@@ -62,6 +68,23 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
               
               <div class="sswrap ">
                 <a class="ss" href="#section-2">&#x00a7;</a>
+              </div>
+              <h2 id="info-on-2-cols">info on 2 cols</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> all=<span class="hljs-built_in">require</span><span class="hljs-string">&quot;all&quot;</span>
+<span class="hljs-keyword">local</span> big,fmt,lt,obj = all.big,all.fmt,all.lt,all.obj,all
+<span class="hljs-keyword">local</span> small,<span class="hljs-built_in">sort</span> = all.small,all.<span class="hljs-built_in">sort</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-3">&#x00a7;</a>
               </div>
               <p><strong>BIN( <code>xlo</code>:  num, <code>xhi</code>:  num, <code>ys</code>:  (NUM|SYM)):BIN</strong> <br> 
 <code>ys</code> stores values seen from <code>xlo to </code>xhi`.</p>
@@ -74,11 +97,11 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
         </li>
         
         
-        <li id="section-3">
+        <li id="section-4">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-3">&#x00a7;</a>
+                <a class="ss" href="#section-4">&#x00a7;</a>
               </div>
               <p>add(i:Bin, x:num, y:(num|str) -&gt; Ensure <code>lo</code>,<code>hi</code> covers <code>x</code>. Add <code>y</code> to <code>ys</code>.</p>
 
@@ -97,9 +120,9 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
   <span class="hljs-keyword">return</span> map(rows, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">return</span> i:hold(row) <span class="hljs-keyword">end</span>) <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN.merged</span><span class="hljs-params">(i,j, min)</span></span>
-  <span class="hljs-keyword">local</span> iy, jy, ky = i.ys, j.ys, i.ys:merge(j.ys)
-  <span class="hljs-keyword">if</span> iy.n &lt; <span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> jy.n &lt; <span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> ab:div(i) &lt;= (a.n*a:div() + b.n*b:div())/ab.n <span class="hljs-keyword">then</span>
-    <span class="hljs-keyword">return</span> BIN(i.lo, j.hi, ky) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">local</span> a, b, c = i.ys, j.ys, i.ys:merge(j.ys)
+  <span class="hljs-keyword">if</span> a.n &lt; <span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> b.n &lt; <span class="hljs-built_in">min</span> <span class="hljs-keyword">or</span> c:div() &lt;= (a.n*a:div() + b.n*b:div())/c.n <span class="hljs-keyword">then</span>
+    <span class="hljs-keyword">return</span> BIN(i.lo, j.hi, c) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN.show</span><span class="hljs-params">(i)</span></span>
   <span class="hljs-keyword">local</span> x,lo,hi = i.ys.txt, i.lo, i.hi
@@ -111,11 +134,11 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
         </li>
         
         
-        <li id="section-4">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-4">&#x00a7;</a>
+                <a class="ss" href="#section-5">&#x00a7;</a>
               </div>
               <hr>
 
@@ -124,16 +147,16 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
         </li>
         
         
-        <li id="section-5">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-5">&#x00a7;</a>
+                <a class="ss" href="#section-6">&#x00a7;</a>
               </div>
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN.BINS</span><span class="hljs-params">(rows,col,y,yKlass)</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BIN.BINS</span><span class="hljs-params">(rows,col,yKlass,y)</span></span>
   y      = y <span class="hljs-keyword">or</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span></span> <span class="hljs-keyword">return</span> row:klass() <span class="hljs-keyword">end</span>
   yKlass = yKlass <span class="hljs-keyword">or</span> SYM
   <span class="hljs-keyword">local</span> n,list, dict = <span class="hljs-number">0</span>,{}, {}
@@ -144,7 +167,7 @@ E.g. here are some “b(Ai)tteries” for XAI.</p>
       <span class="hljs-keyword">local</span> pos = col:bin(v)
       dict[pos] = dict[pos] <span class="hljs-keyword">or</span> push(list, BIN(v,v,yKlass(col.at, col.txt)))
       dict[pos]:add(v, y(row)) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  list = col:merges(<span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;lo&quot;</span>), small(n))
+  list = col:merges(<span class="hljs-built_in">sort</span>(list, lt<span class="hljs-string">&quot;lo&quot;</span>), small(the.Min, n))
   <span class="hljs-keyword">return</span> {bins= list,
           div = sum(list,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(z)</span></span> <span class="hljs-keyword">return</span> z.ys:div()*z.ys.n/n <span class="hljs-keyword">end</span>)} <span class="hljs-keyword">end</span></pre></div></div>
             
