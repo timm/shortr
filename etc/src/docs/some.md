@@ -24,6 +24,7 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a>
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 </p>
+
 ## `SOME` : keep some nums
 Given a finite buffer of some small size `max`, then after reading 
 a very large set of `n` numbers, we should only be keeping `max/n` of those nums.
