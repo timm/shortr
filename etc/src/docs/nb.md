@@ -8,13 +8,6 @@ E.g. here are some "b(Ai)tteries" for XAI.
 (c) 2022, Tim Menzies<br><timm@ieee.org>
 <br clear=all>
 
-**config:** 
-**build:** 
-**demos:** 
-**apps:** 
-**functions:** 
-**klasses:** 
-
 |config | build | demos | apps | functions | classes |
 |-------|-------|-------|------|-----------|---------|
 |[all](all.html)|[Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)<br>(just for doco)|[go](go.html)|[nb](nb.html)|[lib](lib.html)|[bin](bin.html) :: [cols](cols.html) :: [num](num.html) :: [row](row.html) :: [rows](rows.html) :: [some](some.html) :: [sym](sym.html)|
