@@ -1,4 +1,4 @@
-# B(Ai)ttery :high_brightness:
+# :high_brightness: B(Ai)ttery
 
 <img align=left width=400 src="bat2.png">
 
