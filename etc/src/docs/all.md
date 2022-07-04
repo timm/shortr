@@ -5,7 +5,7 @@ LUA is a "batteries-not-included" language.
 But LUA makes it easy to add in the  missing bits.
 E.g. here are some "b(Ai)tteries" for XAI.
 
-(c) 2022, Tim Menzies<br><timm@ieee.org>
+(c) 2022, Tim Menzies <timm@ieee.org>
 
 |what          | where |
 |:-------------|:------|
