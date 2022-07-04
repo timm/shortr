@@ -1,20 +1,17 @@
-<span id="forkongithub"><a href="https://github.com/timm/shortr#shortrlua--less-but-better-xai-eyes">Fork me on GitHub</a></span>
 <img align=left width=250   src="bat2.png">
+# B(Ai)ttery
 LUA is a "batteries-not-included" language.
 But LUA makes it easy to add in the  missing bits.
 E.g. here are some "b(Ai)tteries" for XAI.
 
 (c) 2022, Tim Menzies<br><timm@ieee.org>
 
-**config:** [all](all.html)
-
+<br clear=all>
+**config:** [all](all.html);
 **build:** [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)  
-(just used for the doco)
-
-**demos:** [go](go.html)
-
-**apps:** [nb](nb.html)
-
+(just for doco);
+**demos:** [go](go.html);
+**apps:** [nb](nb.html);
 **functions:** [lib](lib.html)
 
 **klasses:** [bin](bin.html)
