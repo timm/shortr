@@ -9,7 +9,7 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence)
 (c) 2022, Tim Menzies <timm@ieee.org>
 
 |what          | where |
-|:-------------|:------|
+|-------------:|:------|
 |**config**    | [all](all.md)   |
 |**build**     | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)  | 
 |**demos**     | [go](go.md)  |
