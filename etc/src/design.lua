@@ -17,6 +17,7 @@
 --   - When clustering, each cluster is its own `ROWS`.
 --   - `NB` classifiers create one `ROWS` per class in the training data.
 --   - Decision `TREE`s are built by recursively finding the `BIN`s that best distinguish different `ROW`s. 
+--   - XAI
 --   - etc.
 
 -- ## About XAI
