@@ -51,8 +51,6 @@ function BIN.BINS(rows,col,yKlass,y)
       dict[pos] = dict[pos] or push(list, BIN(v,v,yKlass(col.at, col.txt)))
       dict[pos]:add(v, y(row)) end end
   list = col:merges(sort(list, lt"lo"), small(the.Min, n))
-  print("")
-  for _,one in pairs(list) do print(col.txt,1,one) end
   return {bins= list,
           div = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
 

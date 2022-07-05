@@ -66,7 +66,7 @@ function SYM.add(i,x,n)
 
 
 ```lua
-function SYM.bin(x) return x end
+function SYM.bin(i,x) return x end
 ```
 
 

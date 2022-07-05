@@ -14,7 +14,7 @@ function SYM.add(i,x,n)
     i.kept[x] = n  + (i.kept[x] or 0) end end
 
 -- bin(i:SYM: x:any) --> return `x` mapped to a finite range (just return x)
-function SYM.bin(x) return x end
+function SYM.bin(i,x) return x end
 
 -- clone(i:SYM) :SYM --> Return a class of the same structure.
 function SYM.clone(i) return SYM(i.at, i.txt) end

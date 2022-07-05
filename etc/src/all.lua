@@ -5,8 +5,9 @@
 local all=require"lib"
 
 -- The `all.opts` function (used here) parses the string to extract
--- key/value pairs such as  `Min=.5` or `bins=16`. Then it checks
--- for updates for those variables from the command-line. 
+-- key/value pairs such as  `Min=.5` or `bins=16`. FYI, the `cli`
+-- function (called at start-up in the [go](go.md) file),  checks
+-- for for updates for those keys from the command-line. 
 all.the = all.opts( [[
 
 SHORTr: semi-supervised multi-objective optimization XAI

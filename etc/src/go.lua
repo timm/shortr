@@ -89,14 +89,13 @@ function go.CHUNKS()
 function go.BINS( rs, m,best,rest)
   rs=ROWS():fill(the.file)
   sort(rs.rows) 
-  m    = (#rs.rows)^.5
+  m    = (#rs.rows)*.5
   best = splice(rs.rows,1,m)  --(m^.5)) 
   rest = splice(rs.rows,#rs.rows - m) --#rs.rows - 30) --(m^.5)) 
-  rs:tree{best,rest}
+  rs:tree{best,rest}:branches()
   return true
 end
 
--------
 -- ### Start
 the = cli(the)
 on(the, go)
