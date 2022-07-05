@@ -1,7 +1,5 @@
--- ## store many ROWs
-
--- **CLASS** :
--- - ROWS (stores and makes summaries  of     ROWs)
+-- ## Class ROWS
+-- - ROWS stores (and makes summaries  of )    ROWs.
 
 -- **RESPONSIBILITIES** : 
 -- - Store many ROWs

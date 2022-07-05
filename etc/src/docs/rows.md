@@ -28,10 +28,8 @@ decision trees, bayes classifiers, etc).
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 </p>
 
-## store many ROWs
-
-**CLASS** :
-- ROWS (stores and makes summaries  of     ROWs)
+## Class ROWS
+- ROWS stores (and makes summaries  of )    ROWs.
 
 **RESPONSIBILITIES** : 
 - Store many ROWs
