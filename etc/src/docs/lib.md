@@ -36,7 +36,7 @@ local m={}
 
 ### Linting
 
-> ***rogues()***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Find rogue locals. Run `rogues()` _last_ after everything else.  
+rogues() --> Find rogue locals. Run `rogues()` _last_ after everything else.
 
 
 
@@ -49,8 +49,8 @@ function m.rogues()
 
 ### Meta
 
-> ***lt(`x` :str):function***  
-> ***gt(`x` :str):function***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Returns functions that sorts on `x`  
+lt(x:str):function --> 
+gt(x:str):function --> Returns functions that sorts on `x`
 
 
 
@@ -71,7 +71,7 @@ m.same=function(x) return x end
 
 ### Maths
 
-> ***`big` :num***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  return a big number  
+big:num --> return a big number
 
 
 
@@ -114,7 +114,7 @@ function m.rnds(t, places)
 
 ###  Lists
 
-> ***splice(`t` :tab,start=?int=1,`stop` :?num=#t,`step` :?num=1):t***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  pull items  
+splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t --> pull items
 `start` to `stop`, stepping by `step`. 
 
 
@@ -154,10 +154,10 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
-> ***map(`t` :tab, `f` :fun): tab***  
-> ***kap(`t` :tab, `f` :fun): tab***  
-> ***maps(`list1` :tab, `list2` :tab, `f` :fun): tab***  
-> ***kaps(`list1` :tab, `list2` :tab, `f` :fun): tab***  
+> ***map(`t` :tab, `f` :fun): tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:    
+kap(t:tab, f:fun): tab --> 
+maps(list1:tab, list2:tab, f:fun): tab --> 
+kaps(list1:tab, list2:tab, f:fun): tab --> 
 Return items in `t`, filtered thru `f`.
 If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
 key and value to `f`. `maps` and `kaps` pass items from two lists.
@@ -174,7 +174,7 @@ function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;r
 
 ### String to thing
 
-> ***thing(`s` :str):any***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Coerce string to whatever  
+thing(s:str):any --> Coerce string to whatever
 is simplest (boolean or integer or float or, if all else fails, a string).
 
 
@@ -224,7 +224,7 @@ function m.csv(file,fun)
 
 ### Thing to string
 
-> ***fmt(`s` :str,...) :str***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  emulate prinft  
+fmt(s:str,...) :str --> emulate prinft
 
 
 
@@ -269,8 +269,9 @@ function m.chunks(file)
   end ------------------------
   local dump = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
+    if what == 0 then t[1] = hints(t[1]) end
     local s= table.concat(t,"\n")             -- build text dump
-    print(what==0 and (hints(s).."\n") or (   -- dump comment or code
+    print(what==0 and (s.."\n") or (   -- dump comment or code
           "\n\n```lua\n" ..s.."\n```\n\n")) 
   end --------------------
   m.lines(file, function(s)
@@ -284,7 +285,7 @@ function m.chunks(file)
 
 ### Settings
 
-> ***opts(`x` :str) :tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Parse `str` for lines with `--`; then pull keys+defaults.   
+opts(x:str) :tab --> Parse `str` for lines with `--`; then pull keys+defaults. 
 
 
 
@@ -302,7 +303,7 @@ function m.opts(x)
 Things with boolean defaults are flipped via `--flag`. 
 Other keys need `--flag value`.  Print the help
 (if `-h` appears on command line). Return a table with setting `key`s and
-`value`s. IMPORTANT `NOTE` : this function alters-in-place the table `t`
+`value`s. IMPORTANT NOTE: this function alters-in-place the table `t`
 that is passed in-- which means that it alters settings for anything pointing
 to `t`.
 
@@ -324,7 +325,7 @@ function m.cli(t)
 
 ### Tests
 
-> ***on(`opts` :tab, `tests` :[fun])***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Run some tests.  
+on(opts:tab, tests:[fun]) --> Run some tests.
 If  `opt.go=="all"`, then run all tests, sorted on their name.
 Before each test, reset random seed and the options `opts.
 
@@ -350,7 +351,7 @@ function m.on(opts,tests)
 
 ### Objects
 
-> ***obj(`name` :str, `fun` :fun):object***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Return a klass `name` with constructor `fun`.  
+obj(name:str, fun:fun):object --> Return a klass `name` with constructor `fun`.
 Add a unique `id` and a `tosting` method (that uses `cat` (above).
 
 
