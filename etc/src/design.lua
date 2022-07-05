@@ -21,7 +21,7 @@
 
 -- ## About XAI
 -- From Wikipedia:
--- 
+
 -- > Explainable AI (XAI), or Interpretable AI, or Explainable Machine
 -- Learning (XML), is artificial intelligence (AI) in which the
 -- results of the solution can be understood by humans. It contrasts
@@ -44,13 +44,11 @@
 -- in AI techniques should be considered a secondary goal to the pursuit
 -- of AI's effectiveness, -- and that encouraging the exclusive
 -- development of XAI may limit the functionality of AI more broadly.
---
--- In reply to the last para, I offer my own experience where the trade-off was not "explanation or performance". Rather, by exploring concepts of XAI I an actually make the while
--- system better, faster, easier to understand.
 
--- As to how I do  XAI, this code supports
+-- In reply to the last para, I offer my own experience where the trade-off was not "explanation or performance". Rather, by exploring concepts of XAI I an actually make the while
+-- system better, faster, easier to understand. For example. here I offer
 -- explaninable semi-supervised multi-objective optimization XAI
--- (from N items, find and explain the best ones, using just log(N) evals).
+-- (from N items, find and explain the best ones, using just log(N) evals). This works as follows.
 -- - PASS1 (guess): eval two distant items on multi-objective criteria.
 --        Prune everything nearest the worst one. Recurse on rest.
 -- - PASS2 (guess again): do it again, using better items from first pass.
