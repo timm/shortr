@@ -8,12 +8,12 @@ E.g. here is "Tery" which are my AI  "b(ai)tteries" for XAI (explainable artific
 
 |       what | where                                                                                                         |
 |-----------:|---------------------------------------------------------------------------------------------------------------|
-| start here | [help](all.md) ::  [design notes](design.md)     |                                                                 |
+| start here | [help](all.md) &vert;  [design notes](design.md)     |                                                                 |
 |      build | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)                       |
 |      demos | [go](go.md)                                                                                                   |
-|       apps | [nb](nb.md) :: [tree](tree.md)                                                                                |
+|       apps | [nb](nb.md) &vert; [tree](tree.md)                                                                                |
 |  functions | [lib](lib.md)                                                                                                 |
-|    methods | [bin](bin.md) :: [cols](cols.md) :: [num](num.md) :: [row](row.md) :: [rows](rows.md) :: [some](some.md) :: [sym](sym.md) :: [tree](tree.md) |
+|    methods | [bin](bin.md) &vert; [cols](cols.md) &vert; [num](num.md) &vert; [row](row.md) &vert; [rows](rows.md) &vert; [some](some.md) &vert; [sym](sym.md) &vert; [tree](tree.md) |
 
 <br clear=all>
 <p align=center>
