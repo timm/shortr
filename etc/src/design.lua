@@ -1,4 +1,5 @@
--- ## About our objects
+-- ## Design notes
+-- ### About our objects
 -- One of the  theres here is that that there the thing we call "data 
 -- mining" shares many of its internal data structures and algorithms
 -- with the thing we call "optimization". So once we build those
@@ -20,7 +21,7 @@
 --   - XAI
 --   - etc.
 
--- ## About XAI
+-- ### About XAI
 -- From
 -- [Wikipedia](https://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :
 

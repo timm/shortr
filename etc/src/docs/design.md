@@ -25,7 +25,8 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 </p>
 
-## About our objects
+## Design notes
+### About our objects
 One of the  theres here is that that there the thing we call "data 
 mining" shares many of its internal data structures and algorithms
 with the thing we call "optimization". So once we build those
@@ -47,7 +48,7 @@ for `NUM`s that holds just some sample of the numerics in that column.
   - XAI
   - etc.
 
-## About XAI
+### About XAI
 From
 [Wikipedia](https://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :
 
