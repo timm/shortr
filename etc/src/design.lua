@@ -116,6 +116,9 @@
 --  problems with maintainability and technical debt and security that leak in from all 
 --  the parts used in the assembly. Surely, by now, we have the experience to revisit past implementations and radically simplify them:
 
+-- <b>William of Ockham:</b></br>
+-- <em>"Non sunt multiplicanda entia sine necessitate"</em><br>
+-- (Entities are not to be multiplied without necessity)<p>
 -- <b>Ada Lovelace:</b><br>
 -- <em>"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em><p>
 -- <b>Tony Hoare:</b><br>
