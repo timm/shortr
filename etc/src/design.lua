@@ -1,4 +1,4 @@
--- ## Design notes: about our objects
+-- ## Design notes : about our objects
 
 -- One of the  theres here is that that there the thing we call "data 
 -- mining" shares many of its internal data structures and algorithms
@@ -21,7 +21,7 @@
 --   - XAI
 --   - etc.
 
--- ## Design notes: about XAI
+-- ## Design notes : about XAI
 -- From  [Wikipedia](https://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :
 
 -- > Explainable AI (XAI), or Interpretable AI, or Explainable Machine
