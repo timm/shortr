@@ -77,11 +77,21 @@ function BIN.hold(i, row)
 ```lua
 function BIN.holds(i, rows)
   return map(rows, function(row) return i:hold(row) end) end
+```
 
+
+> ***merge(`i` :BIN, `j` :BIN, `min` :number): (BIN|nil)***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Returns non-nil if `i,j` should/can be merged.  
+"Should be merged" means some bins are too small. "Can be merged" means the parts are more
+complex than the whole.
+
+
+
+```lua
 function BIN.merged(i,j, min)
   local a, b, c = i.ys, j.ys, i.ys:merge(j.ys)
-  if a.n < min or b.n < min or c:div() <= (a.n*a:div() + b.n*b:div())/c.n then
-    return BIN(i.lo, j.hi, c) end end
+  local should = a.n < min or b.n < min  
+  local can    = c:div() <= (a.n*a:div() + b.n*b:div())/c.n 
+  if should or can then return BIN(i.lo, j.hi, c) end end
 
 function BIN.show(i)
   local x,lo,hi = i.ys.txt, i.lo, i.hi
