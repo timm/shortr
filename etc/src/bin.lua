@@ -4,12 +4,12 @@ local the=all.the
 local big,fmt,lt,map,obj = all.big, all.fmt, all.lt, all.map, all.obj
 local push,small,sort,sum = all.push, all.small,all.sort,all.sum
 
---> BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN ->
+-- BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN --> Constructor.
 -- `ys` stores values seen from `xlo to `xhi`.
 local BIN = obj("BIN", function(i, xlo, xhi, ys)
   i.lo, i.hi, i.ys = xlo, xhi, ys end)
 
--- add(i:BIN, x:num, y:(num|str) -> Ensure `lo`,`hi` covers `x`. Add `y` to `ys`.
+-- add(i:BIN, x:num, y:(num|str) --> Ensure `lo`,`hi` covers `x`. Add `y` to `ys`.
 function BIN.add(i,x,y)
   i.lo = math.min(i.lo, x)
   i.hi = math.max(i.hi, x)

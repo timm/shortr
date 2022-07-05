@@ -34,11 +34,10 @@ local all=require"all"
 local the=all.the
 local big,fmt,lt,map,obj = all.big, all.fmt, all.lt, all.map, all.obj
 local push,small,sort,sum = all.push, all.small,all.sort,all.sum
-
---> BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN ->
 ```
 
 
+> ***BIN(`xlo` :num,`xhi` :num,`ys` :(NUM|SYM)):BIN***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Constructor.  
 `ys` stores values seen from `xlo to `xhi`.
 
 
@@ -49,7 +48,7 @@ local BIN = obj("BIN", function(i, xlo, xhi, ys)
 ```
 
 
-add(`i` :BIN, `x` :num, `y` :(num|str) -> Ensure `lo`,`hi` covers `x`. Add `y` to `ys`.
+> ***add(`i` :BIN, `x` :num, `y` :(num|str)***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Ensure `lo`,`hi` covers `x`. Add `y` to `ys`.  
 
 
 
