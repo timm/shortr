@@ -49,12 +49,37 @@ for `NUM`s that holds just some sample of the numerics in that column.
 ## About XAI
 From `Wikipedia` :
 
-> Explainable AI (XAI), or Interpretable AI, or Explainable Machine Learning (XML),[1] is artificial intelligence (AI) in which the results of the solution can be understood by humans. It contrasts with the concept of the "black box" in machine learning where even its designers cannot explain why an AI arrived at a specific decision.[2] By refining the mental models of users of AI-powered systems and dismantling their misconceptions, XAI promises to help users perform more effectively.[3] XAI may be an implementation of the social right to explanation.[4] XAI is relevant even if there is no legal right or regulatory requirement—for example, XAI can improve the user experience of a product or service by helping end users trust that the AI is making good decisions. This way the aim of XAI is to explain what has been done, what is done right now, what will be done next and unveil the information the actions are based on.[5] These characteristics make it possible (i) to confirm existing knowledge (ii) to challenge existing knowledge and (iii) to generate new assumptions.[6]
+> Explainable AI (XAI), or Interpretable AI, or Explainable Machine
+Learning (XML), is artificial intelligence (AI) in which the
+results of the solution can be understood by humans. It contrasts
+with the concept of the "black box" in machine learning where even
+its designers cannot explain why an AI arrived at a specific
+decision. By refining the mental models of users of AI-powered
+systems and dismantling their misconceptions, XAI promises to help
+users perform more effectively. XAI may be an implementation of
+the social right to explanation. XAI is relevant even if there
+is no legal right or regulatory requirement—for example, XAI can
+improve the user experience of a product or service by helping end
+users trust that the AI is making good decisions. This way the aim
+of XAI is to explain what has been done, what is done right now,
+what will be done next and unveil the information the actions are
+based on. These characteristics make it possible (i) to confirm
+existing knowledge (ii) to challenge existing knowledge and (iii)
+to generate new assumptions.
 
-> Recent scholarship has suggested that the pursuit of explainability in AI techniques should be considered a secondary goal to the pursuit of AI's effectiveness, 
-and that encouraging the exclusive development of XAI may limit the functionality of AI more broadly.
+> Recent scholarship has suggested that the pursuit of explainability
+in AI techniques should be considered a secondary goal to the pursuit
+of AI's effectiveness, -- and that encouraging the exclusive
+development of XAI may limit the functionality of AI more broadly.
 
-In reply to that, I offer my own experience where the trade-off was not "explanation or performance". Rather, by exploring concepts of XAI I an actually make the while
+
+
+```lua
+--
+```
+
+
+In reply to the last para, I offer my own experience where the trade-off was not "explanation or performance". Rather, by exploring concepts of XAI I an actually make the while
 system better, faster, easier to understand.
 
 As to how I do  XAI, this code supports
