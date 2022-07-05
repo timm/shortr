@@ -111,11 +111,13 @@
 -- ## Viva la revolución
 -- <img src="che.jpg" align=right width=300>
 
--- Less is more.
+-- Less is more. 
 --  Death to mash-ups and their associated 
 --  problems with technical debt and security problems that leak in from all 
 --  the parts used in the assembly.
 
+-- <b>Ada Loverlace:</b><br>
+-- <em>"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em><p>
 -- <b>Tony Hoare:</b><br>
 -- <em>"Inside every large program is a small program struggling to get out."</em><p>
 -- <b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
@@ -129,16 +131,16 @@
 -- And can you use those similarities to do more things with  _it_?
 -- Finally, can you teach _it_ quickly to newcomers?
     
--- ### Role Models
--- People that inspire me to code less, but better:<br>
+-- **Role Models**: Here are some of the people that
+-- inspire me to code less, but better:<br>
 -- [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0), [Hilary Mason](https://www.youtube.com/watch?v=l2btv0yUPNQ),
--- [Brian McFee](https://brianmcfee.net/papers/ismir2011_sptree.pdf),  
+-- [Brian McFee](https://brianmcfee.net/papers/ismir2011_sptree.pdf),
 -- [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html),
 -- [Joel Grus](https://github.com/joelgrus/data-science-from-scratch).<p>
--- Especially the LISPers: <br>
+-- And, in this context, I must not forget the LISPers: <br>
 -- ([Peter Seibel](https://gigamonkeys.com/book/)
 --   ([Conrad Barski](https://doc.lagout.org/programmation/Lisp/Land%20of%20Lisp_%20Learn%20to%20Program%20in%20Lisp%2C%20One%20Game%20at%20a%20Time%20%5BBarski%202010-11-15%5D.pdf)
---   ([Paul Graham](http://www.paulgraham.com/onlisp.html)<br>
+--   ([Paul Graham](http://www.paulgraham.com/onlisp.html)
 --     ([Peter Norvig](http://norvig.com/lispy.html)
 --       ([Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y)))))).-- 
 
