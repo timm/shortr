@@ -74,13 +74,16 @@ in AI techniques should be considered a secondary goal to the pursuit
 of AI's effectiveness, -- and that encouraging the exclusive
 development of XAI may limit the functionality of AI more broadly.
 
-In reply to the last para, I offer my own experience where the trade-off was not "explanation or performance". Rather, by exploring concepts of XAI I an actually make the while
+In reply to the last para, I offer my own experience where the trade-off was not "explanation or performance". 
+Rather, by exploring concepts of XAI I can actually make the while
 system better, faster, easier to understand. For example. here I offer
-explaninable semi-supervised multi-objective optimization XAI
-(from N items, find and explain the best ones, using just log(N) evals). This works as follows.
+explaninable semi-supervised multi-objective optimization XAI, in just a few hundreds lines of code:
 - PASS1 (guess): eval two distant items on multi-objective criteria.
        Prune everything nearest the worst one. Recurse on rest.
 - PASS2 (guess again): do it again, using better items from first pass.
 - PASS3 (explain): recursively discretize attributes on how well they
       distinguish the best and worst items (seen in second pass).
+
+This means, from N items, I can find and explain the best ones, using just log(N) evals. And then I can report
+(using a decision tree) what are the key factors that select for those better examples. 
 
