@@ -37,8 +37,7 @@ local push,small,sort,sum = all.push, all.small,all.sort,all.sum
 ```
 
 
-> ***BIN(`xlo` :num,`xhi` :num,`ys` :(NUM|SYM)):BIN***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Constructor.  
-`ys` stores values seen from `xlo to `xhi`.
+> ***BIN(`xlo` :num,`xhi` :num,`ys` :(NUM|SYM)):BIN***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Constructor. `ys` stores values seen from `xlo to `xhi`.  
 
 
 

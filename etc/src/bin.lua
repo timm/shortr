@@ -4,8 +4,7 @@ local the=all.the
 local big,fmt,lt,map,obj = all.big, all.fmt, all.lt, all.map, all.obj
 local push,small,sort,sum = all.push, all.small,all.sort,all.sum
 
--- BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN --> Constructor.
--- `ys` stores values seen from `xlo to `xhi`.
+-- BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN --> Constructor. `ys` stores values seen from `xlo to `xhi`.
 local BIN = obj("BIN", function(i, xlo, xhi, ys)
   i.lo, i.hi, i.ys = xlo, xhi, ys end)
 
