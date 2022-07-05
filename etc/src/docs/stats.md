@@ -3,7 +3,7 @@
 <a href="all.md"><img align=right width=350 src="bat2.png"></a>
 
 LUA is a "batteries-not-included" language.   But LUA makes it easy to add in the missing bits.
-E.g. here is "Tery" which are my  "b(Ai)tteries" for XAI (explainable artificial intelligence).   
+E.g. here is "Tery" which are my AI  "b(ai)tteries" for XAI (explainable artificial intelligence).   
 
 
 |       what | where                                                                                                         |
