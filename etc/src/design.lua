@@ -21,6 +21,8 @@
 --   - XAI
 --   - etc.
 
+-- <img align=center src="design.jpb">
+
 -- ## Design notes : about XAI
 -- From  [Wikipedia](https://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :
 
