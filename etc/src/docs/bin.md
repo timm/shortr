@@ -12,7 +12,8 @@ decision trees, bayes classifiers, etc).
 
 |       what | where                                                                                                         |
 |-----------:|---------------------------------------------------------------------------------------------------------------|
-| start here | [help](all.md) &hellip;  [install](/INSTALL.md) &hellip; [design notes](design.md)     |                                                                 |
+| start here | [[help](all.md)][install](/INSTALL.md)][[design notes](design.md)]    |                                                                 |
+| start here | [[help](all.md) &hellip;  [install](/INSTALL.md) &hellip; [design notes](design.md)     |                                                                 |
 |      build | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)                       |
 |      demos | [go](go.md)                                                                                                   |
 |       apps | [nb](nb.md) &hellip; [tree](tree.md)                                                                                |
