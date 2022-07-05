@@ -1,11 +1,11 @@
--- ## Our objects
+-- ## About our objects
 -- One of the  theres here is that that there the thing we call "data 
 -- mining" shares many of its internal data structures and algorithms
 -- with the thing we call "optimization". So once we build those
 -- internal things, then building "data miners" or "optimizers"
 -- is a  pretty trivial extension. 
 
--- Just to demonstrate this, consider:
+-- Just to demonstrate this, consider the object model of B(Ai)ttery:
 -- -   `ROWS` holds many `ROW`s (and each `ROW` holds one record).  `ROWS` summarize their numeric
 -- or symbolic  columns in `NUM`s or `SYM`s (respectively). Summaries are held in `COLS`, divided into  (x,y) sets for
 -- independent and dependent columns (respectively). 
