@@ -1,9 +1,9 @@
-# [:high_brightness: B(ai)T = a tiny XAI library, in LUA](all.md)
+# [:high_brightness: shortr: less (but better) XAI](all.md)
 
-<a href="all.md"><img align=right width=350 src="bat2.png"></a>
+<a href="all.md"><img align=right width=350 src="shortr.png"></a>
 
-LUA is a "batteries-not-included" language.   But LUA makes it easy to add in the missing bits.
-E.g. here are my "B(ai)tteries" for XAI (explainable artificial intelligence).   
+XAI (explainable artificial intelligence) need not be complicated.
+Let me show you how...
 
 
 
