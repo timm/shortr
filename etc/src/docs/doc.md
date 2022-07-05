@@ -9,7 +9,7 @@ E.g. here are my "B(ai)tteries" for XAI (explainable artificial intelligence).
 
 |       what | where                                                                                                         |
 |-----------:|---------------------------------------------------------------------------------------------------------------|
-| start here | [help](all.md) &vert;  [design notes](design.md)     |                                                                 |
+| start here | [help](all.md) &vert;  [install](/INSTALL.md) &vert; [design notes](design.md)     |                                                                 |
 |      build | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)                       |
 |      demos | [go](go.md)                                                                                                   |
 |       apps | [nb](nb.md) &vert; [tree](tree.md)                                                                                |
