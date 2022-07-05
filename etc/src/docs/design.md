@@ -46,13 +46,6 @@ for `NUM`s that holds just some sample of the numerics in that column.
   - Decision `TREE`s are built by recursively finding the `BIN`s that best distinguish different `ROW`s. 
   - etc.
 
-
-
-```lua
---
-```
-
-
 As to XAI, this code supports
 explaninable semi-supervised multi-objective optimization XAI
 (from N items, find and explain the best ones, using just log(N) evals).

@@ -4,7 +4,7 @@
 -- with the thing we call "optimization". So once we build those
 -- internal things, then building "data miners" or "optimizers"
 -- is a  pretty trivial extension. 
--- 
+
 -- Just to demonstrate this, consider:
 -- -   `ROWS` holds many `ROW`s (and each `ROW` holds one record).  `ROWS` summarize their numeric
 -- or symbolic  columns in `NUM`s or `SYM`s (respectively). Summaries are held in `COLS`, divided into  (x,y) sets for
@@ -18,7 +18,7 @@
 --   - `NB` classifiers create one `ROWS` per class in the training data.
 --   - Decision `TREE`s are built by recursively finding the `BIN`s that best distinguish different `ROW`s. 
 --   - etc.
---
+
 -- As to XAI, this code supports
 -- explaninable semi-supervised multi-objective optimization XAI
 -- (from N items, find and explain the best ones, using just log(N) evals).
