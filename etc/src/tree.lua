@@ -1,4 +1,6 @@
--- ## ROWS to tree
+-- ## TREEs = nested ROWS
+-- THis code has no decision tree class. Instead, we say trees are just ROWS
+-- with a list of `kids` (and each kid is another ROW).
 local all = require"all"
 local cat,chat,fmt,lt,map= all.cat, all.chat,all.fmt,all.lt, all.map
 local small,sort,the = all.small, all.sort,all.the

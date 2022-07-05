@@ -28,7 +28,9 @@ decision trees, bayes classifiers, etc).
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 </p>
 
-## ROWS to tree
+## TREEs = nested ROWS
+THis code has no decision tree class. Instead, we say trees are just ROWS
+with a list of `kids` (and each kid is another ROW).
 
 
 
