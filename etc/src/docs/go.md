@@ -1,4 +1,4 @@
-# [:high_brightness: Tiny Teries : a small object library for XAI](all.md)
+# [:high_brightness: Tiny Teries : a tiny class library for  XAI](all.md)
 
 <a href="all.md"><img align=right width=350 src="bat2.png"></a>
 
