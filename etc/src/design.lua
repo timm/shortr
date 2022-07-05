@@ -111,12 +111,12 @@
 -- ## Viva la revolución
 -- <img src="che.jpg" align=right width=300>
 
--- Less is more. 
---  Death to mash-ups and their associated 
---  problems with technical debt and security problems that leak in from all 
---  the parts used in the assembly.
+-- This code is a protest of sorts against
+--  mash-ups and bloatware and all their associated 
+--  problems with maintainability and technical debt and security that leak in from all 
+--  the parts used in the assembly. Surely, by now, we have the experience to revisit past implementations and radically simplify them:
 
--- <b>Ada Loverlace:</b><br>
+-- <b>Ada Lovelace:</b><br>
 -- <em>"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em><p>
 -- <b>Tony Hoare:</b><br>
 -- <em>"Inside every large program is a small program struggling to get out."</em><p>
