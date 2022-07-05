@@ -8,7 +8,7 @@ E.g. here is "Tery" which are my AI  "b(ai)tteries" for XAI (explainable artific
 
 |       what | where                                                                                                         |
 |-----------:|---------------------------------------------------------------------------------------------------------------|
-| start here | [design notes](design.md) [help](all.md)     |                                                                 |
+| start here | [design notes](design.md), [help](all.md)     |                                                                 |
 |      build | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)                       |
 |      demos | [go](go.md)                                                                                                   |
 |       apps | [nb](nb.md), [tree](tree.md)                                                                                  |
