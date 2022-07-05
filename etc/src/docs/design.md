@@ -32,7 +32,7 @@ with the thing we call "optimization". So once we build those
 internal things, then building "data miners" or "optimizers"
 is a  pretty trivial extension. 
 
-Just to demonstrate this, consider the object model of B(Ai)`ttery` :
+Just to demonstrate this, consider the object model of B(Ai)ttery:
 -   `ROWS` holds many `ROW`s (and each `ROW` holds one record).  `ROWS` summarize their numeric
 or symbolic  columns in `NUM`s or `SYM`s (respectively). Summaries are held in `COLS`, divided into  (x,y) sets for
 independent and dependent columns (respectively). 
@@ -48,7 +48,8 @@ for `NUM`s that holds just some sample of the numerics in that column.
   - etc.
 
 ## About XAI
-From [Wikipedia](`https` ://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :
+From
+[Wikipedia](https://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :
 
 > Explainable AI (XAI), or Interpretable AI, or Explainable Machine
 Learning (XML), is artificial intelligence (AI) in which the
