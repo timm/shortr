@@ -93,7 +93,7 @@ function go.ALL()
 
 local Rows=obj("Row", function(i,row) i.rows={}; i.cols=nil; i.categories={} end)
 function Rows.add(i,row)
-  rs.kepts = rs.cols and maps(r.kepts,row,update) or `i` :categorize(kap(row,init) end)
+  rs.kepts = rs.cols and maps(r.kepts,row,update) or i:categorize(kap(row,init) end)
 
 
 
@@ -104,7 +104,7 @@ function Rows.add(i,row)
 
 function Rows.categorize(i,cols)
   for _,col in pairs(cols) do if not col.ignorep then 
-     push(col.`txt` :find"[!+-]$" and i.categories.y or i.categories.y, col) end end 
+     push(col.txt:find"[!+-]$" and i.categories.y or i.categories.y, col) end end 
   return end
 
 
@@ -115,7 +115,7 @@ function Rows.categorize(i,cols)
 
 
 function make(f,rows) 
-  local function make1(row) if rows then `rows` :add(row) else rows=Rows(row) end
+  local function make1(row) if rows then rows:add(row) else rows=Rows(row) end
   if type(src)=="table" then map(rows,make1) else csv(src,make1) end
   return rows end
 

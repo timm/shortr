@@ -49,7 +49,7 @@ local SOME = obj("SOME", function(i,max)
 ```
 
 
-> ***add(`i` :`SOME` : `x` :num)***  
+> ***add(`i` :`SOME` : `x` :num)***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:    
 If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random).
 Otherwise, just add.
 

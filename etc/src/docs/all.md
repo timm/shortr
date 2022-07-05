@@ -104,15 +104,15 @@ reservoir, extreme).
 
 ### References
 - Thomas H. Davenport and John C. Beck. (2001). 
-  [The Attention economy](`https` ://ubiquity.acm.org/article.cfm?id=376626). 
+  [The Attention economy](https://ubiquity.acm.org/article.cfm?id=376626). 
   Ubiquity 2001, May (May 1 - May 31, 2001), 
 - Gigerenzer, G. (2008). 
-  [Why Heuristics Work](`https` ://pure.mpg.de/rest/items/item_2100099/component/file_2100098/content).
+  [Why Heuristics Work](https://pure.mpg.de/rest/items/item_2100099/component/file_2100098/content).
   Perspectives on Psychological Science, 3(1), 20–29. 
 - Vilone, Giulia & Longo, Luca. (2020). 
-  [Explainable Artificial `Intelligence` : a Systematic Review](`https` ://arxiv.org/pdf/2006.00093.pdf)
+  [Explainable Artificial Intelligence: a Systematic Review](https://arxiv.org/pdf/2006.00093.pdf)
 - Simon, Herbert A. (1956). 
-  [Rational Choice and the Structure of the Environment](`https` ://uk.sagepub.com/sites/default/files/upm-binaries/25239_Chater~Vol_1~Ch_03.pdf)
+  [Rational Choice and the Structure of the Environment](https://uk.sagepub.com/sites/default/files/upm-binaries/25239_Chater~Vol_1~Ch_03.pdf)
   Psychological Review. 63 (2): 129–138.
 
 
@@ -199,7 +199,7 @@ Trees (regression and decision)
  
  Recursive random projections
  
-`SHORTR` :
+SHORTR:
 Semi-supervised multi-objective optimization XAI
 (from N items, find and explain the best ones, using just log(N) evals).
 PASS1 (guess): eval two distant items on multi-objective criteria.
@@ -210,7 +210,7 @@ PASS3 (explain): recursively discretize attributes on how well they
 
 ### Coding conventions 
 Before reading this, it might  be best to    
-review these [local coding conventions](`https` ://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
+review these [local coding conventions](https://github.com/timm/shortr/blob/master/CONTRIBUTE.md).
 ## Why this code?
  This code is an experiment in "less-is-more". Death to mash-ups and their associated 
  problems with technical debt and security problems that leak in from all 
@@ -225,8 +225,8 @@ review these [local coding conventions](`https` ://github.com/timm/shortr/blob/m
 
 <b>Tony `Hoare` :</b><br>
 <em>"Inside every large program is a small program struggling to get out."</em><p>
-<b>Alan `Perlis` :</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
-<b>Dieter `Rams` :</b><br><em>"Less, but better."</em>
+<b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
+<b>Dieter Rams:</b><br><em>"Less, but better."</em>
 
 
 
@@ -273,7 +273,7 @@ that could be used for other learners.
 
 Also included here is literate programming,
 self-documenting code and support for test-driven development.
-All in around 500 lines of `LUA` : <br>
+All in around 500 lines of LUA: <br>
 
 
 
@@ -297,15 +297,15 @@ Share and enjoy.
 
 
 ### Role Models
-People that inspire me to code less, but `better` :<br>
-[Jack Diederich](`https` ://www.youtube.com/watch?v=o9pEzgHorH0), [Hilary Mason](`https` ://www.youtube.com/watch?v=l2btv0yUPNQ),
-[Brian McFee](`https` ://brianmcfee.net/papers/ismir2011_sptree.pdf),  
-[Brian Kernighan](`https` ://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html),
-[Joel Grus](`https` ://github.com/joelgrus/data-science-from-scratch).<p>
-Especially the `LISPers` : <br>
-([Peter Seibel](`https` ://gigamonkeys.com/book/)
-  ([Conrad Barski](`https` ://doc.lagout.org/programmation/Lisp/Land%20of%20Lisp_%20Learn%20to%20Program%20in%20Lisp%2C%20One%20Game%20at%20a%20Time%20%5BBarski%202010-11-15%5D.pdf)
-  ([Paul Graham](`http` ://www.paulgraham.com/onlisp.html)<br>
-    ([Peter Norvig](`http` ://norvig.com/lispy.html)
-      ([Guy Steele](`https` ://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y)))))).
+People that inspire me to code less, but better:<br>
+[Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0), [Hilary Mason](https://www.youtube.com/watch?v=l2btv0yUPNQ),
+[Brian McFee](https://brianmcfee.net/papers/ismir2011_sptree.pdf),  
+[Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html),
+[Joel Grus](https://github.com/joelgrus/data-science-from-scratch).<p>
+Especially the LISPers: <br>
+([Peter Seibel](https://gigamonkeys.com/book/)
+  ([Conrad Barski](https://doc.lagout.org/programmation/Lisp/Land%20of%20Lisp_%20Learn%20to%20Program%20in%20Lisp%2C%20One%20Game%20at%20a%20Time%20%5BBarski%202010-11-15%5D.pdf)
+  ([Paul Graham](http://www.paulgraham.com/onlisp.html)<br>
+    ([Peter Norvig](http://norvig.com/lispy.html)
+      ([Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y)))))).
 
