@@ -3,9 +3,8 @@
 <a href="all.md"><img align=right width=350 src="shortr.png"></a>
 
 XAI (explainable artificial intelligence) need not be complicated.
-E.g. here is some semi-supervised explainable multi-objective optimization XAI
-(from N items, find and explain the best ones, using just log(N) evals) in just
-a few hundred lines of LUA. Share and enjoy!
+For examples, here we need just a few 100 lines of LUA to search
+N items to  find and explain the best ones, using just log(N) evals.
 
 
 
