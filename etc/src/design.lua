@@ -6,7 +6,7 @@
 -- internal things, then building "data miners" or "optimizers"
 -- is a  pretty trivial extension. 
 
--- Just to demonstrate this, consider the object model of B(Ai)ttery:
+-- Just to demonstrate this, consider the object model of SHORTr:
 -- -   `ROWS` holds many `ROW`s (and each `ROW` holds one record).  `ROWS` summarize their numeric
 -- or symbolic  columns in `NUM`s or `SYM`s (respectively). Summaries are held in `COLS`, divided into  (x,y) sets for
 -- independent and dependent columns (respectively). 

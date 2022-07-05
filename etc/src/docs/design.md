@@ -1,4 +1,4 @@
-# [:high_brightness: shortr (less, but better, XAI)](all.md)
+# [:high_brightness: SHORTr (less, but better, XAI)](all.md)
 
 <a href="all.md"><img align=right width=350 src="shortr.png"></a>
 
@@ -36,7 +36,7 @@ with the thing we call "optimization". So once we build those
 internal things, then building "data miners" or "optimizers"
 is a  pretty trivial extension. 
 
-Just to demonstrate this, consider the object model of B(Ai)ttery:
+Just to demonstrate this, consider the object model of SHORTr:
 -   `ROWS` holds many `ROW`s (and each `ROW` holds one record).  `ROWS` summarize their numeric
 or symbolic  columns in `NUM`s or `SYM`s (respectively). Summaries are held in `COLS`, divided into  (x,y) sets for
 independent and dependent columns (respectively). 
