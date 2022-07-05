@@ -106,7 +106,7 @@ for semi-supervised multi-objective optimization XAI, in just a few hundreds lin
 This means, from N items, I can find and explain the best ones, using just log(N) evals. And then I can report
 (using a decision tree) what are the key factors that select for those better examples. 
 
- References
+ **References**:
 - Thomas H. Davenport and John C. Beck. (2001). 
   [The Attention economy](https://ubiquity.acm.org/article.cfm?id=376626). 
   Ubiquity 2001, May (May 1 - May 31, 2001), 
@@ -169,5 +169,5 @@ And, in this context, I must not forget the LISPers: <br>
   ([Conrad Barski](https://doc.lagout.org/programmation/Lisp/Land%20of%20Lisp_%20Learn%20to%20Program%20in%20Lisp%2C%20One%20Game%20at%20a%20Time%20%5BBarski%202010-11-15%5D.pdf)
   ([Paul Graham](http://www.paulgraham.com/onlisp.html)
     ([Peter Norvig](http://norvig.com/lispy.html)
-      ([Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y)))))).-- 
+      ([Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y)))))). 
 
