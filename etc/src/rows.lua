@@ -1,5 +1,5 @@
 -- ## Class ROWS
--- - ROWS stores (and makes summaries  of )    ROWs.
+--  ROWS stores (and makes summaries  of )    ROWs.
 
 -- **RESPONSIBILITIES** : 
 -- - Store many ROWs
@@ -11,7 +11,8 @@
 -- - Bayesian likelihood calculations (see `add`)   
 
 -- **COLLABORATORS** :
--- - NUM, SYM, COLS (and COLS are factories  that decide what NUMs or SYMs to make).
+-- - ROW, COLS (and COLS are factories  that decide what NUMs or SYMs to make).
+-- ------------------------------------------------------------
 local all = require"all"
 local chat,csv,map,obj  = all.chat, all.csv, all.map,  all.obj
 local push,rnd,rnds,the = all.push, all.rnd, all.rnds, all.the

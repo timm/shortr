@@ -29,7 +29,7 @@ decision trees, bayes classifiers, etc).
 </p>
 
 ## Class ROWS
-- ROWS stores (and makes summaries  of )    ROWs.
+ ROWS stores (and makes summaries  of )    ROWs.
 
 **RESPONSIBILITIES** : 
 - Store many ROWs
@@ -41,7 +41,8 @@ decision trees, bayes classifiers, etc).
 - Bayesian likelihood calculations (see `add`)   
 
 **COLLABORATORS** :
-- NUM, SYM, COLS (and COLS are factories  that decide what NUMs or SYMs to make).
+- ROW, COLS (and COLS are factories  that decide what NUMs or SYMs to make).
+------------------------------------------------------------
 
 
 
