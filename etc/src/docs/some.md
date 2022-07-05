@@ -1,20 +1,19 @@
-# [:high_brightness: B(Ai)ttery](all.md)
+# [:high_brightness: B(Ai)Terry](all.md)
 
 <a href="all.md"><img align=right width=350 src="bat2.png"></a>
 
 LUA is a "batteries-not-included" language.   But LUA makes it easy to add in the missing bits.
-E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).   
+E.g. here is "Terry" which are my  "b(Ai)tteries" for XAI (explainable artificial intelligence).   
 
 
-|what      | where |
-|---------:|:------|
-|start here| [design notes](design.md) |
-|config    | [all](all.md)   |
-|build     | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)  | 
-|demos     | [go](go.md)  |
-|apps      | [nb](nb.md), [tree](tree.md)  |
-|functions | [lib](lib.md) |  
-|methods   | [bin](bin.md), [cols](cols.md), [num](num.md), [row](row.md), [rows](rows.md), [some](some.md), [sym](sym.md) |
+|       what | where                                                                                                         |
+|-----------:|---------------------------------------------------------------------------------------------------------------|
+| start here | [design notes](design.md) [help](all.md)     |                                                                 |
+|      build | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)                       |
+|      demos | [go](go.md)                                                                                                   |
+|       apps | [nb](nb.md), [tree](tree.md)                                                                                  |
+|  functions | [lib](lib.md)                                                                                                 |
+|    methods | [bin](bin.md), [cols](cols.md), [num](num.md), [row](row.md), [rows](rows.md), [some](some.md), [sym](sym.md), [tree](tree.md) |
 
 <br clear=all>
 <p align=center>
