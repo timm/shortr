@@ -1,4 +1,4 @@
-# [:high_brightness: B(Ai)tery](all.md)
+# [:high_brightness: B(Ai).Tery](all.md)
 
 <a href="all.md"><img align=right width=350 src="bat2.png"></a>
 
