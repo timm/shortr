@@ -39,7 +39,7 @@ also can get to all the `lib`.
 local all=require"lib"
 all.the = all.opts( [[
 
-BAITTERY: semi-supervised multi-objective optimization XAI
+SHORTr: semi-supervised multi-objective optimization XAI
 (c) 2022 Tim Menzies <timm@ieee.org> BSD2 license
      
 From N items, find and explain the best ones, using just log(N) evals.
