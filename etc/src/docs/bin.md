@@ -81,8 +81,8 @@ function BIN.holds(i, rows)
 
 
 > ***merge(`i` :BIN, `j` :BIN, `min` :number): (BIN|nil)***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Returns non-nil if `i,j` should/can be merged.  
-"Should be merged" means some bins are too small. "Can be merged" means the parts are more
-complex than the whole.
+"Should be merged" means some bins are too small.  
+"Can be merged" means the parts are more complex than the whole.
 
 
 
