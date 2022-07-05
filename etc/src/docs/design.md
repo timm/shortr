@@ -8,7 +8,7 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 
 |what      | where |
 |---------:|:------|
-|start here| [object model](design.md) |
+|start here| [design notes](design.md) |
 |config    | [all](all.md)   |
 |build     | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)  | 
 |demos     | [go](go.md)  |
