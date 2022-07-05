@@ -51,7 +51,7 @@ for `NUM`s that holds just some sample of the numerics in that column.
   - XAI
   - etc.
 
-<img align=center src="design.jpb">
+<img align=center src="design.jpg">
 
 ## Design notes : about XAI
 From  [Wikipedia](https://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :
