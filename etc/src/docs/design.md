@@ -25,8 +25,8 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 </p>
 
-## Design notes
-### About our objects
+## Design `notes` : about our objects
+
 One of the  theres here is that that there the thing we call "data 
 mining" shares many of its internal data structures and algorithms
 with the thing we call "optimization". So once we build those
@@ -48,9 +48,8 @@ for `NUM`s that holds just some sample of the numerics in that column.
   - XAI
   - etc.
 
-### About XAI
-From
-[Wikipedia](https://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :
+## Design notes: about XAI
+From  [Wikipedia](https://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :
 
 > Explainable AI (XAI), or Interpretable AI, or Explainable Machine
 Learning (XML), is artificial intelligence (AI) in which the
@@ -77,8 +76,27 @@ development of XAI may limit the functionality of AI more broadly.
 
 In reply to the last para, I offer my own experience where the trade-off was not "explanation or performance". 
 Rather, by exploring concepts of XAI I can actually make the while
-system better, faster, easier to understand. For example. here I offer
-explaninable semi-supervised multi-objective optimization XAI, in just a few hundreds lines of code:
+system better, faster, easier to understand. 
+People are clever, as Davenport and Beck remind us,
+but they  have fixed and limited attention spans
+which they  hoard and use sparingly.
+Herbert Simon say that humans  use heuristic "short cuts" that let 
+them satisfy the demands of their work, just enough
+before rushing off to their next
+task.
+Once such short-cut is the "cue"; i.e. a small range
+of some variable that most effects the outcome. Feature
+extraction and weighting  is the process of finding
+those cues. This code can be summarized as "the hunt
+for 'cues'". 
+
+(Another short-cut is sampling; i.e. don't look at 
+everything, just a few things. There are many ways to
+sample and this code exploits them allL random, 
+reservoir, extreme)
+
+From all that I have distilled all that down to the following XAI algorithm
+for semi-supervised multi-objective optimization XAI, in just a few hundreds lines of code:
 - PASS1 (guess): eval two distant items on multi-objective criteria.
        Prune everything nearest the worst one. Recurse on rest.
 - PASS2 (guess again): do it again, using better items from first pass.
@@ -87,4 +105,65 @@ explaninable semi-supervised multi-objective optimization XAI, in just a few hun
 
 This means, from N items, I can find and explain the best ones, using just log(N) evals. And then I can report
 (using a decision tree) what are the key factors that select for those better examples. 
+
+ References
+- Thomas H. Davenport and John C. Beck. (2001). 
+  [The Attention economy](https://ubiquity.acm.org/article.cfm?id=376626). 
+  Ubiquity 2001, May (May 1 - May 31, 2001), 
+- Gigerenzer, G. (2008). 
+  [Why Heuristics Work](https://pure.mpg.de/rest/items/item_2100099/component/file_2100098/content).
+  Perspectives on Psychological Science, 3(1), 20–29. 
+- Vilone, Giulia & Longo, Luca. (2020). 
+  [Explainable Artificial Intelligence: a Systematic Review](https://arxiv.org/pdf/2006.00093.pdf)
+- Simon, Herbert A. (1956). 
+  [Rational Choice and the Structure of the Environment](https://uk.sagepub.com/sites/default/files/upm-binaries/25239_Chater~Vol_1~Ch_03.pdf)
+  Psychological Review. 63 (2): 129–138.- 
+
+## But what about Deep Learning?
+I've found that XAI can (sometimes) actually 
+_replace_ other AI tools since, at least in the domains
+I've explored, XAI tools can make better conclusions, 
+faster, and those conclusions are explicable to people.
+
+But not always of course. If you gave me 10,000 wavelets
+from a signal processing package then of course I'd 
+reach for a deep learner. So yes, sometimes I will abondon XAI if the domain
+needs its. That said, 
+if you wanted to _tune_ that deep
+learner, then I'd still use this code since it
+just runs a few what-of queries on the
+most important parts of the data. Also, if someone needs an _explanaition_
+of what the DL doing, then this code might be useful.
+
+## Viva la revolución
+Less is more.
+ Death to mash-ups and their associated 
+ problems with technical debt and security problems that leak in from all 
+ the parts used in the assembly.
+
+<b>Tony Hoare:</b><br>
+<em>"Inside every large program is a small program struggling to get out."</em><p>
+<b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
+<b>Dieter Rams:</b><br><em>"Less, but better."</em>
+
+So, ask yourself the following questions. Once you've done _it_, did you really understand _it_? Let's check.
+Can you do _it_ better?
+Can you now
+write _it_ in fewer lines and do you know how to make _it_ run faster?
+Can you see how _it_ is same/different to other things?
+And can you use those similarities to do more things with  _it_?
+Finally, can you teach _it_ quickly to newcomers?
+    
+### Role Models
+People that inspire me to code less, but better:<br>
+[Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0), [Hilary Mason](https://www.youtube.com/watch?v=l2btv0yUPNQ),
+[Brian McFee](https://brianmcfee.net/papers/ismir2011_sptree.pdf),  
+[Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html),
+[Joel Grus](https://github.com/joelgrus/data-science-from-scratch).<p>
+Especially the LISPers: <br>
+([Peter Seibel](https://gigamonkeys.com/book/)
+  ([Conrad Barski](https://doc.lagout.org/programmation/Lisp/Land%20of%20Lisp_%20Learn%20to%20Program%20in%20Lisp%2C%20One%20Game%20at%20a%20Time%20%5BBarski%202010-11-15%5D.pdf)
+  ([Paul Graham](http://www.paulgraham.com/onlisp.html)<br>
+    ([Peter Norvig](http://norvig.com/lispy.html)
+      ([Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y)))))).-- 
 
