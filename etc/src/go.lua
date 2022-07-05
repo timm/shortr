@@ -23,8 +23,9 @@ function go.MAPS()
        function(x,y) return x+y end)); return true end
 
 --  Summarize stream of numbers
-function go.NUMS() 
+function go.NUM() 
   local n=NUM(); for i=1,1000 do n:add(i) end; chat(n)
+  print(n:div())
   return true end
 
 -- Keep a sample of 32 nums (out of 1000).
@@ -36,6 +37,7 @@ function go.SOME()
 function go.SYM() 
   local s=SYM()
   for i=1,1000 do for _,c in pairs{"a","a","b"} do s:add(c) end end
+  print(s:div())
   chat(sort(s.kept)); return true end 
 
 -- Print CSV file.
@@ -64,7 +66,7 @@ function go.BETTERS( rs,best,m,rest)
   sort(rs.rows) 
   m    = (#rs.rows)^.5
   best = splice(rs.rows,1,m)  --(m^.5)) 
-  rest = splice(rs.rows,1,#rs.rows - m) --#rs.rows - 30) --(m^.5)) 
+  rest = splice(rs.rows,#rs.rows - m) --#rs.rows - 30) --(m^.5)) 
   chat(rs:clone(best):mids())
   chat(rs:clone(rest):mids())
   return true end
@@ -72,7 +74,7 @@ function go.BETTERS( rs,best,m,rest)
 function go.DIABETES(f,  a,n) --   i,t,a) 
   a = ABCD()
   n= NB(f or "../../data/diabetes.csv",function(got,want) a:add(got,want) end)
-  a:pretty( a:report() )
+  a:pretty( a:report() ) 
   return true end
 
 function go.SOYBEAN()  
@@ -89,7 +91,7 @@ function go.BINS( rs, m,best,rest)
   sort(rs.rows) 
   m    = (#rs.rows)^.5
   best = splice(rs.rows,1,m)  --(m^.5)) 
-  rest = splice(rs.rows,1,#rs.rows - m) --#rs.rows - 30) --(m^.5)) 
+  rest = splice(rs.rows,#rs.rows - m) --#rs.rows - 30) --(m^.5)) 
   rs:tree{best,rest}
   return true
 end

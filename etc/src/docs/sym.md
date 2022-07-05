@@ -52,8 +52,9 @@ local SYM = obj("SYM", function(i,at,txt)
 ```lua
 function SYM.add(i,x,n)
   if x ~= "?" then 
-    i.n = i.n+1
-    i.kept[x] = (n or 1) + (i.kept[x] or 0) end end
+    n = n or 1
+    i.n = i.n+n
+    i.kept[x] = n  + (i.kept[x] or 0) end end
 ```
 
 

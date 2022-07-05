@@ -122,7 +122,10 @@ splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t --> pull items
 ```lua
 function m.splice(t, start, stop, step)
   local u={}
-  for n=(start or 1)//1,(stop or #t)//1,(step or 1)//1 do u[1+#u]=t[n] end
+  start = (start or 1)//1
+  stop  = (stop or #t)//1
+  step  = (step or  1)//1 
+  for j=start,stop,step do u[1+#u]=t[j] end
   return u end
 ```
 
@@ -169,6 +172,16 @@ function m.map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x) end;return u
 function m.kap(t,f,     u) u={};for k,x in pairs(t) do u[1+#u]=f(k,x) end;return u end
 function m.maps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(x,u[k]) end;return v end
 function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;return v end
+```
+
+
+> ***sum(`t` :tab, `f` :?fun=same): num***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  sum items in `t`, filtered through `fun`  
+
+
+
+```lua
+function m.sum(t,f,   u) 
+   u=0;for _,x in pairs(t) do u=u+(f or m.same)(x) end; return u end
 ```
 
 

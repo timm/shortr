@@ -1,6 +1,7 @@
 -- ## ROWS to tree
 local all = require"all"
-local map,small,the = all.map,all.small, all.the
+local chat,lt,map    = all.chat,all.lt, all.map
+local small,sort,the = all.small, all.sort,all.the
 local ROWS = require"rows"
 local BIN = require"bin"
 local SYM = require"sym"
@@ -17,14 +18,14 @@ function ROWS.tree(i, listOfRows)
 function ROWS.kids(i, stop, y)
   if #i.rows >= stop then
     local all  = map(i.cols.x, function(xcol) 
-                                 return BIN.BINS(i.rows,xcol,SYM,y) end) 
+                     return BIN.BINS(i.rows,xcol,SYM,y) end) 
     local best = sort(all, lt"div")[1]
     i.kids     = map(best.bins, function (bin)
-                                  local new = i:clone(bin:holds(i.rows))
-                                  if #new.rows < #i.rows then
-                                    new.gaurd = bin
-                                    return new:kids(stop, y) end end) end
-  return i end
+                  local new = i:clone(bin:holds(i.rows))
+                  if #new.rows < #i.rows then
+                    new.gaurd = bin
+                    return new:kids(stop, y) end end) end
+    return i end
 
 
 function ROWS.branches(i,lvl)

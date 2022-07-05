@@ -26,12 +26,16 @@ E.g. here are some "b(Ai)tteries" for XAI (explainable artifical intelligence).
 </p>
 
 ## Options
+For convenience, this code first loads everything from `lib`, then
+adds in `the` config table. This means that anyone loading `all`
+also can get to all the `lib`.
 
 
 
 ```lua
 local all=require"lib"
 all.the = all.opts( [[
+
 BAITTERY: semi-supervised multi-objective optimization XAI
 (c) 2022 Tim Menzies <timm@ieee.org> BSD2 license
      

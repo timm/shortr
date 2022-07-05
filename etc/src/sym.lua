@@ -9,8 +9,9 @@ local SYM = obj("SYM", function(i,at,txt)
 -- add(i:SYM: x:any, n:?int=1) --> Add `n` count to `i.kept[n]` .
 function SYM.add(i,x,n)
   if x ~= "?" then 
-    i.n = i.n+1
-    i.kept[x] = (n or 1) + (i.kept[x] or 0) end end
+    n = n or 1
+    i.n = i.n+n
+    i.kept[x] = n  + (i.kept[x] or 0) end end
 
 -- bin(i:SYM: x:any) --> return `x` mapped to a finite range (just return x)
 function SYM.bin(x) return x end

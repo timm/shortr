@@ -1,24 +1,26 @@
 --  ##  info on 2 cols
 local all=require"all"
 local the=all.the
-local big,fmt,lt,obj,push = all.big, all.fmt, all.lt, all.obj, all.push
-local small,sort = all.small,all.sort
+local big,fmt,lt,map,obj = all.big, all.fmt, all.lt, all.map, all.obj
+local push,small,sort,sum = all.push, all.small,all.sort,all.sum
 
 --> BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN ->
 -- `ys` stores values seen from `xlo to `xhi`.
 local BIN = obj("BIN", function(i, xlo, xhi, ys)
   i.lo, i.hi, i.ys = xlo, xhi, ys end)
 
--- add(i:Bin, x:num, y:(num|str) -> Ensure `lo`,`hi` covers `x`. Add `y` to `ys`.
+-- add(i:BIN, x:num, y:(num|str) -> Ensure `lo`,`hi` covers `x`. Add `y` to `ys`.
 function BIN.add(i,x,y)
   i.lo = math.min(i.lo, x)
   i.hi = math.max(i.hi, x)
   i.ys:add(y) end
 
+-- hold(i:BIN, row:ROW): (ROW|nil) --> Returns non-nil if bin straddles the `row`.
 function BIN.hold(i, row)
   local x = row.cells[i.ys.at]
   if x=="?" or i.lo==i.hi or i.lo<x and x<=i.hi then return row end end
 
+-- holds(i:BIN, rows:[ROW]): [ROW] --> Returns the subset of `rows` straddled by this bin.
 function BIN.holds(i, rows)
   return map(rows, function(row) return i:hold(row) end) end
 
@@ -46,6 +48,8 @@ function BIN.BINS(rows,col,yKlass,y)
       dict[pos] = dict[pos] or push(list, BIN(v,v,yKlass(col.at, col.txt)))
       dict[pos]:add(v, y(row)) end end
   list = col:merges(sort(list, lt"lo"), small(the.Min, n))
+  print("")
+  for _,one in pairs(list) do print(col.txt,1,one) end
   return {bins= list,
           div = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
 

@@ -40,7 +40,10 @@ function m.rnds(t, places)
 -- `start` to `stop`, stepping by `step`. 
 function m.splice(t, start, stop, step)
   local u={}
-  for n=(start or 1)//1,(stop or #t)//1,(step or 1)//1 do u[1+#u]=t[n] end
+  start = (start or 1)//1
+  stop  = (stop or #t)//1
+  step  = (step or  1)//1 
+  for j=start,stop,step do u[1+#u]=t[j] end
   return u end
 
 -- sort(t:tab, f:fun) :tab --> Return `t`, sorted of function `f` (default "<").
@@ -60,6 +63,11 @@ function m.map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x) end;return u
 function m.kap(t,f,     u) u={};for k,x in pairs(t) do u[1+#u]=f(k,x) end;return u end
 function m.maps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(x,u[k]) end;return v end
 function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;return v end
+
+-- sum(t:tab, f:?fun=same): num --> sum items in `t`, filtered through `fun`
+function m.sum(t,f,   u) 
+   u=0;for _,x in pairs(t) do u=u+(f or m.same)(x) end; return u end
+
 -- ### String to thing
 
 -- thing(s:str):any --> Coerce string to whatever
