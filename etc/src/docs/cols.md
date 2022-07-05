@@ -12,12 +12,12 @@ decision trees, bayes classifiers, etc).
 
 |       what | where                                                                                                         |
 |-----------:|---------------------------------------------------------------------------------------------------------------|
-| start here | [help](all.md) &vert;  [install](/INSTALL.md) &vert; [design notes](design.md)     |                                                                 |
+| start here | [help](all.md) &equiv;  [install](/INSTALL.md) &equiv; [design notes](design.md)     |                                                                 |
 |      build | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)                       |
 |      demos | [go](go.md)                                                                                                   |
-|       apps | [nb](nb.md) &vert; [tree](tree.md)                                                                                |
+|       apps | [nb](nb.md) &equiv; [tree](tree.md)                                                                                |
 |  functions | [lib](lib.md)                                                                                                 |
-|    methods | [bin](bin.md) &vert; [cols](cols.md) &vert; [num](num.md) &vert; [row](row.md) &vert; [rows](rows.md) &vert; [some](some.md) &vert; [sym](sym.md) &vert; [tree](tree.md) |
+|    methods | [bin](bin.md) &equiv; [cols](cols.md) &equiv; [num](num.md) &equiv; [row](row.md) &equiv; [rows](rows.md) &equiv; [some](some.md) &equiv; [sym](sym.md) &equiv; [tree](tree.md) |
 
 <br clear=all>
 <p align=center>
