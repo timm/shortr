@@ -1,4 +1,4 @@
-# [:high_brightness: shortr &rarr; less (but better) XAI](all.md)
+# [:high_brightness: shortr (less, but better, XAI)](all.md)
 
 <a href="all.md"><img align=right width=350 src="shortr.png"></a>
 
