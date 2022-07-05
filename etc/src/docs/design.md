@@ -48,7 +48,7 @@ for `NUM`s that holds just some sample of the numerics in that column.
   - etc.
 
 ## About XAI
-From `Wikipedia` :
+From [Wikipedia](`https` ://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :
 
 > Explainable AI (XAI), or Interpretable AI, or Explainable Machine
 Learning (XML), is artificial intelligence (AI) in which the
