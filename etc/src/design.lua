@@ -109,6 +109,8 @@
 -- of what the DL doing, then this code might be useful.
 
 -- ## Viva la revolución
+-- <img src="che.jpg" align=right width=300>
+
 -- Less is more.
 --  Death to mash-ups and their associated 
 --  problems with technical debt and security problems that leak in from all 
