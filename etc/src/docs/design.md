@@ -128,7 +128,7 @@ _replace_ other AI tools since, at least in the domains
 I've explored, XAI tools can make better conclusions, 
 faster, and those conclusions are explicable to people.
 
-But not always of course. If you gave me 10,000 wavelets
+But not always. If you gave me 10,000 wavelets
 from a signal processing package then of course I'd 
 reach for a deep learner. So yes, sometimes I will abondon XAI if the domain
 needs its. That said, 
