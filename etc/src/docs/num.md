@@ -1,9 +1,10 @@
-# [:high_brightness: B(ai)t.teries for XAI](all.md)
+# [:high_brightness: Tiny Teries : a small object library for XAI](all.md)
 
 <a href="all.md"><img align=right width=350 src="bat2.png"></a>
 
 LUA is a "batteries-not-included" language.   But LUA makes it easy to add in the missing bits.
-E.g. here is "Teries" which are my "b(ai)tteries" for XAI (explainable artificial intelligence).   
+E.g. here is "Tiny Teries" which are my "b(ai)tteries" for XAI (explainable artificial intelligence).   
+
 
 
 |       what | where                                                                                                         |
