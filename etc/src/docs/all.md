@@ -37,6 +37,16 @@ also can get to all the `lib`.
 
 ```lua
 local all=require"lib"
+```
+
+
+The `all.opts` function (used here) parses the string to extract
+key/value pairs such as  `Min=.5` or `bins=16`. Then it checks
+for updates for those variables from the command-line. 
+
+
+
+```lua
 all.the = all.opts( [[
 
 SHORTr: semi-supervised multi-objective optimization XAI
