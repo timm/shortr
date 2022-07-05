@@ -29,8 +29,10 @@ decision trees, bayes classifiers, etc).
 </p>
 
 ## store many ROWs
+
 **CLASS** :
 - ROWS (stores and makes summaries  of     ROWs)
+
 **RESPONSIBILITIES** : 
 - Store many ROWs
 - Load csv files into ROWS (see `fill`)
@@ -39,6 +41,7 @@ decision trees, bayes classifiers, etc).
 - Clone (create new ROWS with the same structure) (see `clone`)
 - Distance calculations (see `dist`)
 - Bayesian likelihood calculations (see `add`)   
+
 **COLLABORATORS** :
 - NUM, SYM, COLS (and COLS are factories  that decide what NUMs or SYMs to make).
 
