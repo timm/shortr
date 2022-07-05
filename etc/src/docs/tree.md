@@ -2,9 +2,11 @@
 
 <a href="all.md"><img align=right width=350 src="shortr.png"></a>
 
-XAI (explainable artificial intelligence) need not be complicated.
+AI and XAI (explainable artificial intelligence) need not be complicated.
 For examples, here we need just a few 100 lines of LUA to search
-N items to  find and explain the best ones, using just log(N) evals.
+N items to  find and explain the best ones, using just log(N) evals. Along the way,
+the object model we use could also be used for many other tasks (nearest neighbor,
+decision trees, bayes classifiers, etc).
 
 
 
