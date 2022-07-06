@@ -1,7 +1,7 @@
 # [:high_brightness: SHORTr : less (but better) XAI](all.md)
 
 <!-- a href="all.md"><img align=right width=500 src="https://ernesto.net/wp-content/uploads/2021/01/img6-home5.png"></a --->
-<a href="all.md"><img align=right width=400 src="xai.png"></a>
+<a href="all.md"><img align=right width=400 src="xai2.png"></a>
 
 AI and XAI (explainable artificial intelligence) need not be complicated.
 For example, here we need just a few 100 lines of LUA to search
@@ -194,6 +194,15 @@ function m.sum(t,f,   u)
 
 
 ### String to thing
+
+> trim(s:str) : str > Trim leading and trailing white space
+
+
+
+```lua
+function m.trim(x) return  x:match"^%s*(.-)%s*$" end
+```
+
 
 thing(s:str):any --> Coerce string to whatever
 is simplest (boolean or integer or float or, if all else fails, a string).

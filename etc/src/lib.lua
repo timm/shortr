@@ -75,6 +75,9 @@ function m.sum(t,f,   u)
 
 -- ### String to thing
 
+-- > trim(s:str) : str > Trim leading and trailing white space
+function m.trim(x) return  x:match"^%s*(.-)%s*$" end
+
 -- thing(s:str):any --> Coerce string to whatever
 -- is simplest (boolean or integer or float or, if all else fails, a string).
 function m.thing(x)

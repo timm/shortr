@@ -1,3 +1,5 @@
+n-1 globals is better than n
+
 old debate : buy vs build? traditional answer: buy the most rebuild the elast. not 
 everypne that way
 
