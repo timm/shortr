@@ -14,7 +14,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 -- ### Create
 
--- > SYM(at:?int=0, txt:?str="") :SYM  >Constructor<
+-- > SYM(at:?int=0, txt:?str="") :SYM  >Constructor
 local SYM = obj("SYM", function(i,at,txt)
   i.at   = at or 0   -- :num -- column position 
   i.txt  = txt or "" -- :str -- column name 
@@ -29,7 +29,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 -- > bin(i:SYM, x:any) > Return `x` mapped to a finite range (just return x).<
 function SYM.bin(i,x) return x end
 
--- > merge(i:SYM,j:SYM):SYM >Combine two SYMS.< 
+-- > merge(i:SYM,j:SYM):SYM >Combine two SYMs.< 
 function SYM.merge(i,j,     k)
   k = i:clone()
   for _,kept in pairs{i.kept, j.kept} do

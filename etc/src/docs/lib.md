@@ -165,8 +165,7 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
-map(t:tab, f:fun): tab --> 
-kap(t:tab, f:fun): tab --> 
+map(t:tab, f:fun): tab --> ***kap(`t` :tab, `f` :fun) : tab --***<br>
 maps(list1:tab, list2:tab, f:fun): tab --> 
 kaps(list1:tab, list2:tab, f:fun): tab --> 
 Return items in `t`, filtered thru `f`.
@@ -283,7 +282,7 @@ chunks(file:str) --> divide source code into comments and code.
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
-          return s:gsub(">([^>]+)>([^!]+)<",function(hint,txt)
+          return s:gsub(">([^>]+)>([^!]+)[\n$]",function(hint,txt)
                     txt  =txt:match"^%s*(.-)%s*$"
                     hint = hint:match"^%s*(.-)%s*$"
                                :gsub("([%w]+):","`%1`:")

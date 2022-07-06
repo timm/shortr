@@ -51,9 +51,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 ### Create
 
-> ***SYM(`at` :?int=0, `txt` :?str="")  :SYM***<br>
-Constructor
-
+> SYM(at:?int=0, txt:?str="") :SYM  >Constructor
 
 
 
@@ -67,9 +65,7 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 
-> ***clone(`i` :SYM)  :SYM***<br>
-Return a class of the same structure.
- 
+> clone(i:SYM) :SYM  >Return a class of the same structure.< 
 
 
 
@@ -79,9 +75,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 
 
 ### Discretize   
-> ***bin(`i` :SYM, `x` :any)***<br>
-Return `x` mapped to a finite range (just return x).
-
+> bin(i:SYM, x:any) > Return `x` mapped to a finite range (just return x).<
 
 
 
@@ -90,9 +84,7 @@ function SYM.bin(i,x) return x end
 ```
 
 
-> ***merge(`i` :SYM,`j` :SYM) :SYM***<br>
-Combine two SYMS.
- 
+> merge(i:SYM,j:SYM):SYM >Combine two SYMs.< 
 
 
 
@@ -105,9 +97,7 @@ function SYM.merge(i,j,     k)
 ```
 
 
-> ***merges(`i` :SYM,`t` :tab) :tab***<br>
-Merge a list of bins (for symbolic y-values).
-
+> merges(i:SYM,t:tab):tab >Merge a list of bins (for symbolic y-values).<
 
 
 
@@ -118,8 +108,7 @@ function SYM.merges(i,t,...) return t end
 
 ### Distance
 > ***dist(`i` :SYM, `x` :any,`y` :any)  :num***<br>
-Return distance 0..1 between `x,y`.
-
+Return distance 0..1 between `x,y`. <
 Assume max distance for missing values.
 
 
@@ -131,9 +120,7 @@ function SYM.dist(i,x,y)
 
 
 ### Likelihood  
-> ***like(`i` :SYM,`x` :any,`prior` :num)  :num***<br>
-Return how much `x` might belong to `i`.
-
+> like(i:SYM,x:any,prior:num) :num >Return how much `x` might belong to `i`.<
 
 
 
@@ -145,8 +132,7 @@ function SYM.like(i,x,prior)
 
 ### Report
  > ***div(`i` :SYM) :tab***<br>
-Return `div`ersity of a column.
-
+Return `div`ersity of a column.<
 FYI, diversity is the  tendency _not_ to be at the central tendency.
 
 
@@ -159,9 +145,7 @@ function SYM.div(i,p)
 ```
 
 
-> ***mid(`i` :SYM) :tab***<br>
-Return a columns' `mid`ddle (central tendency).
-
+> mid(i:SYM):tab  >Return a columns' `mid`ddle (central tendency).<
 
 
 
@@ -174,9 +158,7 @@ function SYM.mid(i,p)
 
 
 ### Update
-> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>
-Add `n` count to `i.kept[n]`.
-
+> add(i:SYM: x:any, n:?int=1) >Add `n` count to `i.kept[n]`.<
 
 
 

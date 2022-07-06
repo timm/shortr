@@ -116,7 +116,7 @@ function m.chat(t) print(m.cat(t)); return t end
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
-          return s:gsub(">([^>]+)>([^!]+)<",function(hint,txt)
+          return s:gsub(">([^>]+)>([^!]+)[\n$]",function(hint,txt)
                     txt  =txt:match"^%s*(.-)%s*$"
                     hint = hint:match"^%s*(.-)%s*$"
                                :gsub("([%w]+):","`%1`:")
