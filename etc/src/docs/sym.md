@@ -34,12 +34,12 @@ Summarize symbols
 
 **RESPONSIBILITIES** : 
 - Same responsibilities as [NUM](num.md) (but for symbols)
-- #create a duplicate structure 
-- #update summarization
-- #discretize 
-- #distance calcs
-- #like lihood calcs (for Bayes)
-- #report central tendency and diversity
+- [Create](#create) a duplicate structure 
+- [Discretize](#discretuze) numerics into a few bins.
+- [Distance](#distance) calculations
+- [Likelihood](#likelihood) calculations (for Bayes)
+- [Report](#report)  central tendency and diversity
+- [Update](#update) summarization
 ------------------------------------------------------------
 
 
@@ -74,21 +74,6 @@ Return a class of the same structure.
 
 ```lua
 function SYM.clone(i) return SYM(i.at, i.txt) end
-```
-
-
-### Update
-> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>
-Add `n` count to `i.kept[n]` .
-
-
-
-```lua
-function SYM.add(i,x,n)
-  if x ~= "?" then 
-    n = n or 1
-    i.n = i.n+n
-    i.kept[x] = n  + (i.kept[x] or 0) end end
 ```
 
 
@@ -175,6 +160,21 @@ function SYM.div(i,p)
   local ent, fun = 0, function(p) return -p*math.log(p,2) end
   for x,n in pairs(i.kept) do if n > 0 then ent=ent + fun(n/i.n) end end
   return ent end
+```
+
+
+### Update
+> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>
+Add `n` count to `i.kept[n]` .
+
+
+
+```lua
+function SYM.add(i,x,n)
+  if x ~= "?" then 
+    n = n or 1
+    i.n = i.n+n
+    i.kept[x] = n  + (i.kept[x] or 0) end end
 ```
 
 
