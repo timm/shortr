@@ -80,15 +80,16 @@ if not empty, will be stored in `klass`.
 
 ```lua
 function COLS._make1Column(i,at,txt)
-  local skipp=  function(x) return (x or ""):find":$"     end -- what to ignore
-  local klassp= function(x) return (x or ""):find"!$"     end -- single goal
-  local goalp=  function(x) return (x or ""):find"[!+-]$" end -- dependent column
-  local nump=   function(x) return (x or ""):find"^[A-Z]" end -- NUM or SYM?
-  local col =   (nump(txt) and NUM or SYM)(at,txt) 
+  local is={}
+  is.skip=  function(x) return (x or ""):find":$"     end -- what to ignore
+  is.klass= function(x) return (x or ""):find"!$"     end -- single goal
+  is.goal=  function(x) return (x or ""):find"[!+-]$" end -- dependent column
+  is.num=   function(x) return (x or ""):find"^[A-Z]" end -- NUM or SYM?
+  local col =   (is.num(txt) and NUM or SYM)(at,txt) 
   push(i.all, col)
-  if not skipp(txt) then
-    push(goalp(txt) and i.y or i.x, col)
-    if klassp(txt) then i.klass = col end end end 
+  if not is.skip(txt) then
+    push(is.goal(txt) and i.y or i.x, col)
+    if is.klass(txt) then i.klass = col end end end 
 ```
 
 
