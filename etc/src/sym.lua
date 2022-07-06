@@ -24,6 +24,11 @@ local SYM = obj("SYM", function(i,at,txt)
   i.kept = {}        -- :tab -- counts of symbols seen so far
   end)
 
+-- :: clone(i:SYM) :SYM
+-- Return a class of the same structure.
+function SYM.clone(i) return SYM(i.at, i.txt) end
+
+-- ### Update
 -- :: add(i:SYM: x:any, n:?int=1)
 -- Add `n` count to `i.kept[n]` .
 function SYM.add(i,x,n)
@@ -32,12 +37,7 @@ function SYM.add(i,x,n)
     i.n = i.n+n
     i.kept[x] = n  + (i.kept[x] or 0) end end
 
--- :: clone(i:SYM) :SYM
--- Return a class of the same structure.
-function SYM.clone(i) return SYM(i.at, i.txt) end
-
 -- ### Discretize
-
 -- :: bin(i:SYM, x:any)
 -- Return `x` mapped to a finite range (just return x)
 function SYM.bin(i,x) return x end
@@ -55,21 +55,18 @@ function SYM.merge(i,j,     k)
 function SYM.merges(i,t,...) return t end
 
 -- ### Distance
-
 -- :: dist(i:SYM, x:any,y:any) :num
 -- Return distance 0..1 between `x,y`. Assume max distance for missing values.
 function SYM.dist(i,x,y)
   return  (x=="?" or y=="?")  and 1 or x==y and 0 or 1 end
 
 -- ### Like  
-
 -- :: like(i:SYM,x:any,prior:num) :num
 -- Return how much `x` might belong to `i`.
 function SYM.like(i,x,prior)
    return ((i.kept[x] or 0)+the.m*prior) / (i.n+the.m) end
 
 -- ### Report
-
 -- :: mid(i:SYM):tab
 -- Return a columns' `mid`ddle (central tendency).
 function SYM.mid(i,p)
