@@ -13,7 +13,7 @@
 local all = require"all"
 local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
--- SYM(at:?int, txt:?str) :SYM --> (CONSTRUCTOR) Summarize a stream of non-numerics.
+-- SYM(at:?int, txt:?str) :SYM --> CONSTRUCTOR: Summarize a stream of non-numerics.
 local SYM = obj("SYM", function(i,at,txt)
   i.at   = at or 0   -- :num -- column position 
   i.txt  = txt or "" -- :str -- column name 
@@ -21,7 +21,7 @@ local SYM = obj("SYM", function(i,at,txt)
   i.kept = {}        -- :tab -- counts of symbols seen so far
   end)
 
--- add(i:SYM: x:any, n:?int=1) --> (UPDATE] Add `n` count to `i.kept[n]` .
+-- add(i:SYM: x:any, n:?int=1) --> UPDATE: Add `n` count to `i.kept[n]` .
 function SYM.add(i,x,n)
   if x ~= "?" then 
     n = n or 1
