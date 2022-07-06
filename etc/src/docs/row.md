@@ -4,7 +4,7 @@
 
 
 AI and XAI (explainable artificial intelligence) need not be
-complicated.  For example, here we need just a few 100 lines of LUA
+hard.  E.g. here's a few 100 lines of LUA
 to search N items to  find and explain the best ones, using just
 log(N) evals.  
 
