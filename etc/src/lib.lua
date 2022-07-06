@@ -8,9 +8,9 @@ function m.rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 -- ### Meta
 
--- >lt(x:str):function   > Retuns a function that sorts ascending on `x`.<
+-- >lt(x:str):function   
+--  gt(x:str):function > Returns functions that sorts on `x`.<
 function m.lt(x) return function(a,b) return a[x] < b[x] end end
--- >gt(x:str):function > Returns functions that sorts descending  on `x`.<
 function m.gt(x) return function(a,b) return a[x] > b[x] end end
 
 -- >same(x:any):any > Return x, unchanged.<
@@ -53,7 +53,7 @@ function m.push(t,x) t[1+#t] = x; return x end
 function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 -- >map(t:tab, f:fun): tab  
 --  kap(t:tab, f:fun): tab  
---  maps(list1:tab, list2:tab, f:fun): tab 
+--  maps(list1:tab, list2:tab, f:fun): tab   
 --  kaps(list1:tab, list2:tab, f:fun): tab >
 -- Return items in `t`, filtered thru `f`.
 -- If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
