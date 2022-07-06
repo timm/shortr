@@ -39,22 +39,22 @@ is a  pretty trivial extension.
 
 Just to demonstrate this, consider the object model of SHORTr:
 
-<img align=center src="design.jpg"> ***-   `[ROWS](rows.md)` holds many `[ROW](row.md)`s (and each `[ROW](row.md)` holds one record).  `[ROWS](rows.md)` summarize their numeric
-or symbolic  columns in `[NUM](num.md)`s or `[SYM](sym.md)`s (respectively). Summaries are held in `[COLS](cols.md)`, divided into  (x,y) sets for
+<img align=center src="design.jpg"> ***-   `[ROWS](rows.md#create)` holds many `[ROW](row.md#create)`s (and each `[ROW](row.md#create)` holds one record).  `[ROWS](rows.md#create)` summarize their numeric
+or symbolic  columns in `[NUM](num.md#create)`s or `[SYM](sym.md#create)`s (respectively). Summaries are held in `[COLS](cols.md#create)`, divided into  (x,y) sets for
 independent and dependent columns (respectively). 
-- `[BIN](bin.md)`s and `[SOME](some.md)` are helper classes. Pairs of (x,y) columns are summarized in `[BIN](bin.md)`s. Adjacent `[BIN](bin.md)`s with  similar y distributions
+- `[BIN](bin.md#create)`s and `[SOME](some.md#create)` are helper classes. Pairs of (x,y) columns are summarized in `[BIN](bin.md#create)`s. Adjacent `[BIN](bin.md#create)`s with  similar y distributions
 are merged. 
-`[SOME](some.md)` is a helper
-for `[NUM](num.md)`s that holds just some sample of the numerics in that column. 
+`[SOME](some.md#create)` is a helper
+for `[NUM](num.md#create)`s that holds just some sample of the numerics in that column. 
 - Everything else is just tiny extensions to the above object model. e.g. 
-  - When clustering, each cluster is its own `[ROWS](rows.md)`.
-  - `[NB](nb.md)` classifiers create one `[ROWS](rows.md)` per class in the training data.
-  - Decision `[TREE](tree.md)`s are built by recursively finding the `[BIN](bin.md)`s that best distinguish different `[ROW](row.md)`s. 
-  - [XAI](xai.md)
+  - When clustering, each cluster is its own `[ROWS](rows.md#create)`.
+  - `[NB](nb.md#create)` classifiers create one `[ROWS](rows.md#create)` per class in the training data.
+  - Decision `[TREE](tree.md#create)`s are built by recursively finding the `[BIN](bin.md#create)`s that best distinguish different `[ROW](row.md#create)`s. 
+  - [XAI](xai.md#create)
   - etc.
 
 
-## Design notes : about [XAI](xai.md)
+## Design notes : about [XAI](xai.md#create)
 From  [Wikipedia](`https`://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :***<br>
 Explainable AI (XAI), or Interpretable AI, or Explainable Machine
 Learning (XML), is artificial intelligence (AI) in which the

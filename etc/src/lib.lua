@@ -122,7 +122,7 @@ function m.chunks(file)
                                :gsub("([%w]+):","`%1`:")
                                :gsub("([A-Z][A-Z]+)",function(word)
                                   down=word:lower()
-                                  return "["..word.."]("..down..".md)" end)
+                                  return "["..word.."]("..down..".md#create)" end)
                     return '> ***'..hint .. "***<br>\n"..txt.."\n" end ) 
   end ------------------------
   local dump = function(what,t) 
