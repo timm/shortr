@@ -211,7 +211,7 @@ is simplest (boolean or integer or float or, if all else fails, a string).
 
 ```lua
 function m.thing(x)
-  x = x:match"^%s*(.-)%s*$"
+  x = m.trim(x)
   if x=="true" then return true elseif x=="false" then return false else
     return math.tointeger(x) or tonumber(x) or x end  end
 ```
@@ -293,13 +293,11 @@ function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
           return s:gsub(">([^>]+)>([^<]+)<",function(hint,txt)
-                    txt  = txt:match"^%s*(.-)%s*$"
-                    hint = hint:match"^%s*(.-)%s*$"
-                               :gsub("([%w]+):","`%1`:")
+            hint = m.trim(hint):gsub("([%w]+):","`%1`:")
                                :gsub("([A-Z][A-Z]+)",function(word)
                                   local down=word:lower()
                                   return "["..word.."]("..down..".md#create)" end)
-                    return '> ***'..hint .. "***<br>\n"..txt.."\n" end ) 
+                    return '> ***'..hint .. "***<br>\n"..m.trim(txt).."\n" end ) 
   end ------------------------
   local dump = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
