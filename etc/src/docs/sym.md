@@ -34,8 +34,8 @@ Summarize symbols
 
 **RESPONSIBILITIES** : 
 - [Create](#create) a duplicate structure 
-- [Discretize](#discretuze) numerics into a few bins.
-- [Distance](#distance) calculations
+- [Discretize](#discretize) numerics into a few bins (for building trees)
+- [Distance](#distance) calculations (for clustering)
 - [Likelihood](#likelihood) calculations (for Bayes)
 - [Report](#report)  central tendency and diversity
 - [Update](#update) summarization
