@@ -120,7 +120,7 @@
 --  problems with maintainability and technical debt and security.
 
 -- <b>William of Ockham:</b></br>
--- <em>"Non sunt multiplicanda entia sine necessitate"</em><br>
+-- <em>"Non sunt multiplicanda entia sine necessitate"</em>
 -- (Entities are not to be multiplied without necessity)<p>
 -- <b>Ada Lovelace:</b><br>
 -- <em>"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em><p>
