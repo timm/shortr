@@ -13,8 +13,8 @@ log(N) evals.
 **demos:**       ([go](go.md))                                                                                                                                                      
 **apps:**         ([nb](nb.md) ([tree](tree.md)))   
 **functions:**   ([lib](lib.md))     
-**columns:**    ([cols](cols.md) ([num](num.md) ([some](some.md) ([sym](sym.md)))))
-**rows:** ([row](row.md) ([rows](rows.md)))
+**columns:**    ([cols](cols.md) ([num](num.md) ([some](some.md) ([sym](sym.md)))))  
+**rows:** ([row](row.md) ([rows](rows.md)))   
 **trees:** ([bin](bin.md) ([tree](tree.md))))
 
 
