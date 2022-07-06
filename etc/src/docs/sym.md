@@ -50,7 +50,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 ```
 
 
-> ***SYM(`at` :?int, `txt` :?str) :SYM***<br>  (#constructor) Summarize a stream of non-numerics.  
+> ***SYM(`at` :?int, `txt` :?str) :SYM***<br>  (CONSTRUCTOR) Summarize a stream of non-numerics.  
 
 
 
@@ -64,7 +64,7 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 
-> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>  [^update] Add `n` count to `i.kept[n]` .  
+> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>  (UPDATE] Add `n` count to `i.kept[n]` .  
 
 
 
