@@ -188,7 +188,16 @@ Return items in `t` rounds to `places`.
 ```lua
 function m.rnds(t, places)
   local u={};for k,x in pairs(t) do u[k]=m.rnd(x,places or 2)end;return u end
+```
 
+
+> ***small(min,x) :num***<br>
+Defined what `small` means.
+
+
+
+
+```lua
 function m.small(min,x) return min<1 and x^min or x end
 ```
 

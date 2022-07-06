@@ -71,6 +71,7 @@ function m.rnd(x, places)  --   &#9312;
 function m.rnds(t, places)
   local u={};for k,x in pairs(t) do u[k]=m.rnd(x,places or 2)end;return u end
 
+-- > small(min,x) :num > Defined what `small` means. <
 function m.small(min,x) return min<1 and x^min or x end
 
 -- ### Meta
