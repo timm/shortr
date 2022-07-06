@@ -27,7 +27,7 @@ log(N) evals.
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 </p>
 
-##  Class Col
+##  Class COLS
 Factor for making NUMs or SYMs
 
 **RESPONSIBILITIES** : 
@@ -49,7 +49,9 @@ local NUM, SYM = require"NUM", require"SYM"
 
 
 ### Create
-> COLS(names:[str]) :COLS > Factory. Turns a list of names into NUMs or SYMs.<
+> ***[COLS](cols.md#create)(`names`:[str]) :[COLS](cols.md#create)***<br>
+Factory. Turns a list of names into NUMs or SYMs.
+
 Goal columns get added to `i.y` and others to `i.x` (unless denoted `ignored`). 
 A klass column goes to `i.klass`.
 
@@ -78,7 +80,9 @@ function COLS.make1Column(i,at,txt)
 
 
 ### Update
-> add(i:COLS: row:ROW) > Update columns using data from `row`.<
+> ***add(`i`:`[COLS](cols.md#create)`: `row`:[ROW](row.md#create))***<br>
+Update columns using data from `row`.
+
 
 
 
