@@ -124,7 +124,7 @@ function SYM.dist(i,x,y)
 ```
 
 
-### Like  
+### Likelihood  
 > ***like(`i` :SYM,`x` :any,`prior` :num) :num***<br>
 Return how much `x` might belong to `i`.
 

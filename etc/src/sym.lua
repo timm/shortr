@@ -51,7 +51,7 @@ function SYM.merges(i,t,...) return t end
 function SYM.dist(i,x,y)
   return  (x=="?" or y=="?")  and 1 or x==y and 0 or 1 end
 
--- ### Like  
+-- ### Likelihood  
 -- :: like(i:SYM,x:any,prior:num) :num
 -- Return how much `x` might belong to `i`.
 function SYM.like(i,x,prior)
