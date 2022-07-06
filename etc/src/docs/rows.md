@@ -11,8 +11,8 @@ trees, bayes classifiers, etc).
 
 <a href="all.md"><img align=right width=600 src="xai4.png"></a>
 
-Also, this code serves as a demonstrator for the value of LUA. LUA is sort of like
-LISP, without brackets. Given 
+Also, this code shows off how LUA is a really cool language
+(kind of like LISP, without brackets). Given 
 a dozen "ten-liners", this code supports test suites for
 test-driven development, literate programming,  several tiny
 domain-specific languages, object-oriented programming, command-line
@@ -111,11 +111,7 @@ function ROWS.fill(i,src)
 ```
 
 
-like(i:ROWS,row;ROW,nklasses:num,nrows:num):num --> ***Return -- P(H)*&prod;<sub***<br>
-i
-/sub> ***(P(E<sub***<br>
-i
-/sub>|H)). 
+like(i:ROWS,row;ROW,nklasses:num,nrows:num):num --> Return -- P(H)*&prod;<sub>i</sub> (P(E<sub>i</sub>|H)). 
 Do it with logs to handle very small numbers.
 
 

@@ -11,8 +11,8 @@ trees, bayes classifiers, etc).
 
 <a href="all.md"><img align=right width=600 src="xai4.png"></a>
 
-Also, this code serves as a demonstrator for the value of LUA. LUA is sort of like
-LISP, without brackets. Given 
+Also, this code shows off how LUA is a really cool language
+(kind of like LISP, without brackets). Given 
 a dozen "ten-liners", this code supports test suites for
 test-driven development, literate programming,  several tiny
 domain-specific languages, object-oriented programming, command-line
@@ -58,9 +58,7 @@ local NUM, SYM = require"NUM", require"SYM"
 
 
 ### Create
-> ***[COLS](cols.md#create)(`names`:[str]) :[COLS](cols.md#create)***<br>
-Factory. Turns a list of names into NUMs or SYMs.
-
+> COLS(names:[str]) :COLS > Factory. Turns a list of names into NUMs or SYMs.<
 Goal columns get added to `i.y` and others to `i.x` (unless denoted `ignored`). 
 A klass column goes to `i.klass`.
 
@@ -89,9 +87,7 @@ function COLS.make1Column(i,at,txt)
 
 
 ### Update
-> ***add(`i`:`[COLS](cols.md#create)`: `row`:[ROW](row.md#create))***<br>
-Update columns using data from `row`.
-
+> add(i:COLS: row:ROW) > Update columns using data from `row`.<
 
 
 
