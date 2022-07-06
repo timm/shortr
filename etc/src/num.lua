@@ -95,7 +95,7 @@ function NUM.norm(i,x)
   local a=i.kept:has(); return (a[#a]-a[1])<1E-9 or (x-a[1])/(a[#a]-a[1]) end
 
 -- ### Update
--- > add(i:NUM: x:num, n:?int=1) > `n` times,update `i`'s SOME object.<
+-- > add(i:NUM, x:num, n:?int=1) > `n` times,update `i`'s SOME object.<
 function NUM.add(i,x,n)
   if x ~="? " then 
    for _ = 1,(n or 1) do i.n=i.n+1; i.kept:add(x) end end end

@@ -212,7 +212,7 @@ function NUM.norm(i,x)
 
 
 ### Update
-> ***add(`i`:`[NUM](num.md#create)`: `x`:num, `n`:?int=1)***<br>
+> ***add(`i`:[NUM](num.md#create), `x`:num, `n`:?int=1)***<br>
 `n` times,update `i`'s SOME object.
 
 
