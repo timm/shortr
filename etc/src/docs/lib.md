@@ -56,13 +56,23 @@ function m.rogues()
 ### Meta
 
 > ***lt(`x`:str):function***<br>
-gt(x:str):function > Returns functions that sorts on `x`.
+Retuns a function that sorts ascending on `x`.
 
 
 
 
 ```lua
 function m.lt(x) return function(a,b) return a[x] < b[x] end end
+```
+
+
+> ***gt(`x`:str):function***<br>
+Returns functions that sorts descending  on `x`.
+
+
+
+
+```lua
 function m.gt(x) return function(a,b) return a[x] > b[x] end end
 ```
 
