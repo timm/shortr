@@ -14,7 +14,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 -- ### Create
 
--- :: SYM(at:?int, txt:?str) :SYM -> Constructor.
+-- SYM(at:?int, txt:?str) :SYM :: Constructor.
 local SYM = obj("SYM", function(i,at,txt)
   i.at   = at or 0   -- :num -- column position 
   i.txt  = txt or "" -- :str -- column name 

@@ -51,7 +51,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 ### Create
 
-:: SYM(at:?int, txt:?str) :SYM -> Constructor.
+SYM(at:?int, txt:?str) :SYM :: Constructor.
 
 
 
@@ -106,10 +106,8 @@ function SYM.merges(i,t,...) return t end
 ```
 
 
-hint	dist(i:SYM, x:any,y:any) :num 	txt	  Return distance 0..1 between `x,y`. 
 ### Distance
-> ***dist(`i` :SYM, `x` :any,`y` :any)  :num***<br>
-  Return distance 0..1 between `x,y`. 
+dist(i:SYM, x:any,y:any) :num ->  Return distance 0..1 between `x,y`. 
 Assume max distance for missing values.
 
 
@@ -131,10 +129,8 @@ function SYM.like(i,x,prior)
 ```
 
 
-hint	 div(i:SYM):tab 	txt	 Return `div`ersity of a column
 ### Report
-> ***div(`i` :SYM) :tab***<br>
- Return `div`ersity of a column
+ div(i:SYM):tab -> Return `div`ersity of a column
 (its tendency _not_ to be a its central tendency).
 
 
