@@ -54,7 +54,7 @@ local SOME = require"some"
 ```
 
 
-### CREATE
+### Create
 > ***NUM(`at` :?int, `txt` :?str)  :NUM***<br>
 Summarize a stream of numbers.
 
@@ -80,20 +80,6 @@ Return a class of the same structure.
 
 ```lua
 function NUM.clone(i) return NUM(i.at, i.txt) end
-```
-
-
-### Update
-> ***add(`i` :`NUM` : `x` :num, `n` :?int=1)***<br>
-`n` times,update `i`'s SOME object.
-
-
-
-
-```lua
-function NUM.add(i,x,n)
-  if x ~="? " then 
-   for _ = 1,(n or 1) do i.n=i.n+1; i.kept:add(x) end end end
 ```
 
 
@@ -127,7 +113,7 @@ function NUM.merge(i,j,     k)
 ```
 
 
-> ***merge(`i` :NUM,`t` :[BIN])  :[BIN]***<br>
+> ***merges(`i` :NUM,`t` :[BIN])  :[BIN]***<br>
 merge a list of bins (for numeric y-values)
 
 Note the last kine of `merges`: if anything merged, then loop again looking for other merges.
@@ -219,6 +205,20 @@ Normalize `x` 0..1 for lo..hi
 ```lua
 function NUM.norm(i,x)
   local a=i.kept:has(); return (a[#a]-a[1])<1E-9 or (x-a[1])/(a[#a]-a[1]) end
+```
+
+
+### Update
+> ***add(`i` :`NUM` : `x` :num, `n` :?int=1)***<br>
+`n` times,update `i`'s SOME object.
+
+
+
+
+```lua
+function NUM.add(i,x,n)
+  if x ~="? " then 
+   for _ = 1,(n or 1) do i.n=i.n+1; i.kept:add(x) end end end
 
 ```
 

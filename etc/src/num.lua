@@ -17,7 +17,7 @@ local all = require"all"
 local big,obj,per,push,the = all.big,all.obj,all.per,all.push,all.the
 local SOME = require"some"
 
--- ### CREATE
+-- ### Create
 -- > NUM(at:?int, txt:?str) :NUM > Summarize a stream of numbers.<
 local NUM = obj("NUM", function(i,at,txt) 
   i.at   = at or 0                 -- :num   column position 
@@ -29,12 +29,6 @@ local NUM = obj("NUM", function(i,at,txt)
 
 -- > clone(i:NUM) :NUM > Return a class of the same structure.<
 function NUM.clone(i) return NUM(i.at, i.txt) end
-
--- ### Update
--- > add(i:NUM: x:num, n:?int=1) > `n` times,update `i`'s SOME object.<
-function NUM.add(i,x,n)
-  if x ~="? " then 
-   for _ = 1,(n or 1) do i.n=i.n+1; i.kept:add(x) end end end
 
 -- ### Discretize
 -- > bin(i:NUM: x:any) > Return `x` mapped to a finite range<
@@ -50,7 +44,7 @@ function NUM.merge(i,j,     k)
     for _,x in pairs(kept) do k:add(x) end end
   return k end
 
--- > merge(i:NUM,t:[BIN]) :[BIN] > merge a list of bins (for numeric y-values) <
+-- > merges(i:NUM,t:[BIN]) :[BIN] > merge a list of bins (for numeric y-values) <
 -- Note the last kine of `merges`: if anything merged, then loop again looking for other merges.
 -- Also, at the end, expand bins to cover all gaps across the number line.
 function NUM.merges(i,b4, min) 
@@ -98,6 +92,12 @@ function NUM.mid(i)
 -- > norm(i:NUM, x:num) :num > Normalize `x` 0..1 for lo..hi <
 function NUM.norm(i,x)
   local a=i.kept:has(); return (a[#a]-a[1])<1E-9 or (x-a[1])/(a[#a]-a[1]) end
+
+-- ### Update
+-- > add(i:NUM: x:num, n:?int=1) > `n` times,update `i`'s SOME object.<
+function NUM.add(i,x,n)
+  if x ~="? " then 
+   for _ = 1,(n or 1) do i.n=i.n+1; i.kept:add(x) end end end
 
 
 -- That's all folks.
