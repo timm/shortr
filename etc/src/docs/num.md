@@ -115,10 +115,7 @@ function NUM.dist(i,x,y)
 ```
 
 
-> ***div(`i` :NUM) :tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Return `div`ersity of a column  
-(its tendency _not_ to be a its central tendency). To understand this code
-recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob. In between,
-at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.
+> ***div(`i` :NUM) :tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Return `div`ersity of a column (tendency to depart central tendancy)  
 
 
 
@@ -128,7 +125,10 @@ function NUM.div(i)
 ```
 
 
-> ***like(`i` :NUM, `x` :any)***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Return the likelihood that `x` belongs to `i`.  
+To understand this code, recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob.
+In between, at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.
+
+like(i:NUM, x:any) --> Return the likelihood that `x` belongs to `i`.
 
 
 
@@ -154,8 +154,6 @@ function NUM.merge(i,j,     k)
 
 
 > ***merge(`i` :NUM,`t` :[BIN]) :[BIN]***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  merge a list of bins (for numeric y-values)  
-If anything merged, then loop again looking for other merges.
-At the end, expand bins to cover all gaps across the number line.
 
 
 
@@ -176,7 +174,10 @@ function NUM.merges(i,b4, min)
 ```
 
 
-> ***mid(`i` :NUM)) :tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Return a columns' `mid`ddle  
+Note the last kine of `merges`: if anything merged, then loop again looking for other merges.
+Also, at the end, expand bins to cover all gaps across the number line.
+
+mid(i:NUM)) :tab --> Return a columns' `mid`ddle
 
 
 
@@ -193,7 +194,14 @@ function NUM.mid(i)
 ```lua
 function NUM.norm(i,x)
   local a=i.kept:has(); return (a[#a]-a[1])<1E-9 or (x-a[1])/(a[#a]-a[1]) end
+```
 
+
+That's all folks.
+
+
+
+```lua
 return NUM
 ```
 

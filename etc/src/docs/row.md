@@ -124,7 +124,14 @@ function ROW.far(i,rows) return per(i:around(rows), the.Far).row end
 
 ```lua
 function ROW.klass(i) return i.cells[i._of.cols.klass.at] end
+```
 
+
+That's all folks.
+
+
+
+```lua
 return ROW
 ```
 
