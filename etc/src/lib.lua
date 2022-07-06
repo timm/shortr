@@ -24,7 +24,7 @@ m.big = math.huge
 -- > R(max:?num=1):num > Return a random number `0..max`.<
 m.R = math.random
 
--- > rnd(x:num, places:int):num  > Return `x` rounded to some number of `place  &#9312; `.<
+-- > rnd(x:num, places:int):num  > Return `x` rounded to some number of `place`  &#9312; .<
 function m.rnd(x, places)  --   &#9312;
   local mult = 10^(places or 2)
   return math.floor(x * mult + 0.5) / mult end

@@ -113,7 +113,7 @@ m.R = math.random
 
 
 > ***rnd(`x`:num, `places`:int):num***<br>
-Return `x` rounded to some number of `place  &#9312; `.
+Return `x` rounded to some number of `place`  &#9312; .
 
 
 
