@@ -14,7 +14,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 -- ### Create
 
--- > SYM(at:?int=0, txt:?str="") :SYM  'Constructor'
+-- > SYM(at:?int=0, txt:?str="") :SYM  >Constructor<
 local SYM = obj("SYM", function(i,at,txt)
   i.at   = at or 0   -- :num -- column position 
   i.txt  = txt or "" -- :str -- column name 
@@ -22,7 +22,7 @@ local SYM = obj("SYM", function(i,at,txt)
   i.kept = {}        -- :tab -- counts of symbols seen so far
   end)
 
--- # clone(i:SYM) :SYM  #Return a class of the same structure.#  
+-- > clone(i:SYM) :SYM  >Return a class of the same structure.< 
 function SYM.clone(i) return SYM(i.at, i.txt) end
 
 -- ### Discretize   

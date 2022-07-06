@@ -51,7 +51,9 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 ### Create
 
-> SYM(at:?int=0, txt:?str="") :SYM  'Constructor'
+> ***SYM(`at` :?int=0, `txt` :?str="")  :SYM***<br>
+Constructor
+
 
 
 
@@ -65,7 +67,9 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 
-# clone(i:SYM) :SYM  #Return a class of the same structure.#  
+> ***clone(`i` :SYM)  :SYM***<br>
+Return a class of the same structure.
+ 
 
 
 
