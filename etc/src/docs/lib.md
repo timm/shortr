@@ -287,7 +287,9 @@ function m.chunks(file)
                     txt  =txt:match"^%s*(.-)%s*$"
                     hint = hint:match"^%s*(.-)%s*$"
                                :gsub("([%w]+):","`%1`:")
-                               :gsub(":"," :")
+                               :gsub("([A-Z][A-Z]+)",function(word)
+                                  down=word:lower()
+                                  return "["..word.."]("..down..".md)" end)
                     return '> ***'..hint .. "***<br>\n"..txt.."\n" end ) 
   end ------------------------
   local dump = function(what,t) 
