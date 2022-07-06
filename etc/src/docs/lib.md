@@ -318,6 +318,7 @@ function m.opts(x)
 
 
 > ***cli(`t` :tab) :tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  For keys in `t`, look for updates on command-line.   
+
 Things with boolean defaults are flipped via `--flag`. 
 Other keys need `--flag value`.  Print the help
 (if `-h` appears on command line). Return a table with setting `key`s and

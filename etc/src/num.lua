@@ -50,10 +50,11 @@ function NUM.dist(i,x,y)
   return math.abs(x - y) end 
 
 -- div(i:NUM) :tab --> Return `div`ersity of a column (tendency to depart central tendancy)
-function NUM.div(i) 
-  local a=i.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
+
 -- To understand `div`  recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob.
 -- In between, at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.
+function NUM.div(i) 
+  local a=i.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
 
 -- like(i:NUM, x:any) --> Return the likelihood that `x` belongs to `i`.
 function NUM.like(i,x,...)
@@ -69,6 +70,9 @@ function NUM.merge(i,j,     k)
   return k end
 
 -- merge(i:NUM,t:[BIN]) :[BIN] --> merge a list of bins (for numeric y-values)
+
+-- Note the last kine of `merges`: if anything merged, then loop again looking for other merges.
+-- Also, at the end, expand bins to cover all gaps across the number line.
 function NUM.merges(i,b4, min) 
   local function fillInTheGaps(bins)
     bins[1].lo, bins[#bins].hi = -big, big
@@ -82,8 +86,6 @@ function NUM.merges(i,b4, min)
     now[#now+1]  = merged or b4[n]
     n            = n + (merged and 2 or 1)  end
   return #now < #b4 and i:merges(now,min) or fillInTheGaps(now) end
--- Note the last kine of `merges`: if anything merged, then loop again looking for other merges.
--- Also, at the end, expand bins to cover all gaps across the number line.
 
 -- mid(i:NUM)) :tab --> Return a columns' `mid`ddle
 function NUM.mid(i) 

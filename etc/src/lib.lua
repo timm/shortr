@@ -143,6 +143,7 @@ function m.opts(x)
   return t end
 
 -- cli(t:tab) :tab --> For keys in `t`, look for updates on command-line. 
+-- 
 -- Things with boolean defaults are flipped via `--flag`. 
 -- Other keys need `--flag value`.  Print the help
 -- (if `-h` appears on command line). Return a table with setting `key`s and
