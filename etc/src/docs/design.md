@@ -147,8 +147,8 @@ of what the DL doing, then this code might be useful.
 
 This code is a protest of sorts against
  mash-ups and bloatware and all their associated 
- problems with maintainability and technical debt and security that leak in from all 
- the parts used in the assembly. Surely, by now, we have the experience to revisit past implementations and radically simplify them:
+ problems with maintainability and technical debt and security.
+ Surely, by now, we have the experience to revisit past implementations and radically simplify them:
 
 <b>William of Ockham:</b></br>
 <em>"Non sunt multiplicanda entia sine necessitate"</em><br>
