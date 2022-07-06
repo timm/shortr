@@ -51,7 +51,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 ### Create
 
-:: SYM(at:?int, txt:?str) :SYM
+> ***SYM(`at` :?int, `txt` :?str) :SYM***<br>
 Summarize a stream of non-numerics.
 
 
@@ -66,7 +66,7 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 
-:: clone(i:SYM) :SYM
+> ***clone(`i` :SYM) :SYM***<br>
 Return a class of the same structure.
 
 
@@ -77,7 +77,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 
 
 ### Discretize
-:: bin(i:SYM, x:any)
+> ***bin(`i` :SYM, `x` :any)***<br>
 Return `x` mapped to a finite range (just return x)
 
 
@@ -87,7 +87,7 @@ function SYM.bin(i,x) return x end
 ```
 
 
-:: merge(i:SYM,j:SYM):SYM
+> ***merge(`i` :SYM,`j` :SYM):SYM***<br>
 Combine two SYMS
 
 
@@ -101,7 +101,7 @@ function SYM.merge(i,j,     k)
 ```
 
 
-:: merge(i:SYM,t:tab):tab
+> ***merge(`i` :SYM,`t` :tab):tab***<br>
 Merge a list of bins (for symbolic y-values)
 
 
@@ -112,7 +112,7 @@ function SYM.merges(i,t,...) return t end
 
 
 ### Distance
-:: dist(i:SYM, x:any,y:any) :num
+> ***dist(`i` :SYM, `x` :any,`y` :any) :num***<br>
 Return distance 0..1 between `x,y`. Assume max distance for missing values.
 
 
@@ -124,7 +124,7 @@ function SYM.dist(i,x,y)
 
 
 ### Likelihood  
-:: like(i:SYM,x:any,prior:num) :num
+> ***like(`i` :SYM,`x` :any,`prior` :num) :num***<br>
 Return how much `x` might belong to `i`.
 
 
@@ -136,7 +136,7 @@ function SYM.like(i,x,prior)
 
 
 ### Report
-:: mid(i:SYM):tab
+> ***mid(`i` :SYM):tab***<br>
 Return a columns' `mid`ddle (central tendency).
 
 
@@ -149,7 +149,7 @@ function SYM.mid(i,p)
 ```
 
 
-:: div(i:SYM):tab
+> ***div(`i` :SYM):tab***<br>
 Return `div`ersity of a column (its tendency _not_ to be a its central tendency).
 
 
@@ -163,7 +163,7 @@ function SYM.div(i,p)
 
 
 ### Update
-:: add(i:SYM: x:any, n:?int=1)
+> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>
 Add `n` count to `i.kept[n]` .
 
 
