@@ -1,6 +1,6 @@
 # [:high_brightness: SHORTr : less (but better) XAI](all.md)
 
-<a href="all.md"><img align=right width=450 src="https://ernesto.net/wp-content/uploads/2021/01/img6-home5.png"></a>
+<a href="all.md"><img align=right width=500 src="https://ernesto.net/wp-content/uploads/2021/01/img6-home5.png"></a>
 
 AI and XAI (explainable artificial intelligence) need not be complicated.
 For example, here we need just a few 100 lines of LUA to search
@@ -10,14 +10,14 @@ decision trees, bayes classifiers, etc).
 
 
 
-|       what | where                                                                                                         |
-|-----------:|---------------------------------------------------------------------------------------------------------------|
-| start here | [help](all.md) &hellip;  [install](/INSTALL.md) &hellip; [design notes](design.md)     |         
-|      build | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)                      |
-|      demos | [go](go.md)                                                                                                   |
-|       apps | [nb](nb.md) &hellip; [tree](tree.md)                                                                                |
-|  functions | [lib](lib.md)                                                                                                 |
-|    methods | [bin](bin.md) &hellip; [cols](cols.md) &hellip; [num](num.md) &hellip; [row](row.md) &hellip; [rows](rows.md) &hellip; [some](some.md) &hellip; [sym](sym.md) &hellip; [tree](tree.md) |
+|       what | where                                                                                                                                                                                     |
+|-----------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| start here | [help](all.md) &hellip;  [install](/INSTALL.md) &hellip; [design notes](design.md)                                                                                                        |
+|      build | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)                                                                                                   |
+|      demos | [go](go.md)                                                                                                                                                                               |
+|       apps | [nb](nb.md) &hellip; [tree](tree.md)                                                                                                                                                      |
+|  functions | [lib](lib.md)                                                                                                                                                                             |
+|    methods | [bin](bin.md) &hellip; [cols](cols.md) &hellip; [num](num.md) &hellip; [row](row.md)<br>&hellip; [rows](rows.md) &hellip; [some](some.md) &hellip; [sym](sym.md) &hellip; [tree](tree.md) |
 
 <br clear=all>
 <p align=center>
