@@ -279,15 +279,13 @@ chunks(file:str) --> divide source code into comments and code.
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
-          return s:gsub(":: ([^\n]*)\n",function(hint)
+          return s:gsub("::[%s]+([^\n]*)[%s]+\n",function(hint)
                     return '> ***'..hint:gsub("([%w]+):","`%1` :") .. "***<br>\n" end ) 
   end ------------------------
   local dump = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
     local s= table.concat(t,"\n")             -- build text dump
-    if what == 0 then s= hints(s) end
-    print(what==0 and (s.."\n") or (   -- dump comment or code
-          "\n\n```lua\n" ..s.."\n```\n\n")) 
+    print(what==0 and (hints(s).."\n") or ("\n\n```lua\n"..s.."\n```\n\n")) 
   end --------------------
   m.lines(file, function(s)
     now = b4
