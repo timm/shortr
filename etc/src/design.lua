@@ -118,11 +118,6 @@
 -- This code is a protest of sorts against
 --  mash-ups and bloatware and all their associated 
 --  problems with maintainability and technical debt and security.
---
--- Also, in the case of decision-making
--- software, we need to at least try to NOT deploy systems that are so complex we
--- cannot readily understand and audit them.
---  Surely, by now, we have the experience to revisit past implementations and radically simplify them:
 
 -- <b>William of Ockham:</b></br>
 -- <em>"Non sunt multiplicanda entia sine necessitate"</em><br>
@@ -133,6 +128,11 @@
 -- <em>"Inside every large program is a small program struggling to get out."</em><p>
 -- <b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
 -- <b>Dieter Rams:</b><br><em>"Less, but better."</em>
+
+-- Also, in the case of decision-making
+-- software, we need to at least try to NOT deploy systems that are so complex we
+-- cannot readily understand and audit them.
+--  Surely, by now, we have the experience to revisit past implementations and radically simplify them?
 
 -- So, ask yourself the following questions. Once you've done _it_, did you really understand _it_? Let's check.
 -- Can you do _it_ better?
