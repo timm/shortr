@@ -51,13 +51,13 @@ function m.sort(t,f) table.sort(t,f); return t end
 function m.push(t,x) t[1+#t] = x; return x end
 -- >per(t:tab, p:?float=.5) :x > Return `p`-th ranked item from `t`.<
 function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
--- >map(t:tab, f:fun): tab --> 
--- >kap(t:tab, f:fun): tab --> 
--- >maps(list1:tab, list2:tab, f:fun): tab --> 
--- >kaps(list1:tab, list2:tab, f:fun): tab --> 
--- >Return items in `t`, filtered thru `f`.
+-- >map(t:tab, f:fun): tab  
+--  kap(t:tab, f:fun): tab  
+--  maps(list1:tab, list2:tab, f:fun): tab 
+--  kaps(list1:tab, list2:tab, f:fun): tab >
+-- Return items in `t`, filtered thru `f`.
 -- If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
--- key and value to `f`. `maps` and `kaps` pass items from two lists.
+-- key and value to `f`. `maps` and `kaps` pass items from two lists.<
 function m.map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x) end;return u end
 function m.kap(t,f,     u) u={};for k,x in pairs(t) do u[1+#u]=f(k,x) end;return u end
 function m.maps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(x,u[k]) end;return v end

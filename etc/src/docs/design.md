@@ -3,13 +3,19 @@
 <!-- a href="all.md"><img align=right width=500 src="https://ernesto.net/wp-content/uploads/2021/01/img6-home5.png"></a --->
 <a href="all.md"><img align=right width=600 src="xai4.png"></a>
 
-AI and XAI (explainable artificial intelligence) need not be complicated.
-For example, here we need just a few 100 lines of LUA to search
-N items to  find and explain the best ones, using just log(N) evals. Along the way,
-the object model we build could also be applied to  many other AI tasks (nearest neighbor,
-decision trees, bayes classifiers, etc).
+AI and XAI (explainable artificial intelligence) need not be
+complicated.  For example, here we need just a few 100 lines of LUA
+to search N items to  find and explain the best ones, using just
+log(N) evals.  Along the way, we built an object model that could
+also be applied to  many other AI tasks (nearest neighbor, decision
+trees, bayes classifiers, etc).
 
-
+Also, this code serves as a demonstrator for the value of LUA. LUA is sort of like
+LISP, without brackets. Given 
+a dozen "ten-liners", this code supports test suites for
+test-driven development, literate programming,  several tiny
+domain-specific languages, object-oriented programming, command-line
+arguments,  and lots of higher-order functions tricks.
 
 |       what | where                                                                                                                                                                                     |
 |-----------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -150,23 +156,31 @@ img src="che.jpg" align=right width=600> ***This code is a protest of sorts agai
 William of Ockham:
 /b> ***</br***<br>
 
-em>"Non sunt multiplicanda entia sine necessitate"</em> ***<br***<br>
-(Entities are not to be multiplied without necessity)
-p> ***<b***<br>
-Ada Lovelace:
-/b> ***<br***<br>
+em> ***"Non sunt multiplicanda entia sine necessitate"</em***<br>
 
-em>"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em> ***<p***<br>
+br> ***(Entities are not to be multiplied without necessity)<p***<br>
 
-b>Tony Hoare:</b> ***<br***<br>
+b> ***Ada `Lovelace`:</b***<br>
 
-em>"Inside every large program is a small program struggling to get out."</em> ***<p***<br>
+br> ***<em***<br>
+"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”
+/em> ***<p***<br>
 
-b>Alan Perlis:</b><br> ***<em***<br>
+b> ***Tony `Hoare`:</b***<br>
+
+br> ***<em***<br>
+"Inside every large program is a small program struggling to get out."
+/em> ***<p***<br>
+
+b> ***Alan `Perlis`:</b***<br>
+
+br> ***<em***<br>
 "Simplicity does not precede complexity, but follows it."
 /em> ***<p***<br>
 
-b>Dieter Rams:</b><br> ***<em***<br>
+b> ***Dieter `Rams`:</b***<br>
+
+br> ***<em***<br>
 "Less, but better."
 /em> ***So, ask yourself the following questions. Once you've done _it_, did you really understand _it_? Let's check.
 Can you do _it_ better?

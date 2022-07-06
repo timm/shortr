@@ -3,13 +3,19 @@
 <!-- a href="all.md"><img align=right width=500 src="https://ernesto.net/wp-content/uploads/2021/01/img6-home5.png"></a --->
 <a href="all.md"><img align=right width=600 src="xai4.png"></a>
 
-AI and XAI (explainable artificial intelligence) need not be complicated.
-For example, here we need just a few 100 lines of LUA to search
-N items to  find and explain the best ones, using just log(N) evals. Along the way,
-the object model we build could also be applied to  many other AI tasks (nearest neighbor,
-decision trees, bayes classifiers, etc).
+AI and XAI (explainable artificial intelligence) need not be
+complicated.  For example, here we need just a few 100 lines of LUA
+to search N items to  find and explain the best ones, using just
+log(N) evals.  Along the way, we built an object model that could
+also be applied to  many other AI tasks (nearest neighbor, decision
+trees, bayes classifiers, etc).
 
-
+Also, this code serves as a demonstrator for the value of LUA. LUA is sort of like
+LISP, without brackets. Given 
+a dozen "ten-liners", this code supports test suites for
+test-driven development, literate programming,  several tiny
+domain-specific languages, object-oriented programming, command-line
+arguments,  and lots of higher-order functions tricks.
 
 |       what | where                                                                                                                                                                                     |
 |-----------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -190,13 +196,14 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
->map(t:tab, f:fun): tab --> 
->kap(t:tab, f:fun): tab --> 
->maps(list1:tab, list2:tab, f:fun): tab --> 
->kaps(list1:tab, list2:tab, f:fun): tab --> 
->Return items in `t`, filtered thru `f`.
+> ***map(`t`:tab, `f`:fun): tab  
+ kap(`t`:tab, `f`:fun): tab  
+ maps(`list1`:tab, `list2`:tab, `f`:fun): tab 
+ kaps(`list1`:tab, `list2`:tab, `f`:fun): tab***<br>
+Return items in `t`, filtered thru `f`.
 If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
 key and value to `f`. `maps` and `kaps` pass items from two lists.
+
 
 
 
