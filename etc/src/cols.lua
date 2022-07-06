@@ -36,7 +36,7 @@ function COLS._make1Column(i,at,txt)
   is.klass= function(x) return (x or ""):find"!$"     end -- single goal
   is.goal=  function(x) return (x or ""):find"[!+-]$" end -- dependent column
   is.num=   function(x) return (x or ""):find"^[A-Z]" end -- NUM or SYM?
-  local col =   (is.num(txt) and NUM or SYM)(at,txt) 
+  local col = (is.num(txt) and NUM or SYM)(at,txt) 
   push(i.all, col)
   if not is.skip(txt) then
     push(is.goal(txt) and i.y or i.x, col)
