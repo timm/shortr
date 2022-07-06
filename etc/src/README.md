@@ -5,7 +5,9 @@
 AI and XAI (explainable artificial intelligence) need not be
 complicated.  For example, here we need just a few 100 lines of LUA
 to search N items to  find and explain the best ones, using just
-log(N) evals.  Along the way, we built an object model that could
+log(N) evals.  
+
+Along the way, we built an object model that could
 also be applied to  many other AI tasks (nearest neighbor, decision
 trees, bayes classifiers, etc).
 
