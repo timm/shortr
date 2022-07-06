@@ -190,4 +190,3 @@ And, in this context, I must not forget the LISPers: <br>
     ([Peter Norvig](http://norvig.com/lispy.html)
       ([Guy Steele](https://dspace.mit.edu/bitstream/handle/1721.1/5790/AIM-353.pdf?sequence=2&isAllowed=y)))))). 
 
-?	down	string
