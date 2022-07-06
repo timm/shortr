@@ -185,13 +185,14 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
-> map(t:tab, f:fun): tab  
- kap(t:tab, f:fun): tab  
- maps(list1:tab, list2:tab, f:fun): tab   
- kaps(list1:tab, list2:tab, f:fun): tab >
+> ***map(`t`:tab, `f`:fun): tab  
+ kap(`t`:tab, `f`:fun): tab  
+ maps(`list1`:tab, `list2`:tab, `f`:fun): tab   
+ kaps(`list1`:tab, `list2`:tab, `f`:fun): tab***<br>
 Return items in `t`, filtered thru `f`.
 If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
-key and value to `f`. `maps` and `kaps` pass items from two lists. <
+key and value to `f`. `maps` and `kaps` pass items from two lists.
+
 
 
 
