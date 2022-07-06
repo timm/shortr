@@ -51,7 +51,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 ### Create
 
-> ***SYM(`at` :?int=0, `txt` :?str="")  :SYM***<br>
+> ***[SYM](sym.md)(`at`:?int=0, `txt`:?str="") :[SYM](sym.md)***<br>
 Constructor.
 
 
@@ -67,7 +67,7 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 
-> ***clone(`i` :SYM)  :SYM***<br>
+> ***clone(`i`:[SYM](sym.md)) :[SYM](sym.md)***<br>
 Return a class of the same structure.
   
 
@@ -79,7 +79,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 
 
 ### Discretize   
-> ***bin(`i` :SYM, `x` :any)***<br>
+> ***bin(`i`:[SYM](sym.md), `x`:any)***<br>
 Return `x` mapped to a finite range (just return x).
 
 
@@ -90,7 +90,7 @@ function SYM.bin(i,x) return x end
 ```
 
 
-> ***merge(`i` :SYM,`j` :SYM) :SYM***<br>
+> ***merge(`i`:[SYM](sym.md),`j`:[SYM](sym.md)):[SYM](sym.md)***<br>
 Combine two SYMs.
    
 
@@ -105,7 +105,7 @@ function SYM.merge(i,j,     k)
 ```
 
 
-> ***merges(`i` :SYM,`t` :tab) :tab***<br>
+> ***merges(`i`:[SYM](sym.md),`t`:tab):tab***<br>
 Merge a list of bins (for symbolic y-values).
 
 
@@ -117,7 +117,7 @@ function SYM.merges(i,t,...) return t end
 
 
 ### Distance
-> ***dist(`i` :SYM, `x` :any,`y` :any)  :num***<br>
+> ***dist(`i`:[SYM](sym.md), `x`:any,`y`:any) :num***<br>
 Return distance 0..1 between `x,y`.
 
 Assume max distance for missing values.
@@ -131,7 +131,7 @@ function SYM.dist(i,x,y)
 
 
 ### Likelihood  
-> ***like(`i` :SYM,`x` :any,`prior` :num)  :num***<br>
+> ***like(`i`:[SYM](sym.md),`x`:any,`prior`:num) :num***<br>
 Return how much `x` might belong to `i`.
 
 
@@ -144,7 +144,7 @@ function SYM.like(i,x,prior)
 
 
 ### Report
- > ***div(`i` :SYM) :tab***<br>
+ > ***div(`i`:[SYM](sym.md)):tab***<br>
 Return `div`ersity of a column.
 
 FYI, diversity is the  tendency _not_ to be at the central tendency.
@@ -159,7 +159,7 @@ function SYM.div(i,p)
 ```
 
 
-> ***mid(`i` :SYM) :tab***<br>
+> ***mid(`i`:[SYM](sym.md)):tab***<br>
 Return a columns' `mid`ddle (central tendency).
 
 
@@ -174,7 +174,7 @@ function SYM.mid(i,p)
 
 
 ### Update
-> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>
+> ***add(`i`:`[SYM](sym.md)`: `x`:any, `n`:?int=1)***<br>
 Add `n` count to `i.kept[n]`.
 
 
@@ -198,3 +198,4 @@ return SYM
 ```
 
 
+?	down	string

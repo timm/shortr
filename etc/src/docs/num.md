@@ -55,7 +55,7 @@ local SOME = require"some"
 
 
 ### Create
-> ***NUM(`at` :?int, `txt` :?str)  :NUM***<br>
+> ***[NUM](num.md)(`at`:?int, `txt`:?str) :[NUM](num.md)***<br>
 Summarize a stream of numbers.
 
 
@@ -72,7 +72,7 @@ local NUM = obj("NUM", function(i,at,txt)
 ```
 
 
-> ***clone(`i` :NUM)  :NUM***<br>
+> ***clone(`i`:[NUM](num.md)) :[NUM](num.md)***<br>
 Return a class of the same structure.
 
 
@@ -84,7 +84,7 @@ function NUM.clone(i) return NUM(i.at, i.txt) end
 
 
 ### Discretize
-> ***bin(`i` :`NUM` : `x` :any)***<br>
+> ***bin(`i`:`[NUM](num.md)`: `x`:any)***<br>
 Return `x` mapped to a finite range
 
 
@@ -98,7 +98,7 @@ function NUM.bin(i,x)
 ```
 
 
-> ***merge(`i` :NUM,`j` :NUM)  :NUM***<br>
+> ***merge(`i`:[NUM](num.md),`j`:[NUM](num.md)) :[NUM](num.md)***<br>
 combine two numerics
 
 
@@ -113,7 +113,7 @@ function NUM.merge(i,j,     k)
 ```
 
 
-> ***merges(`i` :NUM,`t` :[BIN])  :[BIN]***<br>
+> ***merges(`i`:[NUM](num.md),`t`:[[BIN](bin.md)]) :[[BIN](bin.md)]***<br>
 merge a list of bins (for numeric y-values)
 
 Note the last kine of `merges`: if anything merged, then loop again looking for other merges.
@@ -140,7 +140,7 @@ function NUM.merges(i,b4, min)
 
 
 ### Distance
-> ***dist(`i` :NUM, `x` :num,`y` :num) : num***<br>
+> ***dist(`i`:[NUM](num.md), `x`:num,`y`:num): num***<br>
 Return distance 0..1 between `x,y`.
 
 This code assume max distance for missing values.
@@ -158,7 +158,7 @@ function NUM.dist(i,x,y)
 
 
 ### Likelihood
-> ***like(`i` :NUM, `x` :any)***<br>
+> ***like(`i`:[NUM](num.md), `x`:any)***<br>
 Return the likelihood that `x` belongs to `i`.
 
 
@@ -173,7 +173,7 @@ function NUM.like(i,x,...)
 
 
 ### Report
-> ***div(`i` :NUM)  :tab***<br>
+> ***div(`i`:[NUM](num.md)) :tab***<br>
 Return `div`ersity of a column (tendency to depart central tendency).
 
 To understand `div`  recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob.
@@ -187,7 +187,7 @@ function NUM.div(i)
 ```
 
 
-> ***mid(`i` :NUM))  :tab***<br>
+> ***mid(`i`:[NUM](num.md))) :tab***<br>
 Return a columns' `mid`ddle
 
 
@@ -199,7 +199,7 @@ function NUM.mid(i)
 ```
 
 
-> ***norm(`i` :NUM, `x` :num)  :num***<br>
+> ***norm(`i`:[NUM](num.md), `x`:num) :num***<br>
 Normalize `x` 0..1 for lo..hi
 
 
@@ -212,7 +212,7 @@ function NUM.norm(i,x)
 
 
 ### Update
-> ***add(`i` :`NUM` : `x` :num, `n` :?int=1)***<br>
+> ***add(`i`:`[NUM](num.md)`: `x`:num, `n`:?int=1)***<br>
 `n` times,update `i`'s SOME object.
 
 
@@ -235,3 +235,4 @@ return NUM
 ```
 
 
+?	down	string

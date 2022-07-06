@@ -104,7 +104,11 @@ function ROWS.fill(i,src)
 ```
 
 
-like(i:ROWS,row;ROW,nklasses:num,nrows:num):num --> Return -- P(H)*&prod;<sub>i</sub> (P(E<sub>i</sub>|H)). 
+like(i:ROWS,row;ROW,nklasses:num,nrows:num):num --> ***Return -- P(H)*&prod;<sub***<br>
+i
+/sub> ***(P(E<sub***<br>
+i
+/sub>|H)). 
 Do it with logs to handle very small numbers.
 
 
