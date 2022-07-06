@@ -30,7 +30,6 @@ decision trees, bayes classifiers, etc).
 </p>
 
 ## Library Functions
-## Library Functions
 
 
 
@@ -39,9 +38,6 @@ local m={}
 ```
 
 
-### Linting
-
-rogues() --> Find rogue locals. Run `rogues()` _last_ after everything else.
 ### Linting
 
 rogues() --> Find rogue locals. Run `rogues()` _last_ after everything else.
@@ -59,10 +55,6 @@ function m.rogues()
 
 lt(x:str):function --> 
 gt(x:str):function --> Returns functions that sorts on `x`
-### Meta
-
-lt(x:str):function --> 
-gt(x:str):function --> Returns functions that sorts on `x`
 
 
 
@@ -72,7 +64,6 @@ function m.gt(x) return function(a,b) return a[x] > b[x] end end
 ```
 
 
-same(x:any):any --> Return x, unchanged.
 same(x:any):any --> Return x, unchanged.
 
 
@@ -86,12 +77,6 @@ m.same=function(x) return x end
 
 :: big:num 
 return a big number
-hint		txt	 big:num 
-### Maths
-
-> ******<br>
- big:num 
-return a big number
 
 
 
@@ -102,10 +87,6 @@ m.big = math.huge
 
 :: R(max:?num=1):num 
 return a random number `0..max`.
-hint		txt	 R(max:?num=1):num 
-> ******<br>
- R(max:?num=1):num 
-return a random number `0..max`.
 
 
 
@@ -115,10 +96,6 @@ m.R = math.random
 
 
 :: rnd(x:num, places:int):num 
-Return `x` rounded to some number of `places`.
-hint		txt	 rnd(x:num, places:int):num 
-> ******<br>
- rnd(x:num, places:int):num 
 Return `x` rounded to some number of `places`.
 
 
@@ -134,10 +111,6 @@ function m.small(min,x) return min<1 and x^min or x end
 
 :: rnds(t:num, places:?int=2):num
 Return items in `t` rounds to `places`.
-hint		txt	 rnds(t:num, places:?int=2):num
-> ******<br>
- rnds(t:num, places:?int=2):num
-Return items in `t` rounds to `places`.
 
 
 
@@ -149,11 +122,6 @@ function m.rnds(t, places)
 
 ###  Lists
 :: splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t
-Return  items `start` to `stop`, stepping by `step`. 
-hint		txt	 splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t
-###  Lists
-> ******<br>
- splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t
 Return  items `start` to `stop`, stepping by `step`. 
 
 
@@ -171,10 +139,6 @@ function m.splice(t, start, stop, step)
 
 :: sort(t:tab, f:fun) :tab 
 Return `t`, sorted of function `f` (default "<").
-hint		txt	 sort(t:tab, f:fun) :tab 
-> ******<br>
- sort(t:tab, f:fun) :tab 
-Return `t`, sorted of function `f` (default "<").
 
 
 
@@ -183,7 +147,6 @@ function m.sort(t,f) table.sort(t,f); return t end
 ```
 
 
-:: push(t:tab, x:any) :x --> Add `x` to end of `t`; return `t`.
 :: push(t:tab, x:any) :x --> Add `x` to end of `t`; return `t`.
 
 
@@ -194,7 +157,6 @@ function m.push(t,x) t[1+#t] = x; return x end
 
 
 per(t:tab, p:?float=.5) :x --> Return `p`-th ranked item from `t`.
-per(t:tab, p:?float=.5) :x --> Return `p`-th ranked item from `t`.
 
 
 
@@ -203,13 +165,6 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
-map(t:tab, f:fun): tab --> 
-kap(t:tab, f:fun): tab --> 
-maps(list1:tab, list2:tab, f:fun): tab --> 
-kaps(list1:tab, list2:tab, f:fun): tab --> 
-Return items in `t`, filtered thru `f`.
-If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
-key and value to `f`. `maps` and `kaps` pass items from two lists.
 map(t:tab, f:fun): tab --> 
 kap(t:tab, f:fun): tab --> 
 maps(list1:tab, list2:tab, f:fun): tab --> 
@@ -229,7 +184,6 @@ function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;r
 
 
 sum(t:tab, f:?fun=same): num --> sum items in `t`, filtered through `fun`
-sum(t:tab, f:?fun=same): num --> sum items in `t`, filtered through `fun`
 
 
 
@@ -239,10 +193,6 @@ function m.sum(t,f,   u)
 ```
 
 
-### String to thing
-
-thing(s:str):any --> Coerce string to whatever
-is simplest (boolean or integer or float or, if all else fails, a string).
 ### String to thing
 
 thing(s:str):any --> Coerce string to whatever
@@ -259,7 +209,6 @@ function m.thing(x)
 
 
 words(s:str, sep:str, fun:fun):tab --> Return `t` filled with `s`, split  on `sep`.
-words(s:str, sep:str, fun:fun):tab --> Return `t` filled with `s`, split  on `sep`.
 
 
 
@@ -270,7 +219,6 @@ function m.words(s,sep,fun,      t)
 ```
 
 
-lines(file:str,  fun:fun):tab --> Call `fun` with lines
 lines(file:str,  fun:fun):tab --> Call `fun` with lines
 
 
@@ -284,9 +232,9 @@ function m.lines(file, fun)
 ```
 
 
-csv(file:str,  fun:fun):tab --> Call `fun` with lines, split on ",", 
-coercing strings to nums, bools, etc (where appropriate).
-csv(file:str,  fun:fun):tab --> Call `fun` with lines, split on ",", 
+csv(file:str,  fun:fun):tab --> ***Call `fun` with lines, split on***<br>
+,
+, 
 coercing strings to nums, bools, etc (where appropriate).
 
 
@@ -300,9 +248,6 @@ function m.csv(file,fun)
 ### Thing to string
 
 fmt(s:str,...) :str --> emulate prinft
-### Thing to string
-
-fmt(s:str,...) :str --> emulate prinft
 
 
 
@@ -311,7 +256,6 @@ m.fmt=string.format
 ```
 
 
-cat(t:tab):str --> Return table as string. For key-indexed lists, show keys (sorted).
 cat(t:tab):str --> Return table as string. For key-indexed lists, show keys (sorted).
 
 
@@ -325,7 +269,6 @@ function m.cat(t,    key,u)
 
 
 chat(t:tab):t --> Print table (as string). Return `t`.
-chat(t:tab):t --> Print table (as string). Return `t`.
 
 
 
@@ -335,7 +278,6 @@ function m.chat(t) print(m.cat(t)); return t end
 
 
 chunks(file:str) --> divide source code into comments and code.
-chunks(file:str) --> divide source code into comments and code.
 
 
 
@@ -343,9 +285,8 @@ chunks(file:str) --> divide source code into comments and code.
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
-          print(s)
-          return s:gsub("([^\n]*)::([^\n]*)\n",function(hint,txt)
-                    print("hint",hint,"txt",txt)
+          return s:gsub('>([^>]+)"([^"]+)"',function(hint,txt)
+                    txt  =txt:match"^%s*(.-)%s*$"
                     hint = hint:match"^%s*(.-)%s*$"
                                :gsub("([%w]+):","`%1`:")
                                :gsub(":"," :")
@@ -368,9 +309,6 @@ function m.chunks(file)
 ### Settings
 
 opts(x:str) :tab --> Parse `str` for lines with `--`; then pull keys+defaults. 
-### Settings
-
-opts(x:str) :tab --> Parse `str` for lines with `--`; then pull keys+defaults. 
 
 
 
@@ -384,14 +322,6 @@ function m.opts(x)
 ```
 
 
-cli(t:tab) :tab --> For keys in `t`, look for updates on command-line. 
-
-Things with boolean defaults are flipped via `--flag`. 
-Other keys need `--flag value`.  Print the help
-(if `-h` appears on command line). Return a table with setting `key`s and
-`value`s. IMPORTANT NOTE: this function alters-in-place the table `t`
-that is passed in-- which means that it alters settings for anything pointing
-to `t`.
 cli(t:tab) :tab --> For keys in `t`, look for updates on command-line. 
 
 Things with boolean defaults are flipped via `--flag`. 
@@ -419,13 +349,10 @@ function m.cli(t)
 
 ### Tests
 
-on(opts:tab, tests:[fun]) --> Run some tests.
-If  `opt.go=="all"`, then run all tests, sorted on their name.
-Before each test, reset random seed and the options `opts.
-### Tests
-
-on(opts:tab, tests:[fun]) --> Run some tests.
-If  `opt.go=="all"`, then run all tests, sorted on their name.
+on(opts:tab, tests:[fun]) --> ***Run some tests.
+If  `opt.go==***<br>
+all
+`, then run all tests, sorted on their name.
 Before each test, reset random seed and the options `opts.
 
 
@@ -452,10 +379,6 @@ function m.on(opts,tests)
 
 obj(name:str, fun:fun):object --> Return a klass `name` with constructor `fun`.
 Add a unique `id` and a `tosting` method (that uses `cat` (above).
-### Objects
-
-obj(name:str, fun:fun):object --> Return a klass `name` with constructor `fun`.
-Add a unique `id` and a `tosting` method (that uses `cat` (above).
 
 
 
@@ -468,7 +391,6 @@ function m.obj(name,fun,    t,new,x)
 ```
 
 
-Return
 Return
 
 
