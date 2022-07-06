@@ -151,6 +151,9 @@ of what the DL doing, then this code might be useful.
 img src="che.jpg" align=right width=600> ***This code is a protest of sorts against
  mash-ups and bloatware and all their associated 
  problems with maintainability and technical debt and security.
+Also, in the case of decision-making
+software, I feel it no longer acceptable to deploy systems that are so complex we
+cannot readily understand and audit them.
  Surely, by now, we have the experience to revisit past implementations and radically simplify `them`:
 
 <b***<br>

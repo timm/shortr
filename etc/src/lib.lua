@@ -63,7 +63,7 @@ function m.kap(t,f,     u) u={};for k,x in pairs(t) do u[1+#u]=f(k,x) end;return
 function m.maps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(x,u[k]) end;return v end
 function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;return v end
 
--- sum(t:tab, f:?fun=same): num --> sum items in `t`, filtered through `fun`
+-- > sum(t:tab, f:?fun=same): num > sum items in `t`, filtered through `fun` <
 function m.sum(t,f,   u) 
    u=0;for _,x in pairs(t) do u=u+(f or m.same)(x) end; return u end
 
@@ -96,10 +96,10 @@ function m.csv(file,fun)
   m.lines(file, function(line) fun(m.words(line, ",", m.thing)) end) end 
 
 -- ### Thing to string
--- fmt(s:str,...) :str --> emulate prinft
+-- > fmt(s:str,...) :str > emulate printf<
 m.fmt=string.format
 
--- cat(t:tab):str --> Return table as string. For key-indexed lists, show keys (sorted).
+-- > cat(t:tab):str  > Return table as string. For key-indexed lists, show keys (sorted).<
 function m.cat(t,    key,u)
   function key(k,v) if (tostring(k)):sub(1,1)~="_" then return m.fmt(":%s %s",k,v) end end
   u=  #t>1 and m.map(t,f or tostring) or m.sort(m.kap(t,key))

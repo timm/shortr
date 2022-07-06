@@ -207,7 +207,9 @@ function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;r
 ```
 
 
-sum(t:tab, f:?fun=same): num --> sum items in `t`, filtered through `fun`
+> ***sum(`t`:tab, `f`:?fun=same): num***<br>
+sum items in `t`, filtered through `fun`
+
 
 
 
@@ -286,7 +288,9 @@ function m.csv(file,fun)
 
 
 ### Thing to string
-fmt(s:str,...) :str --> emulate prinft
+> ***fmt(`s`:str,...) :str***<br>
+emulate printf
+
 
 
 
@@ -295,7 +299,9 @@ m.fmt=string.format
 ```
 
 
-cat(t:tab):str --> Return table as string. For key-indexed lists, show keys (sorted).
+> ***cat(`t`:tab):str***<br>
+Return table as string. For key-indexed lists, show keys (sorted).
+
 
 
 
