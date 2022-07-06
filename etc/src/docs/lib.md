@@ -428,7 +428,7 @@ m.fmt=string.format
 Run some tests.
 
 If  `opt.go=="all"`, then run all tests, sorted on their name.
-Before each test, reset random seed and the options `opts.
+Before each test, reset random seed and the options in `opts`.
 
 
 

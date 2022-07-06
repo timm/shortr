@@ -186,7 +186,7 @@ m.fmt=string.format
 -- ### Tests
 -- > on(opts:tab, tests:[fun]) > Run some tests. <
 -- If  `opt.go=="all"`, then run all tests, sorted on their name.
--- Before each test, reset random seed and the options `opts.
+-- Before each test, reset random seed and the options in `opts`.
 function m.on(opts,tests)
   local fails, old = 0, {}
   for k,v in pairs(opts) do old[k]=v end
