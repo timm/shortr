@@ -51,7 +51,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 
 ### Create
-***SYM(`at` :?int, `txt` :?str) :SYM***  Summarize a stream of non-numerics.
+***SYM(`at` :?int, `txt` :?str) :SYM***<br>Summarize a stream of non-numerics.
 
 
 
@@ -90,7 +90,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 
 
 ### Discretize
-***bin(`i` :`SYM` : `x` :any  ***  Return `x` mapped to a finite range (just return x)
+***bin(`i` :`SYM` : `x` :any  ***<br>Return `x` mapped to a finite range (just return x)
 
 
 
@@ -124,7 +124,7 @@ function SYM.merges(i,t,...) return t end
 
 
 ### Distance
-***dist(`i` :SYM, `x` :any,`y` :any) :num     ***  Return distance 0..1 between `x,y`. Assume max distance for missing values.
+***dist(`i` :SYM, `x` :any,`y` :any) :num     ***<br>Return distance 0..1 between `x,y`. Assume max distance for missing values.
 
 
 
@@ -134,8 +134,8 @@ function SYM.dist(i,x,y)
 ```
 
 
-### Like
-***like(`i` :SYM,`x` :any,`prior` :num) :num    ***  Return how much `x` might belong to `i`.
+### Like  
+***like(`i` :SYM,`x` :any,`prior` :num) :num    ***<br>Return how much `x` might belong to `i`.
 
 
 
@@ -146,7 +146,7 @@ function SYM.like(i,x,prior)
 
 
 ### Report
-***mid(`i` :SYM):tab   ***  Return a columns' `mid`ddle (central tendency).
+***mid(`i` :SYM):tab   ***<br>Return a columns' `mid`ddle (central tendency).
 
 
 
