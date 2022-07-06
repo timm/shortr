@@ -3,7 +3,7 @@
 
 -- **RESPONSIBILITIES** : 
 -- - Same responsibilities as [NUM](num.md) (but for symbols)
--- - Duplicate structure (see `clone`)
+-- - Create a duplicate structure (see `clone`)
 -- - Incremental summarization (see `add`)
 -- - Discretization (see `bin, merge, merges`)
 -- - Distance calcs (see `dist`)
@@ -13,7 +13,7 @@
 local all = require"all"
 local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
--- SYM(at:?int, txt:?str) :SYM --> [Constructor]. Summarize a stream of non-numerics.
+-- SYM(at:?int, txt:?str) :SYM --> #constructor. Summarize a stream of non-numerics.
 local SYM = obj("SYM", function(i,at,txt)
   i.at   = at or 0   -- :num -- column position 
   i.txt  = txt or "" -- :str -- column name 
@@ -21,28 +21,28 @@ local SYM = obj("SYM", function(i,at,txt)
   i.kept = {}        -- :tab -- counts of symbols seen so far
   end)
 
--- add(i:SYM: x:any, n:?int=1) --> Add `n` count to `i.kept[n]` .
+-- add(i:SYM: x:any, n:?int=1) --> #update Add `n` count to `i.kept[n]` .
 function SYM.add(i,x,n)
   if x ~= "?" then 
     n = n or 1
     i.n = i.n+n
     i.kept[x] = n  + (i.kept[x] or 0) end end
 
--- bin(i:SYM: x:any) --> return `x` mapped to a finite range (just return x)
+-- bin(i:SYM: x:any) --> #discretize Return `x` mapped to a finite range (just return x)
 function SYM.bin(i,x) return x end
 
--- clone(i:SYM) :SYM --> Return a class of the same structure.
+-- clone(i:SYM) :SYM --> #create Return a class of the same structure.
 function SYM.clone(i) return SYM(i.at, i.txt) end
 
--- dist(i:SYM, x:any,y:any): num --> Return distance 0..1 between `x,y`. Assume max distance for missing values.
+-- dist(i:SYM, x:any,y:any): num --> #distance Return distance 0..1 between `x,y`. Assume max distance for missing values.
 function SYM.dist(i,x,y)
   return  (x=="?" or y=="?")  and 1 or x==y and 0 or 1 end
 
--- like(i:SYN,x:any,prior:num):num --> return how much `x` might belong to `i`.
+-- like(i:SYN,x:any,prior:num):num --> #like Return how much `x` might belong to `i`.
 function SYM.like(i,x,prior)
    return ((i.kept[x] or 0)+the.m*prior) / (i.n+the.m) end
 
--- merge(i:SYM,j:SYM):SYM --> combine two symbols
+-- merge(i:SYM,j:SYM):SYM --> #discretize Combine two symbols
 function SYM.merge(i,j,     k)
   k = i:clone()
   for _,kept in pairs{i.kept, j.kept} do
