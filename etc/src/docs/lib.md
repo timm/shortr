@@ -284,7 +284,7 @@ function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
           return s:gsub(">([^>]+)>([^<]+)<",function(hint,txt)
-                    txt  =txt:match"^%s*(.-)%s*$"
+                    txt  = txt:match"^%s*(.-)%s*$"
                     hint = hint:match"^%s*(.-)%s*$"
                                :gsub("([%w]+):","`%1`:")
                                :gsub("([A-Z][A-Z]+)",function(word)

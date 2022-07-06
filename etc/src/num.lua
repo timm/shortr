@@ -23,7 +23,7 @@ local NUM = obj("NUM", function(i,at,txt)
   i.at   = at or 0                 -- :num   column position 
   i.txt  = txt or ""               -- :str   column name 
   i.n    = 0                       -- :num   items seen so far
-  i.kept = SOME(the.SOME)          -- :SOME  holds a sample of items seen so far
+  i.kept = SOME(the.Some)          -- :SOME  holds a sample of items seen so far
   i.w = i.txt:find"-$" and -1 or 1 -- :num   do we seek less or more of this?
   end)
 
@@ -99,7 +99,6 @@ function NUM.norm(i,x)
 function NUM.add(i,x,n)
   if x ~="? " then 
    for _ = 1,(n or 1) do i.n=i.n+1; i.kept:add(x) end end end
-
 
 -- That's all folks.
 return NUM
