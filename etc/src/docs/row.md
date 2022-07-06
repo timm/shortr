@@ -11,13 +11,6 @@ trees, bayes classifiers, etc).
 
 <a href="all.md"><img align=right width=600 src="xai4.png"></a>
 
-Also, this code shows off how LUA is a really cool language
-(kind of like LISP, without brackets). Given 
-a dozen "ten-liners", this code supports test suites for
-test-driven development, literate programming,  several tiny
-domain-specific languages, object-oriented programming, command-line
-arguments,  and lots of higher-order functions tricks.
-
 |       what | where                                                                                                                                                                                     |
 |-----------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | start here | [help](all.md) &hellip;  [install](/INSTALL.md) &hellip; [design notes](design.md)                                                                                                        |
@@ -26,6 +19,13 @@ arguments,  and lots of higher-order functions tricks.
 |       apps | [nb](nb.md) &hellip; [tree](tree.md)                                                                                                                                                      |
 |  functions | [lib](lib.md)                                                                                                                                                                             |
 |    methods | [bin](bin.md) &hellip; [cols](cols.md) &hellip; [num](num.md) &hellip; [row](row.md)<br> [rows](rows.md) &hellip; [some](some.md) &hellip; [sym](sym.md) &hellip; [tree](tree.md) |
+
+Also, this code shows off how LUA is a really cool language
+(kind of like LISP, without brackets). Given 
+a dozen "ten-liners", this code supports test suites for
+test-driven development, literate programming,  several tiny
+domain-specific languages, object-oriented programming, command-line
+arguments,  and lots of higher-order functions tricks.
 
 <br clear=all>
 <p align=center>
