@@ -66,7 +66,7 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 
-> ***clone(`i` :SYM) :SYM    ***<br>
+> ***clone(`i` :SYM) :SYM***<br>
 Return a class of the same structure.
 
 
