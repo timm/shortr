@@ -279,9 +279,11 @@ local _sep=("&nbsp; "):rep(9)..":speech_balloon:"
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
-     return s:gsub("([%w]+):","`%1` :") 
-             :gsub("([^\n]+) [-][-]>([%s]+)\n","> ***%1***  \n") 
-             :gsub("([^\n]+) [-][-]>([^\n]+)","> ***%1***".._sep .." %2  ") 
+     if  s:find"-->" then
+        return s:gsub("([%w]+):","`%1` :") 
+                :gsub("([^\n]+) [-][-]>([%s]+)\n","> ***%1***  \n") 
+                :gsub("([^\n]+) [-][-]>([^\n]+)","> ***%1***".._sep .." %2  ")  
+     else return s end
   end ------------------------
   local dump = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line

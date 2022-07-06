@@ -125,7 +125,7 @@ function NUM.div(i)
 ```
 
 
-To understand this code, recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob.
+To understand `div`  recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob.
 In between, at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.
 
 like(i:NUM, x:any) --> Return the likelihood that `x` belongs to `i`.
