@@ -47,9 +47,7 @@ local m={}
 
 ### Linting
 
-> ***rogues()***<br>
-Find rogue locals. Run `rogues()` _last_ after everything else.
-
+> rogues()> Find rogue locals. Run `rogues()` _last_ after everything else.<
 
 
 
@@ -62,10 +60,8 @@ function m.rogues()
 
 ### Meta
 
-> ***lt(`x`:str):function   
- gt(`x`:str):function***<br>
-Returns functions that sorts on `x`.
-
+>lt(x:str):function   
+ gt(x:str):function > Returns functions that sorts on `x`.<
 
 
 
@@ -75,9 +71,7 @@ function m.gt(x) return function(a,b) return a[x] > b[x] end end
 ```
 
 
-> ***same(`x`:any):any***<br>
-Return x, unchanged.
-
+>same(x:any):any > Return x, unchanged.<
 
 
 
@@ -88,9 +82,7 @@ m.same=function(x) return x end
 
 ### Maths
 
-> ***`big`:num***<br>
-Return a big number.
-
+> big:num > Return a big number.<
 
 
 
@@ -99,9 +91,7 @@ m.big = math.huge
 ```
 
 
-> ***R(`max`:?num=1):num***<br>
-Return a random number `0..max`.
-
+> R(max:?num=1):num > Return a random number `0..max`.<
 
 
 
@@ -110,9 +100,7 @@ m.R = math.random
 ```
 
 
-> ***rnd(`x`:num, `places`:int):num***<br>
-Return `x` rounded to some number of `place`  &#9312; .
-
+> rnd(x:num, places:int):num  > Return `x` rounded to some number of `place`  &#9312; .<
 
 
 
@@ -125,9 +113,7 @@ function m.small(min,x) return min<1 and x^min or x end
 ```
 
 
-> ***rnds(`t`:num, `places`:?int=2):num***<br>
-Return items in `t` rounds to `places`.
-
+> rnds(t:num, places:?int=2):num > Return items in `t` rounds to `places`.<
 
 
 
@@ -138,9 +124,7 @@ function m.rnds(t, places)
 
 
 ###  Lists
-> ***splice(`t`:tab,start=?int=1,`stop`:?num=#t,`step`:?num=1):t***<br>
-Return  items `start` to `stop`, stepping by `step`.
-
+> splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t >Return  items `start` to `stop`, stepping by `step`.<
 
 
 
@@ -155,9 +139,7 @@ function m.splice(t, start, stop, step)
 ```
 
 
-> ***sort(`t`:tab, `f`:fun) :tab***<br>
-Return `t`, sorted of function `f` (default "
-").<
+> sort(t:tab, f:fun) :tab  > Return `t`, sorted of function `f` (default "<").<
 
 
 
@@ -166,9 +148,7 @@ function m.sort(t,f) table.sort(t,f); return t end
 ```
 
 
-> ***push(`t`:tab, `x`:any) :x***<br>
-Add `x` to end of `t`; return `x`.
-
+> push(t:tab, x:any) :x > Add `x` to end of `t`; return `x`.<
 
 
 
@@ -177,9 +157,7 @@ function m.push(t,x) t[1+#t] = x; return x end
 ```
 
 
-> ***per(`t`:tab, `p`:?float=.5) :x***<br>
-Return `p`-th ranked item from `t`.
-
+>per(t:tab, p:?float=.5) :x > Return `p`-th ranked item from `t`.<
 
 
 
@@ -188,14 +166,13 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
-> ***map(`t`:tab, `f`:fun): tab  
- kap(`t`:tab, `f`:fun): tab  
- maps(`list1`:tab, `list2`:tab, `f`:fun): tab   
- kaps(`list1`:tab, `list2`:tab, `f`:fun): tab***<br>
+>map(t:tab, f:fun): tab  
+ kap(t:tab, f:fun): tab  
+ maps(list1:tab, list2:tab, f:fun): tab   
+ kaps(list1:tab, list2:tab, f:fun): tab >
 Return items in `t`, filtered thru `f`.
 If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
-key and value to `f`. `maps` and `kaps` pass items from two lists.
-
+key and value to `f`. `maps` and `kaps` pass items from two lists.<
 
 
 
@@ -221,9 +198,7 @@ function m.sum(t,f,   u)
 
 ### String to thing
 
-> ***trim(`s`:str) : str***<br>
-Trim leading and trailing white space.
-
+> trim(s:str) : str > Trim leading and trailing white space.<
 
 
 
@@ -232,9 +207,7 @@ function m.trim(x) return  x:match"^%s*(.-)%s*$" end
 ```
 
 
-> ***thing(`s`:str):any***<br>
-Coerce string to whatever is simplest.
-
+>thing(s:str):any > Coerce string to whatever is simplest.<
 
 
 
@@ -259,9 +232,7 @@ function m.words(s,sep,fun,      t)
 ```
 
 
-> ***lines(`file`:str,  `fun`:fun):tab***<br>
-Call `fun` with lines.
-
+> lines(file:str,  fun:fun):tab > Call `fun` with lines.<
 
 
 
@@ -288,9 +259,7 @@ function m.csv(file,fun)
 
 
 ### Thing to string
-> ***fmt(`s`:str,...) :str***<br>
-emulate printf
-
+> fmt(s:str,...) :str > emulate printf<
 
 
 
@@ -299,9 +268,7 @@ m.fmt=string.format
 ```
 
 
-> ***cat(`t`:tab):str***<br>
-Return table as string. For key-indexed lists, show keys (sorted).
-
+> cat(t:tab):str  > Return table as string. For key-indexed lists, show keys (sorted).<
 
 
 
@@ -330,7 +297,7 @@ chunks(file:str) --> divide source code into comments and code.
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasize type hints comments (those with ">.*>.*<")
-          return s:gsub(">([^>]*)>([^<]*)<",function(hint,txt)
+          return s:gsub("> ([^>]*) > ([^<]*) <",function(hint,txt)
             hint = m.trim(hint):gsub("([%w]+):","`%1`:")
                                :gsub("([A-Z][A-Z]+)",function(word)
                                   local down=word:lower()

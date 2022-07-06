@@ -46,24 +46,27 @@ is a  pretty trivial extension.
 
 Just to demonstrate this, consider the object model of SHORTr:
 
-<img align=center src="design.jpg"> ***-   `[ROWS](rows.md#create)` holds many `[ROW](row.md#create)`s (and each `[ROW](row.md#create)` holds one record).  `[ROWS](rows.md#create)` summarize their numeric
-or symbolic  columns in `[NUM](num.md#create)`s or `[SYM](sym.md#create)`s (respectively). Summaries are held in `[COLS](cols.md#create)`, divided into  (x,y) sets for
+<img align=center src="design.jpg">
+
+-   `ROWS` holds many `ROW`s (and each `ROW` holds one record).  `ROWS` summarize their numeric
+or symbolic  columns in `NUM`s or `SYM`s (respectively). Summaries are held in `COLS`, divided into  (x,y) sets for
 independent and dependent columns (respectively). 
-- `[BIN](bin.md#create)`s and `[SOME](some.md#create)` are helper classes. Pairs of (x,y) columns are summarized in `[BIN](bin.md#create)`s. Adjacent `[BIN](bin.md#create)`s with  similar y distributions
+- `BIN`s and `SOME` are helper classes. Pairs of (x,y) columns are summarized in `BIN`s. Adjacent `BIN`s with  similar y distributions
 are merged. 
-`[SOME](some.md#create)` is a helper
-for `[NUM](num.md#create)`s that holds just some sample of the numerics in that column. 
+`SOME` is a helper
+for `NUM`s that holds just some sample of the numerics in that column. 
 - Everything else is just tiny extensions to the above object model. e.g. 
-  - When clustering, each cluster is its own `[ROWS](rows.md#create)`.
-  - `[NB](nb.md#create)` classifiers create one `[ROWS](rows.md#create)` per class in the training data.
-  - Decision `[TREE](tree.md#create)`s are built by recursively finding the `[BIN](bin.md#create)`s that best distinguish different `[ROW](row.md#create)`s. 
-  - [XAI](xai.md#create)
+  - When clustering, each cluster is its own `ROWS`.
+  - `NB` classifiers create one `ROWS` per class in the training data.
+  - Decision `TREE`s are built by recursively finding the `BIN`s that best distinguish different `ROW`s. 
+  - XAI
   - etc.
 
 
-## Design notes : about [XAI](xai.md#create)
-From  [Wikipedia](`https`://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :***<br>
-Explainable AI (XAI), or Interpretable AI, or Explainable Machine
+## Design notes : about XAI
+From  [Wikipedia](https://en.wikipedia.org/wiki/Explainable_artificial_intelligence) :
+
+> Explainable AI (XAI), or Interpretable AI, or Explainable Machine
 Learning (XML), is artificial intelligence (AI) in which the
 results of the solution can be understood by humans. It contrasts
 with the concept of the "black box" in machine learning where even
@@ -148,45 +151,27 @@ most important parts of the data. Also, if someone needs an _explanaition_
 of what the DL doing, then this code might be useful.
 
 ## Viva la revolución
-img src="che.jpg" align=right width=600> ***This code is a protest of sorts against
+<img src="che.jpg" align=right width=600>
+
+This code is a protest of sorts against
  mash-ups and bloatware and all their associated 
  problems with maintainability and technical debt and security.
 Also, in the case of decision-making
 software, I feel it no longer acceptable to deploy systems that are so complex we
 cannot readily understand and audit them.
- Surely, by now, we have the experience to revisit past implementations and radically simplify `them`:
+ Surely, by now, we have the experience to revisit past implementations and radically simplify them:
 
-<b***<br>
-William of Ockham:
-/b> ***</br***<br>
+<b>William of Ockham:</b></br>
+<em>"Non sunt multiplicanda entia sine necessitate"</em><br>
+(Entities are not to be multiplied without necessity)<p>
+<b>Ada Lovelace:</b><br>
+<em>"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”</em><p>
+<b>Tony Hoare:</b><br>
+<em>"Inside every large program is a small program struggling to get out."</em><p>
+<b>Alan Perlis:</b><br><em>"Simplicity does not precede complexity, but follows it."</em><p>
+<b>Dieter Rams:</b><br><em>"Less, but better."</em>
 
-em> ***"Non sunt multiplicanda entia sine necessitate"</em***<br>
-
-br> ***(Entities are not to be multiplied without necessity)<p***<br>
-
-b> ***Ada `Lovelace`:</b***<br>
-
-br> ***<em***<br>
-"One essential object is to choose that arrangement which shall tend to reduce to a minimum the time necessary for completing the calculation.”
-/em> ***<p***<br>
-
-b> ***Tony `Hoare`:</b***<br>
-
-br> ***<em***<br>
-"Inside every large program is a small program struggling to get out."
-/em> ***<p***<br>
-
-b> ***Alan `Perlis`:</b***<br>
-
-br> ***<em***<br>
-"Simplicity does not precede complexity, but follows it."
-/em> ***<p***<br>
-
-b> ***Dieter `Rams`:</b***<br>
-
-br> ***<em***<br>
-"Less, but better."
-/em> ***So, ask yourself the following questions. Once you've done _it_, did you really understand _it_? Let's check.
+So, ask yourself the following questions. Once you've done _it_, did you really understand _it_? Let's check.
 Can you do _it_ better?
 Can you now
 write _it_ in fewer lines and do you know how to make _it_ run faster?
@@ -195,12 +180,11 @@ And can you use those similarities to do more things with  _it_?
 Finally, can you teach _it_ quickly to newcomers?
     
 **Role Models**: Here are some of the people that
-inspire me to code less, but `better`:<br***<br>
+inspire me to code less, but better:<br>
 [Jack Diederich](https://www.youtube.com/watch?v=o9pEzgHorH0), [Hilary Mason](https://www.youtube.com/watch?v=l2btv0yUPNQ),
 [Brian McFee](https://brianmcfee.net/papers/ismir2011_sptree.pdf),
 [Brian Kernighan](https://www.oreilly.com/library/view/beautiful-code/9780596510046/ch01.html),
-[Joel Grus](https://github.com/joelgrus/data-science-from-scratch).
-p>
+[Joel Grus](https://github.com/joelgrus/data-science-from-scratch).<p>
 And, in this context, I must not forget the LISPers: <br>
 ([Peter Seibel](https://gigamonkeys.com/book/)
   ([Conrad Barski](https://doc.lagout.org/programmation/Lisp/Land%20of%20Lisp_%20Learn%20to%20Program%20in%20Lisp%2C%20One%20Game%20at%20a%20Time%20%5BBarski%202010-11-15%5D.pdf)

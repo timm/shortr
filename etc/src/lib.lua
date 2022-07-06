@@ -78,19 +78,19 @@ function m.thing(x)
   if x=="true" then return true elseif x=="false" then return false else
     return math.tointeger(x) or tonumber(x) or x end  end
 
--- >words(s:str, sep:str, fun:fun):tab > Return `t` filled with `s`, split  on `sep`.<
+-- > words(s:str, sep:str, fun:fun):tab > Return `t` filled with `s`, split  on `sep`. <
 function m.words(s,sep,fun,      t)
    fun = fun or m.same
    t={};for x in s:gmatch(m.fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
 
--- >lines(file:str,  fun:fun):tab > Call `fun` with lines.<
+-- > lines(file:str,  fun:fun):tab > Call `fun` with lines.<
 function m.lines(file, fun)
   local file = io.input(file)
   while true do
     local line = io.read()
     if not line then return io.close(file) else fun(line) end end end
 
--- >csv(file:str,  fun:fun):tab > Call `fun` with lines, split on ",".<
+-- > csv(file:str,  fun:fun):tab > Call `fun` with lines, split on ",". <
 -- coercing strings to nums, bools, etc (where appropriate).
 function m.csv(file,fun)
   m.lines(file, function(line) fun(m.words(line, ",", m.thing)) end) end 
@@ -112,7 +112,7 @@ function m.chat(t) print(m.cat(t)); return t end
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasize type hints comments (those with ">.*>.*<")
-          return s:gsub(">([^>]*)>([^<]*)<",function(hint,txt)
+          return s:gsub("> ([^>]*) > ([^<]*) <",function(hint,txt)
             hint = m.trim(hint):gsub("([%w]+):","`%1`:")
                                :gsub("([A-Z][A-Z]+)",function(word)
                                   local down=word:lower()
