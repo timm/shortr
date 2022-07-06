@@ -121,7 +121,7 @@ function m.chunks(file)
   end ------------------------
   local dump = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
-    if what == 0 then t[1] = hints(t[1]) end
+    -- if what == 0 then t[1] = hints(t[1]) end
     local s= table.concat(t,"\n")             -- build text dump
     print(what==0 and (s.."\n") or (   -- dump comment or code
           "\n\n```lua\n" ..s.."\n```\n\n")) 
