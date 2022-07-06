@@ -21,6 +21,12 @@ trees, bayes classifiers, etc).
 |  functions | [lib](lib.md)                                                                                                                                                                             |
 |    methods | [bin](bin.md) &hellip; [cols](cols.md) &hellip; [num](num.md) &hellip; [row](row.md)<br> [rows](rows.md) &hellip; [some](some.md) &hellip; [sym](sym.md) &hellip; [tree](tree.md) |
 
+(start here  ([help](all.md) ([install](/INSTALL.md) ([design notes](design.md)))))                                                                                               
+(build       ([Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)-- just for doc))                                                                           
+(demos       ([go](go.md))                                                                                                                                                      
+(methods    ([bin](bin.md) ([cols](cols.md) ([num](num.md) ([row](row.md) ([rows](rows.md) ([some](some.md) ([sym](sym.md) ([tree](tree.md))))))))))
+
+
 Also, this code shows just how cool is  LUA.
 With very little coding, 
 the code supports  TDD,  OO, several tiny DSLs,
