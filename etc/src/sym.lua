@@ -2,7 +2,6 @@
 -- Summarize symbols
 
 -- **RESPONSIBILITIES** : 
--- - Same responsibilities as [NUM](num.md) (but for symbols)
 -- - [Create](#create) a duplicate structure 
 -- - [Discretize](#discretuze) numerics into a few bins.
 -- - [Distance](#distance) calculations
