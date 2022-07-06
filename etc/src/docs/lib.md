@@ -37,6 +37,7 @@ arguments,  and numerous  higher-order tricks. LUA is LISP without brackets!!
 </p>
 
 ## Library Functions
+**Responsbilities**
 
 
 
@@ -59,28 +60,86 @@ function m.rogues()
 ```
 
 
-### Meta
-> ***lt(`x`:str):function   
- gt(`x`:str):function***<br>
-Returns functions that sorts on `x`.i
- 
+###  Lists
+> ***per(`t`:tab, `p`:?float=.5) :x***<br>
+Return `p`-th ranked item from `t`.
+
 
 
 
 ```lua
-function m.lt(x) return function(a,b) return a[x] < b[x] end end
-function m.gt(x) return function(a,b) return a[x] > b[x] end end
+function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
-> ***same(`x`:any):any***<br>
-Return x, unchanged.
+> ***push(`t`:tab, `x`:any) :x***<br>
+Add `x` to end of `t`; return `x`.
 
 
 
 
 ```lua
-m.same=function(x) return x end
+function m.push(t,x) t[1+#t] = x; return x end
+```
+
+
+> ***sort(`t`:tab, `f`:fun) :tab***<br>
+Return `t`, sorted of function `f` (default "&lt;").
+
+
+
+
+```lua
+function m.sort(t,f) table.sort(t,f); return t end
+```
+
+
+> ***splice(`t`:tab,start=?int=1,`stop`:?num=#t,`step`:?num=1):t***<br>
+Return  items `start` to `stop`, stepping by `step`.
+
+
+
+
+```lua
+function m.splice(t, start, stop, step)
+  local u={}
+  start = (start or 1)//1
+  stop  = (stop or #t)//1
+  step  = (step or  1)//1 
+  for j=start,stop,step do u[1+#u]=t[j] end
+  return u end
+```
+
+
+## Mapping
+> ***map(`t`:tab, `f`:fun): tab  
+ kap(`t`:tab, `f`:fun): tab  
+ maps(`list1`:tab, `list2`:tab, `f`:fun): tab   
+ kaps(`list1`:tab, `list2`:tab, `f`:fun): tab***<br>
+Return items in `t`, filtered thru `f`.
+If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
+key and value to `f`. `maps` and `kaps` pass items from two lists.
+
+
+
+
+```lua
+function m.map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x) end;return u end
+function m.kap(t,f,     u) u={};for k,x in pairs(t) do u[1+#u]=f(k,x) end;return u end
+function m.maps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(x,u[k]) end;return v end
+function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;return v end
+```
+
+
+> ***sum(`t`:tab, `f`:?fun=same): num***<br>
+sum items in `t`, filtered through `fun`
+
+
+
+
+```lua
+function m.sum(t,f,   u) 
+   u=0;for _,x in pairs(t) do u=u+(f or m.same)(x) end; return u end
 ```
 
 
@@ -118,7 +177,6 @@ function m.rnd(x, places)  --   &#9312;
   local mult = 10^(places or 2)
   return math.floor(x * mult + 0.5) / mult end
 
-function m.small(min,x) return min<1 and x^min or x end
 ```
 
 
@@ -131,127 +189,107 @@ Return items in `t` rounds to `places`.
 ```lua
 function m.rnds(t, places)
   local u={};for k,x in pairs(t) do u[k]=m.rnd(x,places or 2)end;return u end
+
+function m.small(min,x) return min<1 and x^min or x end
 ```
 
 
-###  Lists
-> ***splice(`t`:tab,start=?int=1,`stop`:?num=#t,`step`:?num=1):t***<br>
-Return  items `start` to `stop`, stepping by `step`.
+### Meta
+> ***gt(`x`:str):function   
+  lt(`x`:str):function***<br>
+Returns functions that sorts on `x`.i
+ 
+
+
+
+```lua
+function m.lt(x) return function(a,b) return a[x] < b[x] end end
+function m.gt(x) return function(a,b) return a[x] > b[x] end end
+```
+
+
+> ***same(`x`:any):any***<br>
+Return x, unchanged.
 
 
 
 
 ```lua
-function m.splice(t, start, stop, step)
-  local u={}
-  start = (start or 1)//1
-  stop  = (stop or #t)//1
-  step  = (step or  1)//1 
-  for j=start,stop,step do u[1+#u]=t[j] end
-  return u end
+m.same=function(x) return x end
 ```
 
 
-> ***sort(`t`:tab, `f`:fun) :tab***<br>
-Return `t`, sorted of function `f` (default "&lt;").
+### Objects
+> ***obj(`name`:str, `fun`:fun):object***<br>
+Return a klass `name` with constructor `fun`.
+
+Add a unique `id` and a `tosting` method (that uses `cat` (above).
+
+
+
+```lua
+local _id = 0
+function m.obj(name,fun,    t,new,x)
+  function new(kl,...) _id=_id+1; x=setmetatable({_id=_id},kl);fun(x,...); return x end 
+  t = {__tostring=m.cat,_is=name}; t.__index=t
+  return setmetatable(t, {__call=new}) end
+```
+
+
+### Settings
+> ***cli(`t`:tab) :tab***<br>
+For keys in `t`, look for updates on command-line.
+
+Things with boolean defaults are flipped via `--flag`. 
+Other keys need `--flag value`.  Print the help
+(if `-h` appears on command line). Return a table with setting `key`s and
+`value`s. IMPORTANT NOTE: this function alters-in-place the table `t`
+that is passed in-- which means that it alters settings for anything pointing
+to `t`.
+
+
+
+```lua
+function m.cli(t)
+  for key,x in pairs(t) do 
+    x = tostring(x)
+    local long, short = "--"..key, "-"..key:sub(1,1)
+    for n,flag in ipairs(arg) do 
+      if flag==short or flag==long then
+        x = x=="false" and "true" or x=="true" and "false" or arg[n+1] 
+        t[key] = m.thing(x) end end end
+  if t.help then os.exit(print(t._HELP:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"")) end 
+  return t end
+```
+
+
+> ***opts(`x`:str) :tab***<br>
+Parse `str` for lines with `--`; then pull keys+defaults.
 
 
 
 
 ```lua
-function m.sort(t,f) table.sort(t,f); return t end
-```
-
-
-> ***push(`t`:tab, `x`:any) :x***<br>
-Add `x` to end of `t`; return `x`.
-
-
-
-
-```lua
-function m.push(t,x) t[1+#t] = x; return x end
-```
-
-
-> ***per(`t`:tab, `p`:?float=.5) :x***<br>
-Return `p`-th ranked item from `t`.
-
-
-
-
-```lua
-function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
-```
-
-
-> ***map(`t`:tab, `f`:fun): tab  
- kap(`t`:tab, `f`:fun): tab  
- maps(`list1`:tab, `list2`:tab, `f`:fun): tab   
- kaps(`list1`:tab, `list2`:tab, `f`:fun): tab***<br>
-Return items in `t`, filtered thru `f`.
-If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
-key and value to `f`. `maps` and `kaps` pass items from two lists.
-
-
-
-
-```lua
-function m.map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x) end;return u end
-function m.kap(t,f,     u) u={};for k,x in pairs(t) do u[1+#u]=f(k,x) end;return u end
-function m.maps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(x,u[k]) end;return v end
-function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;return v end
-```
-
-
-> ***sum(`t`:tab, `f`:?fun=same): num***<br>
-sum items in `t`, filtered through `fun`
-
-
-
-
-```lua
-function m.sum(t,f,   u) 
-   u=0;for _,x in pairs(t) do u=u+(f or m.same)(x) end; return u end
+function m.opts(x)
+  local t = {}
+  x:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",
+           function(f1,f2,k,x) t[k] = m.thing(x) end)
+  t._HELP = x
+  return t end
 ```
 
 
 ### String to thing
-> ***trim(`s`:str) : str***<br>
-Trim leading and trailing white space.
+> ***csv(`file`:str,  `fun`:fun):tab***<br>
+Call `fun` with lines, split on ",".
 
-
-
-
-```lua
-function m.trim(x) return  x:match"^%s*(.-)%s*$" end
-```
-
-
-> ***thing(`s`:str):any***<br>
-Coerce string to whatever is simplest.
-
+coercing strings to nums, bools, etc (where appropriate).
 
 
 
 ```lua
-function m.thing(x)
-  x = m.trim(x)
-  if x=="true" then return true elseif x=="false" then return false else
-    return math.tointeger(x) or tonumber(x) or x end  end
-```
-
-
-> ***words(`s`:str, `sep`:str, `fun`:fun):tab***<br>
-Return `t` filled with `s`, split  on `sep`.
-
-
-
-
-```lua
-function m.words(s,sep,fun,      t)
-   fun = fun or m.same
-   t={};for x in s:gmatch(m.fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
+function m.csv(file,fun)
+  m.lines(file, function(line) fun(m.words(line, ",", m.thing)) end) end 
 ```
 
 
@@ -270,31 +308,45 @@ function m.lines(file, fun)
 ```
 
 
-> ***csv(`file`:str,  `fun`:fun):tab***<br>
-Call `fun` with lines, split on ",".
+> ***thing(`s`:str):any***<br>
+Coerce string to whatever is simplest.
 
-coercing strings to nums, bools, etc (where appropriate).
 
 
 
 ```lua
-function m.csv(file,fun)
-  m.lines(file, function(line) fun(m.words(line, ",", m.thing)) end) end 
+function m.thing(x)
+  x = m.trim(x)
+  if x=="true" then return true elseif x=="false" then return false else
+    return math.tointeger(x) or tonumber(x) or x end  end
+```
+
+
+> ***trim(`s`:str) : str***<br>
+Trim leading and trailing white space.
+
+
+
+
+```lua
+function m.trim(x) return  x:match"^%s*(.-)%s*$" end
+```
+
+
+> ***words(`s`:str, `sep`:str, `fun`:fun):tab***<br>
+Return `t` filled with `s`, split  on `sep`.
+
+
+
+
+```lua
+function m.words(s,sep,fun,      t)
+   fun = fun or m.same
+   t={};for x in s:gmatch(m.fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
 ```
 
 
 ### Thing to string
-> ***fmt(`s`:str,...) :str***<br>
-emulate printf.
-
-
-
-
-```lua
-m.fmt=string.format
-```
-
-
 > ***cat(`t`:tab):str***<br>
 Return table as string. For key-indexed lists, show keys (sorted).
 
@@ -309,7 +361,9 @@ function m.cat(t,    key,u)
 ```
 
 
-> chat(t:tab):t Print table (as string). Return `t`. <
+> ***chat(`t`:tab)***<br>
+Print table (as string). Return `t`.
+
 
 
 
@@ -349,46 +403,14 @@ function m.chunks(file)
 ```
 
 
-### Settings
-> ***opts(`x`:str) :tab***<br>
-Parse `str` for lines with `--`; then pull keys+defaults.
+> ***fmt(`s`:str,...) :str***<br>
+emulate printf.
 
 
 
 
 ```lua
-function m.opts(x)
-  local t = {}
-  x:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",
-           function(f1,f2,k,x) t[k] = m.thing(x) end)
-  t._HELP = x
-  return t end
-```
-
-
-> ***cli(`t`:tab) :tab***<br>
-For keys in `t`, look for updates on command-line.
-
-Things with boolean defaults are flipped via `--flag`. 
-Other keys need `--flag value`.  Print the help
-(if `-h` appears on command line). Return a table with setting `key`s and
-`value`s. IMPORTANT NOTE: this function alters-in-place the table `t`
-that is passed in-- which means that it alters settings for anything pointing
-to `t`.
-
-
-
-```lua
-function m.cli(t)
-  for key,x in pairs(t) do 
-    x = tostring(x)
-    local long, short = "--"..key, "-"..key:sub(1,1)
-    for n,flag in ipairs(arg) do 
-      if flag==short or flag==long then
-        x = x=="false" and "true" or x=="true" and "false" or arg[n+1] 
-        t[key] = m.thing(x) end end end
-  if t.help then os.exit(print(t._HELP:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"")) end 
-  return t end
+m.fmt=string.format
 ```
 
 
@@ -416,23 +438,6 @@ function m.on(opts,tests)
                           print(m.fmt("FAIL: [%s] %s",txt,out or "")) end end end
   m.rogues()
   os.exit(fails) end -- if fails==0 then our return code to the OS will be zero.
-```
-
-
-### Objects
-> ***obj(`name`:str, `fun`:fun):object***<br>
-Return a klass `name` with constructor `fun`.
-
-Add a unique `id` and a `tosting` method (that uses `cat` (above).
-
-
-
-```lua
-local _id = 0
-function m.obj(name,fun,    t,new,x)
-  function new(kl,...) _id=_id+1; x=setmetatable({_id=_id},kl);fun(x,...); return x end 
-  t = {__tostring=m.cat,_is=name}; t.__index=t
-  return setmetatable(t, {__call=new}) end
 ```
 
 
