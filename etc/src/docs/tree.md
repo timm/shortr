@@ -1,6 +1,6 @@
 # [:high_brightness: SHORTr : less (but better) XAI](all.md)
 
-<a href="all.md"><img align=right width=400 src="https://ernesto.net/wp-content/uploads/2021/01/img6-home5.png"></a>
+<a href="all.md"><img align=right width=500 src="https://ernesto.net/wp-content/uploads/2021/01/img6-home5.png"></a>
 
 AI and XAI (explainable artificial intelligence) need not be complicated.
 For example, here we need just a few 100 lines of LUA to search
