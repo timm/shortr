@@ -8,7 +8,7 @@ function m.rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 -- ### Meta
 
--- >lt(x:str):function ><--> 
+-- >lt(x:str):function   
 -- >gt(x:str):function > Returns functions that sorts on `x`.<
 function m.lt(x) return function(a,b) return a[x] < b[x] end end
 function m.gt(x) return function(a,b) return a[x] > b[x] end end

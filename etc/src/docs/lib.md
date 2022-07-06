@@ -56,8 +56,6 @@ function m.rogues()
 ### Meta
 
 > ***lt(`x`:str):function***<br>
-
---> ******<br>
 gt(x:str):function > Returns functions that sorts on `x`.
 
 
