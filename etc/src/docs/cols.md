@@ -5,7 +5,7 @@
 AI and XAI (explainable artificial intelligence) need not be complicated.
 
 
-<a href="all.md"><img align=right width=500 src="xai4.png"></a>
+<a href="all.md"><img align=right width=600 src="xai4.png"></a>
 For example, here we need just a few 100 lines of LUA to search
 N items to  find and explain the best ones, using just log(N) evals. Along the way,
 the object model we build could also be applied to  many other AI tasks (nearest neighbor,
