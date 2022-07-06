@@ -13,3 +13,38 @@
 [NUM|w:num;]1--kept 1[SOME|kept:tab]
 
 [BIN|lo:num;hi:num;]1--ys 1[COL]
+
+///
+[ROWS]1---rows +[ROW|cells:tab;of:tab;evaled:bool|add();like();]
+
+[COL]-[note: There is no\n actual COL object {bg:cornsilk}]
+
+[COLS|names:str+; all:COL+;x:COL+;y:COL+;klass:COL or nil;|add();]1---summarizes 1[ROWS]
+
+[COLS]1--makes +[COL]
+
+[COL|n:num; at:num; txt:str;|add();like();dist();]^[NUM]
+
+[COL]^[SYM|kept:tab;ok:bool, i.max:num, n:num ] 
+
+[NUM|w:num;]1--kept 1[SOME|kept:tab]
+
+[BIN|lo:num;hi:num;]1--ys 1[COL]
+
+///
+
+[ROWS]1---rows +[ROW|cells:tab;of:tab;evaled:bool|add();like();]
+
+[COL]-[note: There is no\n actual COL object {bg:cornsilk}]
+
+[COLS|names:str+; all:COL+;x:COL+;y:COL+;klass:COL or nil;|add();]1---summarizes 1[ROWS]
+
+[COLS]1--makes +[COL]
+
+[COL|n:num; at:num; txt:str;|add();like();dist();]^[NUM]
+
+[COL]^[SYM|kept:tab;ok:bool, i.max:num, n:num ] 
+
+[NUM|w:num;]1--kept 1[SOME|kept:tab]
+
+[BIN|lo:num;hi:num;]1--ys 1[COL]

@@ -1,10 +1,24 @@
--- ## Summarize symbols
+-- ## Class SYM
+-- Summarize symbols
 
+-- **RESPONSIBILITIES** : 
+-- - Creation, clbming (see `new,clone`)
+-- - Incremental summarization (see `add`)
+-- - Discretization (see `bin, merge, merges`)
+-- - Distance calcs (see `dist`)
+-- - Likelihood calcs (see `like`)
+-- - Knows central tendency and diversity (see `mids, divs`)
+-- ------------------------------------------------------------
 local all = require"all"
 local chat,obj,push,the = all.chat, all.obj, all.push, all.the
+
 -- SYM(at:?int, txt:?str) :SYM --> Summarize a stream of non-numerics.
 local SYM = obj("SYM", function(i,at,txt)
-  i.at, i.txt, i.n, i.kept =  at or 0, txt or "", 0, {} end)
+  i.at   = at or 0   -- :num -- column position 
+  i.txt  = txt or "" -- :str -- column name 
+  i.n    = 0         -- :num -- items seen so far
+  i.kept = {}        -- :tab -- counts of symbols seen so far
+  end)
 
 -- add(i:SYM: x:any, n:?int=1) --> Add `n` count to `i.kept[n]` .
 function SYM.add(i,x,n)
@@ -18,6 +32,10 @@ function SYM.bin(i,x) return x end
 
 -- clone(i:SYM) :SYM --> Return a class of the same structure.
 function SYM.clone(i) return SYM(i.at, i.txt) end
+
+-- dist(i:SYM, x:any,y:any): num --> Return distance 0..1 between `x,y`. Assume max distance for missing values.
+function SYM.dist(i,x,y)
+  return  (x=="?" or y=="?")  and 1 or x==y and 0 or 1 end
 
 -- like(i:SYN,x:any,prior:num):num --> return how much `x` might belong to `i`.
 function SYM.like(i,x,prior)

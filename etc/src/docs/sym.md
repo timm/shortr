@@ -28,7 +28,17 @@ decision trees, bayes classifiers, etc).
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 </p>
 
-## Summarize symbols
+## Class SYM
+Summarize symbols
+
+**RESPONSIBILITIES** : 
+- Creation, clbming (see `new,clone`)
+- Incremental summarization (see `add`)
+- Discretization (see `bin, merge, merges`)
+- Distance calcs (see `dist`)
+- Likelihood calcs (see `like`)
+- Knows central tendency and diversity (see `mids, divs`)
+------------------------------------------------------------
 
 
 
@@ -44,7 +54,11 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 ```lua
 local SYM = obj("SYM", function(i,at,txt)
-  i.at, i.txt, i.n, i.kept =  at or 0, txt or "", 0, {} end)
+  i.at   = at or 0   -- :num -- column position 
+  i.txt  = txt or "" -- :str -- column name 
+  i.n    = 0         -- :num -- items seen so far
+  i.kept = {}        -- :tab -- counts of symbols seen so far
+  end)
 ```
 
 
@@ -76,6 +90,16 @@ function SYM.bin(i,x) return x end
 
 ```lua
 function SYM.clone(i) return SYM(i.at, i.txt) end
+```
+
+
+> ***dist(`i` :SYM, `x` :any,`y` :any): num***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Return distance 0..1 between `x,y`. Assume max distance for missing values.  
+
+
+
+```lua
+function SYM.dist(i,x,y)
+  return  (x=="?" or y=="?")  and 1 or x==y and 0 or 1 end
 ```
 
 

@@ -59,7 +59,7 @@ function ROWS.like(i,row, nklasses, nrows)
 
 -- mids(i:ROW,p:?int=2,cols=?[COL]=i.cols.y):tab --> Return `mid` of columns rounded to `p` places.
 function ROWS.mids(i,p,cols) 
-  local t={}
+  local t={n=#i.rows}
   for _,col in pairs(cols or i.cols.y) do t[col.txt]=col:mid(p) end
   return rnds(t,p or 2) end
 

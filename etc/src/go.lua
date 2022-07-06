@@ -1,4 +1,4 @@
--- ## Test suite
+-- ## Start-up, test suite, demos
 local all = require"all"
 local chat,chunks,cli,csv = all.chat, all.chunks, all.cli, all.csv
 local maps,on = all.maps, all.on
@@ -6,7 +6,8 @@ local settings,sort,splice, the = all.settings, all.sort, all.splice, all.the
 
 local COLS,NUM = require"cols", require"num"
 local SOME, SYM, NB  = require"some", require"sym", require"nb"
-local ABCD,ROWS      = require"abcd", require"tree"
+local ABCD,ROWS      = require"abcd", require"rows"
+require "tree"
 
 -- To disable a test, rename it from `go` to `no`.
 local go,no = {},{}
@@ -89,7 +90,7 @@ function go.CHUNKS()
 function go.BINS( rs, m,best,rest)
   rs=ROWS():fill(the.file)
   sort(rs.rows) 
-  m    = (#rs.rows)*.5
+  m    = (#rs.rows)*.1
   best = splice(rs.rows,1,m)  --(m^.5)) 
   rest = splice(rs.rows,#rs.rows - m) --#rs.rows - 30) --(m^.5)) 
   rs:tree{best,rest}:branches()

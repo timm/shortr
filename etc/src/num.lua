@@ -22,6 +22,14 @@ function NUM.bin(i,x)
 -- clone(i:(SYM|NUM)) :(SYM|NUM) --> Return a class of the same structure.
 function NUM.clone(i) return NUM(i.at, i.txt) end
 
+-- dist(i:NUM, x:num,y:num): num --> Return distance 0..1 between `x,y`. Assume max distance for missing values.
+function NUM.dist(i,x,y)
+  if x=="?" and y=="?" then return 1 end
+  if     x=="?" then y = i:norm(y); x = y<.5 and 1 or 0 
+  elseif y=="?" then x = i:norm(x); y = x<.5 and 1 or 0
+  else   x,y = i:norm(x), i:norm(y) end
+  return math.abs(x - y) end 
+
 -- div(i:NUM) :tab --> Return `div`ersity of a column
 -- (its tendency _not_ to be a its central tendency). To understand this code
 -- recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob. In between,

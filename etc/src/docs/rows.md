@@ -129,7 +129,7 @@ function ROWS.like(i,row, nklasses, nrows)
 
 ```lua
 function ROWS.mids(i,p,cols) 
-  local t={}
+  local t={n=#i.rows}
   for _,col in pairs(cols or i.cols.y) do t[col.txt]=col:mid(p) end
   return rnds(t,p or 2) end
 ```
