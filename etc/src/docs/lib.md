@@ -52,8 +52,8 @@ function m.rogues()
 
 
 ### Meta
-
-lt(x:str):function --> 
+> ***lt(`x` :str) :function -***<br>
+ 
 gt(x:str):function --> Returns functions that sorts on `x`
 
 
@@ -75,7 +75,8 @@ m.same=function(x) return x end
 
 ### Maths
 
-big:num --> return a big number
+:: big:num 
+return a big number
 
 
 
@@ -84,7 +85,8 @@ m.big = math.huge
 ```
 
 
-R(max:?num=1):num --> return a random number `0..max`.
+:: R(max:?num=1):num 
+return a random number `0..max`.
 
 
 
@@ -93,7 +95,8 @@ m.R = math.random
 ```
 
 
-rnd(x:num, places:int):num --> return `x` rounded to some number of `places`.
+:: rnd(x:num, places:int):num 
+Return `x` rounded to some number of `places`.
 
 
 
@@ -106,7 +109,8 @@ function m.small(min,x) return min<1 and x^min or x end
 ```
 
 
-rnds(t:num, places:?int=2):t --> return items in `t` rounds to `places`.
+:: rnds(t:num, places:?int=2):num
+Return items in `t` rounds to `places`.
 
 
 
@@ -117,9 +121,8 @@ function m.rnds(t, places)
 
 
 ###  Lists
-
-splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t --> pull items
-`start` to `stop`, stepping by `step`. 
+:: splice(t:tab,start=?int=1,stop:?num=#t,step:?num=1):t
+Return  items `start` to `stop`, stepping by `step`. 
 
 
 
@@ -134,7 +137,8 @@ function m.splice(t, start, stop, step)
 ```
 
 
-sort(t:tab, f:fun) :tab --> Return `t`, sorted of function `f` (default "<").
+:: sort(t:tab, f:fun) :tab 
+Return `t`, sorted of function `f` (default "<").
 
 
 
@@ -143,7 +147,7 @@ function m.sort(t,f) table.sort(t,f); return t end
 ```
 
 
-push(t:tab, x:any) :x --> Add `x` to end of `t`; return `t`.
+:: push(t:tab, x:any) :x --> Add `x` to end of `t`; return `t`.
 
 
 
@@ -161,10 +165,10 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
-map(t:tab, f:fun): tab --> 
-kap(t:tab, f:fun): tab --> 
-maps(list1:tab, list2:tab, f:fun): tab --> 
-kaps(list1:tab, list2:tab, f:fun): tab --> 
+map(t:tab, f:fun): tab --> > ***kap(`t` :tab, `f` :fun) : tab -***<br>
+ 
+maps(list1:tab, list2:tab, f:fun): tab --> > ***kaps(`list1` :tab, `list2` :tab, `f` :fun) : tab -***<br>
+ 
 Return items in `t`, filtered thru `f`.
 If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
 key and value to `f`. `maps` and `kaps` pass items from two lists.
@@ -190,8 +194,8 @@ function m.sum(t,f,   u)
 
 
 ### String to thing
-
-thing(s:str):any --> Coerce string to whatever
+> ***thing(`s` :str) :any -***<br>
+ Coerce string to whatever
 is simplest (boolean or integer or float or, if all else fails, a string).
 
 
@@ -279,9 +283,11 @@ chunks(file:str) --> divide source code into comments and code.
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
-          return s:gsub("::([^\n]*)\n",function(hint)
+          return s:gsub("\n([^\n]*)->([^\n]*)\n",function(hint,txt)
                     hint = hint:match"^%s*(.-)%s*$"
-                    return '> ***'..hint:gsub("([%w]+):","`%1` :") .. "***<br>\n" end ) 
+                               :gsub("([%w]+):","`%1`:")
+                               :gsub(":"," :")
+                    return '> ***'..hint .. "***<br>\n"..txt.."\n" end ) 
   end ------------------------
   local dump = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
@@ -339,8 +345,8 @@ function m.cli(t)
 
 
 ### Tests
-
-on(opts:tab, tests:[fun]) --> Run some tests.
+> ***on(`opts` :tab, `tests` :[fun]) -***<br>
+ Run some tests.
 If  `opt.go=="all"`, then run all tests, sorted on their name.
 Before each test, reset random seed and the options `opts.
 
@@ -365,8 +371,8 @@ function m.on(opts,tests)
 
 
 ### Objects
-
-obj(name:str, fun:fun):object --> Return a klass `name` with constructor `fun`.
+> ***obj(`name` :str, `fun` :fun) :object -***<br>
+ Return a klass `name` with constructor `fun`.
 Add a unique `id` and a `tosting` method (that uses `cat` (above).
 
 
