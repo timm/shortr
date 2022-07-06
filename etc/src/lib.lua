@@ -112,7 +112,7 @@ function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
           return s:gsub(":: ([^\n]*)\n",function(hint)
-                    return '***'..hint:gsub("([%w]+):","`%1` :") .. "***<br>\n" end ) 
+                    return '> ***'..hint:gsub("([%w]+):","`%1` :") .. "***<br>\n" end ) 
   end ------------------------
   local dump = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
