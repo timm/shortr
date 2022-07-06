@@ -13,7 +13,7 @@
 local all = require"all"
 local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
--- SYM(at:?int, txt:?str) :SYM --> Summarize a stream of non-numerics.
+-- SYM(at:?int, txt:?str) :SYM --> [Constructor]. Summarize a stream of non-numerics.
 local SYM = obj("SYM", function(i,at,txt)
   i.at   = at or 0   -- :num -- column position 
   i.txt  = txt or "" -- :str -- column name 
