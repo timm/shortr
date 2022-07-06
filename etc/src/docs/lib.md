@@ -53,9 +53,8 @@ function m.rogues()
 
 ### Meta
 
-lt(x:str):function --> ***gt(`x` :str) :function --***<br>
-Returns functions that sorts on `x`
-
+lt(x:str):function --> 
+gt(x:str):function --> Returns functions that sorts on `x`
 
 
 
@@ -166,11 +165,11 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
-map(t:tab, f:fun): tab --> ***kap(`t` :tab, `f` :fun) : tab --***<br>
+map(t:tab, f:fun): tab --> 
+kap(t:tab, f:fun): tab --> 
 maps(list1:tab, list2:tab, f:fun): tab --> 
 kaps(list1:tab, list2:tab, f:fun): tab --> 
-Return items in `t`, filtered thru `f`
-.
+Return items in `t`, filtered thru `f`.
 If `f` returns nil, then the output table shrinks. `kap` and `kaps` pass the
 key and value to `f`. `maps` and `kaps` pass items from two lists.
 
@@ -284,7 +283,7 @@ chunks(file:str) --> divide source code into comments and code.
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
-          return s:gsub(">([^>]+)>([^.]+)",function(hint,txt)
+          return s:gsub(">([^>]+)>([^<]+)<",function(hint,txt)
                     txt  =txt:match"^%s*(.-)%s*$"
                     hint = hint:match"^%s*(.-)%s*$"
                                :gsub("([%w]+):","`%1`:")
