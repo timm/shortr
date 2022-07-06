@@ -65,7 +65,20 @@ local COLS = obj("COLS", function(i,names)
   i.y     = {}      -- :[NUM|SYM]   list of pointers to just the dependent columns
   i.klass = nil     -- :?(NUM|SYM)  pointer to the klass column, may be nil.
   for at,txt in pairs(names) do i:make1Column(at,txt) end end)
+```
 
+
+> ***make1Column(`i`:[COLS](cols.md#create), `at`:num, `txt`: str)***<br>
+Make NUM or Sym columns.
+
+All the columns are stored in `i.all`. Dependent and independent columns
+are also held in `i.y` and `i.x` (respectively). Anything we are skipping
+will make it into `all`, but not `x,y`. Ditto for any klass column (which,
+if not empty, will be stored in `klass`.
+
+
+
+```lua
 function COLS.make1Column(i,at,txt)
   local skipp=  function(x) return (x or ""):find":$"     end -- what to ignore
   local klassp= function(x) return (x or ""):find"!$"     end -- single goal
@@ -83,6 +96,8 @@ function COLS.make1Column(i,at,txt)
 > ***add(`i`:`[COLS](cols.md#create)`: `row`:[ROW](row.md#create))***<br>
 Update columns using data from `row`.
 
+This code only updates the `x,y` columns (so we do not take up space
+collecting data on "skipped" columns). 
 
 
 
