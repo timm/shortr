@@ -43,7 +43,7 @@ local obj,push,R,sort,the= all.obj, all.push, all.R, all.sort, all.the
 ```
 
 
-> ***SOME(`max` :?int) :SOME***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Constructor of a collector for, at most, `max` numbers.  
+> ***SOME(`max` :?int) :SOME***<br>  Constructor of a collector for, at most, `max` numbers.  
 
 
 
@@ -53,7 +53,7 @@ local SOME = obj("SOME", function(i,max)
 ```
 
 
-> ***add(`i` :`SOME` : `x` :num)***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:    
+> ***add(`i` :`SOME` : `x` :num)***<br>    
 If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random).
 Otherwise, just add.
 
@@ -68,7 +68,7 @@ function SOME.add(i,x)
 ```
 
 
-> ***has(`i` :SOME):tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Ensure contents are sorted. Return those contents.  
+> ***has(`i` :SOME):tab***<br>  Ensure contents are sorted. Return those contents.  
 
 
 

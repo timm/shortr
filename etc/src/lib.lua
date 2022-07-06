@@ -108,7 +108,8 @@ function m.cat(t,    key,u)
 function m.chat(t) print(m.cat(t)); return t end
 
 -- chunks(file:str) --> divide source code into comments and code.
-local _sep=("&nbsp; "):rep(9)..":speech_balloon:" 
+--local _sep=("&nbsp; "):rep(9)..":speech_balloon:" 
+local _sep="<br>"
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")

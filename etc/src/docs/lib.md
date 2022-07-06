@@ -64,7 +64,7 @@ function m.gt(x) return function(a,b) return a[x] > b[x] end end
 ```
 
 
-> ***same(`x` :any):any***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Return x, unchanged.  
+> ***same(`x` :any):any***<br>  Return x, unchanged.  
 
 
 
@@ -84,7 +84,7 @@ m.big = math.huge
 ```
 
 
-> ***R(`max` :?num=1):num***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  return a random number `0..max`.  
+> ***R(`max` :?num=1):num***<br>  return a random number `0..max`.  
 
 
 
@@ -93,7 +93,7 @@ m.R = math.random
 ```
 
 
-> ***rnd(`x` :num, `places` :int):num***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  return `x` rounded to some number of `places`.  
+> ***rnd(`x` :num, `places` :int):num***<br>  return `x` rounded to some number of `places`.  
 
 
 
@@ -106,7 +106,7 @@ function m.small(min,x) return min<1 and x^min or x end
 ```
 
 
-> ***rnds(`t` :num, `places` :?int=2):t***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  return items in `t` rounds to `places`.  
+> ***rnds(`t` :num, `places` :?int=2):t***<br>  return items in `t` rounds to `places`.  
 
 
 
@@ -134,7 +134,7 @@ function m.splice(t, start, stop, step)
 ```
 
 
-> ***sort(`t` :tab, `f` :fun) :tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Return `t`, sorted of function `f` (default "<").  
+> ***sort(`t` :tab, `f` :fun) :tab***<br>  Return `t`, sorted of function `f` (default "<").  
 
 
 
@@ -143,7 +143,7 @@ function m.sort(t,f) table.sort(t,f); return t end
 ```
 
 
-> ***push(`t` :tab, `x` :any) :x***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Add `x` to end of `t`; return `t`.  
+> ***push(`t` :tab, `x` :any) :x***<br>  Add `x` to end of `t`; return `t`.  
 
 
 
@@ -152,7 +152,7 @@ function m.push(t,x) t[1+#t] = x; return x end
 ```
 
 
-> ***per(`t` :tab, `p` :?float=.5) :x***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Return `p`-th ranked item from `t`.  
+> ***per(`t` :tab, `p` :?float=.5) :x***<br>  Return `p`-th ranked item from `t`.  
 
 
 
@@ -161,7 +161,7 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
-> ***map(`t` :tab, `f` :fun): tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:    
+> ***map(`t` :tab, `f` :fun): tab***<br>    
 kap(t:tab, f:fun): tab --> 
 maps(list1:tab, list2:tab, f:fun): tab --> 
 kaps(list1:tab, list2:tab, f:fun): tab --> 
@@ -179,7 +179,7 @@ function m.kaps(t,u,f,  v) v={};for k,x in pairs(t) do v[1+#v]=f(k,x,u[k]) end;r
 ```
 
 
-> ***sum(`t` :tab, `f` :?fun=same): num***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  sum items in `t`, filtered through `fun`  
+> ***sum(`t` :tab, `f` :?fun=same): num***<br>  sum items in `t`, filtered through `fun`  
 
 
 
@@ -204,7 +204,7 @@ function m.thing(x)
 ```
 
 
-> ***words(`s` :str, `sep` :str, `fun` :fun):tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Return `t` filled with `s`, split  on `sep`.  
+> ***words(`s` :str, `sep` :str, `fun` :fun):tab***<br>  Return `t` filled with `s`, split  on `sep`.  
 
 
 
@@ -215,7 +215,7 @@ function m.words(s,sep,fun,      t)
 ```
 
 
-> ***lines(`file` :str,  `fun` :fun):tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Call `fun` with lines  
+> ***lines(`file` :str,  `fun` :fun):tab***<br>  Call `fun` with lines  
 
 
 
@@ -228,7 +228,7 @@ function m.lines(file, fun)
 ```
 
 
-> ***csv(`file` :str,  `fun` :fun):tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Call `fun` with lines, split on ",",   
+> ***csv(`file` :str,  `fun` :fun):tab***<br>  Call `fun` with lines, split on ",",   
 coercing strings to nums, bools, etc (where appropriate).
 
 
@@ -250,7 +250,7 @@ m.fmt=string.format
 ```
 
 
-> ***cat(`t` :tab):str***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Return table as string. For key-indexed lists, show keys (sorted).  
+> ***cat(`t` :tab):str***<br>  Return table as string. For key-indexed lists, show keys (sorted).  
 
 
 
@@ -262,7 +262,7 @@ function m.cat(t,    key,u)
 ```
 
 
-> ***chat(`t` :tab):t***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Print table (as string). Return `t`.  
+> ***chat(`t` :tab):t***<br>  Print table (as string). Return `t`.  
 
 
 
@@ -271,12 +271,13 @@ function m.chat(t) print(m.cat(t)); return t end
 ```
 
 
-> ***chunks(`file` :str)***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  divide source code into comments and code.  
+> ***chunks(`file` :str)***<br>  divide source code into comments and code.  
 
 
 
 ```lua
-local _sep=("&nbsp; "):rep(9)..":speech_balloon:" 
+--local _sep=("&nbsp; "):rep(9)..":speech_balloon:" 
+local _sep="<br>"
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
@@ -318,7 +319,7 @@ function m.opts(x)
 ```
 
 
-> ***cli(`t` :tab) :tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  For keys in `t`, look for updates on command-line.   
+> ***cli(`t` :tab) :tab***<br>  For keys in `t`, look for updates on command-line.   
 
 Things with boolean defaults are flipped via `--flag`. 
 Other keys need `--flag value`.  Print the help

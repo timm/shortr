@@ -53,7 +53,7 @@ local obj,rnds,sort    = all.obj, all.rnds, all.sort
 ```
 
 
-> ***ROW(`of` :ROWS, `cells` :tab) :ROW***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Place to store one record  
+> ***ROW(`of` :ROWS, `cells` :tab) :ROW***<br>  Place to store one record  
 (and stats on how it is used; e.g. `i.evaled=true` if we touch the y values.
 
 
@@ -67,7 +67,7 @@ local ROW = obj("ROW", function(i,of,cells)
 ```
 
 
-> ***better(`i` :ROW, `j` :ROW):boolean***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  should `i` proceed before `j`?  
+> ***better(`i` :ROW, `j` :ROW):boolean***<br>  should `i` proceed before `j`?  
 
 
 
@@ -84,7 +84,7 @@ function ROW.__lt(i,j)
 ```
 
 
-> ***`i` :ROW - `j` :ROW***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  return distance between `i` and `j`  
+> ***`i` :ROW - `j` :ROW***<br>  return distance between `i` and `j`  
 
 
 
@@ -98,7 +98,7 @@ function ROW.__sub(i,j)
 ```
 
 
-> ***around(`i` :ROW, `rows` :?[ROW]):tab***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:   return rows in this table  
+> ***around(`i` :ROW, `rows` :?[ROW]):tab***<br>   return rows in this table  
 sorted by distance to `i`. `rows` defaults to the rows of this ROWS.
 
 
@@ -110,7 +110,7 @@ function ROW.around(i, rows)
 ```
 
 
-> ***far(`i` :ROW,`rows` :?[ROW]):ROW***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  find something `far` away.  
+> ***far(`i` :ROW,`rows` :?[ROW]):ROW***<br>  find something `far` away.  
 
 
 
@@ -119,7 +119,7 @@ function ROW.far(i,rows) return per(i:around(rows), the.Far).row end
 ```
 
 
-> ***klass(`i` :ROW):any***&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; :speech_balloon:  Return the class value of this record.  
+> ***klass(`i` :ROW):any***<br>  Return the class value of this record.  
 
 
 
