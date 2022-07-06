@@ -1,7 +1,7 @@
 
 # [:high_brightness: SHORTr : less (but better) XAI](all.md)
 
-<a href="all.md"><img align=left width=400 src="stark.jpeg"></a>
+<a href="all.md"><img align=right width=400 src="stark.jpeg"></a>
 
 AI and XAI (explainable artificial intelligence) need not be
 hard.  E.g. here's a few hundred lines of LUA
