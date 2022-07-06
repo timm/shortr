@@ -64,7 +64,9 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 
-> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>  #update; add `n` count to `i.kept[n]` .  
+### Create
+
+add(i:SYM: x:any, n:?int=1) -->  Add `n` count to `i.kept[n]` .
 
 
 
@@ -77,16 +79,7 @@ function SYM.add(i,x,n)
 ```
 
 
-> ***bin(`i` :`SYM` : `x` :any)***<br>  #discretize; return `x` mapped to a finite range (just return x)  
-
-
-
-```lua
-function SYM.bin(i,x) return x end
-```
-
-
-> ***clone(`i` :SYM) :SYM***<br>  #create; return a class of the same structure.  
+> ***clone(`i` :SYM) :SYM***<br>  return a class of the same structure.  
 
 
 
@@ -95,23 +88,14 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 ```
 
 
-> ***dist(`i` :SYM, `x` :any,`y` :any): num***<br>  #distance; return distance 0..1 between `x,y`. Assume max distance for missing values.  
+### Discretize
+
+bin(i:SYM: x:any) -->  Return `x` mapped to a finite range (just return x)
 
 
 
 ```lua
-function SYM.dist(i,x,y)
-  return  (x=="?" or y=="?")  and 1 or x==y and 0 or 1 end
-```
-
-
-> ***like(`i` :SYN,`x` :any,`prior` :num):num***<br>  #like; return how much `x` might belong to `i`.  
-
-
-
-```lua
-function SYM.like(i,x,prior)
-   return ((i.kept[x] or 0)+the.m*prior) / (i.n+the.m) end
+function SYM.bin(i,x) return x end
 ```
 
 
@@ -128,7 +112,7 @@ function SYM.merge(i,j,     k)
 ```
 
 
-> ***merge(`i` :SYM,`t` :tab):tab***<br>  #discretize;  merge a list of bins (for symbolic y-values)  
+> ***merge(`i` :SYM,`t` :tab):tab***<br>  Merge a list of bins (for symbolic y-values)  
 
 
 
@@ -137,7 +121,33 @@ function SYM.merges(i,t,...) return t end
 ```
 
 
-> ***mid(`i` :SYM):tab***<br>  #report; return a columns' `mid`ddle (central tendency).  
+### Distance
+
+dist(i:SYM, x:any,y:any): num --> Return distance 0..1 between `x,y`. Assume max distance for missing values.
+
+
+
+```lua
+function SYM.dist(i,x,y)
+  return  (x=="?" or y=="?")  and 1 or x==y and 0 or 1 end
+```
+
+
+### Like
+
+like(i:SYN,x:any,prior:num):num --> Return how much `x` might belong to `i`.
+
+
+
+```lua
+function SYM.like(i,x,prior)
+   return ((i.kept[x] or 0)+the.m*prior) / (i.n+the.m) end
+```
+
+
+### Report
+
+mid(i:SYM):tab --> Return a columns' `mid`ddle (central tendency).
 
 
 
@@ -149,7 +159,7 @@ function SYM.mid(i,p)
 ```
 
 
-> ***div(`i` :SYM):tab***<br>  #report; return `div`ersity of a column (its tendency _not_ to be a its central tendency).  
+> ***div(`i` :SYM):tab***<br>  Return `div`ersity of a column (its tendency _not_ to be a its central tendency).  
 
 
 
