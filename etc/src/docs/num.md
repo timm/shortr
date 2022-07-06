@@ -118,6 +118,7 @@ merge a list of bins (for numeric y-values)
 
 Note the last kine of `merges`: if anything merged, then loop again looking for other merges.
 Also, at the end, expand bins to cover all gaps across the number line.
+Finally, to see what happens when this code calls `merged`, goto [BIN](bin.md).
 
 
 
