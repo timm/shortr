@@ -20,11 +20,11 @@ local SOME = require"some"
 
 -- NUM(at:?int, txt:?str) :NUM --> Summarize a stream of numbers.
 local NUM = obj("NUM", function(i,at,txt) 
-  i.at   = at or 0                 -- :num -- column position 
-  i.txt  = txt or ""               -- :str -- column name 
-  i.n    = 0                       -- :num -- items seen so far
-  i.kept = SOME(the.SOME)          -- :SOME -- holds a sample of items seen so far
-  i.w = i.txt:find"-$" and -1 or 1 -- :num -- do we seek less or more of this?
+  i.at   = at or 0                 --> :num  , column position 
+  i.txt  = txt or ""               --> :str  , column name 
+  i.n    = 0                       --> :num  , items seen so far
+  i.kept = SOME(the.SOME)          --: :SOME , holds a sample of items seen so far
+  i.w = i.txt:find"-$" and -1 or 1 --> :num  , do we seek less or more of this?
   end)
 
 -- add(i:NUM: x:num, n:?int=1) --> `n` times,update `i`'s SOME object.

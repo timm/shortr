@@ -55,22 +55,22 @@ local SOME = require"some"
 ```
 
 
-> ***NUM(`at` :?int, `txt` :?str) :NUM***<br>  Summarize a stream of numbers.  
+NUM(at:?int, txt:?str) :NUM --> Summarize a stream of numbers.
 
 
 
 ```lua
 local NUM = obj("NUM", function(i,at,txt) 
-  i.at   = at or 0                 -- :num -- column position 
-  i.txt  = txt or ""               -- :str -- column name 
-  i.n    = 0                       -- :num -- items seen so far
-  i.kept = SOME(the.SOME)          -- :SOME -- holds a sample of items seen so far
-  i.w = i.txt:find"-$" and -1 or 1 -- :num -- do we seek less or more of this?
+  i.at   = at or 0                 --> :num  , column position 
+  i.txt  = txt or ""               --> :str  , column name 
+  i.n    = 0                       --> :num  , items seen so far
+  i.kept = SOME(the.SOME)          --: :SOME , holds a sample of items seen so far
+  i.w = i.txt:find"-$" and -1 or 1 --> :num  , do we seek less or more of this?
   end)
 ```
 
 
-> ***add(`i` :`NUM` : `x` :num, `n` :?int=1)***<br>  `n` times,update `i`'s SOME object.  
+add(i:NUM: x:num, n:?int=1) --> `n` times,update `i`'s SOME object.
 
 
 
@@ -81,7 +81,7 @@ function NUM.add(i,x,n)
 ```
 
 
-> ***bin(`i` :`NUM` : `x` :any)***<br>  return `x` mapped to a finite range  
+bin(i:NUM: x:any) --> return `x` mapped to a finite range
 
 
 
@@ -93,7 +93,7 @@ function NUM.bin(i,x)
 ```
 
 
-> ***clone(`i` :NUM) :NUM***<br>  Return a class of the same structure.  
+clone(i:NUM) :NUM --> Return a class of the same structure.
 
 
 
@@ -102,7 +102,7 @@ function NUM.clone(i) return NUM(i.at, i.txt) end
 ```
 
 
-> ***dist(`i` :NUM, `x` :num,`y` :num): num***<br>  Return distance 0..1 between `x,y`. Assume max distance for missing values.  
+dist(i:NUM, x:num,y:num): num --> Return distance 0..1 between `x,y`. Assume max distance for missing values.
 
 
 
@@ -116,7 +116,7 @@ function NUM.dist(i,x,y)
 ```
 
 
-> ***div(`i` :NUM) :tab***<br>  Return `div`ersity of a column (tendency to depart central tendancy)  
+div(i:NUM) :tab --> Return `div`ersity of a column (tendency to depart central tendancy)
 
 To understand `div`  recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob.
 In between, at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.
@@ -129,7 +129,7 @@ function NUM.div(i)
 ```
 
 
-> ***like(`i` :NUM, `x` :any)***<br>  Return the likelihood that `x` belongs to `i`.  
+like(i:NUM, x:any) --> Return the likelihood that `x` belongs to `i`.
 
 
 
@@ -141,7 +141,7 @@ function NUM.like(i,x,...)
 ```
 
 
-> ***merge(`i` :NUM,`j` :NUM) :NUM***<br>  combine two numerics  
+merge(i:NUM,j:NUM) :NUM --> combine two numerics
 
 
 
@@ -154,7 +154,7 @@ function NUM.merge(i,j,     k)
 ```
 
 
-> ***merge(`i` :NUM,`t` :[BIN]) :[BIN]***<br>  merge a list of bins (for numeric y-values)  
+merge(i:NUM,t:[BIN]) :[BIN] --> merge a list of bins (for numeric y-values)
 
 Note the last kine of `merges`: if anything merged, then loop again looking for other merges.
 Also, at the end, expand bins to cover all gaps across the number line.
@@ -178,7 +178,7 @@ function NUM.merges(i,b4, min)
 ```
 
 
-> ***mid(`i` :NUM)) :tab***<br>  Return a columns' `mid`ddle  
+mid(i:NUM)) :tab --> Return a columns' `mid`ddle
 
 
 
@@ -188,7 +188,7 @@ function NUM.mid(i)
 ```
 
 
-> ***norm(`i` :NUM, `x` :num) :num***<br>  Normalize `x` 0..1 for lo..hi,  
+norm(i:NUM, x:num) :num --> Normalize `x` 0..1 for lo..hi,
 
 
 

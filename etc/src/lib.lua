@@ -108,21 +108,16 @@ function m.cat(t,    key,u)
 function m.chat(t) print(m.cat(t)); return t end
 
 -- chunks(file:str) --> divide source code into comments and code.
---local _sep=("&nbsp; "):rep(9)..":speech_balloon:" 
-local _sep="<br>"
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
-     if  s:find"-->" then
-        return s:gsub("([%w]+):","`%1` :") 
-                :gsub("([^\n]+) [-][-]>([%s]+)\n","> ***%1***  \n") 
-                :gsub("([^\n]+) [-][-]>([^\n]+)","> ***%1***".._sep .." %2  ")  
-     else return s end
+          return s:gsub("\n:: ([^\n]*)\n",function(hint)
+                    return '***'..hint:gsub("([%w]+):","`%1` :") .. "***  " end ) 
   end ------------------------
   local dump = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
-    -- if what == 0 then t[1] = hints(t[1]) end
     local s= table.concat(t,"\n")             -- build text dump
+    if what == 0 then s= hints(s) end
     print(what==0 and (s.."\n") or (   -- dump comment or code
           "\n\n```lua\n" ..s.."\n```\n\n")) 
   end --------------------
