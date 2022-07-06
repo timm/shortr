@@ -111,7 +111,7 @@ function m.chat(t) print(m.cat(t)); return t end
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
-          return s:gsub("\n:: ([^\n]*)[%S]*\n",function(hint)
+          return s:gsub("\n:: ([^\n]*)[%s]*\n",function(hint)
                     return '***'..hint:gsub("([%w]+):","`%1` :") .. "***<br>" end ) 
   end ------------------------
   local dump = function(what,t) 
