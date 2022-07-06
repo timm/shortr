@@ -41,7 +41,7 @@ local push,small,sort,sum = all.push, all.small,all.sort,all.sum
 ```
 
 
-> ***BIN(`xlo` :num,`xhi` :num,`ys` :(NUM|SYM)):BIN***<br>  Constructor. `ys` stores dependent values seen from `xlo` to `xhi`.  
+BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN --> Constructor. `ys` stores dependent values seen from `xlo` to `xhi`.
 
 
 
@@ -51,7 +51,7 @@ local BIN = obj("BIN", function(i, xlo, xhi, ys)
 ```
 
 
-> ***add(`i` :BIN, `x` :num, `y` :(num|str)***<br>  Ensure `lo`,`hi` covers `x`. Add `y` to `ys`.  
+add(i:BIN, x:num, y:(num|str) --> Ensure `lo`,`hi` covers `x`. Add `y` to `ys`.
 
 
 
@@ -63,7 +63,7 @@ function BIN.add(i,x,y)
 ```
 
 
-> ***hold(`i` :BIN, `row` :ROW): (ROW|nil)***<br>  Returns non-nil if bin straddles the `row`.  
+hold(i:BIN, row:ROW): (ROW|nil) --> Returns non-nil if bin straddles the `row`.
 
 
 
@@ -74,7 +74,7 @@ function BIN.hold(i, row)
 ```
 
 
-> ***holds(`i` :BIN, `rows` :[ROW]): [ROW]***<br>  Returns the subset of `rows` straddled by this bin.  
+holds(i:BIN, rows:[ROW]): [ROW] --> Returns the subset of `rows` straddled by this bin.
 
 
 
@@ -84,7 +84,7 @@ function BIN.holds(i, rows)
 ```
 
 
-> ***merge(`i` :BIN, `j` :BIN, `min` :number): (BIN|nil)***<br>  Returns non-nil if `i,j` should/can be merged.  
+merge(i:BIN, j:BIN, min:number): (BIN|nil) --> Returns non-nil if `i,j` should/can be merged.
 "Should be merged" means some bins are too small.  
 "Can be merged" means the parts are more complex than the whole.
 

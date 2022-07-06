@@ -55,7 +55,7 @@ local COLS,ROW          = require"COLS",require"ROW"
 ```
 
 
-> ***ROWS(`names` :?[str], `rows` :?[ROW}) :ROWS***<br>  Place to store many ROWS  
+ROWS(names:?[str], rows:?[ROW}) :ROWS --> Place to store many ROWS
  and summarize them (in `i.cols`).
 
 
@@ -67,7 +67,7 @@ local ROWS = obj("ROWS", function(i,names,rows)
 ```
 
 
-> ***add(`i` :`ROWS` : `row` :ROW)***<br>  add ROW to ROWS, update the summaries in `i.cols`.  
+add(i:ROWS: row:ROW) --> add ROW to ROWS, update the summaries in `i.cols`.
 
 
 
@@ -79,7 +79,7 @@ function ROWS.add(i,t)
 ```
 
 
-> ***ROWS.clone(`init` :?[ROW]) :ROWS***<br>  Return a ROWS with same structure as `i`.   
+ROWS.clone(init:?[ROW]) :ROWS --> Return a ROWS with same structure as `i`. 
 Optionally, `init`ialize it with some rows. Add a pointer back to the 
 original table that spawned `eve`rything else (useful for some distance calcs).
 
@@ -92,7 +92,7 @@ function ROWS.clone(i,init)
 ```
 
 
-> ***fill(`i` :`ROWS` : `src` :(str|tab)):ROWS***<br>  copy the data from `src` into `i`.  
+fill(i:ROWS: src:(str|tab)):ROWS --> copy the data from `src` into `i`.
 
 
 
@@ -104,7 +104,7 @@ function ROWS.fill(i,src)
 ```
 
 
-> ***like(`i` :ROWS,row;ROW,`nklasses` :num,`nrows` :num):num***<br>  Return -- P(H)*&prod;<sub>i</sub> (P(E<sub>i</sub>|H)).   
+like(i:ROWS,row;ROW,nklasses:num,nrows:num):num --> Return -- P(H)*&prod;<sub>i</sub> (P(E<sub>i</sub>|H)). 
 Do it with logs to handle very small numbers.
 
 
@@ -124,7 +124,7 @@ function ROWS.like(i,row, nklasses, nrows)
 ```
 
 
-> ***mids(`i` :ROW,`p` :?int=2,cols=?[COL]=i.cols.y):tab***<br>  Return `mid` of columns rounded to `p` places.  
+mids(i:ROW,p:?int=2,cols=?[COL]=i.cols.y):tab --> Return `mid` of columns rounded to `p` places.
 
 
 
