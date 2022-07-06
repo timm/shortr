@@ -28,7 +28,6 @@ literate programming,
 command-line
 arguments,  and numerous  higher-order tricks. LUA is LISP without brackets!!
 
-<br clear=all>
 <p align=center>
 <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
 <a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow?logo=Checkmarx&logoColor=white"></a>
