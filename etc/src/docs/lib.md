@@ -381,7 +381,7 @@ divide source code into comments and code.
 ```lua
 function m.chunks(file)
   local b4,now,t = 0,0,{}
-  local hints=function(s)  -- emphasize type hints comments (those with ">.*>.*<")
+  local hints=function(s)  -- Emphasize type hints comments (those with "> .* > .* <")
           return s:gsub("> ([^>]*) > ([^<]*) <",function(hint,txt)
             hint = m.trim(hint):gsub("([%w]+):","`%1`:")
                                :gsub("([A-Z][A-Z]+)",function(word)
@@ -404,7 +404,7 @@ function m.chunks(file)
 
 
 > ***fmt(`s`:str,...) :str***<br>
-emulate printf.
+Emulate printf.
 
 
 

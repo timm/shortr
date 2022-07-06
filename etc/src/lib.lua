@@ -148,7 +148,7 @@ function m.chat(t) print(m.cat(t)); return t end
 -- > chunks(file:str) > divide source code into comments and code. <
 function m.chunks(file)
   local b4,now,t = 0,0,{}
-  local hints=function(s)  -- emphasize type hints comments (those with ">.*>.*<")
+  local hints=function(s)  -- Emphasize type hints comments (those with "> .* > .* <")
           return s:gsub("> ([^>]*) > ([^<]*) <",function(hint,txt)
             hint = m.trim(hint):gsub("([%w]+):","`%1`:")
                                :gsub("([A-Z][A-Z]+)",function(word)
@@ -168,7 +168,7 @@ function m.chunks(file)
     b4 = now end)
   dump(now,t) end 
 
--- > fmt(s:str,...) :str > emulate printf.  <
+-- > fmt(s:str,...) :str > Emulate printf.  <
 m.fmt=string.format
 
 -- ### Tests
