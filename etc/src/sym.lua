@@ -25,7 +25,7 @@ local SYM = obj("SYM", function(i,at,txt)
 -- clone(i:SYM) :SYM  ->  Return a class of the same structure.
 function SYM.clone(i) return SYM(i.at, i.txt) end
 
--- ### Discretize
+-- ### Discretize   
 -- bin(i:SYM, x:any) -> Return `x` mapped to a finite range (just return x)
 function SYM.bin(i,x) return x end
 

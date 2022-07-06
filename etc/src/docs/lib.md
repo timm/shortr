@@ -51,6 +51,7 @@ function m.rogues()
 ```
 
 
+hint	lt(x:str):function -	txt	 
 ### Meta
 > ***lt(`x` :str) :function -***<br>
  
@@ -165,6 +166,8 @@ function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
 
+hint	kap(t:tab, f:fun): tab -	txt	 
+hint	kaps(list1:tab, list2:tab, f:fun): tab -	txt	 
 map(t:tab, f:fun): tab --> > ***kap(`t` :tab, `f` :fun) : tab -***<br>
  
 maps(list1:tab, list2:tab, f:fun): tab --> > ***kaps(`list1` :tab, `list2` :tab, `f` :fun) : tab -***<br>
@@ -193,6 +196,7 @@ function m.sum(t,f,   u)
 ```
 
 
+hint	thing(s:str):any -	txt	 Coerce string to whatever
 ### String to thing
 > ***thing(`s` :str) :any -***<br>
  Coerce string to whatever
@@ -284,6 +288,7 @@ function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
           return s:gsub("\n([^\n]*)[-]>([^\n]*)\n",function(hint,txt)
+                    print("hint",hint,"txt",txt)
                     hint = hint:match"^%s*(.-)%s*$"
                                :gsub("([%w]+):","`%1`:")
                                :gsub(":"," :")
@@ -344,6 +349,7 @@ function m.cli(t)
 ```
 
 
+hint	on(opts:tab, tests:[fun]) -	txt	 Run some tests.
 ### Tests
 > ***on(`opts` :tab, `tests` :[fun]) -***<br>
  Run some tests.
@@ -370,6 +376,7 @@ function m.on(opts,tests)
 ```
 
 
+hint	obj(name:str, fun:fun):object -	txt	 Return a klass `name` with constructor `fun`.
 ### Objects
 > ***obj(`name` :str, `fun` :fun) :object -***<br>
  Return a klass `name` with constructor `fun`.
