@@ -113,7 +113,7 @@
 -- of what the DL doing, then this code might be useful.
 
 -- ## Viva la revolución
--- <img src="che.jpg" align=right width=700>
+-- <img src="che.jpg" align=right width=700>  
 
 -- This code is a protest of sorts against
 --  mash-ups and bloatware and all their associated 
