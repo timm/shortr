@@ -157,7 +157,9 @@ function NUM.dist(i,x,y)
 
 
 ### Likelihood
-like(i:NUM, x:any) --> Return the likelihood that `x` belongs to `i`.
+> ***like(`i` :NUM, `x` :any)***<br>
+Return the likelihood that `x` belongs to `i`.
+
 
 
 

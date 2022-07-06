@@ -72,7 +72,7 @@ function NUM.dist(i,x,y)
   return math.abs(x - y) end 
 
 -- ### Likelihood
--- like(i:NUM, x:any) --> Return the likelihood that `x` belongs to `i`.
+-- > like(i:NUM, x:any) > Return the likelihood that `x` belongs to `i`.<
 function NUM.like(i,x,...)
   local sd,mu=i:div(), i:mid()
   if sd==0 then return x==mu and 1 or 1/big end
