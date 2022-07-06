@@ -1,6 +1,7 @@
 # [:high_brightness: SHORTr : less (but better) XAI](all.md)
 
-<a href="all.md"><img align=right width=500 src="https://ernesto.net/wp-content/uploads/2021/01/img6-home5.png"></a>
+<!-- a href="all.md"><img align=right width=500 src="https://ernesto.net/wp-content/uploads/2021/01/img6-home5.png"></a --->
+<a href="all.md"><img align=right width=500 src="xai.png"></a>
 
 AI and XAI (explainable artificial intelligence) need not be complicated.
 For example, here we need just a few 100 lines of LUA to search
@@ -28,7 +29,7 @@ decision trees, bayes classifiers, etc).
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 </p>
 
-## `SOME` : keep some nums
+## SOME: keep some nums
 Given a finite buffer of some small size `max`, then after reading 
 a very large set of `n` numbers, we should only be keeping `max/n` of those nums.
 

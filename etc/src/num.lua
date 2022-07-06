@@ -38,7 +38,7 @@ function NUM.bin(i,x)
   local b = (a[#a] - a[1])/the.bins
   return a[#a]==a[1] and 1 or math.floor(x/b+.5)*b end
 
--- clone(i:(SYM|NUM)) :(SYM|NUM) --> Return a class of the same structure.
+-- clone(i:NUM) :NUM --> Return a class of the same structure.
 function NUM.clone(i) return NUM(i.at, i.txt) end
 
 -- dist(i:NUM, x:num,y:num): num --> Return distance 0..1 between `x,y`. Assume max distance for missing values.
