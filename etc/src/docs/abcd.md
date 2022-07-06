@@ -4,7 +4,7 @@
 
 
 AI and XAI (explainable artificial intelligence) need not be
-hard.  E.g. here's a few 100 lines of LUA
+hard.  E.g. here's a few hundred lines of LUA
 to search N items to  find and explain the best ones, using just
 log(N) evals.  
 
@@ -13,7 +13,9 @@ log(N) evals.
 **demos:**       ([go](go.md))                                                                                                                                                      
 **apps:**         ([nb](nb.md) ([tree](tree.md)))   
 **functions:**   ([lib](lib.md))     
-**methods:**    ([bin](bin.md) ([cols](cols.md) ([num](num.md) ([row](row.md) ([rows](rows.md) ([some](some.md) ([sym](sym.md) ([tree](tree.md)))))))))
+**columns:**    ([cols](cols.md) ([num](num.md) ([some](some.md) ([sym](sym.md)))))
+**rows:** ([row](row.md) ([rows](rows.md)))
+**trees:** ([bin](bin.md) ([tree](tree.md))))
 
 
 <br clear=all>&nbsp;
