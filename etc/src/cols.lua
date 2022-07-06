@@ -1,4 +1,4 @@
--- ##  Class Col
+-- ##  Class COLS
 -- Factor for making NUMs or SYMs
 
 -- **RESPONSIBILITIES** : 
@@ -14,7 +14,7 @@ local obj, push = all.obj, all.push
 local NUM, SYM = require"NUM", require"SYM"
 
 -- ### Create
--- > COLS(names:[str]) :COLS > Factory. Turns a list of names into NUMs or SYMs.<
+-- > COLS(names:[str]) :COLS > Factory. Turns a list of names into NUMs or SYMs. <
 -- Goal columns get added to `i.y` and others to `i.x` (unless denoted `ignored`). 
 -- A klass column goes to `i.klass`.
 local COLS = obj("COLS", function(i,names) 
@@ -37,7 +37,7 @@ function COLS.make1Column(i,at,txt)
     if klassp(txt) then i.klass = col end end end 
 
 -- ### Update
--- > add(i:COLS: row:ROW) > Update columns using data from `row`.<
+-- > add(i:COLS: row:ROW) > Update columns using data from `row`. <
 function COLS.add(i,row)
   for _,cols in pairs{i.x,i.y} do
     for _,col in pairs(cols) do col:add(row.cells[col.at]) end end end
