@@ -9,7 +9,7 @@ log(N) evals.  Along the way, we built an object model that could
 also be applied to  many other AI tasks (nearest neighbor, decision
 trees, bayes classifiers, etc).
 
-<a href="all.md"><img align=right width=600 src="xai4.png"></a>
+<a href="all.md"><img align=right width=500 src="xai4.png"></a>
 
 |       what | where                                                                                                                                                                                     |
 |-----------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
