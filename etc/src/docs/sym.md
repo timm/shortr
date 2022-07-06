@@ -64,7 +64,7 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 
-> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>  #update Add `n` count to `i.kept[n]` .  
+> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>  [^update] Add `n` count to `i.kept[n]` .  
 
 
 

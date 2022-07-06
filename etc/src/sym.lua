@@ -21,7 +21,7 @@ local SYM = obj("SYM", function(i,at,txt)
   i.kept = {}        -- :tab -- counts of symbols seen so far
   end)
 
--- add(i:SYM: x:any, n:?int=1) --> #update Add `n` count to `i.kept[n]` .
+-- add(i:SYM: x:any, n:?int=1) --> [^update] Add `n` count to `i.kept[n]` .
 function SYM.add(i,x,n)
   if x ~= "?" then 
     n = n or 1
