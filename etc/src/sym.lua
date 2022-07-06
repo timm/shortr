@@ -52,7 +52,7 @@ function SYM.like(i,x,prior)
 
 -- ### Report
 --  > div(i:SYM):tab  "Return `div`ersity of a column."
--- (its tendency _not_ to be a its central tendency).
+-- FYI, diversity is the  tendency _not_ to be at the central tendency.
 function SYM.div(i,p)
   local ent, fun = 0, function(p) return -p*math.log(p,2) end
   for x,n in pairs(i.kept) do if n > 0 then ent=ent + fun(n/i.n) end end

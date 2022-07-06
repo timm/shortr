@@ -147,7 +147,7 @@ function SYM.like(i,x,prior)
  > ***div(`i` :SYM) :tab***<br>
 Return `div`ersity of a column.
 
-(its tendency _not_ to be a its central tendency).
+FYI, diversity is the  tendency _not_ to be at the central tendency.
 
 
 
