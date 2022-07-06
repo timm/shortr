@@ -51,7 +51,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 ### Create
 
-> ***SYM(`at` :?int, `txt` :?str)  :SYM***<br>
+> ***SYM(`at` :?int=0, `txt` :?str=""r)  :SYM***<br>
 Constructor
 
 
@@ -159,8 +159,8 @@ function SYM.div(i,p)
 ```
 
 
-> ***mid(`i` :SYM) :tab***<br>
-Return a columns' `mid`ddle (central tendency).
+> ***mid(`i` :SYM) :tab  'Return a columns***<br>
+`mid`ddle (central tendency).
 
 
 

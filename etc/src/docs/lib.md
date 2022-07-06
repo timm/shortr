@@ -232,9 +232,7 @@ function m.lines(file, fun)
 ```
 
 
-csv(file:str,  fun:fun):tab --> ***Call `fun` with lines, split on***<br>
-,
-, 
+csv(file:str,  fun:fun):tab --> Call `fun` with lines, split on ",", 
 coercing strings to nums, bools, etc (where appropriate).
 
 
@@ -285,7 +283,7 @@ chunks(file:str) --> divide source code into comments and code.
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
-          return s:gsub('>([^>]+)"([^"]+)"',function(hint,txt)
+          return s:gsub(">([^>]+)'([^']+)'",function(hint,txt)
                     txt  =txt:match"^%s*(.-)%s*$"
                     hint = hint:match"^%s*(.-)%s*$"
                                :gsub("([%w]+):","`%1`:")
@@ -349,10 +347,8 @@ function m.cli(t)
 
 ### Tests
 
-on(opts:tab, tests:[fun]) --> ***Run some tests.
-If  `opt.go==***<br>
-all
-`, then run all tests, sorted on their name.
+on(opts:tab, tests:[fun]) --> Run some tests.
+If  `opt.go=="all"`, then run all tests, sorted on their name.
 Before each test, reset random seed and the options `opts.
 
 
