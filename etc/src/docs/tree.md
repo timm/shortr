@@ -1,4 +1,4 @@
-<a href="all.md"><img align=right width=400 src="stark.jpeg"></a>
+<a href="all.md"><img align=left width=400 src="stark.jpeg"></a>
 
 # [:high_brightness: SHORTr : less (but better) XAI](all.md)
 
