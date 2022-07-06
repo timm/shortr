@@ -283,7 +283,7 @@ chunks(file:str) --> divide source code into comments and code.
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
-          return s:gsub("\n([^\n]*)->([^\n]*)\n",function(hint,txt)
+          return s:gsub("\n([^\n]*)[-]>([^\n]*)\n",function(hint,txt)
                     hint = hint:match"^%s*(.-)%s*$"
                                :gsub("([%w]+):","`%1`:")
                                :gsub(":"," :")
