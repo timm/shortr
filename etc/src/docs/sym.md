@@ -101,7 +101,7 @@ function SYM.merge(i,j,     k)
 ```
 
 
-> ***merge(`i` :SYM,`t` :tab):tab***<br>
+> ***merges(`i` :SYM,`t` :tab):tab***<br>
 Merge a list of bins (for symbolic y-values)
 
 
@@ -136,19 +136,6 @@ function SYM.like(i,x,prior)
 
 
 ### Report
-> ***mid(`i` :SYM):tab***<br>
-Return a columns' `mid`ddle (central tendency).
-
-
-
-```lua
-function SYM.mid(i,p)
-  local max,mode=-1,nil
-  for x,n in pairs(i.kept) do if n > most then most,mode = n,x end end
-  return mode end
-```
-
-
 > ***div(`i` :SYM):tab***<br>
 Return `div`ersity of a column (its tendency _not_ to be a its central tendency).
 
@@ -159,6 +146,19 @@ function SYM.div(i,p)
   local ent, fun = 0, function(p) return -p*math.log(p,2) end
   for x,n in pairs(i.kept) do if n > 0 then ent=ent + fun(n/i.n) end end
   return ent end
+```
+
+
+> ***mid(`i` :SYM):tab***<br>
+Return a columns' `mid`ddle (central tendency).
+
+
+
+```lua
+function SYM.mid(i,p)
+  local max,mode=-1,nil
+  for x,n in pairs(i.kept) do if n > most then most,mode = n,x end end
+  return mode end
 ```
 
 
