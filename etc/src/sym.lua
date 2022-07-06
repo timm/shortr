@@ -29,7 +29,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 -- bin(i:SYM, x:any) -> Return `x` mapped to a finite range (just return x)
 function SYM.bin(i,x) return x end
 
--- merge(i:SYM,j:SYM):SYM -> Combine two SYMS
+-- merge(i:SYM,j:SYM):SYM -> Combine two SYMS   
 function SYM.merge(i,j,     k)
   k = i:clone()
   for _,kept in pairs{i.kept, j.kept} do

@@ -84,7 +84,7 @@ function SYM.bin(i,x) return x end
 ```
 
 
-merge(i:SYM,j:SYM):SYM -> Combine two SYMS
+merge(i:SYM,j:SYM):SYM -> Combine two SYMS   
 
 
 
@@ -107,7 +107,8 @@ function SYM.merges(i,t,...) return t end
 
 
 hint	dist(i:SYM, x:any,y:any) :num 	txt	  Return distance 0..1 between `x,y`. 
-### Distance> ***dist(`i` :SYM, `x` :any,`y` :any)  :num***<br>
+### Distance
+> ***dist(`i` :SYM, `x` :any,`y` :any)  :num***<br>
   Return distance 0..1 between `x,y`. 
 Assume max distance for missing values.
 
@@ -131,7 +132,8 @@ function SYM.like(i,x,prior)
 
 
 hint	 div(i:SYM):tab 	txt	 Return `div`ersity of a column
-### Report> ***div(`i` :SYM) :tab***<br>
+### Report
+> ***div(`i` :SYM) :tab***<br>
  Return `div`ersity of a column
 (its tendency _not_ to be a its central tendency).
 
