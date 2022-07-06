@@ -51,9 +51,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 ### Create
 
-> ***SYM(`at` :?int=0, `txt` :?str=""r)  :SYM***<br>
-Constructor
-
+> SYM(at:?int=0, txt:?str="") :SYM  'Constructor'
 
 
 
@@ -67,9 +65,7 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 
-> ***clone(`i` :SYM)  :SYM***<br>
-Return a class of the same structure.
-   
+# clone(i:SYM) :SYM  #Return a class of the same structure.#  
 
 
 
@@ -91,8 +87,8 @@ function SYM.bin(i,x) return x end
 
 
 > ***merge(`i` :SYM,`j` :SYM) :SYM***<br>
-Combine two SYMS
-  
+Combine two SYMS.
+ 
 
 
 
@@ -106,7 +102,7 @@ function SYM.merge(i,j,     k)
 
 
 > ***merges(`i` :SYM,`t` :tab) :tab***<br>
-Merge a list of bins (for symbolic y-values)
+Merge a list of bins (for symbolic y-values).
 
 
 
@@ -159,8 +155,8 @@ function SYM.div(i,p)
 ```
 
 
-> ***mid(`i` :SYM) :tab  'Return a columns***<br>
-`mid`ddle (central tendency).
+> ***mid(`i` :SYM) :tab***<br>
+Return a columns' `mid`ddle (central tendency).
 
 
 
