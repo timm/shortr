@@ -52,7 +52,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 ### Create
 
-> SYM(at:?int, txt:?str) :SYM   
+> _SYM(at:?int, txt:?str) :SYM_ 
 Summarize a stream of non-numerics.
 
 
@@ -67,7 +67,7 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 
-> add(`i` :`SYM` : `x` :any, `n` :?int=1)    
+> _add(i:SYM: x:any, n:?int=1)_   
 Add `n` count to `i.kept[n]` .
 
 
@@ -81,7 +81,7 @@ function SYM.add(i,x,n)
 ```
 
 
-> clone(`i` :SYM) :SYM  
+> _clone(i:SYM) :SYM_   
 Return a class of the same structure.
 
 
@@ -93,7 +93,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 
 ### Discretize
 
-> bin(i:SYM: x:any  
+> _bin(i:SYM: x:any_  
 Return `x` mapped to a finite range (just return x)
 
 
@@ -103,7 +103,7 @@ function SYM.bin(i,x) return x end
 ```
 
 
-> merge(`i` :SYM,`j` :SYM):SYM   
+> _merge(i:SYM,j:SYM):SYM_   
 Combine two SYMS
 
 
@@ -117,7 +117,7 @@ function SYM.merge(i,j,     k)
 ```
 
 
-> merge(`i` :SYM,`t` :tab):tab  
+> merge(i:SYM,t:tab):tab  
 Merge a list of bins (for symbolic y-values)
 
 
@@ -168,7 +168,7 @@ function SYM.mid(i,p)
 ```
 
 
-> div(`i` :SYM):tab   
+> div(i:SYM):tab   
 Return `div`ersity of a column (its tendency _not_ to be a its central tendency).
 
 
