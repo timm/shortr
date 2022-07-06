@@ -23,7 +23,7 @@ local SYM = obj("SYM", function(i,at,txt)
   i.kept = {}        -- :tab -- counts of symbols seen so far
   end)
 
--- :: clone(i:SYM) :SYM
+-- ::   clone(i:SYM) :SYM    
 -- Return a class of the same structure.
 function SYM.clone(i) return SYM(i.at, i.txt) end
 
