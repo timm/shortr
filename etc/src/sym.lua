@@ -16,10 +16,10 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 -- > SYM(at:?int=0, txt:?str="") :SYM  >Constructor.<
 local SYM = obj("SYM", function(i,at,txt)
-  i.at   = at or 0   -- :num -- column position 
-  i.txt  = txt or "" -- :str -- column name 
-  i.n    = 0         -- :num -- items seen so far
-  i.kept = {}        -- :tab -- counts of symbols seen so far
+  i.at   = at or 0   -- :num  column position 
+  i.txt  = txt or "" -- :str  column name 
+  i.n    = 0         -- :num  items seen so far
+  i.kept = {}        -- :tab  counts of symbols seen so far
   end)
 
 -- > clone(i:SYM) :SYM  >Return a class of the same structure.<  

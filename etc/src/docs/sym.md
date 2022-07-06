@@ -59,10 +59,10 @@ Constructor.
 
 ```lua
 local SYM = obj("SYM", function(i,at,txt)
-  i.at   = at or 0   -- :num -- column position 
-  i.txt  = txt or "" -- :str -- column name 
-  i.n    = 0         -- :num -- items seen so far
-  i.kept = {}        -- :tab -- counts of symbols seen so far
+  i.at   = at or 0   -- :num  column position 
+  i.txt  = txt or "" -- :str  column name 
+  i.n    = 0         -- :num  items seen so far
+  i.kept = {}        -- :tab  counts of symbols seen so far
   end)
 ```
 
