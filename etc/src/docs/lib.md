@@ -27,6 +27,16 @@ log(N) evals.
 
 ## Library Functions
 **Responsbilities**
+- [Linting](#linting) code;
+- [List](#list) processing;
+- [Mapping](#mapping) functions over lists;
+- Misc [Math](#math) functions.
+- Misc [Meta](#meta) tricks
+- Support for [Objects](#objects)
+- Parsing [Settings] from help strings, updating [Settings] from command-line.
+- Coercion of [String to thing](#string-to-thing)s; e.g. reading in CSV files
+- Coercion of [Thing to string](#thing-to-string)s; e.g. printing tables
+- All our start-up actions are defined in a  [Tests](#tests) suite (the `go` variable defined in [go](go.md).
 
 
 
@@ -49,7 +59,7 @@ function m.rogues()
 ```
 
 
-###  Lists
+###  List
 > ***per(`t`:tab, `p`:?float=.5) :x***<br>
 Return `p`-th ranked item from `t`.
 

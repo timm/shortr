@@ -1,5 +1,15 @@
 -- ## Library Functions
 -- **Responsbilities**
+-- - [Linting](#linting) code;
+-- - [List](#list) processing;
+-- - [Mapping](#mapping) functions over lists;
+-- - Misc [Math](#math) functions.
+-- - Misc [Meta](#meta) tricks
+-- - Support for [Objects](#objects)
+-- - Parsing [Settings] from help strings, updating [Settings] from command-line.
+-- - Coercion of [String to thing](#string-to-thing)s; e.g. reading in CSV files
+-- - Coercion of [Thing to string](#thing-to-string)s; e.g. printing tables
+-- - All our start-up actions are defined in a  [Tests](#tests) suite (the `go` variable defined in [go](go.md).
 
 local m={}
 -- ### Linting
@@ -8,7 +18,7 @@ local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 function m.rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 
--- ###  Lists
+-- ###  List
 -- > per(t:tab, p:?float=.5) :x > Return `p`-th ranked item from `t`. <
 function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 
