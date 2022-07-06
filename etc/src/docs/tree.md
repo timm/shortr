@@ -13,8 +13,8 @@ trees, bayes classifiers, etc).
 **start here**  ([help](all.md) ([install](/INSTALL.md) ([design notes](design.md))))                                                                                               
 **build**       ([Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)-- just for doc)                                                                           
 **demos**       ([go](go.md))                                                                                                                                                      
-**apps**         ([nb](nb.md) ([tree](tree.md)))                                                                                                                                                     |
-**functions**   ([lib](lib.md))                                                                                                                                                                            |
+**apps**         ([nb](nb.md) ([tree](tree.md)))   
+**functions**   ([lib](lib.md))     
 **methods**    ([bin](bin.md) ([cols](cols.md) ([num](num.md) ([row](row.md) ([rows](rows.md) ([some](some.md) ([sym](sym.md) ([tree](tree.md)))))))))
 
 
