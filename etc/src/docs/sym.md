@@ -50,7 +50,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 ```
 
 
-> ***SYM(`at` :?int, `txt` :?str) :SYM***<br>  #constructor. Summarize a stream of non-numerics.  
+> ***SYM(`at` :?int, `txt` :?str) :SYM***<br>  (#constructor) Summarize a stream of non-numerics.  
 
 
 
