@@ -1,7 +1,6 @@
 # [:high_brightness: SHORTr : less (but better) XAI](all.md)
 
 <!-- a href="all.md"><img align=right width=500 src="https://ernesto.net/wp-content/uploads/2021/01/img6-home5.png"></a --->
-<a href="all.md"><img align=right width=600 src="xai4.png"></a>
 
 AI and XAI (explainable artificial intelligence) need not be
 complicated.  For example, here we need just a few 100 lines of LUA
@@ -9,6 +8,8 @@ to search N items to  find and explain the best ones, using just
 log(N) evals.  Along the way, we built an object model that could
 also be applied to  many other AI tasks (nearest neighbor, decision
 trees, bayes classifiers, etc).
+
+<a href="all.md"><img align=right width=600 src="xai4.png"></a>
 
 Also, this code serves as a demonstrator for the value of LUA. LUA is sort of like
 LISP, without brackets. Given 
