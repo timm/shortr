@@ -111,8 +111,8 @@ function m.chat(t) print(m.cat(t)); return t end
 function m.chunks(file)
   local b4,now,t = 0,0,{}
   local hints=function(s)  -- emphasis type hints comments (those with "-->")
-          return s:gsub("\n:: ([^\n]*)\n",function(hint)
-                    return '***'..hint:gsub("([%w]+):","`%1` :") .. "***  " end ) 
+          return s:gsub("\n:: ([^\n]*)[%S]*\n",function(hint)
+                    return '***'..hint:gsub("([%w]+):","`%1` :") .. "***<br>" end ) 
   end ------------------------
   local dump = function(what,t) 
     if t[#t]:find"^[%s]*$" then t[#t]=nil end -- zap trailing blank line
