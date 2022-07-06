@@ -20,11 +20,11 @@ trees, bayes classifiers, etc).
 |    methods | [bin](bin.md) &hellip; [cols](cols.md) &hellip; [num](num.md) &hellip; [row](row.md)<br> [rows](rows.md) &hellip; [some](some.md) &hellip; [sym](sym.md) &hellip; [tree](tree.md) |
 
 Also, this code shows the power of LUA is a really cool language
-(its like LISP, without brackets). With very little coding, 
+With very little coding, 
 this code supports  TDD,  OO, several tiny DSLs,
 literate programming, 
 command-line
-arguments,  and numerous  higher-order tricks.
+arguments,  and numerous  higher-order tricks. LUA is LISP without brackets!!
 
 <br clear=all>
 <p align=center>
