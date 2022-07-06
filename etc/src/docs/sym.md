@@ -50,7 +50,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 ```
 
 
-> ***SYM(`at` :?int, `txt` :?str) :SYM***<br>  `CONSTRUCTOR` : Summarize a stream of non-numerics.  
+> ***SYM(`at` :?int, `txt` :?str) :SYM***<br>  #CONSTRUCTOR. Summarize a stream of non-numerics.  
 
 
 
@@ -64,7 +64,7 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 
-> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>  `UPDATE` : Add `n` count to `i.kept[n]` .  
+> ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>  #UPDATE. Add `n` count to `i.kept[n]` .  
 
 
 
@@ -77,7 +77,7 @@ function SYM.add(i,x,n)
 ```
 
 
-> ***bin(`i` :`SYM` : `x` :any)***<br>  #discretize Return `x` mapped to a finite range (just return x)  
+> ***bin(`i` :`SYM` : `x` :any)***<br>  #DISCRETIZE. Return `x` mapped to a finite range (just return x)  
 
 
 
@@ -86,7 +86,7 @@ function SYM.bin(i,x) return x end
 ```
 
 
-> ***clone(`i` :SYM) :SYM***<br>  #create Return a class of the same structure.  
+> ***clone(`i` :SYM) :SYM***<br>  #cCREATE. Return a class of the same structure.  
 
 
 
@@ -95,7 +95,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 ```
 
 
-> ***dist(`i` :SYM, `x` :any,`y` :any): num***<br>  #distance Return distance 0..1 between `x,y`. Assume max distance for missing values.  
+> ***dist(`i` :SYM, `x` :any,`y` :any): num***<br>  #DISTANCE. Return distance 0..1 between `x,y`. Assume max distance for missing values.  
 
 
 
@@ -105,7 +105,7 @@ function SYM.dist(i,x,y)
 ```
 
 
-> ***like(`i` :SYN,`x` :any,`prior` :num):num***<br>  #like Return how much `x` might belong to `i`.  
+> ***like(`i` :SYN,`x` :any,`prior` :num):num***<br>  #LIKE. Return how much `x` might belong to `i`.  
 
 
 
@@ -115,7 +115,7 @@ function SYM.like(i,x,prior)
 ```
 
 
-> ***merge(`i` :SYM,`j` :SYM):SYM***<br>  #discretize Combine two symbols  
+> ***merge(`i` :SYM,`j` :SYM):SYM***<br>  #DISCRETIZ. Combine two symbols  
 
 
 
@@ -128,7 +128,7 @@ function SYM.merge(i,j,     k)
 ```
 
 
-> ***merge(`i` :SYM,`t` :tab):tab***<br>  merge a list of bins (for symbolic y-values)  
+> ***merge(`i` :SYM,`t` :tab):tab***<br>  #DISCRETIZE. merge a list of bins (for symbolic y-values)  
 
 
 
@@ -137,7 +137,7 @@ function SYM.merges(i,t,...) return t end
 ```
 
 
-> ***mid(`i` :SYM):tab***<br>  Return a columns' `mid`ddle (central tendency).  
+> ***mid(`i` :SYM):tab***<br>  #`report` : Return a columns' `mid`ddle (central tendency).  
 
 
 
