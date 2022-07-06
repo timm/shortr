@@ -42,7 +42,7 @@ function m.splice(t, start, stop, step)
   for j=start,stop,step do u[1+#u]=t[j] end
   return u end
 
--- > sort(t:tab, f:fun) :tab  > Return `t`, sorted of function `f` (default "<"). <
+-- > sort(t:tab, f:fun) :tab  > Return `t`, sorted of function `f` (default "&lt;"). <
 function m.sort(t,f) table.sort(t,f); return t end
 -- > push(t:tab, x:any) :x > Add `x` to end of `t`; return `x`. <
 function m.push(t,x) t[1+#t] = x; return x end

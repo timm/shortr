@@ -152,7 +152,9 @@ function m.splice(t, start, stop, step)
 ```
 
 
-> sort(t:tab, f:fun) :tab  > Return `t`, sorted of function `f` (default "<"). <
+> ***sort(`t`:tab, `f`:fun) :tab***<br>
+Return `t`, sorted of function `f` (default "&lt;").
+
 
 
 
