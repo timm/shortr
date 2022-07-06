@@ -6,25 +6,16 @@ AI and XAI (explainable artificial intelligence) need not be
 complicated.  For example, here we need just a few 100 lines of LUA
 to search N items to  find and explain the best ones, using just
 log(N) evals.  
-
 Along the way, we built an object model that could
 also be applied to  many other AI tasks (nearest neighbor, decision
 trees, bayes classifiers, etc).
 
-
-|       what | where                                                                                                                                                                                     |
-|-----------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| start here | [help](all.md) &hellip;  [install](/INSTALL.md) &hellip; [design notes](design.md)                                                                                                        |
-|      build | [Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile) (just for doco)                                                                                                   |
-|      demos | [go](go.md)                                                                                                                                                                               |
-|       apps | [nb](nb.md) &hellip; [tree](tree.md)                                                                                                                                                      |
-|  functions | [lib](lib.md)                                                                                                                                                                             |
-|    methods | [bin](bin.md) &hellip; [cols](cols.md) &hellip; [num](num.md) &hellip; [row](row.md)<br> [rows](rows.md) &hellip; [some](some.md) &hellip; [sym](sym.md) &hellip; [tree](tree.md) |
-
-(start here  ([help](all.md) ([install](/INSTALL.md) ([design notes](design.md)))))                                                                                               
-(build       ([Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)-- just for doc))                                                                           
-(demos       ([go](go.md))                                                                                                                                                      
-(methods    ([bin](bin.md) ([cols](cols.md) ([num](num.md) ([row](row.md) ([rows](rows.md) ([some](some.md) ([sym](sym.md) ([tree](tree.md))))))))))
+**start here**  ([help](all.md) ([install](/INSTALL.md) ([design notes](design.md))))                                                                                               
+**build**       ([Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)-- just for doc)                                                                           
+**demos**       ([go](go.md))                                                                                                                                                      
+**apps**         ([nb](nb.md) ([tree](tree.md)))                                                                                                                                                     |
+**functions**   ([lib](lib.md))                                                                                                                                                                            |
+**methods**    ([bin](bin.md) ([cols](cols.md) ([num](num.md) ([row](row.md) ([rows](rows.md) ([some](some.md) ([sym](sym.md) ([tree](tree.md)))))))))
 
 
 Also, this code shows just how cool is  LUA.
