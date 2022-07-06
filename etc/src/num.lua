@@ -1,12 +1,31 @@
--- ## Summarize numbers
+-- ## Class NUM
+-- Summarize numbers
+
+-- **RESPONSIBILITIES** : 
+-- - Same responsibilities as [SYM](sym.md) (but for numbers)
+-- - Duplicate structure (see `clone`)
+-- - Incremental summarization (see `add`)
+-- - Discretization (see `bin, merge, merges`)
+-- - Distance calcs (see `dist`)
+-- - Likelihood calcs (see `like`)
+-- - Knows central tendency and diversity (see `mids, divs`)
+-- - Knows if we want to minimize or maximize this value (see `w`).
+
+-- **COLLABORATORS** :
+-- - [SOME](some.md) : to store a sample of the items seen oo far.
+-- ------------------------------------------------------------
 local all = require"all"
 local big,obj,per,push,the = all.big,all.obj,all.per,all.push,all.the
 local SOME = require"some"
 
 -- NUM(at:?int, txt:?str) :NUM --> Summarize a stream of numbers.
 local NUM = obj("NUM", function(i,at,txt) 
-  i.at, i.txt, i.n, i.kept =  at or 0, txt or "", 0, SOME(the.Some)
-  i.w = i.txt:find"-$" and -1 or 1 end)
+  i.at   = at or 0        -- :num -- column position 
+  i.txt  = txt or ""      -- :str -- column name 
+  i.n    = 0              -- :num -- items seen so far
+  i.kept = SOME(the.SOME) -- :SOME -- holds a sample of items seen so far
+  i.w = i.txt:find"-$" and -1 or 1 -- :num -- do we seek less or more of this?
+  end)
 
 -- add(i:NUM: x:num, n:?int=1) --> `n` times,update `i`'s SOME object.
 function NUM.add(i,x,n)

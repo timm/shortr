@@ -2,7 +2,8 @@
 -- Summarize symbols
 
 -- **RESPONSIBILITIES** : 
--- - Creation, clbming (see `new,clone`)
+-- - Same responsibilities as [NUM](num.md) (but for symbols)
+-- - Duplicate structure (see `clone`)
 -- - Incremental summarization (see `add`)
 -- - Discretization (see `bin, merge, merges`)
 -- - Distance calcs (see `dist`)
