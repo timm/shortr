@@ -38,7 +38,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 
 -- ### Discretize
 
--- :: bin(i:SYM: x:any
+-- :: bin(i:SYM, x:any)
 -- Return `x` mapped to a finite range (just return x)
 function SYM.bin(i,x) return x end
 
