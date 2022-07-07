@@ -20,6 +20,12 @@ function m.rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 
 -- ###  List
+-- > any(a:tab):any > Return any item, picked at random. <
+function m.any(a, i)    i=m.R()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
+
+-- > many(a:tab,n:number):any > Return any `n`' items, picked at random. <
+function m.many(a,n, u) u={}; for j=1,n do        u[1+#u]= any(a) end;return u end
+
 -- > per(t:tab, p:?float=.5) :x > Return `p`-th ranked item from `t`. <
 function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 

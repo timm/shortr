@@ -1,7 +1,7 @@
 -- ## Start-up, test suite, demos
 local all = require"all"
-local chat,chunks,cli,csv = all.chat, all.chunks, all.cli, all.csv
-local maps,on = all.maps, all.on
+local any,chat,chunks,cli,csv = all.any, all.chat, all.chunks, all.cli, all.csv
+local many,maps,on = all.many, all.maps, all.on
 local settings,sort,splice, the = all.settings, all.sort, all.splice, all.the
 
 local COLS,NUM = require"cols", require"num"
@@ -97,6 +97,9 @@ function go.BINS( rs, m,best,rest)
   return true
 end
 
+function go.DIST(rs)
+  rs=ROWS():fill(the.file) 
+  for i=1,100 do print(any(rs.rows) - any(rs.rows)) end end
   
 -- ### Start
 the = cli(the)
