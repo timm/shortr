@@ -99,7 +99,7 @@ function NUM.like(i,x,...)
 
 -- <img align=right src="normal.png"> 
 
--- Q: where does the magic number 2.56 come from?   
+-- Q: In this code, where does the magic number 2.56 come from?   
 -- A: Intuitively, the diversity can be measured by (a) ignoring outliers from, say, the top
 -- and bottom 10% then (b) reporting the high-low values of the rest, perhaps divided by two
 -- (since we reporting divergence from some middle point). 
