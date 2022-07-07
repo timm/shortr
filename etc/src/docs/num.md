@@ -123,7 +123,9 @@ merge a list of BINs (for numeric y-values)
 Note the last line of `merges`: if anything merged, then loop again looking for other merges.
 Else, time to finish up (expand the bins to cover all gaps across the number line).
 FYI, to see what happens when this code calls `merged`, goto [BIN](bin.md).
-Note that this is defined here (and not in the BIN class) since the `merges` of several
+
+Q: why is this defined here (and not in the BIN class)?  
+A: The `merges` of several
 BINs is different for NUMs and SYMs (in SYMs, we can't merge anything so `merges` just 
 returns the original list, unchanged).
 
