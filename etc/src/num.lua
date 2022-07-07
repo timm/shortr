@@ -97,13 +97,15 @@ function NUM.like(i,x,...)
 -- ### Report
 -- > div(i:NUM) :tab > Return `div`ersity of a column (tendency to depart central tendency). <
 
--- Q: where does the magic number 2.56 come from?
+-- <img align=right src="normal.png"> 
+
+-- Q: where does the magic number 2.56 come from?   
 -- A: Intuitively, the diversity can be measured by (a) ignoring outliers from, say, the top
 -- and bottom 10% then (b) reporting the high-low values of the rest, perhaps divided by two
 -- (since we reporting divergence from some middle point). 
--- But with a little bit of mathemagic, we can turn that (90th=10th)/2 report into some more
+-- But with a little bit of mathemagic, we can turn that (90th-10th)/2 report into some more
 -- standard.
--- Recall &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob.
+-- Recall that &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob.
 -- In between, at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd. TL;DR, do not
 -- divide by 2, but 2.56.
 function NUM.div(i) 
