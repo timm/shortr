@@ -31,23 +31,28 @@ local NUM = obj("NUM", function(i,at,txt)
 function NUM.clone(i) return NUM(i.at, i.txt) end
 
 -- ### Discretize
--- > bin(i:NUM: x:any) > Return `x` mapped to a finite range <
+-- To discretize a numeric column, first map all the numbers into a finite number
+-- of bins (say, divided on "(hi-lo)/16"). Then look at the class distrubutions
+-- in each bin. While two adjacent bins have similar distributions, then merge them
+-- and go look for anything else that might be merged.
+
+-- > bin(i:NUM: x:any) > Return `x` mapped to a finite number of bins <
 function NUM.bin(i,x)
   local a = i.kept:has()
   local b = (a[#a] - a[1])/the.bins
   return a[#a]==a[1] and 1 or math.floor(x/b+.5)*b end
 
--- > merge(i:NUM,j:NUM) :NUM > combine two numerics <
+-- > merge(i:NUM,j:NUM) :NUM > merge two NUMs <
 function NUM.merge(i,j,     k)
   k = i:clone()
   for _,kept in pairs{i.kept, j.kept} do
     for _,x in pairs(kept) do k:add(x) end end
   return k end
 
--- > merges(i:NUM,t:[BIN]) :[BIN] > merge a list of bins (for numeric y-values) <
--- Note the last kine of `merges`: if anything merged, then loop again looking for other merges.
--- Also, at the end, expand bins to cover all gaps across the number line.
--- Finally, to see what happens when this code calls `merged`, goto [BIN](bin.md).
+-- > merges(i:NUM,t:[BIN]) :[BIN] > merge a list of BINs (for numeric y-values) <
+-- Note the last line of `merges`: if anything merged, then loop again looking for other merges.
+-- Else, time to finish up (expand the bins to cover all gaps across the number line).
+-- FYI, to see what happens when this code calls `merged`, goto [BIN](bin.md).
 function NUM.merges(i,b4, min) 
   local function fillInTheGaps(bins)
     bins[1].lo, bins[#bins].hi = -big, big
@@ -57,9 +62,10 @@ function NUM.merges(i,b4, min)
   end ------------- 
   local n,now = 1,{}
   while n <= #b4 do
-    local merged = n<#b4 and b4[n]:merged(b4[n+1], min)
-    now[#now+1]  = merged or b4[n]
-    n            = n + (merged and 2 or 1)  end
+    local merged= n<#b4 and b4[n]:merged(b4[n+1],min) --"merged" defined in bin.md
+    now[#now+1] = merged or b4[n]
+    n           = n + (merged and 2 or 1)  -- if merged, skip passed the merged bin
+  end
   return #now < #b4 and i:merges(now,min) or fillInTheGaps(now) end
 
 -- ### Distance

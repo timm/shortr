@@ -79,8 +79,13 @@ function NUM.clone(i) return NUM(i.at, i.txt) end
 
 
 ### Discretize
+To discretize a numeric column, first map all the numbers into a finite number
+of bins (say, divided on "(hi-lo)/16"). Then look at the class distrubutions
+in each bin. While two adjacent bins have similar distributions, then merge them
+and go look for anything else that might be merged.
+
 > ***bin(`i`:`[NUM](num.md#create)`: `x`:any)***<br>
-Return `x` mapped to a finite range
+Return `x` mapped to a finite number of bins
 
 
 
@@ -94,7 +99,7 @@ function NUM.bin(i,x)
 
 
 > ***merge(`i`:[NUM](num.md#create),`j`:[NUM](num.md#create)) :[NUM](num.md#create)***<br>
-combine two numerics
+merge two NUMs
 
 
 
@@ -109,11 +114,11 @@ function NUM.merge(i,j,     k)
 
 
 > ***merges(`i`:[NUM](num.md#create),`t`:[[BIN](bin.md#create)]) :[[BIN](bin.md#create)]***<br>
-merge a list of bins (for numeric y-values)
+merge a list of BINs (for numeric y-values)
 
-Note the last kine of `merges`: if anything merged, then loop again looking for other merges.
-Also, at the end, expand bins to cover all gaps across the number line.
-Finally, to see what happens when this code calls `merged`, goto [BIN](bin.md).
+Note the last line of `merges`: if anything merged, then loop again looking for other merges.
+Else, time to finish up (expand the bins to cover all gaps across the number line).
+FYI, to see what happens when this code calls `merged`, goto [BIN](bin.md).
 
 
 
@@ -127,9 +132,10 @@ function NUM.merges(i,b4, min)
   end ------------- 
   local n,now = 1,{}
   while n <= #b4 do
-    local merged = n<#b4 and b4[n]:merged(b4[n+1], min)
-    now[#now+1]  = merged or b4[n]
-    n            = n + (merged and 2 or 1)  end
+    local merged= n<#b4 and b4[n]:merged(b4[n+1],min) --"merged" defined in bin.md
+    now[#now+1] = merged or b4[n]
+    n           = n + (merged and 2 or 1)  -- if merged, skip passed the merged bin
+  end
   return #now < #b4 and i:merges(now,min) or fillInTheGaps(now) end
 ```
 
