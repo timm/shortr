@@ -54,6 +54,11 @@ local SOME = require"some"
 Summarize a stream of numbers.
 
 
+Q: Where we use the `w` weight?  
+A: See the `better` method inside [ROW](row.md) where `w` is used to 
+   weight the dependent variables. In that code, one ROW is better than another
+   when that weight rewards changing to that value.
+
 
 
 ```lua

@@ -19,6 +19,11 @@ local SOME = require"some"
 
 -- ### Create
 -- > NUM(at:?int, txt:?str) :NUM > Summarize a stream of numbers. <
+
+-- Q: Where we use the `w` weight?  
+-- A: See the `better` method inside [ROW](row.md) where `w` is used to 
+--    weight the dependent variables. In that code, one ROW is better than another
+--    when that weight rewards changing to that value.
 local NUM = obj("NUM", function(i,at,txt) 
   i.at   = at or 0                 -- :num   column position 
   i.txt  = txt or ""               -- :str   column name 

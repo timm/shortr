@@ -119,7 +119,9 @@ klass(i:ROW):any --> Return the class value of this record.
 
 
 ```lua
-function ROW.klass(i) return i.cells[i._of.cols.klass.at] end
+function ROW.klass(i) 
+  i.evaled = true
+  return i.cells[i._of.cols.klass.at] end
 ```
 
 
