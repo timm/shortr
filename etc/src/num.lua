@@ -105,9 +105,11 @@ function NUM.like(i,x,...)
 -- (since we reporting divergence from some middle point). 
 -- But with a little bit of mathemagic, we can turn that (90th-10th)/2 report into some more
 -- standard.
--- Recall that &pm;1 to &pm;2 sds covers 66 to 95% of the Gaussian prob.
--- In between, at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd. TL;DR, do not
--- divide by 2, but 2.56.<br clear=all>
+-- Recall that &pm;1 to &pm;2 sds covers 68 to 95% of the Gaussian prob.
+-- In between, at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd. 
+
+-- TL;DR, do not
+-- divide by 2, but 2.56.
 function NUM.div(i) 
   local a=i.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
 
