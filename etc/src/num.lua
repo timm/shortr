@@ -36,8 +36,9 @@ function NUM.clone(i) return NUM(i.at, i.txt) end
 -- in each bin. While two adjacent bins have similar distributions, then merge them
 -- and go look for anything else that might be merged. 
 
--- Note that for this to run, we need to collect information on _two_ columns.
--- The class [BIN](bin.md) does that. Here, we define some services to help
+-- Q: For that to work, don't you need to to collect information on _two_ columns.
+--    (one you are trying to discretize and another holding the class distribution)?   
+-- A:  Yes indeed. The class [BIN](bin.md) does that. Here, we define some services to help
 -- [BIN](bin.md) do its work.
 
 -- > bin(i:NUM: x:any) > Return `x` mapped to a finite number of bins <
