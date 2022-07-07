@@ -34,7 +34,11 @@ function NUM.clone(i) return NUM(i.at, i.txt) end
 -- To discretize a numeric column, first map all the numbers into a finite number
 -- of bins (say, divided on "(hi-lo)/16"). Then look at the class distrubutions
 -- in each bin. While two adjacent bins have similar distributions, then merge them
--- and go look for anything else that might be merged.
+-- and go look for anything else that might be merged. 
+
+-- Note that for this to run, we need to collect information on _two_ columns.
+-- The class [BIN](bin.md) does that. Here, we define some services to help
+-- [BIN](bin.md) do its work.
 
 -- > bin(i:NUM: x:any) > Return `x` mapped to a finite number of bins <
 function NUM.bin(i,x)
@@ -53,6 +57,9 @@ function NUM.merge(i,j,     k)
 -- Note the last line of `merges`: if anything merged, then loop again looking for other merges.
 -- Else, time to finish up (expand the bins to cover all gaps across the number line).
 -- FYI, to see what happens when this code calls `merged`, goto [BIN](bin.md).
+-- Note that this is defined here (and not in the BIN class) since the `merges` of several
+-- BINs is different for NUMs and SYMs (in SYMs, we can't merge anything so `merges` just 
+-- returns the original list, unchanged).
 function NUM.merges(i,b4, min) 
   local function fillInTheGaps(bins)
     bins[1].lo, bins[#bins].hi = -big, big
