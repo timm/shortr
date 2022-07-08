@@ -24,7 +24,7 @@ function m.rogues()
 function m.any(a, i)    i=m.R()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
 
 -- > many(a:tab,n:number):any > Return any `n`' items, picked at random. <
-function m.many(a,n, u) u={}; for j=1,n do        u[1+#u]= any(a) end;return u end
+function m.many(a,n, u) u={}; for j=1,n do u[1+#u]= m.any(a) end;return u end
 
 -- > per(t:tab, p:?float=.5) :x > Return `p`-th ranked item from `t`. <
 function m.per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
@@ -79,7 +79,7 @@ function m.rnds(t, places)
   local u={};for k,x in pairs(t) do u[k]=m.rnd(x,places or 2)end;return u end
 
 -- > small(min,x) :num > Defined what `small` means. <
-function m.small(min,x) return min<1 and x^min or x end
+function m.small(min,x) return math.max(4,min<1 and x^min or x) end
 
 -- ### Meta
 -- > gt(x:str):function   

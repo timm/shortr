@@ -14,7 +14,8 @@
 -- ------------------------------------------------------------
 local all = require"all"
 local big,chat,lt,map  = all.big, all.chat, all.lt, all.map
-local obj,rnds,sort    = all.obj, all.rnds, all.sort
+local obj,per,rnds,sort    = all.obj, all.per, all.rnds, all.sort
+local the=all.the
 
 -- ROW(of:ROWS, cells:tab) :ROW --> Place to store one record
 -- (and stats on how it is used; e.g. `i.evaled=true` if we touch the y values.

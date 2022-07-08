@@ -1,8 +1,8 @@
 -- ## Start-up, test suite, demos
 local all = require"all"
-local any,chat,chunks,cli,csv = all.any, all.chat, all.chunks, all.cli, all.csv
-local many,maps,on = all.many, all.maps, all.on
-local settings,sort,splice, the = all.settings, all.sort, all.splice, all.the
+local any,cat,chat,chunks,cli,csv = all.any, all.cat,all.chat, all.chunks, all.cli, all.csv
+local fmt,many,map,maps,on,rnd = all.fmt, all.many, all.map,all.maps, all.on,all.rnd
+local settings,sort,splice, small,sum,the = all.settings, all.sort, all.splice, all.small, all.sum,all.the
 
 local COLS,NUM = require"cols", require"num"
 local SOME, SYM, NB  = require"some", require"sym", require"nb"
@@ -99,8 +99,49 @@ end
 
 function go.DIST(rs)
   rs=ROWS():fill(the.file) 
-  for i=1,100 do print(any(rs.rows) - any(rs.rows)) end end
-  
+  for j=1,20 do 
+    local x=any(rs.rows)
+    local y=x:far()
+    print(j,fmt("%4.4f",x-y), cat(x.cells), cat(y.cells)) end 
+  return true end
+
+function go.HALF(rs,xy)
+  rs=ROWS():fill(the.file) 
+  xy=rs:half()
+  chat(rs:clone(xy.xs):mids())
+  chat(rs:clone(xy.ys):mids())
+  print(xy.y < xy.x)
+  return true end
+
+local function _calc(c,p) return math.log(math.log(1-c)/math.log(1-p),2) end
+function go.BEST(rs,xy,bests,rests,best,n)
+  rs=ROWS():fill(the.file) 
+  rows = rs.rows
+  local n1,n2=20,20
+  bests1,rests1=rs:best(rows,n1) 
+  print("bests1",cat(rs:clone(bests1):mids()))
+  print("rests1",cat(rs:clone(rests1):mids()))
+  n=sum(rs.rows,function(row) return row.evaled and 1 or 0 end); print("eval1",n)
+
+  bests2,rests2=rs:best(bests1,n2)
+  print("bests2",cat(rs:clone(bests2):mids()))
+  print("rests2",cat(rs:clone(rests2):mids()))
+  n=sum(rs.rows,function(row) return row.evaled and 1 or 0 end); print("eval1",n)
+
+  for j,row in pairs(sort(rs.rows)) do row.rank=100*j/#rs.rows//1 end
+  print("bests1",cat(sort(map(bests1,function(r) return r.rank end))))
+  print("bests2",cat(sort(map(bests2,function(r) return r.rank end))))
+  print("rand", cat(sort(map(many(rs.rows,n),function(r) return r.rank end))))
+
+  print("\ntree")
+  rows1=bests2
+  rows2=splice(rests1,#rests1-3*#rows1)
+  print("size",#rows1,#rows2)
+  rs:tree{rows1,rows2}:branches()
+
+  print(rnd(_calc(.99,.05),1))
+  return true end
+   
 -- ### Start
 the = cli(the)
 on(the, go)
