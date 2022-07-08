@@ -1,21 +1,23 @@
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
-local cat,chat,csv,fmt,kap,lines,map,new
-local obj,order,push,rogues,sort,thing,trim,words
+local cat,chat,cli,csv,fmt,kap,lines,map,new
+local obj,order,push,rogues,same,sort,thing,trim,words
 local the,help = {},[[
 
- -b --bins  max number of bins    = 16
- -c --cohen difference in nums    = .35
- -m --Min   size of small         = .5
+ -b bins  max number of bins    = 7
+ -c cohen difference in nums    = .35
+ -f file  source                = ../../data/auto93.csv
+ -g go    action                = help
+ -m min   size of small         = .5
+ -s seed  random number seed    = 10019
 ]]
 function trim(x) return  x:match"^%s*(.-)%s*$" end
 
 function thing(x)
-  x = trim(x)
-  if x=="true" then return true elseif x=="false" then return false else
-    return math.tointeger(x) or tonumber(x) or x end  end
+  if x=="true" then return true elseif x=="false" then return false 
+  else return math.tointeger(x) or tonumber(x) or x end  end
 
-help:gsub("\n  ([-][^%s]+)[%s]+([-][-]([^%s]+))[^\n]*%s([^%s]+)",
-           function(f1,f2,k,x) t[k] = m.thing(x) end)
+help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", 
+          function(k,x) the[k]=thing(trim(x)) end)
 
 function lines(file, fun)
   local file = io.input(file)
@@ -24,21 +26,32 @@ function lines(file, fun)
     if not line then return io.close(file) else fun(line) end end end
 
 function words(s,sep,fun,      t)
+   fun = fun or same
    t={};for x in s:gmatch(fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
 
 function csv(file,fun)
   lines(file, function(line) fun(words(line, ",", thing)) end) end 
 
+function cli(t)
+  for key,x in pairs(t) do 
+    x = tostring(x)
+    for n,flag in ipairs(arg) do 
+      if   flag=="-"..key:sub(1,1) 
+      then x = x=="false" and "true" or x=="true" and "false" or arg[n+1] end end
+    t[key] = thing(x) end 
+  return t end
+
 function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 
 fmt=string.format
+function same(x) return x end
 function map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x) end;return u end
 function kap(t,f,     u) u={};for k,x in pairs(t) do u[1+#u]=f(k,x) end;return u end
 function sort(t,f)       table.sort(t,f); return t end
 function push(t,x)       t[1+#t]=x; return x end
 
-function chat(t) print(m.cat(t)); return t end
+function chat(t) print(cat(t)); return t end
 function cat(t)
   local function pub(k,v) return (tostring(k)):sub(1,1)~="_" end
   local function key(k,v) if pub(k) then  return fmt(":%s %s",k,v) end end
@@ -65,20 +78,20 @@ function SYM:new(at,txt); self.kept={}; col(self,at,txt) end
 
 function SYM:add(x) 
   if x ~= "?" then
-    i.n=i.n+1
+    self.n=self.n+1
     self.kept[x] = 1+(self.kept[x] or 0) end end
 
-function SYM:bin(rows) return true end
+function SYM:bins(rows) return true end
 function SYM:ent(    e)
   local function z(p) return  p*math.log(p,2) end
   e=0;for _,n in pairs(self.kept) do if n>0 then e=e-z(n/i.n) end end;return e end
 
 local NUM = obj"NUM"
 function NUM:new(at,txt) 
-  _ol(self,at,txt)
+  col(self,at,txt)
   self.lo =math.huge; self.hi=-self.lo 
-  i.mu, i.m2, i.sd = 0,0,0
-  self.w = i.txt:find"-$" and -1 or 1  end
+  self.mu, self.m2, self.sd = 0,0,0
+  self.w = self.txt:find"-$" and -1 or 1  end
 
 function NUM:add(x)
   if x ~= "?" then
@@ -86,9 +99,9 @@ function NUM:add(x)
     local d = x - self.mu
     self.mu = self.mu + d/self.n
     self.m2 = self.m2 + d*(x - self.mu)
-    self.sd = (self.n < 2 or self.m2<0) and 0 or (self.m2)/(self.n -1)^.5 
-    if x > self.hi then i.hi = x end
-    if x < self.lo then i.lo = x end end end
+    self.sd = (self.n < 2 or self.m2<0) and 0 or ((self.m2)/(self.n -1))^.5 
+    if x > self.hi then self.hi = x end
+    if x < self.lo then self.lo = x end end end
 
 function NUM:bins(rows)
   local function lt(x,y) 
@@ -100,7 +113,7 @@ function NUM:bins(rows)
   for j,row in pairs(sort(rows, order)) do
     if x(j) ~= "?" then 
       b4 = b4 or j
-      if   x(j) - x(b4) > self.sd*the.cohen and n > self.n^the.Min 
+      if   x(j) - x(b4) > self.sd*the.cohen and n > self.n^the.min 
       then bin=bin+1; n=0; b4=j end 
       n = n+1
       xis(j,bin) end end end
@@ -127,7 +140,8 @@ function COLS:new(names)
 
 function COLS:add(row)
   for _,cols in pairs{self.x,self.y} do
-    for _,col in pairs(cols) do col:add(row.cells[col.at]) end end end
+    for _,col in pairs(cols) do col:add(row.raw[col.at]) end end 
+  return row end
 
 local ROW = obj"ROW"
 function ROW:new(of,cells) 
@@ -137,15 +151,39 @@ function ROW:new(of,cells)
   self.evaled = false end
 
 local ROWS = obj"ROWS"
-function ROWS:new(src) self.rows={}; self.cols=nil end
+function ROWS:new() self.rows={}; self.cols=nil end
+
+function ROWS:clone(src) return ROWS():add(self.cols.names):adds(src) end
 
 function ROWS:adds(src)
-  if   type(src) == "table" 
-  then for _,row in pairs(src) do self:add(row) end 
-  else for   row in csv(src)   do self:add(row) end end end 
+  if   type(src) == "string" 
+  then csv(src, function(row) self:add(row) end)
+  else for _,row in pairs(src or {}) do self:add(row) end end
+  return self end 
 
 function ROWS:add(row)
-  row = row.raw and row or ROW(self,row) 
-  if self.cols then self.cols:add(row) else self.cols=COLS(row) end end
- 
+  if   self.cols 
+  then push(self.rows,  self.cols:add( row.raw and row or ROW(self,row))) 
+  else self.cols = COLS(row) end end
+
+local go={}
+function go.all() 
+  local want = function(k,_)if k~="all" then return k end end
+  for _,x in pairs(sort(kap(go,want))) do 
+    math.randomseed(the.seed)
+    go[x]() end end
+
+function go.help() print(help) end
+function go.the()  chat(the) end
+function go.csv()  csv(the.file, function(x) chat(x) end) end
+function go.rows(r)  
+  print(the.file)
+  r=ROWS():adds(the.file) 
+  chat(r.cols.x[4])
+  for _,col in pairs(r.cols.x) do col:bins(r.rows) end
+  for _,row in pairs(r.rows) do chat(row.cooked) end
+  end
+
+the=cli(the)
+go[the.go]()
 rogues()
