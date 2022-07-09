@@ -206,24 +206,22 @@ local function ents(rows)
     e = e + s:ent() end 
   return e end 
 
-function fuse1(i,j,epsilon)
+local function fuse1(i,j,epsilon)
   if math.abs(i.e - j.e) <= epsilon then
-    return {lo= i.lo, hi=j.hi, n=i.n+j.n, 
+    return {at=i.at, lo= i.lo, hi=j.hi, n=i.n+j.n, 
             e=  (i.n*i.e + j.n*j.e)/(i.n + j.n)} end end
 
 function fuse(epsilon, b4)
-  while true do
-    local n,now = 1,{}
-    while n<#b4 do
-      local merged = n<#b4 and fuse1(b4[n],b4[n+1],epsilon) 
-      now[#now+1]  = merged or b4[n]
-      n            = n + (merged and 2 or 1)
-    end
-    if #now<#b4 then b4 = now else
-      
-      now[1].lo = -math.huge
-      now[#now].hi =  math.huge
-      return now end end end 
+  local n,now = 1,{}
+  while n<=#b4 do
+    local merged = n<#b4 and fuse1(b4[n],b4[n+1],epsilon) 
+    now[#now+1]  = merged or b4[n]
+    n            = n + (merged and 2 or 1)
+  end
+  if #now<#b4 then  return fuse(epsilon,now) end
+  now[1].lo = -math.huge
+  now[#now].hi =  math.huge
+  return now end 
 
 function go.rows(r, es,all)
   es = NUM()
@@ -240,14 +238,14 @@ function go.rows(r, es,all)
       local e = ents(range.has)
       es:add(e)
       print("\t", range.lo, range.hi, #range.has.rows,e)  
-      push(here, {lo=range.lo, hi=range.hi, n=#range.has.rows,e=e})  end end 
+      push(here, {at=range.at,lo=range.lo, hi=range.hi, n=#range.has.rows,e=e})  end end 
   for x,one in pairs(all) do 
     all[x] = fuse(es.sd  * the.cohen, sort(one,lt"lo")) end 
-  for x,one in pairs(all) do 
-    chat(one)
-    for _, range in pairs(one) do
-        chat(range) end end end 
-
+   print("...............")
+   for x,one in pairs(all) do 
+     print(one[1].at.txt)
+     for _, range in pairs(one) do 
+        print("\t", range.lo, range.hi, range.n, range.e)  end end end 
 
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", 
           function(k,x) the[k]=thing(trim(x)) end)
