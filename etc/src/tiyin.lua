@@ -1,23 +1,22 @@
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
-local cat,chat,cli,csv,fmt,kap,lines,map,new
-local obj,order,push,rogues,same,sort,thing,trim,words
 local the,help = {},[[
 
- -b bins  max number of bins    = 7
  -c cohen difference in nums    = .35
  -f file  source                = ../../data/auto93.csv
  -g go    action                = help
  -m min   size of small         = .5
- -s seed  random number seed    = 10019
-]]
+ -s seed  random number seed    = 10019]]
+
+local cat,chat,cli,csv,fmt,fuse, fume1,kap,lines,lt,map,new
+local obj,order,push,rogues,same,sort,thing,trim,words
+
+function lt(x) return function(a,b) return a[x] < b[x] end end
+
 function trim(x) return  x:match"^%s*(.-)%s*$" end
 
 function thing(x)
   if x=="true" then return true elseif x=="false" then return false 
   else return math.tointeger(x) or tonumber(x) or x end  end
-
-help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", 
-          function(k,x) the[k]=thing(trim(x)) end)
 
 function lines(file, fun)
   local file = io.input(file)
@@ -46,10 +45,10 @@ function rogues()
 
 fmt=string.format
 function same(x) return x end
-function map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x) end;return u end
-function kap(t,f,     u) u={};for k,x in pairs(t) do u[1+#u]=f(k,x) end;return u end
-function sort(t,f)       table.sort(t,f); return t end
-function push(t,x)       t[1+#t]=x; return x end
+function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
+function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
+function sort(t,f)    table.sort(t,f); return t end
+function push(t,x)    t[1+#t]=x; return x end
 
 function chat(t) print(cat(t)); return t end
 function cat(t)
@@ -71,7 +70,8 @@ function obj(name)
 local function col(self, at,txt)
   self.at   = at or 0                 -- :num   column position 
   self.txt  = txt or ""               -- :str   column name 
-  self.n    = 0  end                  -- :num   items seen so far
+  self.n    = 0                       -- :num   items seen so far
+  self.all  = {} end
  
 local SYM = obj"SYM"
 function SYM:new(at,txt); self.kept={}; col(self,at,txt) end
@@ -81,16 +81,23 @@ function SYM:add(x)
     self.n=self.n+1
     self.kept[x] = 1+(self.kept[x] or 0) end end
 
-function SYM:bins(rows) return true end
+function SYM:bins(of,rows,   x) 
+  for _,row in pairs(rows) do 
+    x = row.raw[self.at]
+    if x ~= "?" then
+      self.all[x] = self.all[x] or  {at=self,lo=x,hi=x,has=of:clone()} end
+    self.all[x].has:add(row) end end
+
 function SYM:ent(    e)
   local function z(p) return  p*math.log(p,2) end
-  e=0;for _,n in pairs(self.kept) do if n>0 then e=e-z(n/i.n) end end;return e end
+  e=0;for _,n in pairs(self.kept)do if n>0 then e=e-z(n/self.n)end end;return e end
 
 local NUM = obj"NUM"
 function NUM:new(at,txt) 
   col(self,at,txt)
   self.lo =math.huge; self.hi=-self.lo 
   self.mu, self.m2, self.sd = 0,0,0
+  self._bins= {}
   self.w = self.txt:find"-$" and -1 or 1  end
 
 function NUM:add(x)
@@ -103,20 +110,24 @@ function NUM:add(x)
     if x > self.hi then self.hi = x end
     if x < self.lo then self.lo = x end end end
 
-function NUM:bins(rows)
+function NUM:bins(of, rows)
   local function lt(x,y) 
     return (x=="?" and -math.huge or x) < (y=="?" and -math.huge or y) end
-  local order   = function(a,b) return lt(a.raw[self.at],b.raw[self.at]) end
-  local n,bin,b4= 1,1,nil
-  local x       = function(k)   return rows[k].raw[self.at] end
-  local xis     = function(k,x) rows[k].cooked[self.at] = x end
-  for j,row in pairs(sort(rows, order)) do
+  local order  = function(a,b) return lt(a.raw[self.at],b.raw[self.at]) end
+  local x      = function(k)   return rows[k].raw[self.at] end
+  local xis    = function(k,x) rows[k].cooked[self.at] = x; end 
+  local n,b4   = 1,nil
+  local min    = self.n^the.min
+  local epsilon= self.sd*the.cohen
+  local rows   = sort(rows,order)
+  local one    = push(self.all, {at=self, n=0, lo=x(1), hi=x(1), has=of:clone()})
+  for j,row in pairs(rows) do
     if x(j) ~= "?" then 
-      b4 = b4 or j
-      if   x(j) - x(b4) > self.sd*the.cohen and n > self.n^the.min 
-      then bin=bin+1; n=0; b4=j end 
-      n = n+1
-      xis(j,bin) end end end
+      if   #rows-j>min and #one.has.rows>min and x(j)~=x(j+1) and x(j)-one.lo>epsilon
+      then one = push(self.all, {at=self,lo=one.hi,hi=x(j),has=of:clone()}) end
+      one.hi = x(j)
+      one.has:add(row) end end 
+  end
 
 local is={}
 is.skip=  function(x) return x:find":$"     end -- what to ignore
@@ -153,7 +164,8 @@ function ROW:new(of,cells)
 local ROWS = obj"ROWS"
 function ROWS:new() self.rows={}; self.cols=nil end
 
-function ROWS:clone(src) return ROWS():add(self.cols.names):adds(src) end
+function ROWS:clone(src) 
+  return ROWS():add(self.cols.names):adds(src) end
 
 function ROWS:adds(src)
   if   type(src) == "string" 
@@ -164,7 +176,8 @@ function ROWS:adds(src)
 function ROWS:add(row)
   if   self.cols 
   then push(self.rows,  self.cols:add( row.raw and row or ROW(self,row))) 
-  else self.cols = COLS(row) end end
+  else self.cols = COLS(row) end 
+  return self end
 
 local go={}
 function go.all() 
@@ -176,14 +189,69 @@ function go.all()
 function go.help() print(help) end
 function go.the()  chat(the) end
 function go.csv()  csv(the.file, function(x) chat(x) end) end
-function go.rows(r)  
+function go.clone(r,s)  
   print(the.file)
   r=ROWS():adds(the.file) 
-  chat(r.cols.x[4])
-  for _,col in pairs(r.cols.x) do col:bins(r.rows) end
-  for _,row in pairs(r.rows) do chat(row.cooked) end
-  end
+  s=r:clone() 
+  print(s) end
+  --chat(s.cols.all[1]) end
 
+local function ents(rows)
+  local e = 0
+  for _,col in pairs(rows.cols.x) do
+    local s = SYM()
+    for _,row in pairs(rows.rows) do
+      local x = row.cooked[col.at] 
+      if x ~= "?" then s:add(x) end end
+    e = e + s:ent() end 
+  return e end 
+
+function fuse1(i,j,epsilon)
+  if math.abs(i.e - j.e) <= epsilon then
+    return {lo= i.lo, hi=j.hi, n=i.n+j.n, 
+            e=  (i.n*i.e + j.n*j.e)/(i.n + j.n)} end end
+
+function fuse(epsilon, b4)
+  while true do
+    local n,now = 1,{}
+    while n<#b4 do
+      local merged = n<#b4 and fuse1(b4[n],b4[n+1],epsilon) 
+      now[#now+1]  = merged or b4[n]
+      n            = n + (merged and 2 or 1)
+    end
+    if #now<#b4 then b4 = now else
+      
+      now[1].lo = -math.huge
+      now[#now].hi =  math.huge
+      return now end end end 
+
+function go.rows(r, es,all)
+  es = NUM()
+  all= {}
+  r=ROWS():adds(the.file) 
+  print(ents(r))
+  es:add(ents(r))
+  for _,col in pairs(r.cols.x) do col:bins(r,r.rows) end
+  for _,col in pairs(r.cols.x) do 
+    print(col.txt, #col.all)    
+    local here={}
+    all[col.at]=here
+    for _,range in pairs(col.all) do 
+      local e = ents(range.has)
+      es:add(e)
+      print("\t", range.lo, range.hi, #range.has.rows,e)  
+      push(here, {lo=range.lo, hi=range.hi, n=#range.has.rows,e=e})  end end 
+  for x,one in pairs(all) do 
+    all[x] = fuse(es.sd  * the.cohen, sort(one,lt"lo")) end 
+  for x,one in pairs(all) do 
+    chat(one)
+    for _, range in pairs(one) do
+        chat(range) end end end 
+
+
+help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", 
+          function(k,x) the[k]=thing(trim(x)) end)
 the=cli(the)
 go[the.go]()
 rogues()
+
