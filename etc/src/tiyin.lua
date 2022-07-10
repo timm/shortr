@@ -1,6 +1,8 @@
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 local the,help = {},[[
 
+TODO: dont fuse on non-numerics
+
  -c cohen difference in nums    = .35
  -f file  source                = ../../data/auto93.csv
  -g go    action                = help
@@ -66,7 +68,7 @@ function obj(name)
   local t = {__tostring=cat,_is=name}; t.__index=t
   return setmetatable(t, {__call=new}) end
 
-------------------------------------------------------
+------------------------------------------------------
 local function col(self, at,txt)
   self.at   = at or 0                 -- :num   column position 
   self.txt  = txt or ""               -- :str   column name 
@@ -179,7 +181,7 @@ function ROWS:add(row)
   else self.cols = COLS(row) end 
   return self end
 
-local go={}
+local go={}
 function go.all() 
   local want = function(k,_)if k~="all" then return k end end
   for _,x in pairs(sort(kap(go,want))) do 
@@ -246,10 +248,50 @@ function go.rows(r, es,all)
      print(one[1].at.txt)
      for _, range in pairs(one) do 
         print("\t", range.lo, range.hi, range.n, range.e)  end end end 
-
+----ddP-------------------------------------------------------------------
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", 
           function(k,x) the[k]=thing(trim(x)) end)
 the=cli(the)
 go[the.go]()
 rogues()
-
+----ddP-------------------------------------------------------------------
+-- 12.348722672624
+-- Clndrs	3
+-- 		3	4	207	10.186135496684
+-- 		4	6	87	8.2438268409432
+-- 		6	8	104	7.0495719622724
+-- Volume	8
+-- 		68	105	106	9.1032053779412
+-- 		105	141	88	9.1314349037882
+-- 		141	173	31	8.1942729502156
+-- 		173	225	27	5.8317127555027
+-- 		225	262	46	5.7889030186077
+-- 		262	305	23	5.2949444385008
+-- 		305	350	39	4.7986838713161
+-- 		350	455	38	5.4934036254341
+-- Model	6
+-- 		70	72	84	9.265662209105
+-- 		72	74	67	8.8229185085156
+-- 		74	76	64	8.6789383050277
+-- 		76	78	64	9.0203804206288
+-- 		78	80	58	9.159537586695
+-- 		80	82	61	7.8732012623659
+-- origin	3
+-- 		1	1	249	10.186516126735
+-- 		2	2	70	8.5363112369701
+-- 		3	3	79	8.4061141489268
+-- ...............
+-- Clndrs
+-- 		-inf	4	207	10.186135496684
+-- 		4	6	87	8.2438268409432
+-- 		6	inf	104	7.0495719622724
+-- Volume
+-- 		-inf	141	194	9.1160105236862
+-- 		141	173	31	8.1942729502156
+-- 		173	inf	173	5.4417775380802
+-- Model
+-- 		-inf	80	337	9.001367193192
+-- 		80	inf	61	7.8732012623659
+-- origin
+-- 		-inf	1	249	10.186516126735
+-- 		2	inf	149	8.4672805661283
