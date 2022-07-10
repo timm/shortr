@@ -32,7 +32,6 @@ function COL:new(at,txt) return isa(OBJ(), COL,{at=at or 0,txt=txt or "",n=0, ke
 
 function COL:add(x,n)
   n= n or 1
-  print(cat(self))
   if x ~="?" then self.n=self.n+n self:add1(x,n) end end 
 
 local SYM=obj"SYM"
