@@ -11,24 +11,24 @@ function cat(t,u)
     table.sort(u) end
   return (t._is or "").."{"..table.concat(u," ").."}" end 
 
-local function isa(t,meta,inits) 
+local function isa(t,meta) 
   setmetatable(meta, getmetatable(t))
-  setmetatable(t,meta); for k,v in pairs(inits or {}) do t[k]=v end; return t end
+  setmetatable(t,meta)
+  return t end
 
 local _id = 0
-local function new(kl,...) return kl.new(isa({},kl),...) end 
+local function new(kl,...) return kl.new(setmetatable({},kl),...) end 
 
-local function obj(name,base,    t,mt)
+local function obj(name,    t)
   t = {__tostring=cat,_is=name}; t.__index=t
-  t= isa(t, {__call=new}) 
-  return t end
+  return setmetatable(t, {__call=new}) end 
 
 local OBJ=obj"OBJ"  
 function OBJ:new() _id=_id+1; self.id=_id; return self end
-function OBJ:add(t) print(1);for k,v in pairs(t or {}) do self[k]=v end; return self end
+function OBJ:adds(t) for k,v in pairs(t or {}) do self[k]=v end; return self end
   
-local COL=obj("COL",OBJ)  
-function COL:new(at,txt) return isa(OBJ(), COL,{at=at or 0,txt=txt or "",n=0, kept={}}) end
+local COL=obj"COL"  
+function COL:new(at,txt) return isa(OBJ(), COL):adds{at=at or 0,txt=txt or "",n=0, kept={}} end
 
 function COL:add(x,n)
   n= n or 1
@@ -36,9 +36,7 @@ function COL:add(x,n)
 
 local SYM=obj"SYM"
 function SYM:new(...)
-  self=isa(COL(...),SYM)
-  self.mode, self.most = nil,0 
-  return self
+  return isa(COL(...),SYM):adds{mode=nil,most=0}
 end
 
 function SYM:add1(x,n) 
