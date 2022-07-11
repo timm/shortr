@@ -82,18 +82,22 @@ function cat(t, u)
 fmt=string.format
 
 -- ### Testing
-local go={}
+local go,fails={},0
 function go.all() 
+  local defaults={}
+  for k,v in pairs(the) do defaults[k]=v end 
   local want = function(k,_)if k~="all" then return k end end
-  for _,x in pairs(sort(kap(go,want))) do 
+  for k,x in pairs(sort(kap(go,want))) do 
+    for k,v in pairs(defaults) do the[k]=v end 
     math.randomseed(the.seed)
-    go[x]() end end
+    if true ~= go[x]() then 
+      print("FAIL:",k)
+      fails=fails+1 end end end
 
 -- ## Demos
 
 -- ## Start
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",function(k,x) the[k]=thing(x) end)
-
 the=cli(the)
 go[the.go]()
 rogues()
