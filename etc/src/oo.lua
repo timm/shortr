@@ -1,6 +1,8 @@
 fmt = string.format
 function sort(t,f) table.sort(t,f); return t end
-function cat(t, u) u={};for k,v in pairs(t) do u[1+#u]=tostring(k) end;return u;end
+function cat(t, u) 
+  u={};for k,v in pairs(t) do u[1+#u]=tostring(k) end
+  return "{"..table.concat(u," ").."}" end
 
 function obj(txt,base,  i,new)
   new = function(k,...) i=setmetatable({},k); k.new(i,...); return i end
