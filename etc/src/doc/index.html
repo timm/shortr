@@ -1,0 +1,1113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#String_utilties">String utilties </a></li>
+<li><a href="#File_and_Path_functions">File and Path functions </a></li>
+<li><a href="#Extended_table_functions">Extended table functions </a></li>
+<li><a href="#Functional_helpers">Functional helpers </a></li>
+<li><a href="#Classes">Classes </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>ml</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>ml</code></h1>
+<p>Microlight - a very compact Lua utilities module</p>
+<p> Steve Donovan, 2012; License MIT</p>
+
+
+<h2><a href="#String_utilties">String utilties </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#split">split (s, re, n)</a></td>
+	<td class="summary">split a string into a list of strings separated by a delimiter.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#escape">escape (s)</a></td>
+	<td class="summary">escape any 'magic' characters in a string</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#expand">expand (s, subst)</a></td>
+	<td class="summary">expand a string containing any ${var} or $var.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#readfile">readfile (filename, is_bin)</a></td>
+	<td class="summary">return the contents of a file as a string</td>
+	</tr>
+</table>
+<h2><a href="#File_and_Path_functions">File and Path functions </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#splitpath">splitpath (P)</a></td>
+	<td class="summary">split a file path.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#splitext">splitext (P)</a></td>
+	<td class="summary">given a path, return the root part and the extension part.</td>
+	</tr>
+</table>
+<h2><a href="#Extended_table_functions">Extended table functions </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#tstring">tstring (t, limit)</a></td>
+	<td class="summary">return a string representation of a Lua table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#tdump">tdump (t, f)</a></td>
+	<td class="summary">dump a Lua table to a file object.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#imap">imap (f, t, ...)</a></td>
+	<td class="summary">map a function over a list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ifilter">ifilter (t, pred, ...)</a></td>
+	<td class="summary">filter a list using a predicate.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ifind">ifind (t, pred, ...)</a></td>
+	<td class="summary">find an item in a list using a predicate.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#index">index (t, value)</a></td>
+	<td class="summary">return the index of an item in a list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#sub">sub (t, i1, i2)</a></td>
+	<td class="summary">return a slice of a list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#tmap">tmap (f, t, ...)</a></td>
+	<td class="summary">map a function over a Lua table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#tfilter">tfilter (t, pred, ...)</a></td>
+	<td class="summary">filter a table using a predicate.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#update">update (t, other)</a></td>
+	<td class="summary">add the key/value pairs of `other` to `t`.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#extend">extend (t, other)</a></td>
+	<td class="summary">extend a list using values from another.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set">set (t)</a></td>
+	<td class="summary">make a set from a list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#keys">keys (t, a)</a></td>
+	<td class="summary">extract the keys of a table as a list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#subset">subset (t, other)</a></td>
+	<td class="summary">is `other` a subset of `t`?</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#tequal">tequal (t, other)</a></td>
+	<td class="summary">are these two tables equal?</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#intersect">intersect (t, other)</a></td>
+	<td class="summary">the intersection of two tables.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#collect">collect (iter, count)</a></td>
+	<td class="summary">collect the values of an iterator into a list.</td>
+	</tr>
+</table>
+<h2><a href="#Functional_helpers">Functional helpers </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#throw">throw (f)</a></td>
+	<td class="summary">create a function which will throw an error on failure.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#safe">safe (f)</a></td>
+	<td class="summary">create a function which will never throw an error.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#bind1">bind1 (f, v)</a></td>
+	<td class="summary">bind the value `v` to the first argument of function `f`.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#compose">compose (f1, f2)</a></td>
+	<td class="summary">compose two functions.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#callable">callable (obj)</a></td>
+	<td class="summary">is the object either a function or a callable object?.</td>
+	</tr>
+</table>
+<h2><a href="#Classes">Classes </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#class">class (base)</a></td>
+	<td class="summary">create a class with an optional base class.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#is_a">is_a (self, klass)</a></td>
+	<td class="summary">is an object derived from a class?</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#type">type (obj)</a></td>
+	<td class="summary">extended type of an object.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="String_utilties"></a>String utilties </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "split"></a>
+    <strong>split (s, re, n)</strong>
+    </dt>
+    <dd>
+    split a string into a list of strings separated by a delimiter.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">s</span>
+         The input string
+        </li>
+        <li><span class="parameter">re</span>
+         A Lua string pattern; defaults to '%s+'
+        </li>
+        <li><span class="parameter">n</span>
+         optional maximum number of splits
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a list
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "escape"></a>
+    <strong>escape (s)</strong>
+    </dt>
+    <dd>
+    escape any 'magic' characters in a string
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">s</span>
+         The input string
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        an escaped string
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "expand"></a>
+    <strong>expand (s, subst)</strong>
+    </dt>
+    <dd>
+    expand a string containing any ${var} or $var.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">s</span>
+         the string
+        </li>
+        <li><span class="parameter">subst</span>
+         either a table or a function (as in `string.gsub`)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        expanded string
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "readfile"></a>
+    <strong>readfile (filename, is_bin)</strong>
+    </dt>
+    <dd>
+    return the contents of a file as a string
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">filename</span>
+         The file path
+        </li>
+        <li><span class="parameter">is_bin</span>
+         open in binary mode, default false
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        file contents
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="File_and_Path_functions"></a>File and Path functions </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "splitpath"></a>
+    <strong>splitpath (P)</strong>
+    </dt>
+    <dd>
+    split a file path.
+ if there's no directory part, the first value will be the empty string
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">P</span>
+         A file path
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+        the directory part</li>
+        <li>
+        the file part</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "splitext"></a>
+    <strong>splitext (P)</strong>
+    </dt>
+    <dd>
+    given a path, return the root part and the extension part.
+ if there's no extension part, the second value will be empty
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">P</span>
+         A file path
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+        the name part</li>
+        <li>
+        the extension</li>
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Extended_table_functions"></a>Extended table functions </h2>
+
+          <div class="section-description">
+
+ 'list' here is shorthand for 'list-like table'; these functions
+ only operate over the numeric `1..#t` range of a table and are
+ particularly efficient for this purpose.
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "tstring"></a>
+    <strong>tstring (t, limit)</strong>
+    </dt>
+    <dd>
+    return a string representation of a Lua table.
+ Cycles are detected, and a limit on number of items can be imposed.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         the table
+        </li>
+        <li><span class="parameter">limit</span>
+         the limit on items, default 1000
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a string
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "tdump"></a>
+    <strong>tdump (t, f)</strong>
+    </dt>
+    <dd>
+    dump a Lua table to a file object.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         the table
+        </li>
+        <li><span class="parameter">f</span>
+         the file object (anything supporting f.write)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "imap"></a>
+    <strong>imap (f, t, ...)</strong>
+    </dt>
+    <dd>
+    map a function over a list.
+ The output must always be the same length as the input, so
+ any `nil` values are mapped to `false`.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">f</span>
+         a function of one or more arguments
+        </li>
+        <li><span class="parameter">t</span>
+         the table
+        </li>
+        <li><span class="parameter">...</span>
+         any extra arguments to the function
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a list with elements `f(t[i])`
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ifilter"></a>
+    <strong>ifilter (t, pred, ...)</strong>
+    </dt>
+    <dd>
+    filter a list using a predicate.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         a table
+        </li>
+        <li><span class="parameter">pred</span>
+         the predicate function
+        </li>
+        <li><span class="parameter">...</span>
+         any extra arguments to the predicate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a list such that `pred(t[i])` is true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ifind"></a>
+    <strong>ifind (t, pred, ...)</strong>
+    </dt>
+    <dd>
+    find an item in a list using a predicate.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         the list
+        </li>
+        <li><span class="parameter">pred</span>
+         a function of at least one argument
+        </li>
+        <li><span class="parameter">...</span>
+         any extra arguments
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the item value
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "index"></a>
+    <strong>index (t, value)</strong>
+    </dt>
+    <dd>
+    return the index of an item in a list.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         the list
+        </li>
+        <li><span class="parameter">value</span>
+         item value
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        index, otherwise `nil`
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "sub"></a>
+    <strong>sub (t, i1, i2)</strong>
+    </dt>
+    <dd>
+    return a slice of a list.
+ Like string.sub, the end index may be negative.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         the list
+        </li>
+        <li><span class="parameter">i1</span>
+         the start index
+        </li>
+        <li><span class="parameter">i2</span>
+         the end index, default #t
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "tmap"></a>
+    <strong>tmap (f, t, ...)</strong>
+    </dt>
+    <dd>
+    map a function over a Lua table.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">f</span>
+         a function of one or more arguments
+        </li>
+        <li><span class="parameter">t</span>
+         the table
+        </li>
+        <li><span class="parameter">...</span>
+         any optional arguments to the function
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "tfilter"></a>
+    <strong>tfilter (t, pred, ...)</strong>
+    </dt>
+    <dd>
+    filter a table using a predicate.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         a table
+        </li>
+        <li><span class="parameter">pred</span>
+         the predicate function
+        </li>
+        <li><span class="parameter">...</span>
+         any extra arguments to the predicate
+        </li>
+    </ul>
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">tfilter({a=<span class="number">1</span>,b=<span class="string">'boo'</span>},<span class="global">tonumber</span>) == {a=<span class="number">1</span>}</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "update"></a>
+    <strong>update (t, other)</strong>
+    </dt>
+    <dd>
+    add the key/value pairs of `other` to `t`.
+ For sets, this is their union. For the same keys,
+ the values from the first table will be overwritten
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         table to be updated
+        </li>
+        <li><span class="parameter">other</span>
+         table
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the updated table
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "extend"></a>
+    <strong>extend (t, other)</strong>
+    </dt>
+    <dd>
+    extend a list using values from another.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         the list to be extended
+        </li>
+        <li><span class="parameter">other</span>
+         a list
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the extended list
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set"></a>
+    <strong>set (t)</strong>
+    </dt>
+    <dd>
+    make a set from a list.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         a list of values
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a table where the keys are the values
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">set{<span class="string">'one'</span>,<span class="string">'two'</span>} == {one=<span class="keyword">true</span>,two=<span class="keyword">true</span>}</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "keys"></a>
+    <strong>keys (t, a)</strong>
+    </dt>
+    <dd>
+    extract the keys of a table as a list.
+ This is the opposite operation to tset
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         a table
+        </li>
+        <li><span class="parameter">a</span>
+         list of keys
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "subset"></a>
+    <strong>subset (t, other)</strong>
+    </dt>
+    <dd>
+    is `other` a subset of `t`?
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         a set
+        </li>
+        <li><span class="parameter">other</span>
+         a possible subset
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true or false
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "tequal"></a>
+    <strong>tequal (t, other)</strong>
+    </dt>
+    <dd>
+    are these two tables equal?
+ This is shallow equality.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         a table
+        </li>
+        <li><span class="parameter">other</span>
+         a table
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true or false
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "intersect"></a>
+    <strong>intersect (t, other)</strong>
+    </dt>
+    <dd>
+    the intersection of two tables.
+ Works as expected for sets, otherwise note that the first
+ table's values are preseved
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         a table
+        </li>
+        <li><span class="parameter">other</span>
+         a table
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the intersection of the tables
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "collect"></a>
+    <strong>collect (iter, count)</strong>
+    </dt>
+    <dd>
+    collect the values of an iterator into a list.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">iter</span>
+         a single or double-valued iterator
+        </li>
+        <li><span class="parameter">count</span>
+         an optional number of values to collect
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a list of values.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">collect(<span class="global">ipairs</span>{<span class="number">10</span>,<span class="number">20</span>}) == {{<span class="number">1</span>,<span class="number">10</span>},{<span class="number">2</span>,<span class="number">20</span>}}</pre>
+    </ul>
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Functional_helpers"></a>Functional helpers </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "throw"></a>
+    <strong>throw (f)</strong>
+    </dt>
+    <dd>
+    create a function which will throw an error on failure.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">f</span>
+         a function that returns nil,err if it fails
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        an equivalent function that raises an error
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "safe"></a>
+    <strong>safe (f)</strong>
+    </dt>
+    <dd>
+    create a function which will never throw an error.
+ This is the opposite situation to throw; if the
+ original function throws an error e, then this
+ function will return nil,e.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">f</span>
+         a function which can throw an error
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a function which returns nil,error when it fails
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "bind1"></a>
+    <strong>bind1 (f, v)</strong>
+    </dt>
+    <dd>
+    bind the value `v` to the first argument of function `f`.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">f</span>
+         a function of at least one argument
+        </li>
+        <li><span class="parameter">v</span>
+         a value
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a function of one less argument
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">(bind1(<span class="global">string</span>.match,<span class="string">'hello'</span>)(<span class="string">'^hell'</span>) == <span class="string">'hell'</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "compose"></a>
+    <strong>compose (f1, f2)</strong>
+    </dt>
+    <dd>
+    compose two functions.
+ For instance, `printf` can be defined as `compose(io.write,string.format)`
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">f1</span>
+         a function
+        </li>
+        <li><span class="parameter">f2</span>
+         a function
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        f1(f2(...))
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "callable"></a>
+    <strong>callable (obj)</strong>
+    </dt>
+    <dd>
+    is the object either a function or a callable object?.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">obj</span>
+         Object to check.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true if callable
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Classes"></a>Classes </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "class"></a>
+    <strong>class (base)</strong>
+    </dt>
+    <dd>
+    create a class with an optional base class.
+ The resulting table has a new() function for invoking
+ the constructor, which must be named `_init`. If the base
+ class has a constructor, you can call it as the `super()` method.
+ The `__tostring` metamethod is also inherited, but others need
+ to be brought in explicitly.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">base</span>
+         optional base class
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the metatable representing the class
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "is_a"></a>
+    <strong>is_a (self, klass)</strong>
+    </dt>
+    <dd>
+    is an object derived from a class?
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">self</span>
+         the object
+        </li>
+        <li><span class="parameter">klass</span>
+         a class created with `class`
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true or false
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "type"></a>
+    <strong>type (obj)</strong>
+    </dt>
+    <dd>
+    extended type of an object.
+ The type of a table is its metatable, otherwise works like standard type()
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">obj</span>
+         a value
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the type, either a string or the metatable
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-07-12 01:17:01 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
