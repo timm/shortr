@@ -1,49 +1,36 @@
-function clone(t,u)
-  if type(t)=="table" then return t end
-  u={}; for k,v in pairs(t) do u[k]=clone(v) end
-  return u end
-
-function map(t,f) u={};for k,v in pairs(t) do u[k] = v end; return u end 
-function cat(t,u)
+fmt=string.format
+function cat(t,    u,pub)
+  function pub(k,v) 
+    if (tostring(k)):sub(1,1) ~= "_" then return fmt(":%s %s",k,cat(v)) end end
   if type(t) ~= "table" then return tostring(t) end
-  if #t>0 then u= map(t,tostring) else
-    u={}; for k,v in pairs(t) do u[1+#u]=string.format(":%s %s",k, cat(v))end 
-    table.sort(u) end
-  return (t._is or "").."{"..table.concat(u," ").."}" end 
+  u = {}
+  if   #t>1 
+  then for k,v in pairs(t) do u[1+#u]=cat(v) end
+  else for k,v in pairs(t) do u[1+#u]=pub(k,v) end 
+       table.sort(u) end
+  return (t._is or "").."{"..table.concat(u," ").."}" end
 
-local function isa(t,meta) 
-  setmetatable(meta, getmetatable(t))
-  setmetatable(t,meta)
-  return t end
+function obj(txt,base,   new,i)
+	function new(class,...) i=setmetatable({},class);class.new(i,...);return i end
+  t={}
+  for k,v in pairs(base or {}) do t[k] = v end
+  t.__tostring, t._is, t._index = cat,txt,t
+	return setmetatable(t,{__call=new}) end
 
-local _id = 0
-local function new(kl,...) return kl.new(setmetatable({},kl),...) end 
+local Point = obj"Point"
+function Point:new(x,y) self.x,self.y= x,y end
+function Point.__lt(self,other) return self.y > other.y end
 
-local function obj(name,    t)
-  t = {__tostring=cat,_is=name}; t.__index=t
-  return setmetatable(t, {__call=new}) end 
+local Pole = obj("Pole",Point)
+function Pole:new(x,y,z)
+  Point.new(self,x,y)
+  self._w=100
+  self.z = z end
 
-local OBJ=obj"OBJ"  
-function OBJ:new() _id=_id+1; self.id=_id; return self end
-function OBJ:adds(t) for k,v in pairs(t or {}) do self[k]=v end; return self end
-  
-local COL=obj"COL"  
-function COL:new(at,txt) return isa(OBJ(), COL):adds{at=at or 0,txt=txt or "",n=0, kept={}} end
 
-function COL:add(x,n)
-  n= n or 1
-  if x ~="?" then self.n=self.n+n self:add1(x,n) end end 
-
-local SYM=obj"SYM"
-function SYM:new(...)
-  return isa(COL(...),SYM):adds{mode=nil,most=0}
-end
-
-function SYM:add1(x,n) 
-  self.kept[x] = n + (self.kept[x] or 0) end
-
-s=SYM(2,"tim")
-s:add("t")
-s:add("t")
-s:add("t")
-print(s)
+p=Pole(10,120,5)
+q=Pole(1,  20,6)
+r=Pole(30,200,6)
+t={p,q,r}
+table.sort(t)
+print(t[1],t[2],t[3])
