@@ -1,25 +1,28 @@
-fmt=string.format
-function cat(t,    u,pub)
-  function pub(k,v) 
-    if (tostring(k)):sub(1,1) ~= "_" then return fmt(":%s %s",k,cat(v)) end end
-  if type(t) ~= "table" then return tostring(t) end
-  u = {}
-  if   #t>1 
-  then for k,v in pairs(t) do u[1+#u]=cat(v) end
-  else for k,v in pairs(t) do u[1+#u]=pub(k,v) end 
-       table.sort(u) end
-  return (t._is or "").."{"..table.concat(u," ").."}" end
+fmt = string.format
+function sort(t,f) table.sort(t,f); return t end
+function cat(t, u) u={};for k,v in pairs(t) do u[1+#u]=tostring(k) end;return u;end
 
-function obj(txt,base,   new,i)
-	function new(class,...) i=setmetatable({},class);class.new(i,...);return i end
-  t={}
-  for k,v in pairs(base or {}) do t[k] = v end
-  t.__tostring, t._is, t._index = cat,txt,t
+function obj(txt,base,  i,new)
+  new = function(k,...) i=setmetatable({},k); k.new(i,...); return i end
+  t={}; for k,v in pairs(base or {}) do t[k] = v end
+  t.is, t.__index = txt, t
 	return setmetatable(t,{__call=new}) end
 
-local Point = obj"Point"
-function Point:new(x,y) self.x,self.y= x,y end
-function Point.__lt(self,other) return self.y > other.y end
+_id = 0
+local Object = obj"Object"
+function Object:new() _id=_id+1; self._id=_id end
+
+function Object:__tostring(   u,pub)
+  pub = function(k,v) return tostring(k):sub(1,1)~="_" end
+  u={}; for k,v in pairs(self) do if pub(k) then u[1+#u]=fmt(":%s %s",k,v) end end
+  return (self.is or "").."{"..table.concat(sort(u)," ").."}" end
+
+local Point = obj("Point",Object)
+function Point:new(x,y) 
+   Object.new(self)
+   self.x,self.y= x,y end
+
+function Point.__lt(self,other) return self.y < other.y end
 
 local Pole = obj("Pole",Point)
 function Pole:new(x,y,z)
