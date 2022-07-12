@@ -11,7 +11,7 @@ BEGIN {LANG="lua"
                   {now=b4}
 $0 ~ COM          {now=0} 
 $0 ~ HINT         {sep="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                   sep= sep sep sep sep sep ":triangular_flag_on_post: "
+                   sep= sep sep sep sep sep ":notes: "
                    split($0,h,/[><]/) 
                    h[2]=gensub(/([A-Za-z0-9_]+)[ \t]*:/,"`\\1`:","g",h[2])
                    gsub(/:/," :",h[2])
