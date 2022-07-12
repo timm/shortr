@@ -11,16 +11,16 @@ Summarize symbols
 
 
 | What                                                   | Notes                                                |
-|--------------------------------------------------------|------------------------------------------------------|
-| [***SYM(`at` :?int=0, `txt` :?str="")  :SYM***](#1)    | Constructor.                                         |
-| [***clone(`i` :SYM)  :SYM***](#2)                      | Return a class of the same structure.                |
-| [***bin(`i` :SYM, `x` :any)***](#3)                    | Return `x` mapped to a finite range (just return x). |
-| [***merge(`i` :SYM,`j` :SYM) :SYM***](#4)              | Combine two SYMs.                                    |
-| [***merges(`i` :SYM,`t` :tab) :tab***](#5)             | Merge a list of bins (for symbolic y-values).        |
-| [***dist(`i` :SYM, `x` :any,`y` :any)  :num***](#6)    | Return distance 0..1 between `x,y`.                  |
-| [***like(`i` :SYM,`x` :any,`prior` :num)  :num***](#7) | Return how much `x` might belong to `i`.             |
-| [***mid(`i` :SYM) :tab***](#8)                         | Return a columns' `mid`ddle (central tendency).      |
-| [***add(`i` :`SYM` : `x` :any, `n` :?int=1)***](#9)    | Add `n` count to `i.kept[n]`.                        |
+|-------------------------------------------------------:|------------------------------------------------------|
+| [***SYM](#1)    | Constructor.                                         |
+| [***clone](#2)                      | Return a class of the same structure.                |
+| [***bin](#2)                    | Return `x` mapped to a finite range (just return x). |
+| [***merge](#4)              | Combine two SYMs.                                    |
+| [***merges(](#5)             | Merge a list of bins (for symbolic y-values).        |
+| [***dist](#6)    | Return distance 0..1 between `x,y`.                  |
+| [***like](#7) | Return how much `x` might belong to `i`.             |
+| [***mid](#8)                         | Return a columns' `mid`ddle (central tendency).      |
+| [***add](#9)    | Add `n` count to `i.kept[n]`.                        |
 
 ```lua
 local all = require"all"
@@ -54,8 +54,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 ```
 
 ### Discretize   
-> [](#2)
-***bin(`i` :SYM, `x` :any)***<br>
+> ***bin(`i` :SYM, `x` :any)***<a name="2"></a><br>
 Return `x` mapped to a finite range (just return x).
 
 
