@@ -30,14 +30,14 @@ Misc utils
 
 |Category|Class||Protocol|What|Notes|
 |:---------|:----|:--------|:---|:----|
-|Config|||[***`help` :str***](#1)|Help text for this code.|
-|Config|||[***`the` :table***](#2)|Config settings. Extracted from `help`.|
-|Names|||[***obj(`txt` :str,`base` :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
-|Columns|COL|Creation|[***COL(`at` :?int=0, `txt` :?str="") : COL***](#4)|Superclass constructor for columns.|
-|Columns|COL|Reports|[***dist(`x` :any, `y` :any)  :num***](#5)|Return distance. For missing values, assume max distance.|
-|Columns|COL|Update|[***add(`x` :any, `inc` :?int=1)***](#6)|`inc` times repeat: add `x`|
-|Lib|Lint|Update|[***rogues()***](#7)|Warn if our code introduced a rogue global.|
-|Lib|String2things|Update|[***`the` :table***](#8)|Config settings. Extracted from `help`.|
+|Config |  |  | [***`help` :str***](#1)|Help text for this code.|
+|Config |  |  | [***`the` :table***](#2)|Config settings. Extracted from `help`.|
+|Names |  |  | [***obj(`txt` :str,`base` :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
+|Columns | COL | Creation | [***COL(`at` :?int=0, `txt` :?str="") : COL***](#4)|Superclass constructor for columns.|
+|Columns | COL | Reports | [***dist(`x` :any, `y` :any)  :num***](#5)|Return distance. For missing values, assume max distance.|
+|Columns | COL | Update | [***add(`x` :any, `inc` :?int=1)***](#6)|`inc` times repeat: add `x`|
+|Lib | Lint | Update | [***rogues()***](#7)|Warn if our code introduced a rogue global.|
+|Lib | String2things | Update | [***`the` :table***](#8)|Config settings. Extracted from `help`.|
 
 
 
