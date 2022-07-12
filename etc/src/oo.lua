@@ -14,7 +14,7 @@
 -- - ROWS hold many ROWs which are summarized in COLs.
 -- - COLs can be either SYMboliuc or NUMeric). 
 -- - Two helper classes are:
---   - SOME: keeps a sample of the data.
+--   - SOME: keeps a sample of data from a NUMeric column.
 --   - BIN:  tracks what goal variables are seen within some range.
 
 -- Data from disk is read into a ROWS, from which we 
@@ -55,7 +55,7 @@ oo.lua : stuff that is cool
  -s  seed   random number seed   = 10019
  -S  Some   some items to keep   = 256]]
 
--- > the :table > Config settings. Extracted from `help`. <
+-- > the :table > Config settings. e.g. `the.cohen=.35`. Extracted from `help`. <
 local the={}
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x) 
           if x=="true" then the[k]=true elseif x=="false" then the[k]=false 
