@@ -6,8 +6,7 @@
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 ```
 
-> 
-***rogues()***<br>
+> ***rogues()***<br>
 Warn if our code introduced a rogue global.
 
 
@@ -16,8 +15,7 @@ local function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 ```
 
-> 
-***`help` :str***<br>
+> ***`help` :str***<br>
 Help text for this code.
 
 
@@ -37,8 +35,7 @@ oo.lua : stuff that is cool
 
 ```
 
-> 
-***`the` :table***<br>
+> ***`the` :table***<br>
 Config settings. Extracted from `help`.
 
 
@@ -63,8 +60,7 @@ local new,obj,per,push,R,rogues,same,sort,trim,words
 
 ```
 
-> 
-***obj(`txt` :str,`base` :?class)  :class***<br>
+> ***obj(`txt` :str,`base` :?class)  :class***<br>
 Make a class, perhaps as a kid of `base`.
 
 
