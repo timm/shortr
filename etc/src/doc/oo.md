@@ -11,10 +11,10 @@ Summarize symbols
 
 
 | What                                                   | Notes                                                |
-|--------------------------------------------------------|------------------------------------------------------|
+|-------------------------------------------------------:|------------------------------------------------------|
 | [***SYM(`at` :?int=0, `txt` :?str="")  :SYM***](#1)    | Constructor.                                         |
 | [***clone(`i` :SYM)  :SYM***](#2)                      | Return a class of the same structure.                |
-| [***bin(`i` :SYM, `x` :any)***](#3)                    | Return `x` mapped to a finite range (just return x). |
+| [***bin(`i` :SYM, `x` :any)***](#2)                    | Return `x` mapped to a finite range (just return x). |
 | [***merge(`i` :SYM,`j` :SYM) :SYM***](#4)              | Combine two SYMs.                                    |
 | [***merges(`i` :SYM,`t` :tab) :tab***](#5)             | Merge a list of bins (for symbolic y-values).        |
 | [***dist(`i` :SYM, `x` :any,`y` :any)  :num***](#6)    | Return distance 0..1 between `x,y`.                  |
