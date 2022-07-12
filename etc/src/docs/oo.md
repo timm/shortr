@@ -46,7 +46,7 @@ Misc utils
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 ```
 
-> ***`help` :str***<a id=1></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:cyclone: Help text for this code. :cyclone:
+> ***`help` :str***<a id=1></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Help text for this code. :arrow_backward:
 
 
 ```lua
@@ -65,7 +65,7 @@ oo.lua : stuff that is cool
 
 ```
 
-> ***`the` :table***<a id=2></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:cyclone: Config settings. Extracted from `help`. :cyclone:
+> ***`the` :table***<a id=2></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Config settings. Extracted from `help`. :arrow_backward:
 
 
 ```lua
@@ -85,7 +85,7 @@ local new,obj,per,push,R,rogues,same,sort,trim,words
 
 ```
 
-> ***obj(`txt` :str,`base` :?class)  :class***<a id=3></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:cyclone: Make a class, perhaps as a kid of `base`. :cyclone:
+> ***obj(`txt` :str,`base` :?class)  :class***<a id=3></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Make a class, perhaps as a kid of `base`. :arrow_backward:
 
 Instances have a unique `id` and use the `cat` function for pretty printing.
 
@@ -184,7 +184,7 @@ function NUM:add1(x,inc)
 
 ## Lib
 ### Lint
-> ***rogues()***<a id=4></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:cyclone: Warn if our code introduced a rogue global. :cyclone:
+> ***rogues()***<a id=4></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Warn if our code introduced a rogue global. :arrow_backward:
 
 
 ```lua
@@ -241,7 +241,7 @@ function lines(file, fun)
 
 ```
 
-> ***`the` :table***<a id=5></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:cyclone: Config settings. Extracted from `help`. :cyclone:
+> ***`the` :table***<a id=5></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Config settings. Extracted from `help`. :arrow_backward:
 
 
 ```lua
