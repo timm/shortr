@@ -15,7 +15,7 @@ $0 ~ HINT         {sep="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                    split($0,h,/[><]/) 
                    h[2]=gensub(/([A-Za-z0-9_]+)[ \t]*:/,"`\\1`:","g",h[2])
                    gsub(/:/," :",h[2])
-                   $0= "> ***"trim(h[2])"***<a id="++n"></a>"sep trim(h[3])"\n" 
+                   $0= "> ***"trim(h[2])"***<a id="++n"></a>"sep trim(h[3])" :cyclone:\n" 
                    print("|"Category"|"Protocol"|[***"trim(h[2])"***](#"n")|"trim(h[3])"|")>>"/dev/stderr"
                   }
 $0 ~ /^[a-zA-Z_]/ {now=1} 
