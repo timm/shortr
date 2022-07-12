@@ -28,10 +28,13 @@ log(N) evals.
 Misc utils
 This code starts with a help string (from which we extract our global settings)
 and ends with a library of demos (see the `go` functions at end of file). 
-In between there are classes 
+In between there are the following classes 
 - ROWS hold many ROWs which are summarized in COLs.
 - COLs can be either SYMboliuc or NUMeric). 
 - SOME is a helper class for NUM that keeps a sample of the data.
+The general cycle is that data from disk is read into a ROWS, from which we 
+do some clustering (and each cluster is new ROWS object, containing a subset
+of the data.
 
 
 |Category|Class|Protocol|What|Notes|
