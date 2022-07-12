@@ -42,7 +42,7 @@ the worst `rests`.
 |Category|Class|Protocol|What|Notes|
 |:---------|:----|:--------|:---|:----|
 |Config |  |  | [***`help` :str***](#1)|Help text for this code.|
-| |  |  | [***`the` :table***](#2)|Config settings. e.g. `the.cohen=.35`. Extracted from `help`.|
+| |  |  | [***`the` :table***](#2)|Config settings. Extracted from `help`. e.g. `the.cohen=.35`.|
 |Names |  |  | [***obj(`txt` :str,`base` :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
 |Columns | COL | Create | [***COL(`at` :?int=0, `txt` :?str="") : COL***](#4)|Superclass constructor for columns.|
 | |  | Reports | [***dist(`x` :any, `y` :any)  :num***](#5)|Return distance. For missing values, assume max distance.|
@@ -73,7 +73,7 @@ oo.lua : stuff that is cool
 
 ```
 
-> ***`the` :table***<a id=2></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Config settings. e.g. `the.cohen=.35`. Extracted from `help`. 
+> ***`the` :table***<a id=2></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Config settings. Extracted from `help`. e.g. `the.cohen=.35`. 
 
 
 ```lua

@@ -55,7 +55,7 @@ oo.lua : stuff that is cool
  -s  seed   random number seed   = 10019
  -S  Some   some items to keep   = 256]]
 
--- > the :table > Config settings. e.g. `the.cohen=.35`. Extracted from `help`. <
+-- > the :table > Config settings. Extracted from `help`. e.g. `the.cohen=.35`.  <
 local the={}
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x) 
           if x=="true" then the[k]=true elseif x=="false" then the[k]=false 
