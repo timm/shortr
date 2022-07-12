@@ -7,10 +7,12 @@ BEGIN {LANG="lua"
 }
                   {now=b4}
 $0 ~ COM          {now=0} 
-$0 ~ HINT         {split($0,h,/[><]/) 
+$0 ~ HINT         {sep="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                   sep= sep sep sep ":speech_balloon:"
+                   split($0,h,/[><]/) 
                    h[2]=gensub(/([A-Za-z0-9_]+)[ \t]*:/,"`\\1`:","g",h[2])
                    gsub(/:/," :",h[2])
-                   $0= "> ***"trim(h[2])"***<a id="++n"></a><br>\n"trim(h[3])"\n" 
+                   $0= "> ***"trim(h[2])"***<a id="++n"></a>"sep trim(h[3])"\n" 
                    print("|[***"trim(h[2])"***](#"n")|"trim(h[3])"|")>>"/dev/stderr"
                   }
 $0 ~ /^[a-zA-Z_]/ {now=1} 

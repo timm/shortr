@@ -10,8 +10,7 @@ Misc utils
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 ```
 
-> ***`help` :str***<a id=1></a><br>
-Help text for this code.
+> ***`help` :str***<a id=1></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:speech_balloon:Help text for this code.
 
 
 ```lua
@@ -30,8 +29,7 @@ oo.lua : stuff that is cool
 
 ```
 
-> ***`the` :table***<a id=2></a><br>
-Config settings. Extracted from `help`.
+> ***`the` :table***<a id=2></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:speech_balloon:Config settings. Extracted from `help`.
 
 
 ```lua
@@ -55,8 +53,7 @@ local new,obj,per,push,R,rogues,same,sort,trim,words
 
 ```
 
-> ***obj(`txt` :str,`base` :?class)  :class***<a id=3></a><br>
-Make a class, perhaps as a kid of `base`.
+> ***obj(`txt` :str,`base` :?class)  :class***<a id=3></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:speech_balloon:Make a class, perhaps as a kid of `base`.
 
 
 ```lua
@@ -155,8 +152,7 @@ function NUM:add1(x,inc)
 
 ## Lib
 ### Lint
-> ***rogues()***<a id=4></a><br>
-Warn if our code introduced a rogue global.
+> ***rogues()***<a id=4></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:speech_balloon:Warn if our code introduced a rogue global.
 
 
 ```lua
