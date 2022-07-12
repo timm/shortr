@@ -1,7 +1,17 @@
 # OO
 Misc utils
 
-[TOC]
+
+|What|Notes|
+|----:|------|
+|[***`help` :str***](#1)|Help text for this code.|
+|[***`the` :table***](#2)|Config settings. Extracted from `help`.|
+|[***obj(`txt` :str,`base` :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
+|[***rogues()***](#4)|Warn if our code introduced a rogue global.|
+|[***`the` :table***](#5)|Config settings. Extracted from `help`.|
+
+
+
 
 ## Config
 `b4` is a list of everything known before this code.  Used by `rogue()` (see below).
@@ -36,7 +46,7 @@ oo.lua : stuff that is cool
 local the={}
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x) 
           if x=="true" then the[k]=true elseif x=="false" then the[k]=false 
-          else the[k]=math.tointeger(x) or tonumber(x) or x end )
+          else the[k] = math.tointeger(x) or tonumber(x) or x end end )
 
 ```
 
@@ -51,6 +61,7 @@ local new,obj,per,push,R,rogues,same,sort,trim,words
 
 > ***obj(`txt` :str,`base` :?class)  :class***<a id=3></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:triangular_flag_on_post: Make a class, perhaps as a kid of `base`.
 
+Instances have a unique `id` and use the `cat` function for pretty printing.
 
 ```lua
 local _id=0
@@ -69,14 +80,13 @@ SYMboliuc or NUMeric). SOME is a helper class for NUM that keeps a sample of the
 
 ```lua
 local COL,ROW,ROWS   = obj"COL", obj"ROW", obj"ROWS"
-local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",SYM) 
+local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL) 
 ```
 
 ## Columns
 ### COL
 
 ```lua
-local COL=obj"COL"
 function COL:new(at,txt)
   self.at  = at or 0     
   self.txt = txt or ""  

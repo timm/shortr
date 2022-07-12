@@ -1,7 +1,7 @@
 -- # OO
 -- Misc utils
 
--- [TOC]
+-- TABLE.OF.CONTENTS
 
 -- ## Config
 -- `b4` is a list of everything known before this code.  Used by `rogue()` (see below).
@@ -24,7 +24,7 @@ oo.lua : stuff that is cool
 local the={}
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x) 
           if x=="true" then the[k]=true elseif x=="false" then the[k]=false 
-          else the[k]=math.tointeger(x) or tonumber(x) or x end )
+          else the[k] = math.tointeger(x) or tonumber(x) or x end end )
 
 -- ## Names
 -- By defining names before the code, the code can be written in any order.
@@ -32,6 +32,7 @@ local cat,chat,cli,csv,fmt,kap,lines,map
 local new,obj,per,push,R,rogues,same,sort,trim,words
 
 -- > obj(txt:str,base:?class) :class > Make a class, perhaps as a kid of `base`.
+-- Instances have a unique `id` and use the `cat` function for pretty printing.
 local _id=0
 function obj(txt,base,  t,new,i)
   function new(k,...) 
@@ -44,10 +45,9 @@ function obj(txt,base,  t,new,i)
 -- In this code, ROWS hold many ROWs which are summarized in COLs (which can be either
 -- SYMboliuc or NUMeric). SOME is a helper class for NUM that keeps a sample of the data.
 local COL,ROW,ROWS   = obj"COL", obj"ROW", obj"ROWS"
-local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",SYM) 
+local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL) 
 -- ## Columns
 -- ### COL
-local COL=obj"COL"
 function COL:new(at,txt)
   self.at  = at or 0     
   self.txt = txt or ""  
