@@ -1,5 +1,5 @@
 -- # SHORTr.lua : less (but better) XAI
--- <img align=right width=300 src="xai.png"> AI and XAI (explainable artificial intelligence) need not be hard. 
+-- <img align=right width=300 src="xai2.png"> AI and XAI (explainable artificial intelligence) need not be hard. 
 -- E.g. here's a few hundred lines of LUA to search N items to find and 
 -- explain the best ones, using just log(N) evals.
 
@@ -17,7 +17,7 @@
 --   - SOME, that keeps a sample of the data.
 --   - BIN, that tracks what goal variables are seen within some range.
 
--- The general cycle is that data from disk is read into a ROWS, from which we 
+-- Data from disk is read into a ROWS, from which we 
 -- do some clustering (and each cluster is new ROWS object, containing a subset
 -- of the data). A decision tree is built that reports the difference between the 
 -- better and worst classes (and that tree is nothing but tree of ROWS with a `kids` pointer
