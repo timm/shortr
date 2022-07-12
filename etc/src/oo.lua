@@ -49,22 +49,25 @@ local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL)
 
 -- ## Columns
 -- ### COL
+-- #### Creation
 -- > COL(at:?int=0, txt:?str=""): COL > Superclass constructor for columns. <
 function COL:new(at,txt)
   self.at  = at or 0     
   self.txt = txt or ""  
   self.n   = 0 end     
 
+-- #### Reports
+-- > dist(x:any, y:any) :num > Return distance. For missing values, assume max distance. <
+function COL:dist(x,y)
+  return x=="?" and y=="?" and 1 or self:dist1(x,y) end
+
+-- #### Update
 -- > add(x:any, inc:?int=1) > `inc` times repeat: add `x` <
 function COL:add(x,inc)
   if x ~= "?" then 
     inc = inc or 1
     self.n = self.n + inc
     self:add1(x,inc) end end
-
--- > add(x:any, y:any) :num > Return distance. For missing values, assume max distance. <
-function COL:dist1(x,y)
-  return x=="?" and y=="?" and 1 or self:dist1(x,y) end
 
 -- ### SOME
 local SOME=obj("SOME",COL)

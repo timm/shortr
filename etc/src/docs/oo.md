@@ -34,8 +34,8 @@ Misc utils
 |Config||[***`the` :table***](#2)|Config settings. Extracted from `help`.|
 |Names||[***obj(`txt` :str,`base` :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
 |Columns|COL|[***COL(`at` :?int=0, `txt` :?str="") : COL***](#4)|Superclass constructor for columns.|
-|Columns|COL|[***add(`x` :any, `inc` :?int=1)***](#5)|`inc` times repeat: add `x`|
-|Columns|COL|[***add(`x` :any, `y` :any)  :num***](#6)|Return distance. For missing values, assume max distance.|
+|Columns|COL|[***dist(`x` :any, `y` :any)  :num***](#5)|Return distance. For missing values, assume max distance.|
+|Columns|COL|[***add(`x` :any, `inc` :?int=1)***](#6)|`inc` times repeat: add `x`|
 |Lib|Lint|[***rogues()***](#7)|Warn if our code introduced a rogue global.|
 |Lib|String2things|[***`the` :table***](#8)|Config settings. Extracted from `help`.|
 
@@ -115,6 +115,7 @@ local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL)
 
 ## Columns
 ### COL
+#### Creation
 > ***COL(`at` :?int=0, `txt` :?str="") : COL***<a id=4></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Superclass constructor for columns. 
 
 
@@ -126,7 +127,18 @@ function COL:new(at,txt)
 
 ```
 
-> ***add(`x` :any, `inc` :?int=1)***<a id=5></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: `inc` times repeat: add `x` 
+#### Reports
+> ***dist(`x` :any, `y` :any)  :num***<a id=5></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Return distance. For missing values, assume max distance. 
+
+
+```lua
+function COL:dist(x,y)
+  return x=="?" and y=="?" and 1 or self:dist1(x,y) end
+
+```
+
+#### Update
+> ***add(`x` :any, `inc` :?int=1)***<a id=6></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: `inc` times repeat: add `x` 
 
 
 ```lua
@@ -135,15 +147,6 @@ function COL:add(x,inc)
     inc = inc or 1
     self.n = self.n + inc
     self:add1(x,inc) end end
-
-```
-
-> ***add(`x` :any, `y` :any)  :num***<a id=6></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Return distance. For missing values, assume max distance. 
-
-
-```lua
-function COL:dist1(x,y)
-  return x=="?" and y=="?" and 1 or self:dist1(x,y) end
 
 ```
 
