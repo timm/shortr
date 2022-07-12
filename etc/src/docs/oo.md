@@ -2,13 +2,13 @@
 Misc utils
 
 
-|What|Notes|
-|----:|------|
-|[***`help` :str***](#1)|Help text for this code.|
-|[***`the` :table***](#2)|Config settings. Extracted from `help`.|
-|[***obj(`txt` :str,`base` :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
-|[***rogues()***](#4)|Warn if our code introduced a rogue global.|
-|[***`the` :table***](#5)|Config settings. Extracted from `help`.|
+|Category|Protocol|What|Notes|
+|:---------|:-------|:---|:----|
+|Config||[***`help` :str***](#1)|Help text for this code.|
+|Config||[***`the` :table***](#2)|Config settings. Extracted from `help`.|
+|Names||[***obj(`txt` :str,`base` :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
+|Lib|Lint|[***rogues()***](#4)|Warn if our code introduced a rogue global.|
+|Lib|String2things|[***`the` :table***](#5)|Config settings. Extracted from `help`.|
 
 
 
