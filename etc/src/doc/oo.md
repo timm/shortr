@@ -10,17 +10,17 @@ Summarize symbols
 - [Update](#update) summarization
 
 
-| Name                                                   | Notes                                                |
+| What                                                   | Notes                                                |
 |--------------------------------------------------------|------------------------------------------------------|
-| [***SYM(`at` :?int=0, `txt` :?str="")  :SYM***][#1]    | Constructor.                                         |
-| [***clone(`i` :SYM)  :SYM***][#2]                      | Return a class of the same structure.                |
-| [***bin(`i` :SYM, `x` :any)***][#3]                    | Return `x` mapped to a finite range (just return x). |
-| [***merge(`i` :SYM,`j` :SYM) :SYM***][#4]              | Combine two SYMs.                                    |
-| [***merges(`i` :SYM,`t` :tab) :tab***][#5]             | Merge a list of bins (for symbolic y-values).        |
-| [***dist(`i` :SYM, `x` :any,`y` :any)  :num***][#6]    | Return distance 0..1 between `x,y`.                  |
-| [***like(`i` :SYM,`x` :any,`prior` :num)  :num***][#7] | Return how much `x` might belong to `i`.             |
-| [***mid(`i` :SYM) :tab***][#8]                         | Return a columns' `mid`ddle (central tendency).      |
-| [***add(`i` :`SYM` : `x` :any, `n` :?int=1)***][#9]    | Add `n` count to `i.kept[n]`.                        |
+| [***SYM(`at` :?int=0, `txt` :?str="")  :SYM***](#1)    | Constructor.                                         |
+| [***clone(`i` :SYM)  :SYM***](#2)                      | Return a class of the same structure.                |
+| [***bin(`i` :SYM, `x` :any)***](#3)                    | Return `x` mapped to a finite range (just return x). |
+| [***merge(`i` :SYM,`j` :SYM) :SYM***](#4)              | Combine two SYMs.                                    |
+| [***merges(`i` :SYM,`t` :tab) :tab***](#5)             | Merge a list of bins (for symbolic y-values).        |
+| [***dist(`i` :SYM, `x` :any,`y` :any)  :num***](#6)    | Return distance 0..1 between `x,y`.                  |
+| [***like(`i` :SYM,`x` :any,`prior` :num)  :num***](#7) | Return how much `x` might belong to `i`.             |
+| [***mid(`i` :SYM) :tab***](#8)                         | Return a columns' `mid`ddle (central tendency).      |
+| [***add(`i` :`SYM` : `x` :any, `n` :?int=1)***](#9)    | Add `n` count to `i.kept[n]`.                        |
 
 ```lua
 local all = require"all"
@@ -29,7 +29,8 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 ### Create
 
-[](#0)***SYM(`at` :?int=0, `txt` :?str="")  :SYM ***<br>
+> [](#0)
+***SYM(`at` :?int=0, `txt` :?str="")  :SYM***<br>
 Constructor.
 
 
@@ -42,7 +43,8 @@ local SYM = obj("SYM", function(i,at,txt)
   end)
 ```
 
-[](#1)***clone(`i` :SYM)  :SYM ***<br>
+> [](#1)
+***clone(`i` :SYM)  :SYM***<br>
 Return a class of the same structure.
 
 
@@ -52,7 +54,8 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 ```
 
 ### Discretize   
-[](#2)***bin(`i` :SYM, `x` :any)***<br>
+> [](#2)
+***bin(`i` :SYM, `x` :any)***<br>
 Return `x` mapped to a finite range (just return x).
 
 
@@ -60,7 +63,8 @@ Return `x` mapped to a finite range (just return x).
 function SYM.bin(i,x) return x end
 ```
 
-[](#3)***merge(`i` :SYM,`j` :SYM) :SYM***<br>
+> [](#3)
+***merge(`i` :SYM,`j` :SYM) :SYM***<br>
 Combine two SYMs.
 
 
@@ -73,7 +77,8 @@ function SYM.merge(i,j,     k)
   return k end
 ```
 
-[](#4)***merges(`i` :SYM,`t` :tab) :tab***<br>
+> [](#4)
+***merges(`i` :SYM,`t` :tab) :tab***<br>
 Merge a list of bins (for symbolic y-values).
 
 
@@ -83,7 +88,8 @@ function SYM.merges(i,t,...) return t end
 ```
 
 ### Distance
-[](#5)***dist(`i` :SYM, `x` :any,`y` :any)  :num***<br>
+> [](#5)
+***dist(`i` :SYM, `x` :any,`y` :any)  :num***<br>
 Return distance 0..1 between `x,y`.
 
 Assume max distance for missing values.
@@ -94,7 +100,8 @@ function SYM.dist(i,x,y)
 ```
 
 ### Likelihood  
-[](#6)***like(`i` :SYM,`x` :any,`prior` :num)  :num***<br>
+> [](#6)
+***like(`i` :SYM,`x` :any,`prior` :num)  :num***<br>
 Return how much `x` might belong to `i`.
 
 
@@ -114,7 +121,8 @@ function SYM.div(i,p)
   return ent end
 ```
 
-[](#7)***mid(`i` :SYM) :tab ***<br>
+> [](#7)
+***mid(`i` :SYM) :tab***<br>
 Return a columns' `mid`ddle (central tendency).
 
 
@@ -127,7 +135,8 @@ function SYM.mid(i,p)
 ```
 
 ### Update
-[](#8)***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>
+> [](#8)
+***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>
 Add `n` count to `i.kept[n]`.
 
 
