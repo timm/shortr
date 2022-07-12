@@ -17,7 +17,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 
 ### Create
 
-[](#0)
+> [](#0)
 ***SYM(`at` :?int=0, `txt` :?str="")  :SYM***<br>
 Constructor.
 
@@ -31,7 +31,7 @@ local SYM = obj("SYM", function(i,at,txt)
   end)
 ```
 
-[](#1)
+> [](#1)
 ***clone(`i` :SYM)  :SYM***<br>
 Return a class of the same structure.
 
@@ -42,7 +42,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 ```
 
 ### Discretize   
-[](#2)
+> [](#2)
 ***bin(`i` :SYM, `x` :any)***<br>
 Return `x` mapped to a finite range (just return x).
 
@@ -51,7 +51,7 @@ Return `x` mapped to a finite range (just return x).
 function SYM.bin(i,x) return x end
 ```
 
-[](#3)
+> [](#3)
 ***merge(`i` :SYM,`j` :SYM) :SYM***<br>
 Combine two SYMs.
 
@@ -65,7 +65,7 @@ function SYM.merge(i,j,     k)
   return k end
 ```
 
-[](#4)
+> [](#4)
 ***merges(`i` :SYM,`t` :tab) :tab***<br>
 Merge a list of bins (for symbolic y-values).
 
@@ -76,7 +76,7 @@ function SYM.merges(i,t,...) return t end
 ```
 
 ### Distance
-[](#5)
+> [](#5)
 ***dist(`i` :SYM, `x` :any,`y` :any)  :num***<br>
 Return distance 0..1 between `x,y`.
 
@@ -88,7 +88,7 @@ function SYM.dist(i,x,y)
 ```
 
 ### Likelihood  
-[](#6)
+> [](#6)
 ***like(`i` :SYM,`x` :any,`prior` :num)  :num***<br>
 Return how much `x` might belong to `i`.
 
@@ -109,7 +109,7 @@ function SYM.div(i,p)
   return ent end
 ```
 
-[](#7)
+> [](#7)
 ***mid(`i` :SYM) :tab***<br>
 Return a columns' `mid`ddle (central tendency).
 
@@ -123,7 +123,7 @@ function SYM.mid(i,p)
 ```
 
 ### Update
-[](#8)
+> [](#8)
 ***add(`i` :`SYM` : `x` :any, `n` :?int=1)***<br>
 Add `n` count to `i.kept[n]`.
 
