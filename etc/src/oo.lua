@@ -1,5 +1,8 @@
--- # OO
--- Misc utils
+-- # SHORTr.lua : less (but better) XAI
+-- <img align=right width=400 src=xai3.png> AI and XAI (explainable artificial intelligence) need not be hard. 
+-- E.g. here's a few hundred lines of LUA to search N items to find and 
+-- explain the best ones, using just log(N) evals.
+-- 
 -- This code starts with a help string (from which we extract our global settings)
 -- and ends with a library of demos (see the `go` functions at end of file). 
 -- In between there are the following classes 
@@ -8,7 +11,7 @@
 -- - SOME is a helper class for NUM that keeps a sample of the data.
 -- The general cycle is that data from disk is read into a ROWS, from which we 
 -- do some clustering (and each cluster is new ROWS object, containing a subset
--- of the data.
+-- of the data.<br clear=all>
 
 -- TABLE.OF.CONTENTS
 
