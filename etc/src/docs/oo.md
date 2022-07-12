@@ -14,8 +14,8 @@ This code uses the following classes.
 - ROWS hold many ROWs which are summarized in COLs.
 - COLs can be either SYMboliuc or NUMeric). 
 - Two helper classes are:
-  - SOME, that keeps a sample of the data.
-  - BIN, that tracks what goal variables are seen within some range.
+  - SOME: keeps a sample of the data.
+  - BIN:  tracks what goal variables are seen within some range.
 
 Data from disk is read into a ROWS, from which we 
 do some clustering (and each cluster is new ROWS object, containing a subset
