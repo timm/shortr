@@ -46,6 +46,7 @@ function obj(txt,base,  t,new,i)
 -- SYMboliuc or NUMeric). SOME is a helper class for NUM that keeps a sample of the data.
 local COL,ROW,ROWS   = obj"COL", obj"ROW", obj"ROWS"
 local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL) 
+
 -- ## Columns
 -- ### COL
 function COL:new(at,txt)
@@ -58,6 +59,9 @@ function COL:add(x,inc)
     inc = inc or 1
     self.n = self.n + inc
     self:add1(x,inc) end end
+
+function COL:dist1(x,y)
+  return x=="?" and y=="?" and 1 or self:dist1(x,y) end
 
 -- ### SOME
 local SOME=obj("SOME",COL)
@@ -75,7 +79,7 @@ function SOME:has()
   self.kept = self.ok and self.kept or sort(self.kept)
   self.ok=true
   return self.kept  end
- 
+
 -- ### NUM
 -- #### Creation
 local NUM=obj("NUM",COL)
