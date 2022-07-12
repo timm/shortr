@@ -33,8 +33,11 @@ Misc utils
 |Config||[***`help` :str***](#1)|Help text for this code.|
 |Config||[***`the` :table***](#2)|Config settings. Extracted from `help`.|
 |Names||[***obj(`txt` :str,`base` :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
-|Lib|Lint|[***rogues()***](#4)|Warn if our code introduced a rogue global.|
-|Lib|String2things|[***`the` :table***](#5)|Config settings. Extracted from `help`.|
+|Columns|COL|[***COL(`at` :?int=0, `txt` :?str="") : COL***](#4)|Superclass constructor for columns.|
+|Columns|COL|[***add(`x` :any, `inc` :?int=1)***](#5)|`inc` times repeat: add `x`|
+|Columns|COL|[***add(`x` :any, `y` :any)  :num***](#6)|Return distance. For missing values, assume max distance.|
+|Lib|Lint|[***rogues()***](#7)|Warn if our code introduced a rogue global.|
+|Lib|String2things|[***`the` :table***](#8)|Config settings. Extracted from `help`.|
 
 
 
@@ -112,6 +115,8 @@ local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL)
 
 ## Columns
 ### COL
+> ***COL(`at` :?int=0, `txt` :?str="") : COL***<a id=4></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Superclass constructor for columns. 
+
 
 ```lua
 function COL:new(at,txt)
@@ -119,12 +124,24 @@ function COL:new(at,txt)
   self.txt = txt or ""  
   self.n   = 0 end     
 
+```
+
+> ***add(`x` :any, `inc` :?int=1)***<a id=5></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: `inc` times repeat: add `x` 
+
+
+```lua
 function COL:add(x,inc)
   if x ~= "?" then 
     inc = inc or 1
     self.n = self.n + inc
     self:add1(x,inc) end end
 
+```
+
+> ***add(`x` :any, `y` :any)  :num***<a id=6></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Return distance. For missing values, assume max distance. 
+
+
+```lua
 function COL:dist1(x,y)
   return x=="?" and y=="?" and 1 or self:dist1(x,y) end
 
@@ -188,7 +205,7 @@ function NUM:add1(x,inc)
 
 ## Lib
 ### Lint
-> ***rogues()***<a id=4></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Warn if our code introduced a rogue global. 
+> ***rogues()***<a id=7></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Warn if our code introduced a rogue global. 
 
 
 ```lua
@@ -245,7 +262,7 @@ function lines(file, fun)
 
 ```
 
-> ***`the` :table***<a id=5></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Config settings. Extracted from `help`. 
+> ***`the` :table***<a id=8></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Config settings. Extracted from `help`. 
 
 
 ```lua
