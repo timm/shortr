@@ -43,12 +43,6 @@ Misc utils
 
 
 ## Config
-`b4` is a list of everything known before this code.  Used by `rogue()` (see below).
-
-```lua
-local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
-```
-
 > ***`help` :str***<a id=1></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Help text for this code. 
 
 
@@ -80,6 +74,12 @@ help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x)
 ```
 
 ## Names
+`b4` is a list of names known before this code. Used by `rogue()` (see below)
+
+```lua
+local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
+```
+
 By defining names before the code, the code can be written in any order.
 
 ```lua

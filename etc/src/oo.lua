@@ -4,8 +4,6 @@
 -- TABLE.OF.CONTENTS
 
 -- ## Config
--- `b4` is a list of everything known before this code.  Used by `rogue()` (see below).
-local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 -- > help :str > Help text for this code. <
 local help = [[
 
@@ -27,6 +25,8 @@ help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x)
           else the[k] = math.tointeger(x) or tonumber(x) or x end end )
 
 -- ## Names
+-- `b4` is a list of names known before this code. Used by `rogue()` (see below)
+local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 -- By defining names before the code, the code can be written in any order.
 local cat,chat,cli,csv,fmt,kap,lines,map
 local new,obj,per,push,R,rogues,same,sort,trim,words
