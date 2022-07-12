@@ -1,7 +1,12 @@
 -- # OO
 -- ## Config
+-- `b4` is a list of everything known before this code. 
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
-local the,help = {},[[
+-- > rogues() > Warn if our code introduced a rogue global. <
+local function rogues()
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
+-- > help :str > Help text for this code. <
+local help = [[
 
 oo.lua : stuff that is cool
 (c) 2022 Tim Menzies BSD-two-clause
@@ -14,18 +19,22 @@ oo.lua : stuff that is cool
  -s  seed   random number seed   = 10019
  -S  Some   some items to keep   = 256]]
 
+-- > the :table > Config settings. Extracted from `help`. <
 local function thing(x) 
   x = x:match"^%s*(.-)%s*$"
   if x=="true" then return true elseif x=="false" then return false end
   return math.tointeger(x) or tonumber(x) or x end 
 
+local the={}
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",
           function(k,x) the[k]=thing(x) end)
 
 -- ## Names
+-- By defining names before the code, the code can be written in any order.
 local cat,chat,cli,csv,fmt,kap,lines,map
 local new,obj,per,push,R,rogues,same,sort,trim,words
 
+-- > obj(txt:str,base:?class) :class > Make a class, perhaps as a kid of `base`.
 local _id=0
 function obj(txt,base,  t,new,i)
   function new(k,...) 
@@ -35,6 +44,10 @@ function obj(txt,base,  t,new,i)
   t.is, t.__index =  txt, t
 	return setmetatable(t,{__call=new}) end
 
+-- In this code, ROWS hold many ROWs which are summarized in COLs (which can be either
+-- SYMboliuc or NUMeric). SOME is a helper class for NUM that keeps a sample of the data.
+local COL,ROW,ROWS   = obj"COL", obj"ROW", obj"ROWS"
+local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",SYM) 
 -- ## Columns
 -- ### COL
 local COL=obj"COL"
@@ -110,9 +123,6 @@ function cli(t)
       then x = x=="false" and "true" or x=="true" and "false" or arg[n+1] end end
     t[key] = thing(x) end 
   return t end
-
-function rogues()
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 
 function same(x) return x end
 -- ### String2things
