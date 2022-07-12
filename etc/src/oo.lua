@@ -70,17 +70,19 @@ function COL:add(x,inc)
     self:add1(x,inc) end end
 
 -- ### SOME
-local SOME=obj("SOME",COL)
+-- #### Creation
 function SOME:new(...)
   COL.new(self, ...)
   self.kept,self.ok,self.max,self.n = {},true,the.Some,0  end
 
+-- #### Update
 function SOME:add1(x,inc)
   for j=1,inc do
     local a= self.kept
     if     #a  < self.max        then self.ok=false; push(a,x) 
     elseif R() < self.max/self.n then self.ok=false; a[R(#a)]=x end end end 
 
+-- #### Reports
 function SOME:has()
   self.kept = self.ok and self.kept or sort(self.kept)
   self.ok=true
