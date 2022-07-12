@@ -18,7 +18,7 @@ local chat,obj,push,the = all.chat, all.obj, all.push, all.the
 ### Create
 
 [](#0)
-***SYM(`at` :?int=0, `txt` :?str="")  :SYM ***<br>
+***SYM(`at` :?int=0, `txt` :?str="")  :SYM***<br>
 Constructor.
 
 
@@ -32,7 +32,7 @@ local SYM = obj("SYM", function(i,at,txt)
 ```
 
 [](#1)
-***clone(`i` :SYM)  :SYM ***<br>
+***clone(`i` :SYM)  :SYM***<br>
 Return a class of the same structure.
 
 
@@ -110,7 +110,7 @@ function SYM.div(i,p)
 ```
 
 [](#7)
-***mid(`i` :SYM) :tab ***<br>
+***mid(`i` :SYM) :tab***<br>
 Return a columns' `mid`ddle (central tendency).
 
 
