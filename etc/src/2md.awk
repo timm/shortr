@@ -8,7 +8,7 @@ $0 ~ COM         {now=0}
 $0 ~ HINT        {split($0,h,/[><]/) 
                   h[2]=gensub(/([A-Za-z0-9_]+)[ \t]*:/,"`\\1`:","g",h[2])
                   gsub(/:/," :",h[2])
-                  $0= "<a name>"n++"</a>\n> ***"trim(h[2])"***<br>\n"trim(h[3])"\n" 
+                  $0= "<a id="n++"></a>\n> ***"trim(h[2])"***<br>\n"trim(h[3])"\n" 
                   print(                 "|[***"trim(h[2])"***][#"n"]|"trim(h[3])"|")>>"/dev/stderr"
                  }
 $0 ~ /^[a-zA-Z_]/{now=1} 
