@@ -23,6 +23,14 @@ of the data). A decision tree is built that reports the difference between the
 better and worst classes (and that tree is nothing but tree of ROWS with a `kids` pointer
 to sub-ROWS).
 
+More technically, we do recursive random projections using the
+independent variables. At each level of the recursion, pairs of
+remote points are ranked (using the dependent variables) and all
+the data associated with the best/worst points are labeled `bests`
+or `rests`. Finally, supervised discretization and an entropy-based
+decision tree is then learned to distinguish the best `bests` from
+the worst `rests`.
+
 <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
 <a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow?logo=Checkmarx&logoColor=white"></a>
 <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a>
