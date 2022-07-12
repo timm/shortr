@@ -54,8 +54,7 @@ function SYM.clone(i) return SYM(i.at, i.txt) end
 ```
 
 ### Discretize   
-> [](#2)
-***bin(`i` :SYM, `x` :any)***<br>
+> ***bin(`i` :SYM, `x` :any)***<a name="2"></a><br>
 Return `x` mapped to a finite range (just return x).
 
 
