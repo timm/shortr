@@ -1,21 +1,16 @@
 # OO
+Misc utils
+
+[TOC]
+
 ## Config
-`b4` is a list of everything known before this code. 
+`b4` is a list of everything known before this code.  Used by `rogue()` (see below).
 
 ```lua
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 ```
 
-> ***rogues()***<a id=1></a><br>
-Warn if our code introduced a rogue global.
-
-
-```lua
-local function rogues()
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
-```
-
-> ***`help` :str***<a id=2></a><br>
+> ***`help` :str***<a id=1></a><br>
 Help text for this code.
 
 
@@ -35,7 +30,7 @@ oo.lua : stuff that is cool
 
 ```
 
-> ***`the` :table***<a id=3></a><br>
+> ***`the` :table***<a id=2></a><br>
 Config settings. Extracted from `help`.
 
 
@@ -60,7 +55,7 @@ local new,obj,per,push,R,rogues,same,sort,trim,words
 
 ```
 
-> ***obj(`txt` :str,`base` :?class)  :class***<a id=4></a><br>
+> ***obj(`txt` :str,`base` :?class)  :class***<a id=3></a><br>
 Make a class, perhaps as a kid of `base`.
 
 
@@ -159,6 +154,16 @@ function NUM:add1(x,inc)
 ```
 
 ## Lib
+### Lint
+> ***rogues()***<a id=4></a><br>
+Warn if our code introduced a rogue global.
+
+
+```lua
+local function rogues()
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
+```
+
 ### Maths
 
 ```lua

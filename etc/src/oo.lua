@@ -1,10 +1,11 @@
 -- # OO
+-- Misc utils
+
+-- [TOC]
+
 -- ## Config
--- `b4` is a list of everything known before this code. 
+-- `b4` is a list of everything known before this code.  Used by `rogue()` (see below).
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
--- > rogues() > Warn if our code introduced a rogue global. <
-local function rogues()
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 -- > help :str > Help text for this code. <
 local help = [[
 
@@ -103,6 +104,10 @@ function NUM:add1(x,inc)
   for j=1,inc do self.kept:add(x) end end 
 
 -- ## Lib
+-- ### Lint
+-- > rogues() > Warn if our code introduced a rogue global. <
+local function rogues()
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 -- ### Maths
 R=math.random
 -- ### Lists
