@@ -40,8 +40,7 @@ docs/%.html: %.lua  README.md ## make html
 
 docs/%.md : %.lua  README.md
 	echo $< 2>&1
-	cat README.md > /tmp/page
-	gawk -f 2md.awk $< >> /tmp/page 2> /tmp/toc
+	gawk -f 2md.awk $< > /tmp/page 2> /tmp/toc
 	gawk 'sub(/TABLE.OF.CONTENTS/,"",$$0) {system("cat /tmp/toc")} 1' /tmp/page > $@
 
 mds:   $(subst .lua,.md,docs/$(subst lua ,md docs/,$(LUAS))) ready ## make all htmls
