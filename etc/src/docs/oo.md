@@ -33,14 +33,10 @@ oo.lua : stuff that is cool
 
 
 ```lua
-local function thing(x) 
-  x = x:match"^%s*(.-)%s*$"
-  if x=="true" then return true elseif x=="false" then return false end
-  return math.tointeger(x) or tonumber(x) or x end 
-
 local the={}
-help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",
-          function(k,x) the[k]=thing(x) end)
+help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x) 
+          if x=="true" then the[k]=true elseif x=="false" then the[k]=false 
+          else the[k]=math.tointeger(x) or tonumber(x) or x end )
 
 ```
 
@@ -206,6 +202,17 @@ function lines(file, fun)
   while true do
     local line = io.read()
     if not line then return io.close(file) else fun(line) end end end
+
+```
+
+> ***`the` :table***<a id=5></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:triangular_flag_on_post: Config settings. Extracted from `help`.
+
+
+```lua
+function thing(x) 
+  x = x:match"^%s*(.-)%s*$"
+  if x=="true" then return true elseif x=="false" then return false end
+  return math.tointeger(x) or tonumber(x) or x end 
 
 
 function words(s,sep,fun,      t)
