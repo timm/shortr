@@ -56,6 +56,9 @@ oo.lua : stuff that is cool
  -S  Some   some items to keep   = 256]]
 
 -- > the :table > Config settings. Extracted from `help`. e.g. `the.cohen=.35`.  <
+-- Settings can be updated from the command line using the flags shown at left; e.g. `-c .2`
+-- updates `the.cohen`. To flip booleans, just mention them on the command line; e.g. `-h`
+-- will flip `the.help-false` to `the.help=true`.
 local the={}
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x) 
           if x=="true" then the[k]=true elseif x=="false" then the[k]=false 
