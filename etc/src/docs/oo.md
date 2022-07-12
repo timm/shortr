@@ -43,12 +43,13 @@ the worst `rests`.
 |:---------|:----|:--------|:---|:----|
 |Config |  |  | [***`help` :str***](#1)|Help text for this code.|
 | |  |  | [***`the` :table***](#2)|Config settings. Extracted from `help`. e.g. `the.cohen=.35`.|
-|Names |  |  | [***obj(`txt` :str,`base` :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
-|Columns | COL | Create | [***COL(`at` :?int=0, `txt` :?str="") : COL***](#4)|Superclass constructor for columns.|
-| |  | Reports | [***dist(`x` :any, `y` :any)  :num***](#5)|Return distance. For missing values, assume max distance.|
-| |  | Update | [***add(`x` :any, `inc` :?int=1)***](#6)|`inc` times repeat: add `x`|
-|Lib | Lint | Update | [***rogues()***](#7)|Warn if our code introduced a rogue global.|
-| | String2things |  | [***`the` :table***](#8)|Config settings. Extracted from `help`.|
+| |  |  | [***cli(`the` :table) :the***](#3)|Updates settings from the command line.|
+|Names |  |  | [***obj(`txt` :str,`base` :?class)  :class***](#4)|Make a class, perhaps as a kid of `base`.|
+|Columns | COL | Create | [***COL(`at` :?int=0, `txt` :?str="") : COL***](#5)|Superclass constructor for columns.|
+| |  | Reports | [***dist(`x` :any, `y` :any)  :num***](#6)|Return distance. For missing values, assume max distance.|
+| |  | Update | [***add(`x` :any, `inc` :?int=1)***](#7)|`inc` times repeat: add `x`|
+|Lib | Lint | Update | [***rogues()***](#8)|Warn if our code introduced a rogue global.|
+| | String2things |  | [***`the` :table***](#9)|Config settings. Extracted from `help`.|
 
 
 
@@ -75,15 +76,29 @@ oo.lua : stuff that is cool
 
 > ***`the` :table***<a id=2></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Config settings. Extracted from `help`. e.g. `the.cohen=.35`. 
 
-Settings can be updated from the command line using the flags shown at left; e.g. `-c .2`
-updates `the.cohen`. To flip booleans, just mention them on the command line; e.g. `-h`
-will flip `the.help-false` to `the.help=true`.
 
 ```lua
 local the={}
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x) 
           if x=="true" then the[k]=true elseif x=="false" then the[k]=false 
           else the[k] = math.tointeger(x) or tonumber(x) or x end end )
+
+```
+
+> ***cli(`the` :table) :the***<a id=3></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Updates settings from the command line. 
+
+e.g. `-c .2` -- updates `the.cohen`. To flip booleans, just mention them 
+on the command line; e.g. `-h` -- will flip `the.help-false` to `the.help=true`.
+
+```lua
+local function cli(t)
+  for key,x in pairs(t) do 
+    x = tostring(x)
+    for n,flag in ipairs(arg) do 
+      if   flag=="-"..key:sub(1,1) 
+      then x = x=="false" and "true" or x=="true" and "false" or arg[n+1] end end
+    t[key] = thing(x) end 
+  return t end
 
 ```
 
@@ -97,12 +112,12 @@ local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 By defining names before the code, the code can be written in any order.
 
 ```lua
-local cat,chat,cli,csv,fmt,kap,lines,map
+local cat,chat,csv,fmt,kap,lines,map
 local new,obj,per,push,R,rogues,same,sort,trim,words
 
 ```
 
-> ***obj(`txt` :str,`base` :?class)  :class***<a id=3></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Make a class, perhaps as a kid of `base`. 
+> ***obj(`txt` :str,`base` :?class)  :class***<a id=4></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Make a class, perhaps as a kid of `base`. 
 
 Instances have a unique `id` and use the `cat` function for pretty printing.
 
@@ -124,7 +139,7 @@ local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL)
 ## Columns
 ### COL
 #### Create
-> ***COL(`at` :?int=0, `txt` :?str="") : COL***<a id=4></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Superclass constructor for columns. 
+> ***COL(`at` :?int=0, `txt` :?str="") : COL***<a id=5></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Superclass constructor for columns. 
 
 
 ```lua
@@ -136,7 +151,7 @@ function COL:new(at,txt)
 ```
 
 #### Reports
-> ***dist(`x` :any, `y` :any)  :num***<a id=5></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Return distance. For missing values, assume max distance. 
+> ***dist(`x` :any, `y` :any)  :num***<a id=6></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Return distance. For missing values, assume max distance. 
 
 
 ```lua
@@ -146,7 +161,7 @@ function COL:dist(x,y)
 ```
 
 #### Update
-> ***add(`x` :any, `inc` :?int=1)***<a id=6></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: `inc` times repeat: add `x` 
+> ***add(`x` :any, `inc` :?int=1)***<a id=7></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: `inc` times repeat: add `x` 
 
 
 ```lua
@@ -226,7 +241,7 @@ function NUM:add1(x,inc)
 
 ## Lib
 ### Lint
-> ***rogues()***<a id=7></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Warn if our code introduced a rogue global. 
+> ***rogues()***<a id=8></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Warn if our code introduced a rogue global. 
 
 
 ```lua
@@ -256,15 +271,6 @@ function per(t,p)     p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ### Misc
 
 ```lua
-function cli(t)
-  for key,x in pairs(t) do 
-    x = tostring(x)
-    for n,flag in ipairs(arg) do 
-      if   flag=="-"..key:sub(1,1) 
-      then x = x=="false" and "true" or x=="true" and "false" or arg[n+1] end end
-    t[key] = thing(x) end 
-  return t end
-
 function same(x) return x end
 ```
 
@@ -283,7 +289,7 @@ function lines(file, fun)
 
 ```
 
-> ***`the` :table***<a id=8></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Config settings. Extracted from `help`. 
+> ***`the` :table***<a id=9></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Config settings. Extracted from `help`. 
 
 
 ```lua

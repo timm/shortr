@@ -56,19 +56,28 @@ oo.lua : stuff that is cool
  -S  Some   some items to keep   = 256]]
 
 -- > the :table > Config settings. Extracted from `help`. e.g. `the.cohen=.35`.  <
--- Settings can be updated from the command line using the flags shown at left; e.g. `-c .2`
--- updates `the.cohen`. To flip booleans, just mention them on the command line; e.g. `-h`
--- will flip `the.help-false` to `the.help=true`.
 local the={}
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x) 
           if x=="true" then the[k]=true elseif x=="false" then the[k]=false 
           else the[k] = math.tointeger(x) or tonumber(x) or x end end )
 
+-- > cli(the:table):the > Updates settings from the command line. <
+-- e.g. `-c .2` -- updates `the.cohen`. To flip booleans, just mention them 
+-- on the command line; e.g. `-h` -- will flip `the.help-false` to `the.help=true`.
+local function cli(t)
+  for key,x in pairs(t) do 
+    x = tostring(x)
+    for n,flag in ipairs(arg) do 
+      if   flag=="-"..key:sub(1,1) 
+      then x = x=="false" and "true" or x=="true" and "false" or arg[n+1] end end
+    t[key] = thing(x) end 
+  return t end
+
 -- ## Names
 -- `b4` is a list of names known before this code. Used by `rogue()` (see below)
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 -- By defining names before the code, the code can be written in any order.
-local cat,chat,cli,csv,fmt,kap,lines,map
+local cat,chat,csv,fmt,kap,lines,map
 local new,obj,per,push,R,rogues,same,sort,trim,words
 
 -- > obj(txt:str,base:?class) :class > Make a class, perhaps as a kid of `base`.
@@ -166,15 +175,6 @@ function per(t,p)     p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 
 
 -- ### Misc
-function cli(t)
-  for key,x in pairs(t) do 
-    x = tostring(x)
-    for n,flag in ipairs(arg) do 
-      if   flag=="-"..key:sub(1,1) 
-      then x = x=="false" and "true" or x=="true" and "false" or arg[n+1] end end
-    t[key] = thing(x) end 
-  return t end
-
 function same(x) return x end
 -- ### String2things
 
