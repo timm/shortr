@@ -5,8 +5,9 @@
 
 -- This code starts with a help string (from which we extract our global settings)
 -- and ends with a library of demos (see the `go` functions at end of file).  
--- - Demos can be run separately or (using `-g all`) all together.  
--- - To handle regression tests, we report back to the operating system 
+-- - Each setting can be (optionally) updated by a command-line flag.
+-- - Demos can be run separately or  all at once (using `-g all`).
+--   To handle regression tests, we report back to the operating system 
 --   the failures seen when the demos run.
 
 -- This code uses the following classes.
