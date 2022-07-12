@@ -1,5 +1,11 @@
 -- # OO
 -- Misc utils
+-- This code starts with a help string (from which we extract our global settings)
+-- and ends with a library of demos (see the `go` functions at end of file). 
+-- In between there are classes 
+-- - ROWS hold many ROWs which are summarized in COLs.
+-- - COLs can be either SYMboliuc or NUMeric). 
+-- - SOME is a helper class for NUM that keeps a sample of the data.
 
 -- TABLE.OF.CONTENTS
 
@@ -42,8 +48,6 @@ function obj(txt,base,  t,new,i)
   t.is, t.__index =  txt, t
 	return setmetatable(t,{__call=new}) end
 
--- In this code, ROWS hold many ROWs which are summarized in COLs (which can be either
--- SYMboliuc or NUMeric). SOME is a helper class for NUM that keeps a sample of the data.
 local COL,ROW,ROWS   = obj"COL", obj"ROW", obj"ROWS"
 local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL) 
 
