@@ -3,7 +3,7 @@ BEGIN {LANG="lua"
        HINT = COM ">"
        split("",tmp,"")
        print "\n|Category|Class||Protocol|What|Notes|" >> "/dev/stderr"
-       print "|:---|:----|------|:-------|:---|:----|" >> "/dev/stderr"
+       print "|:---------|:----|:--------|:---|:----|" >> "/dev/stderr"
 }
                   { if ($0 ~ (COM "## ")) Category = $3 
                     if ($0 ~ (COM "### ")) Class = $3 
