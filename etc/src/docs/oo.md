@@ -4,18 +4,27 @@ E.g. here's a few hundred lines of LUA to search N items to find and
 explain the best ones, using just log(N) evals.
 
 This code starts with a help string (from which we extract our global settings)
-and ends with a library of demos (see the `go` functions at end of file). 
-In between there are the following classes 
+and ends with a library of demos (see the `go` functions at end of file).  
+- Demos can be run separately or (using `-g all`) all together.  
+- To handle regression tests, we report back to the operating system 
+  the failures seen when the demos run.
+
+This code uses the following classes.
 - ROWS hold many ROWs which are summarized in COLs.
 - COLs can be either SYMboliuc or NUMeric). 
-- SOME is a helper class for NUM that keeps a sample of the data.
+- Two helper classes are:
+  - SOME, that keeps a sample of the data.
+  - BIN, that tracks what goal variables are seen within some range.
+
 The general cycle is that data from disk is read into a ROWS, from which we 
 do some clustering (and each cluster is new ROWS object, containing a subset
-of the data.
+of the data). A decision tree is built that reports the difference between the 
+better and worst classes (and that tree is nothing but tree of ROWS with a `kids` pointer
+to sub-ROWS).
 
 <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
 <a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow?logo=Checkmarx&logoColor=white"></a>
-<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br>
+<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a>
 <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a>
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 <br clear=all>
