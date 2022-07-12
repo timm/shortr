@@ -28,7 +28,7 @@ log(N) evals.
 Misc utils
 
 
-|Category|Class||Protocol|What|Notes|
+|Category|Class|Protocol|What|Notes|
 |:---------|:----|:--------|:---|:----|
 |Config |  |  | [***`help` :str***](#1)|Help text for this code.|
 |Config |  |  | [***`the` :table***](#2)|Config settings. Extracted from `help`.|
