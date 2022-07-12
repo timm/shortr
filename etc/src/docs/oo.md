@@ -33,7 +33,7 @@ Misc utils
 |Config |  |  | [***`help` :str***](#1)|Help text for this code.|
 | |  |  | [***`the` :table***](#2)|Config settings. Extracted from `help`.|
 |Names |  |  | [***obj(`txt` :str,`base` :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
-|Columns | COL | Creation | [***COL(`at` :?int=0, `txt` :?str="") : COL***](#4)|Superclass constructor for columns.|
+|Columns | COL | Create | [***COL(`at` :?int=0, `txt` :?str="") : COL***](#4)|Superclass constructor for columns.|
 | |  | Reports | [***dist(`x` :any, `y` :any)  :num***](#5)|Return distance. For missing values, assume max distance.|
 | |  | Update | [***add(`x` :any, `inc` :?int=1)***](#6)|`inc` times repeat: add `x`|
 |Lib | Lint | Update | [***rogues()***](#7)|Warn if our code introduced a rogue global.|
@@ -115,7 +115,7 @@ local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL)
 
 ## Columns
 ### COL
-#### Creation
+#### Create
 > ***COL(`at` :?int=0, `txt` :?str="") : COL***<a id=4></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Superclass constructor for columns. 
 
 
@@ -151,7 +151,7 @@ function COL:add(x,inc)
 ```
 
 ### SOME
-#### Creation
+#### Create
 
 ```lua
 function SOME:new(...)
@@ -182,7 +182,7 @@ function SOME:has()
 ```
 
 ### NUM
-#### Creation
+#### Create
 
 ```lua
 local NUM=obj("NUM",COL)

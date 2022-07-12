@@ -49,7 +49,7 @@ local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL)
 
 -- ## Columns
 -- ### COL
--- #### Creation
+-- #### Create
 -- > COL(at:?int=0, txt:?str=""): COL > Superclass constructor for columns. <
 function COL:new(at,txt)
   self.at  = at or 0     
@@ -70,7 +70,7 @@ function COL:add(x,inc)
     self:add1(x,inc) end end
 
 -- ### SOME
--- #### Creation
+-- #### Create
 function SOME:new(...)
   COL.new(self, ...)
   self.kept,self.ok,self.max,self.n = {},true,the.Some,0  end
@@ -89,7 +89,7 @@ function SOME:has()
   return self.kept  end
 
 -- ### NUM
--- #### Creation
+-- #### Create
 local NUM=obj("NUM",COL)
 function NUM:new(...)
   COL.new(self, ...)
