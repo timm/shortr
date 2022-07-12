@@ -11,15 +11,14 @@ local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 Warn if our code introduced a rogue global.
 
 
-
 ```lua
 local function rogues()
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end```
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
+```
 
 > 
 ***`help` :str***<br>
 Help text for this code.
-
 
 
 ```lua
@@ -35,12 +34,12 @@ oo.lua : stuff that is cool
  -m  min    size of small        = .5
  -s  seed   random number seed   = 10019
  -S  Some   some items to keep   = 256]]
+
 ```
 
 > 
 ***`the` :table***<br>
 Config settings. Extracted from `help`.
-
 
 
 ```lua
@@ -52,6 +51,7 @@ local function thing(x)
 local the={}
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",
           function(k,x) the[k]=thing(x) end)
+
 ```
 
 ## Names
@@ -60,12 +60,12 @@ By defining names before the code, the code can be written in any order.
 ```lua
 local cat,chat,cli,csv,fmt,kap,lines,map
 local new,obj,per,push,R,rogues,same,sort,trim,words
+
 ```
 
 > 
 ***obj(`txt` :str,`base` :?class)  :class***<br>
 Make a class, perhaps as a kid of `base`.
-
 
 
 ```lua
@@ -77,6 +77,7 @@ function obj(txt,base,  t,new,i)
   for k,v in pairs(base or {}) do t[k] = v end
   t.is, t.__index =  txt, t
 	return setmetatable(t,{__call=new}) end
+
 ```
 
 In this code, ROWS hold many ROWs which are summarized in COLs (which can be either
@@ -84,7 +85,8 @@ SYMboliuc or NUMeric). SOME is a helper class for NUM that keeps a sample of the
 
 ```lua
 local COL,ROW,ROWS   = obj"COL", obj"ROW", obj"ROWS"
-local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",SYM) ```
+local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",SYM) 
+```
 
 ## Columns
 ### COL
@@ -101,10 +103,10 @@ function COL:add(x,inc)
     inc = inc or 1
     self.n = self.n + inc
     self:add1(x,inc) end end
+
 ```
 
 ### SOME
-
 
 ```lua
 local SOME=obj("SOME",COL)
@@ -122,7 +124,8 @@ function SOME:has()
   self.kept = self.ok and self.kept or sort(self.kept)
   self.ok=true
   return self.kept  end
- ```
+ 
+```
 
 ### NUM
 #### Creation
@@ -133,10 +136,10 @@ function NUM:new(...)
   COL.new(self, ...)
   self.kept = SOME()          
   self.w = self.txt:find"-$" and -1 or 1 end
+
 ```
 
 #### Report
-
 
 ```lua
 function NUM.div(i) 
@@ -148,14 +151,15 @@ function NUM.mid(i)
 function NUM:norm(x)
   local a = self.kept:has()
   return (a[#a]-a[1])<1E-9 or (x-a[1])/(a[#a]-a[1]) end
+
 ```
 
 #### Update
 
-
 ```lua
 function NUM:add1(x,inc)
   for j=1,inc do self.kept:add(x) end end 
+
 ```
 
 ## Lib
@@ -167,7 +171,6 @@ R=math.random
 
 ### Lists
 
-
 ```lua
 function same(x)      return x end
 function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
@@ -176,10 +179,10 @@ function sort(t,f)    table.sort(t,f); return t end
 function push(t,x)    t[1+#t]=x; return x end
 function per(t,p)     p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 
+
 ```
 
 ### Misc
-
 
 ```lua
 function cli(t)
@@ -191,7 +194,8 @@ function cli(t)
     t[key] = thing(x) end 
   return t end
 
-function same(x) return x end```
+function same(x) return x end
+```
 
 ### String2things
 
@@ -210,10 +214,10 @@ function lines(file, fun)
 function words(s,sep,fun,      t)
   fun = fun or same
   t={};for x in s:gmatch(fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
+
 ```
 
 ### Thing2string
-
 
 ```lua
 function chat(t) print(cat(t)); return t end
@@ -226,10 +230,10 @@ function cat(t,   u,pub)
   return (t.is or "").."{"..table.concat(u," ").."}"  end
 
 fmt=string.format
+
 ```
 
 ### Testing
-
 
 ```lua
 local go,fails={},0
@@ -251,14 +255,15 @@ function go.some( n)
   chat(n)
   for j=1,10^3 do n:add(j) end
   chat(n.kept:has()) return true end
+
 ```
 
 ## Start
-
 
 ```lua
 the=cli(the)
 if the.help then print(help) elseif go[the.go] then go[the.go]() end
 rogues()
-os.exit(fails)```
+os.exit(fails)
+```
 

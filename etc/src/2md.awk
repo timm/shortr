@@ -23,8 +23,7 @@ END {dump(now,tmp)
 
 function dump(what,a,     s,sep,f) {
   for( f in a ) {s=s sep a[f]; sep="\n"}
-  if(1==length(a)) s=s"\n"
-  print(what ? "\n```"LANG"\n"s"```\n" : s)
+  print(what ? "\n```"LANG"\n"s"\n```\n" : s)
   split("",a,"") }
 
 function trim(s)   {
