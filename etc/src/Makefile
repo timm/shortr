@@ -38,14 +38,15 @@ docs/%.html: %.lua  README.md ## make html
 	rm tmp.lua 
 	cp $R/etc/docco.css docs/docco.css
 
-docs/%.md : %.lua  
+docs/%.md : %.lua  README.md
 	echo $< 2>&1
-	gawk -f 2md.awk $< > /tmp/page 2> /tmp/toc
+	cat README.md > /tmp/page
+	gawk -f 2md.awk $< >> /tmp/page 2> /tmp/toc
 	gawk 'sub(/TABLE.OF.CONTENTS/,"",$$0) {system("cat /tmp/toc")} 1' /tmp/page > $@
 
 mds:   $(subst .lua,.md,docs/$(subst lua ,md docs/,$(LUAS))) ready ## make all htmls
 
-docs/%.md: %.lua  README.md ## make mds
+xdocs/%.md: %.lua  README.md ## make mds
 	echo $< 2>&1
 	(cat README.md ; lua go.lua -f $< -g CHUNKS ) > $@
 
