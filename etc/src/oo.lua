@@ -1,5 +1,5 @@
 -- # SHORTr.lua : less (but better) XAI
--- <img align=right width=500 src="xai4.jpeg"> AI and XAI (explainable artificial intelligence) need not be hard. 
+-- <img align=right width=400 src="xai4.jpeg"> AI and XAI (explainable artificial intelligence) need not be hard. 
 -- E.g. here's a few hundred lines of LUA to search N items to find and 
 -- explain the best ones, using just log(N) evals.
 
@@ -12,7 +12,7 @@
 
 -- This code uses the following classes.
 -- - ROWS hold many ROWs which are summarized in COLs.
--- - COLs can be either SYMboliuc or NUMeric). 
+-- - COLs can be either SYMbolic or NUMeric). 
 -- - Two helper classes are:
 --   - SOME: keeps a sample of data from a NUMeric column.
 --   - BIN:  tracks what goal variables are seen within some range.
@@ -23,13 +23,14 @@
 -- better and worst classes (and that tree is nothing but tree of ROWS with a `kids` pointer
 -- to sub-ROWS).
 
--- More technically, we do recursive random projections using the
--- independent variables. At each level of the recursion, pairs of
+-- More technically, using the independent variables, we do recursive random projections using 
+-- [FASTMAP](https://www.ijcai.org/Proceedings/2018/0198.pdf#page=2) and [Aha's heterogeneous distance measures](https://link.springer.com/content/pdf/10.1007/BF00153759.pdf#page=6). 
+-- At each level of the recursion, pairs of
 -- remote points are ranked (using the dependent variables) and all
 -- the data associated with the best/worst points are labeled `bests`
--- or `rests`. Finally, supervised discretization and an entropy-based
--- decision tree is then learned to distinguish the best `bests` from
--- the worst `rests`.
+-- or `rests`.  Supervised discretization and an entropy-based
+-- decision tree is then used to distinguish the best `bests` from
+-- the worst `rests`. Note that all this access the dependent variables just _log2(N)_ times.
 
 -- <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
 -- <a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow?logo=Checkmarx&logoColor=white"></a>
