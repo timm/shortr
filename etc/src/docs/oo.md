@@ -1,5 +1,5 @@
 # SHORTr.lua : less (but better) XAI
-<img align=right width=400 src="xai4.jpeg"> AI and XAI (explainable artificial intelligence) need not be hard. 
+<img align=right width=500 src="xai4.jpeg"> AI and XAI (explainable artificial intelligence) need not be hard. 
 E.g. here's a few hundred lines of LUA to search N items to find and 
 explain the best ones, using just log(N) evals.
 
