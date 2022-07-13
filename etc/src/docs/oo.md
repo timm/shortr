@@ -1,5 +1,5 @@
 # SHORTr.lua : less (but better) XAI
-<img align=right width=400 src="shortr.png"> AI and XAI (explainable artificial intelligence) need not be hard. 
+<img align=right width=400 src="xai4.jpeg"> AI and XAI (explainable artificial intelligence) need not be hard. 
 E.g. here's a few hundred lines of LUA to search N items to find and 
 explain the best ones, using just log(N) evals.
 
@@ -88,7 +88,7 @@ help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x)
 > ***cli(`the` :table) :the***<a id=3></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Updates settings from the command line. 
 
 e.g. `-c .2` -- updates `the.cohen`. To flip booleans, just mention them 
-on the command line; e.g. `-h` -- will flip `the.help-false` to `the.help=true`.
+on the command line; e.g. `-h` will flip `the.help=false` to `the.help=true`.
 
 ```lua
 local function cli(t)
