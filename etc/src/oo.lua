@@ -58,11 +58,14 @@ oo.lua : stuff that is cool
 
 -- > the :table > Config settings. Extracted from `help`. e.g. `the.cohen=.35`.  <
 local the={}
-help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x) 
-          if x=="true" then the[k]=true elseif x=="false" then the[k]=false 
-          else the[k] = math.tointeger(x) or tonumber(x) or x end end )
+local function thing(x) 
+  x = x:match"^%s*(.-)%s*$"
+  if x=="true" then return true elseif x=="false" then return false end
+  return math.tointeger(x) or tonumber(x) or x end 
 
--- > cli(the:table):the > Updates settings from the command line. <
+help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",function(k,x) the[k]=thing(x) end)
+
+-- > cli(the:tab):tab > Updates settings from the command line. <
 -- e.g. `-c .2` -- updates `the.cohen`. To flip booleans, just mention them 
 -- on the command line; e.g. `-h` will flip `the.help=false` to `the.help=true`.
 local function cli(t)

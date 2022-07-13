@@ -44,7 +44,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 |:---------|:----|:--------|:---|:----|
 |Config |  |  | [***`help` :str***](#1)|Help text for this code.|
 | |  |  | [***`the` :table***](#2)|Config settings. Extracted from `help`. e.g. `the.cohen=.35`.|
-| |  |  | [***cli(`the` :table) :the***](#3)|Updates settings from the command line.|
+| |  |  | [***cli(`the` :tab) :tab***](#3)|Updates settings from the command line.|
 |Names |  |  | [***obj(`txt` :str,`base` :?class)  :class***](#4)|Make a class, perhaps as a kid of `base`.|
 |Columns | COL | Create | [***COL(`at` :?int=0, `txt` :?str="") : COL***](#5)|Superclass constructor for columns.|
 | |  | Reports | [***dist(`x` :any, `y` :any)  :num***](#6)|Return distance. For missing values, assume max distance.|
@@ -80,13 +80,16 @@ oo.lua : stuff that is cool
 
 ```lua
 local the={}
-help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)", function(k,x) 
-          if x=="true" then the[k]=true elseif x=="false" then the[k]=false 
-          else the[k] = math.tointeger(x) or tonumber(x) or x end end )
+local function thing(x) 
+  x = x:match"^%s*(.-)%s*$"
+  if x=="true" then return true elseif x=="false" then return false end
+  return math.tointeger(x) or tonumber(x) or x end 
+
+help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",function(k,x) the[k]=thing(x) end)
 
 ```
 
-> ***cli(`the` :table) :the***<a id=3></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Updates settings from the command line. 
+> ***cli(`the` :tab) :tab***<a id=3></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:arrow_forward: Updates settings from the command line. 
 
 e.g. `-c .2` -- updates `the.cohen`. To flip booleans, just mention them 
 on the command line; e.g. `-h` will flip `the.help=false` to `the.help=true`.
