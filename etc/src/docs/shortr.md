@@ -284,6 +284,7 @@ Summarize a sequence of numbers.
 
 **RESPONSIBILITIES** : 
 - Same as COL and knows if we want to minimize or maximize these values (see `w`).
+
 **COLLOBERATIONS** : 
 - Uses SOME to keep a sample of the data seen.
 
