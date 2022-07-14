@@ -44,6 +44,7 @@
 -- TABLE.OF.CONTENTS
 
 -- ## Config
+-- <img align=right width=150 src="cdown.png">
 -- -> help :str -> Help text for this code. 
 local help = [[
 
@@ -98,6 +99,7 @@ local function cli(t)
   return t end
 
 -- ## Names
+-- <img align=right width=150 src="ndown.png">
 -- `b4` is a list of names known before this code. Used by `rogue()` (see below)
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 -- By defining names before the code, the code can be written in any order.

@@ -71,6 +71,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 
 
 ## Config
+<img align=right width=150 src="cdown.png">
 > ***help  :str***<a id=1></a><br>Help text for this code. 
 
 
@@ -140,6 +141,7 @@ local function cli(t)
 ```
 
 ## Names
+<img align=right width=150 src="ndown.png">
 `b4` is a list of names known before this code. Used by `rogue()` (see below)
 
 ```lua
