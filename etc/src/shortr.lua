@@ -338,7 +338,7 @@ function SYM:dist(x,y)
   return  (x=="?" or y=="?")  and 1 or x==y and 0 or 1 end
 
 -- #### Likelihood  
--- -> like(i:SYM,x:any,prior:num) :num -> Return how much `x` might belong to `i`. 
+-- -> like(x:any,prior:num) :num -> Return how much `x` might belong to `i`. 
 function SYM:ike(x,prior)
    return ((self.kept[x] or 0)+the.m*prior) / (self.n+the.m) end
 
@@ -357,7 +357,7 @@ function SYM:mid()
   return mode end
 
 -- #### Update
--- -> add(SYM: x:any, n:?int=1) -> Add `n` count to `self.kept[n]`. 
+-- -> add(x:any, n:?int=1) -> Add `n` count to `self.kept[n]`. 
 function SYM:add1(x,n)
   self.kept[x] = n  + (self.kept[x] or 0) end 
 

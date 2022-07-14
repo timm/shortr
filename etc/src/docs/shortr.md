@@ -69,9 +69,9 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  |  | [***merge(j :SYM) :SYM***](#23)|Combine self with `j`.|
 | |  |  | [***merges(i :SYM,t :tab) :tab***](#24)|Merge a list of bins (for symbolic y-values).|
 | |  | Distance | [***dist(x :any,y :any)  :num***](#25)|Return distance 0..1 between `x,y`.|
-| |  | Likelihood | [***like(i :SYM,x :any,prior :num)  :num***](#26)|Return how much `x` might belong to `i`.|
+| |  | Likelihood | [***like(x :any,prior :num)  :num***](#26)|Return how much `x` might belong to `i`.|
 | |  | Report | [***div() :tab***](#27)|Return `div`ersity of a column (its entropy).|
-| |  | Update | [***add(SYM : x :any, n :?int=1)***](#28)|Add `n` count to `self.kept[n]`.|
+| |  | Update | [***add(x :any, n :?int=1)***](#28)|Add `n` count to `self.kept[n]`.|
 |Lib | Maths |  | [***big :num***](#29)|Return `math.huge`|
 | |  |  | [***R(n :?num=1)***](#30)|If `n` missing return a random number 0..1. Else return 1..`n`.|
 | | Lists |  | [***kap(t :tab,f :fun) :tab***](#31)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
@@ -518,7 +518,7 @@ function SYM:dist(x,y)
 ```
 
 #### Likelihood  
-> ***like(i :SYM,x :any,prior :num)  :num***<a id=26></a><br>Return how much `x` might belong to `i`. 
+> ***like(x :any,prior :num)  :num***<a id=26></a><br>Return how much `x` might belong to `i`. 
 
 
 ```lua
@@ -551,7 +551,7 @@ function SYM:mid()
 ```
 
 #### Update
-> ***add(SYM : x :any, n :?int=1)***<a id=28></a><br>Add `n` count to `self.kept[n]`. 
+> ***add(x :any, n :?int=1)***<a id=28></a><br>Add `n` count to `self.kept[n]`. 
 
 
 ```lua
