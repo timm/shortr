@@ -171,7 +171,7 @@ function SOME:new(...)
   self.kept, self.ok, self.max = {}, true, the.Some end
 
 -- #### Update
--- -> add(i:SOME: x:num) -> If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random). Otherwise, just add.
+-- -> add(x:num) -> If full then at odds `self.some/self.n`, keep `x`(replacing some older item, at random). Otherwise, just add.
 function SOME:add1(x,inc)
   for j=1,inc do
     local a= self.kept
@@ -289,11 +289,11 @@ function NUM:like(x,...)
 -- TL;DR, to make statisticians happy, do not
 -- divide by 2, but 2*1.28 = 2.56.
 function NUM.div(i) 
-  local a=i.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
+  local a=self.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
 
 -- -> mid(i:NUM)) :tab -> Return a columns' `mid`ddle 
 function NUM.mid(i) 
-  local a=i.kept:has(); return per(a,.5) end
+  local a=self.kept:has(); return per(a,.5) end
 
 -- -> norm(i:NUM, x:num) :num -> Normalize `x` 0..1 for lo..hi 
 function NUM:norm(x)
@@ -357,7 +357,7 @@ function SYM:mid()
   return mode end
 
 -- ### Update
--- -> add(SYM: x:any, n:?int=1) -> Add `n` count to `i.kept[n]`. 
+-- -> add(SYM: x:any, n:?int=1) -> Add `n` count to `self.kept[n]`. 
 function SYM:add1(x,n)
   self.kept[x] = n  + (self.kept[x] or 0) end 
 

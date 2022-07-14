@@ -53,7 +53,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  | Query | [***dist(x :any, y :any)  :num***](#7)|Return distance. For missing values, assume max distance.<|
 | |  | Update | [***add(x :any, inc :?int=1)***](#8)|`inc` times repeat: add `x`|
 | | SOME | Create | [***SOME(at?int=0, txt :?str="") : SOME***](#9)|Constructor.|
-| |  | Update | [***add(i :SOME : x :num)***](#10)|If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random). Otherwise, just add.|
+| |  | Update | [***add(x :num)***](#10)|If full then at odds `self.some/self.n`, keep `x`(replacing some older item, at random). Otherwise, just add.|
 | |  | Query | [***has(i :SOME) :tab***](#11)|Ensure contents are sorted. Return those contents.|
 | | NUM | Create | [***NUM(at :?num=0, txt :?str="")  :NUM***](#12)|Constructor.|
 | |  | Discretize | [***bin(x :any)***](#13)|Return `x` mapped to a finite number of bins|
@@ -71,7 +71,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | | Distance |  | [***dist(x :any,y :any)  :num***](#25)|Return distance 0..1 between `x,y`.|
 | | Likelihood |  | [***like(i :SYM,x :any,prior :num)  :num***](#26)|Return how much `x` might belong to `i`.|
 | | Report |  | [***div() :tab***](#27)|Return `div`ersity of a column (its entropy).|
-| | Update |  | [***add(SYM : x :any, n :?int=1)***](#28)|Add `n` count to `i.kept[n]`.|
+| | Update |  | [***add(SYM : x :any, n :?int=1)***](#28)|Add `n` count to `self.kept[n]`.|
 |Lib | Maths |  | [***big :num***](#29)|Return `math.huge`|
 | |  |  | [***R(n :?num=1)***](#30)|If `n` missing return a random number 0..1. Else return 1..`n`.|
 | | Lists |  | [***kap(t :tab,f :fun) :tab***](#31)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
@@ -267,7 +267,7 @@ function SOME:new(...)
 ```
 
 #### Update
-> ***add(i :SOME : x :num)***<a id=10></a><br>If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random). Otherwise, just add. 
+> ***add(x :num)***<a id=10></a><br>If full then at odds `self.some/self.n`, keep `x`(replacing some older item, at random). Otherwise, just add. 
 
 
 ```lua
@@ -428,7 +428,7 @@ divide by 2, but 2*1.28 = 2.56.
 
 ```lua
 function NUM.div(i) 
-  local a=i.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
+  local a=self.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
 
 ```
 
@@ -437,7 +437,7 @@ function NUM.div(i)
 
 ```lua
 function NUM.mid(i) 
-  local a=i.kept:has(); return per(a,.5) end
+  local a=self.kept:has(); return per(a,.5) end
 
 ```
 
@@ -551,7 +551,7 @@ function SYM:mid()
 ```
 
 ### Update
-> ***add(SYM : x :any, n :?int=1)***<a id=28></a><br>Add `n` count to `i.kept[n]`. 
+> ***add(SYM : x :any, n :?int=1)***<a id=28></a><br>Add `n` count to `self.kept[n]`. 
 
 
 ```lua
