@@ -53,7 +53,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  | Query | [***dist(x :any, y :any)  :num***](#7)|Return distance. For missing values, assume max distance.<|
 | |  | Update | [***add(x :any, inc :?int=1)***](#8)|`inc` times repeat: add `x`|
 | | SOME | Create | [***SOME(at?int=0, txt :?str="") : SOME***](#9)|Constructor.|
-| |  | Update | [***add(i :SOME : x :num)***](#10)|-- If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random).|
+| |  | Update | [***add(i :SOME : x :num)***](#10)|If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random). Otherwise, just add.|
 | | NUM | Create | [***NUM(at :?num=0, txt :?str="")  :NUM***](#11)|Constructor.|
 | |  | Query | [***div(i :NUM)  :tab***](#12)|Return `div`ersity of a column (tendency to depart central tendency).|
 |Lib | Maths | Update | [***big :num***](#13)|Return `math.huge`|
@@ -245,9 +245,8 @@ function SOME:new(...)
 ```
 
 #### Update
-> ***add(i :SOME : x :num)***<a id=10></a><br>-- If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random). 
+> ***add(i :SOME : x :num)***<a id=10></a><br>If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random). Otherwise, just add. 
 
-Otherwise, just add.
 
 ```lua
 ffunction SOME:add1(x,inc)

@@ -166,8 +166,7 @@ function SOME:new(...)
   self.kept, self.ok, self.max = {}, true, the.Some end
 
 -- #### Update
--- -> add(i:SOME: x:num) -> -- If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random).
--- Otherwise, just add.
+-- -> add(i:SOME: x:num) -> If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random). Otherwise, just add.
 ffunction SOME:add1(x,inc)
   for j=1,inc do
     local a= self.kept
