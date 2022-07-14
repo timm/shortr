@@ -399,7 +399,7 @@ function go.some( s)
   local m=0
   for _,n in pairs(s:has()) do if n> 200 and n<300 then m =m+1 end end
   return m>1 and m<12 end
- 
+
 -- NUM
 function go.num( n,n1) 
   n  = NUM(6,"tim")
