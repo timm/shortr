@@ -157,7 +157,8 @@ function COL:add(x,inc)
     self:add1(x,inc) end end
 
 -- ### SOME
--- Reservoir sampler. Keep no more than `the.Same` numbers.
+-- Given a finite buffer of some small size `max`, then after reading 
+-- a very large set of `n` numbers, we should only be keeping `max/n` of those nums.
 -- #### Create
 -- -> SOME(at?int=0, txt:?str=""): SOME -> Constructor.
 local SOME=obj("SOME",COL)
@@ -174,7 +175,8 @@ ffunction SOME:add1(x,inc)
     elseif R() < self.max/self.n then self.ok=false; a[R(#a)]=x end end end 
 
 -- #### Query
-function SOME:has()
+-- -> has(i:SOME):tab -> Ensure contents are sorted. Return those contents.
+ffunction SOME:has()
   self.kept = self.ok and self.kept or sort(self.kept)
   self.ok=true
   return self.kept  end
