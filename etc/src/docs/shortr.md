@@ -603,7 +603,7 @@ function go.num( n,n1)
 ```
 
 ## Start
-This code can get used in two ways.   
+This code can get used in two ways.   <img align=right width=150  src="sgreen.png"> 
 - If used in `lua shortr.lua` then it is _top-level_ code.   
   In this case, this code is in control and it will call
   one or more of the `go` demos.
