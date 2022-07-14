@@ -32,7 +32,8 @@
 -- to sub-ROWS).
 
 -- More technically, using the independent variables, we do recursive random projections using 
--- [FASTMAP](https://www.ijcai.org/Proceedings/2018/0198.pdf#page=2) and [Aha's heterogeneous distance measures](https://link.springer.com/content/pdf/10.1007/BF00153759.pdf#page=6). 
+-- [FASTMAP](https://www.ijcai.org/Proceedings/2018/0198.pdf#page=2) and [Aha's heterogeneous 
+-- distance measures](https://link.springer.com/content/pdf/10.1007/BF00153759.pdf#page=6). 
 -- At each level of the recursion, pairs of
 -- remote points are ranked (using the dependent variables) and all
 -- the data associated with the best/worst points are labeled `bests`
@@ -46,16 +47,34 @@
 -- -> help :str -> Help text for this code. 
 local help = [[
 
-oo.lua : stuff that is cool
-(c) 2022 Tim Menzies BSD-two-clause
-
- -c  cohen  difference in nums   = .35
- -f  file   source               = ../../data/auto93.csv
- -g  go     action               = help
- -h  help   show help            = false
- -m  min    size of small        = .5
- -s  seed   random number seed   = 10019
- -S  Some   some items to keep   = 256]]
+SHORTr: semi-supervised multi-objective optimization XAI
+(c) 2022 Tim Menzies <timm@ieee.org> BSD2 license
+     
+From N items, find and explain the best ones, using just log(N) evals.
+PASS1 (guess): eval two distant items on multi-objective criteria.
+      Prune everything nearest the worst one. Recurse on rest.  
+PASS2 (guess again): do it again, using better items from first pass.  
+PASS3 (explain): recursively discretize attributes on how well they
+      distinguish the best and worst items (seen in second pass).
+   
+USAGE:
+  lua shortr.lua [OPTIONS]
+   
+OPTIONS:
+  -M  Min    min size of space                    =  .5
+  -b  bins   max number of bins                   =  16
+  -F  Far    how far to look for remove points    =  .95
+  -k  k      Bayes hack: low attribute frequency  =  2
+  -m  m      Bayes hack: low class frequency      =  1
+  -p  p      distance coefficient (2=Euclidean)   =  2
+  -s  seed   random number seed                   =  10019
+  -S  Some   max number of nums to keep           =  256
+  -w  wait   wait this number before testing      =  10
+   
+OPTIONS (other):
+  -f  file   file           = ../../data/auto93.csv
+  -g  go     start-up goal  = nothing
+  -h  help   show help      = false ]]
 
 -- -> the :table -> Config settings. Extracted from `help`. e.g. `the.cohen=.35`. 
 local the={}
@@ -64,7 +83,7 @@ local function thing(x)
   if x=="true" then return true elseif x=="false" then return false end
   return math.tointeger(x) or tonumber(x) or x end 
 
-help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",function(k,x) the[k]=thing(x) end)
+help:gsub("\n[%s]+[-]%S[%s]+([%S]+)[^\n]+=[%s]*([%S]+)",function(k,x) the[k]=thing(x) end)
 
 -- -> cli(the:tab):tab -> Updates settings from the command line. 
 -- e.g. `-c .2` -- updates `the.cohen`. To flip booleans, just mention them 
@@ -87,6 +106,7 @@ local new,obj,per,push,R,rogues,same,sort,trim,words
 
 -- -> obj(txt:str,base:?class) :class -> Make a class, perhaps as a kid of `base`.
 -- Instances have a unique `id` and use the `cat` function for pretty printing.
+-- Every class must have a `CLASS:new()` function.
 local _id=0
 function obj(txt,base,  t,new,i)
   function new(k,...) 
@@ -237,7 +257,16 @@ function go.some( n)
   chat(n.kept:has()) return true end
 
 -- ## Start
-the=cli(the)
-if the.help then print(help) elseif go[the.go] then go[the.go]() end
-rogues()
-os.exit(fails)
+-- This code can get used in two ways.   
+-- - If used in `lua shortr.lua` then it is _top-level_ code.   
+--   In this case, this code is in control and it will call
+--   one or more of the `go` demos.
+-- - If used in `require "shortr"` then it a _included_ code. 
+--   In this case, something else will control how this is used.
+if    pcall(debug.getlocal, 4, 1) -- true if this is an included call.
+then  return {ROWS=ROWS, the=the}  
+else  the=cli(the)
+      if the.help then print(help) elseif go[the.go] then go[the.go]() end
+      rogues()
+      os.exit(fails)
+end
