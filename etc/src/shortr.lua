@@ -318,7 +318,7 @@ function SYM:new(...)
   slf.kept = {} end
 
 -- #### Discretize   
--- > bin(x:any) > Return `x` mapped to a finite range (just return x). 
+-- -> bin(x:any) -> Return `x` mapped to a finite range (just return x). 
 function SYM:bin(x) return x end
 
 -- -> merge(j:SYM):SYM -> Combine self with `j`.
@@ -332,7 +332,7 @@ function SYM:merge(j,     k)
 function SYM:merges(t,...) return t end
 
 -- ### Distance
--- -> dist(x:any,y:any) :num -> Return distance 0..1 between `x,y`. <
+-- -> dist(x:any,y:any) :num -> Return distance 0..1 between `x,y`. 
 -- Assume max distance for missing values.
 function SYM:dist(x,y)
   return  (x=="?" or y=="?")  and 1 or x==y and 0 or 1 end
@@ -343,7 +343,7 @@ function SYM:ike(x,prior)
    return ((self.kept[x] or 0)+the.m*prior) / (self.n+the.m) end
 
 -- ### Report
---  -> div():tab  -> Return `div`ersity of a column (its entropy). 
+-- -> div():tab -> Return `div`ersity of a column (its entropy). 
 -- FYI, diversity is the  tendency _not_ to be at the central tendency.
 function SYM:div()
   local ent, fun = 0, function(p) return -p*math.log(p,2) end
