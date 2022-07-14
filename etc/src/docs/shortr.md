@@ -57,18 +57,20 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  | Query | [***has(i :SOME) :tab***](#11)|Ensure contents are sorted. Return those contents.|
 | | NUM | Create | [***NUM(at :?num=0, txt :?str="")  :NUM***](#12)|Constructor.|
 | |  | Discretize | [***bin(x :any)***](#13)|Return `x` mapped to a finite number of bins|
-| |  |  | [***merges(t :[BIN])  :[BIN]***](#14)|merge a list of BINs (for numeric y-values)|
-| |  | Likelihood | [***like(x :any)***](#15)|Return the likelihood that `x` belongs to `i`. <|
-| |  | Query | [***div(i :NUM)  :tab***](#16)|Return `div`ersity of a column (tendency to depart central tendency).|
-|Lib | Maths | Update | [***big :num***](#17)|Return `math.huge`|
-| |  |  | [***R(n :?num=1)***](#18)|If `n` missing return a random number 0..1. Else return 1..`n`.|
-| | Lists |  | [***kap(t :tab,f :fun) :tab***](#19)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
-| |  |  | [***map(t :tab,f :fun) :tab***](#20)|Filter through `fun`. Remove slots where `fun` returns nil|
-| |  |  | [***per(t :tab,p :float) :any***](#21)|Returns the items `p`-th way through `t`.|
-| |  |  | [***sort(t :tab,f :fun) :tab***](#22)|Sort list in place. Return list. `fun` defaults to `<`.|
-| |  |  | [***sort(t :tab,f :fun) :tab***](#23)|Sort list in place. Return list. `fun` defaults to `<`.|
-| | Misc |  | [***ako(x) :tab***](#24)|Return arg's metatable.|
-| |  |  | [***same(x) :x***](#25)|Return arg, un changed.|
+| |  |  | [***merge(j :NUM)  :NUM***](#14)|merge two NUMs|
+| |  |  | [***merges(t :[BIN])  :[BIN]***](#15)|merge a list of BINs (for numeric y-values)|
+| |  | Distance | [***dist(x :num,y :num) : num***](#16)|Return distance 0..1 between `x,y`.|
+| |  | Likelihood | [***like(x :any)***](#17)|Return the likelihood that `x` belongs to `i`. <|
+| |  | Query | [***div(i :NUM)  :tab***](#18)|Return `div`ersity of a column (tendency to depart central tendency).|
+|Lib | Maths | Update | [***big :num***](#19)|Return `math.huge`|
+| |  |  | [***R(n :?num=1)***](#20)|If `n` missing return a random number 0..1. Else return 1..`n`.|
+| | Lists |  | [***kap(t :tab,f :fun) :tab***](#21)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***map(t :tab,f :fun) :tab***](#22)|Filter through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***per(t :tab,p :float) :any***](#23)|Returns the items `p`-th way through `t`.|
+| |  |  | [***sort(t :tab,f :fun) :tab***](#24)|Sort list in place. Return list. `fun` defaults to `<`.|
+| |  |  | [***sort(t :tab,f :fun) :tab***](#25)|Sort list in place. Return list. `fun` defaults to `<`.|
+| | Misc |  | [***ako(x) :tab***](#26)|Return arg's metatable.|
+| |  |  | [***same(x) :x***](#27)|Return arg, un changed.|
 
 
 
@@ -327,7 +329,8 @@ function NUM:bin(x)
 
 ```
 
-> merge(j:NUM) :NUM -> merge two NUMs 
+> ***merge(j :NUM)  :NUM***<a id=14></a><br>merge two NUMs 
+
 
 ```lua
 function NUM:merge(j,     k)
@@ -338,7 +341,7 @@ function NUM:merge(j,     k)
 
 ```
 
-> ***merges(t :[BIN])  :[BIN]***<a id=14></a><br>merge a list of BINs (for numeric y-values) 
+> ***merges(t :[BIN])  :[BIN]***<a id=15></a><br>merge a list of BINs (for numeric y-values) 
 
 Note the last line of `merges`: if anything merged, then loop again looking for other merges.
 Else, time to finish up (expand the bins to cover all gaps across the number line).
@@ -368,7 +371,8 @@ function NUM:merges(b4, min)
 ```
 
 #### Distance
-> dist(x:num,y:num): num > Return distance 0..1 between `x,y`. <
+> ***dist(x :num,y :num) : num***<a id=16></a><br>Return distance 0..1 between `x,y`. 
+
 This code assume max distance for missing values.
 
 ```lua
@@ -382,7 +386,7 @@ function NUM:dist(x,y)
 ```
 
 #### Likelihood
-> ***like(x :any)***<a id=15></a><br>Return the likelihood that `x` belongs to `i`. < 
+> ***like(x :any)***<a id=17></a><br>Return the likelihood that `x` belongs to `i`. < 
 
 
 ```lua
@@ -394,7 +398,7 @@ function NUM:like(x,...)
 ```
 
 #### Query
-> ***div(i :NUM)  :tab***<a id=16></a><br>Return `div`ersity of a column (tendency to depart central tendency). 
+> ***div(i :NUM)  :tab***<a id=18></a><br>Return `div`ersity of a column (tendency to depart central tendency). 
 
 
 <img align=right src="normal.png"> 
@@ -444,14 +448,14 @@ local function rogues()
 ```
 
 ### Maths
-> ***big :num***<a id=17></a><br>Return `math.huge` 
+> ***big :num***<a id=19></a><br>Return `math.huge` 
 
 
 ```lua
 big = math.huge
 ```
 
-> ***R(n :?num=1)***<a id=18></a><br>If `n` missing return a random number 0..1. Else return 1..`n`. 
+> ***R(n :?num=1)***<a id=20></a><br>If `n` missing return a random number 0..1. Else return 1..`n`. 
 
 
 ```lua
@@ -459,7 +463,7 @@ R = math.random
 ```
 
 ### Lists
-> ***kap(t :tab,f :fun) :tab***<a id=19></a><br>Filter key,values through `fun`. Remove slots where `fun` returns nil 
+> ***kap(t :tab,f :fun) :tab***<a id=21></a><br>Filter key,values through `fun`. Remove slots where `fun` returns nil 
 
 
 ```lua
@@ -467,7 +471,7 @@ function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
 
 ```
 
-> ***map(t :tab,f :fun) :tab***<a id=20></a><br>Filter through `fun`. Remove slots where `fun` returns nil 
+> ***map(t :tab,f :fun) :tab***<a id=22></a><br>Filter through `fun`. Remove slots where `fun` returns nil 
 
 
 ```lua
@@ -475,7 +479,7 @@ function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
 
 ```
 
-> ***per(t :tab,p :float) :any***<a id=21></a><br>Returns the items `p`-th way through `t`. 
+> ***per(t :tab,p :float) :any***<a id=23></a><br>Returns the items `p`-th way through `t`. 
 
 
 ```lua
@@ -483,7 +487,7 @@ function per(t,p)  p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 
 ```
 
-> ***sort(t :tab,f :fun) :tab***<a id=22></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
+> ***sort(t :tab,f :fun) :tab***<a id=24></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
 
 
 ```lua
@@ -491,7 +495,7 @@ function sort(t,f) table.sort(t,f); return t end
 
 ```
 
-> ***sort(t :tab,f :fun) :tab***<a id=23></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
+> ***sort(t :tab,f :fun) :tab***<a id=25></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
 
 
 ```lua
@@ -500,7 +504,7 @@ function push(t,x) t[1+#t]=x; return x end
 ```
 
 ### Misc
-> ***ako(x) :tab***<a id=24></a><br>Return arg's metatable. 
+> ***ako(x) :tab***<a id=26></a><br>Return arg's metatable. 
 
 
 ```lua
@@ -508,7 +512,7 @@ function ako(x) return getmetatable(x) end
 
 ```
 
-> ***same(x) :x***<a id=25></a><br>Return arg, un changed. 
+> ***same(x) :x***<a id=27></a><br>Return arg, un changed. 
 
 
 ```lua

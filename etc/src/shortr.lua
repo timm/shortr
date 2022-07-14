@@ -224,7 +224,7 @@ function NUM:bin(x)
   local b = (a[#a] - a[1])/the.bins
   return a[#a]==a[1] and 1 or math.floor(x/b+.5)*b end
 
--- > merge(j:NUM) :NUM -> merge two NUMs 
+-- -> merge(j:NUM) :NUM -> merge two NUMs 
 function NUM:merge(j,     k)
   k = self:clone()
   for _,kept in pairs{self.kept, j.kept} do
@@ -256,7 +256,7 @@ function NUM:merges(b4, min)
   return #now < #b4 and self:merges(now,min) or fillInTheGaps(now) end
 
 -- #### Distance
--- > dist(x:num,y:num): num > Return distance 0..1 between `x,y`. <
+-- -> dist(x:num,y:num): num -> Return distance 0..1 between `x,y`. 
 -- This code assume max distance for missing values.
 function NUM:dist(x,y)
   if x=="?" and y=="?" then return 1 end
