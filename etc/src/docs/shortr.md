@@ -177,7 +177,7 @@ function obj(txt,base,  t,new,i)
 
 ## Columns
 ### COL
-Superclass of NUM and SYM.
+Superclass of NUM and SYM. <img align=right width=150 src="c.png">
 
 **RESPONSIBILITIES** : 
 - Create or clone a duplicate structure 
@@ -232,6 +232,7 @@ function COL:add(x,inc)
 ```
 
 ### SOME
+<img align=right width=150 src="s.png">
 Given a finite buffer of some small size `max`, then after reading 
 a very large set of `n` numbers, we should only be keeping `max/n` of those nums.
 #### Create
@@ -272,6 +273,7 @@ function SOME:has()
 ```
 
 ### NUM
+<img align=right width=150 src="n.png">
 #### Create
 > ***NUM(at :?num=0, txt :?str="")  :NUM***<a id=12></a><br>Constructor. 
 
