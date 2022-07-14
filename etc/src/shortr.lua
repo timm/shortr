@@ -375,6 +375,8 @@ fmt=string.format
 -- To disable a test, move it from `go` to `no`.
 local go,no,fails={},{},0
 
+-- -> go.all() -> Runs all the tests (called from command-line by `-g all`).
+-- Resets `the` and the random number seed before each call. 
 function go.all() 
   local defaults={}
   for k,v in pairs(the) do defaults[k]=v end 
@@ -386,9 +388,10 @@ function go.all()
       print("FAIL:",k)
       fails=fails+1 end end end
 
--- To disable a test, move it from `go` to `no`.
--- To disable a test, move it from `go` to `no`.
+-- Show the settings
 function go.the()  chat(the);    return true end
+
+-- SOME
 function go.some( s) 
   the.Some = 16
   s = SOME()
@@ -396,7 +399,8 @@ function go.some( s)
   local m=0
   for _,n in pairs(s:has()) do if n> 200 and n<300 then m =m+1 end end
   return m>1 and m<12 end
-  
+ 
+-- NUM
 function go.num( n,n1) 
   n  = NUM(6,"tim")
   n1 = n:clone()

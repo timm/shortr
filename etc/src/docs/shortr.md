@@ -71,6 +71,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  |  | [***sort(t :tab,f :fun) :tab***](#25)|Sort list in place. Return list. `fun` defaults to `<`.|
 | | Misc |  | [***ako(x) :tab***](#26)|Return arg's metatable.|
 | |  |  | [***same(x) :x***](#27)|Return arg, un changed.|
+|Testing | Thing2string |  | [***go.all()***](#28)|Runs all the tests (called from command-line by `-g all`).|
 
 
 
@@ -572,6 +573,13 @@ To disable a test, move it from `go` to `no`.
 ```lua
 local go,no,fails={},{},0
 
+```
+
+> ***go.all()***<a id=28></a><br>Runs all the tests (called from command-line by `-g all`). 
+
+Resets `the` and the random number seed before each call. 
+
+```lua
 function go.all() 
   local defaults={}
   for k,v in pairs(the) do defaults[k]=v end 
@@ -585,11 +593,16 @@ function go.all()
 
 ```
 
-To disable a test, move it from `go` to `no`.
-To disable a test, move it from `go` to `no`.
+Show the settings
 
 ```lua
 function go.the()  chat(the);    return true end
+
+```
+
+SOME
+
+```lua
 function go.some( s) 
   the.Some = 16
   s = SOME()
@@ -597,7 +610,12 @@ function go.some( s)
   local m=0
   for _,n in pairs(s:has()) do if n> 200 and n<300 then m =m+1 end end
   return m>1 and m<12 end
-  
+ 
+```
+
+NUM
+
+```lua
 function go.num( n,n1) 
   n  = NUM(6,"tim")
   n1 = n:clone()
