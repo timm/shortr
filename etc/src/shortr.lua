@@ -224,11 +224,11 @@ function NUM:bin(x)
   local b = (a[#a] - a[1])/the.bins
   return a[#a]==a[1] and 1 or math.floor(x/b+.5)*b end
 
--- -> merge(j:NUM) :NUM -> merge two NUMs 
+-- -> merge(j:NUM) :NUM -> combine `self` with `j`.
 function NUM:merge(j,     k)
   k = self:clone()
-  for _,kept in pairs{self.kept, j.kept} do
-    for _,x in pairs(kept) do k:add(x) end end
+  for _,some in pairs{self.kept, j.kept} do
+    for _,x in pairs(some.kept) do k:add(x) end end
   return k end
 
 -- -> merges(t:[BIN]) :[BIN] -> merge a list of BINs (for numeric y-values) 
@@ -291,9 +291,11 @@ function NUM:like(x,...)
 function NUM.div(i) 
   local a=i.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
 
+-- -> mid(i:NUM)) :tab -> Return a columns' `mid`ddle 
 function NUM.mid(i) 
   local a=i.kept:has(); return per(a,.5) end
 
+-- -> norm(i:NUM, x:num) :num -> Normalize `x` 0..1 for lo..hi 
 function NUM:norm(x)
   local a = self.kept:has()
   return (a[#a]-a[1])<1E-9 or (x-a[1])/(a[#a]-a[1]) end
@@ -301,6 +303,63 @@ function NUM:norm(x)
 -- #### Update
 function NUM:add1(x,inc)
   for j=1,inc do self.kept:add(x) end end 
+
+-- ### SYM
+-- Summarize a sequence of symbols.
+-- <img align=right height=100 src="s.png">
+
+-- **RESPONSIBILITIES** : 
+-- - Same as COL.
+
+-- -> SYM(at:?int=0, txt:?str="") :SYM  -> Constructor.  
+local SYM = obj("SYM",COL)
+function SYM:new(...)
+  self.super.new(self,...)
+  slf.kept = {} end
+
+-- #### Discretize   
+-- > bin(x:any) > Return `x` mapped to a finite range (just return x). 
+function SYM:bin(x) return x end
+
+-- -> merge(j:SYM):SYM -> Combine self with `j`.
+function SYM:merge(j,     k)
+  k = self:clone()
+  for _,kept in pairs{self.kept, self.kept} do
+    for x,n in pairs(kept) do k:add(x,n) end end
+  return k end
+
+-- -> merges(i:SYM,t:tab):tab -> Merge a list of bins (for symbolic y-values). 
+function SYM:merges(t,...) return t end
+
+-- ### Distance
+-- -> dist(x:any,y:any) :num -> Return distance 0..1 between `x,y`. <
+-- Assume max distance for missing values.
+function SYM:dist(x,y)
+  return  (x=="?" or y=="?")  and 1 or x==y and 0 or 1 end
+
+-- ### Likelihood  
+-- -> like(i:SYM,x:any,prior:num) :num -> Return how much `x` might belong to `i`. 
+function SYM:ike(x,prior)
+   return ((self.kept[x] or 0)+the.m*prior) / (self.n+the.m) end
+
+-- ### Report
+--  -> div():tab  -> Return `div`ersity of a column (its entropy). 
+-- FYI, diversity is the  tendency _not_ to be at the central tendency.
+function SYM:div()
+  local ent, fun = 0, function(p) return -p*math.log(p,2) end
+  for x,n in pairs(self.kept) do if n > 0 then ent=ent + fun(n/self.n) end end
+  return ent end
+
+-- > mid():num  > Return the most common symbol (the `mid`ddle (central tendency). 
+function SYM:mid()
+  local max,mode=-1,nil
+  for x,n in pairs(self.kept) do if n > most then most,mode = n,x end end
+  return mode end
+
+-- ### Update
+-- -> add(SYM: x:any, n:?int=1) -> Add `n` count to `i.kept[n]`. 
+function SYM:add1(x,n)
+  self.kept[x] = n  + (self.kept[x] or 0) end 
 
 -- ## Lib
 -- <img align=right height=100 src="l.png">
@@ -382,10 +441,10 @@ function go.all()
   for k,v in pairs(the) do defaults[k]=v end 
   local want = function(k,_)if k~="all" then return k end end
   for k,x in pairs(sort(kap(go,want))) do 
-    for k,v in pairs(defaults) do the[k]=v end 
+    for k0,v0 in pairs(defaults) do the[k0]=v0 end 
     math.randomseed(the.seed)
     if true ~= go[x]() then 
-      print("FAIL:",k)
+      print("FAIL:",x)
       fails=fails+1 end end end
 
 -- Show the settings
@@ -402,14 +461,11 @@ function go.some( s)
 
 -- NUM
 function go.num( n,n1) 
+  the.Some = 16
   n  = NUM(6,"tim")
-  n1 = n:clone()
-  for j=1,10^3 do n:add(j) end
-  for j=1,10^3 do n1:add(j) end
-  chat(n.kept:has())
-  chat(n1.kept:has())
-  chat(n1)
-  return true end
+  for _,v in pairs{4, 9, 11,  12,  17,  5, 8, 12,  14} do
+    n:add(v) end
+  return assert( 3.90== n:div()//.01 * .01) end
 
 -- ## Start
 -- This code can get used in two ways.   <img align=right height=100  src="sgreen.png"> 
