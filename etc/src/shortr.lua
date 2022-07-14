@@ -44,7 +44,7 @@
 -- TABLE.OF.CONTENTS
 
 -- ## Config
--- <img align=right width=150 src="cdown.png">
+-- <img align=right height=150 src="cdown.png">
 
 -- -> help :str -> Help text for this code. 
 local help = [[
@@ -100,7 +100,7 @@ local function cli(t)
   return t end
 
 -- ## Names
--- <img align=right width=150 src="ndown.png">
+-- <img align=right height=150 src="ndown.png">
 -- `b4` is a list of names known before this code. Used by `rogue()` (see below)
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 -- By defining names before the code, the code can be written in any order.
@@ -125,7 +125,7 @@ function obj(txt,base,  t,new,i)
 
 -- ## Columns
 -- ### COL
--- Superclass of NUM and SYM. <img align=right width=150 src="c.png">
+-- Superclass of NUM and SYM. <img align=right height=150 src="c.png">
 
 -- **RESPONSIBILITIES** : 
 -- - Create or clone a duplicate structure 
@@ -160,7 +160,7 @@ function COL:add(x,inc)
     self:add1(x,inc) end end
 
 -- ### SOME
--- <img align=right width=150 src="s.png">
+-- <img align=right height=150 src="s.png">
 -- Given a finite buffer of some small size `max`, then after reading 
 -- a very large set of `n` numbers, we should only be keeping `max/n` of those nums.
 -- #### Create
@@ -187,7 +187,7 @@ function SOME:has()
 
 -- ### NUM
 -- Summarize a sequence of numbers.
--- <img align=right width=150 src="n.png">
+-- <img align=right height=150 src="n.png">
 
 -- **RESPONSIBILITIES** : 
 -- - Same as COL and knows if we want to minimize or maximize these values (see `w`).
@@ -303,7 +303,7 @@ function NUM:add1(x,inc)
   for j=1,inc do self.kept:add(x) end end 
 
 -- ## Lib
--- <img align=right width=150 src="l.png">
+-- <img align=right height=150 src="l.png">
 -- Musc utils.
 -- ### Lint
 -- > rogues() > Warn if our code introduced a rogue global. <
@@ -371,7 +371,7 @@ function cat(t,   u,pub)
 fmt=string.format
 
 -- ## Testing
--- Code for demos, tests.   <img align=right width=150  src="tpurple.png"> 
+-- Code for demos, tests.   <img align=right height=150  src="tpurple.png"> 
 -- To disable a test, move it from `go` to `no`.
 local go,no,fails={},{},0
 
@@ -412,7 +412,7 @@ function go.num( n,n1)
   return true end
 
 -- ## Start
--- This code can get used in two ways.   <img align=right width=150  src="sgreen.png"> 
+-- This code can get used in two ways.   <img align=right height=150  src="sgreen.png"> 
 -- - If used in `lua shortr.lua` then it is _top-level_ code.   
 --   In this case, this code is in control and it will call
 --   one or more of the `go` demos.

@@ -77,7 +77,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 
 
 ## Config
-<img align=right width=150 src="cdown.png">
+<img align=right height=150 src="cdown.png">
 
 > ***help  :str***<a id=1></a><br>Help text for this code. 
 
@@ -148,7 +148,7 @@ local function cli(t)
 ```
 
 ## Names
-<img align=right width=150 src="ndown.png">
+<img align=right height=150 src="ndown.png">
 `b4` is a list of names known before this code. Used by `rogue()` (see below)
 
 ```lua
@@ -186,7 +186,7 @@ function obj(txt,base,  t,new,i)
 
 ## Columns
 ### COL
-Superclass of NUM and SYM. <img align=right width=150 src="c.png">
+Superclass of NUM and SYM. <img align=right height=150 src="c.png">
 
 **RESPONSIBILITIES** : 
 - Create or clone a duplicate structure 
@@ -241,7 +241,7 @@ function COL:add(x,inc)
 ```
 
 ### SOME
-<img align=right width=150 src="s.png">
+<img align=right height=150 src="s.png">
 Given a finite buffer of some small size `max`, then after reading 
 a very large set of `n` numbers, we should only be keeping `max/n` of those nums.
 #### Create
@@ -283,7 +283,7 @@ function SOME:has()
 
 ### NUM
 Summarize a sequence of numbers.
-<img align=right width=150 src="n.png">
+<img align=right height=150 src="n.png">
 
 **RESPONSIBILITIES** : 
 - Same as COL and knows if we want to minimize or maximize these values (see `w`).
@@ -438,7 +438,7 @@ function NUM:add1(x,inc)
 ```
 
 ## Lib
-<img align=right width=150 src="l.png">
+<img align=right height=150 src="l.png">
 Musc utils.
 ### Lint
 > rogues() > Warn if our code introduced a rogue global. <
@@ -567,7 +567,7 @@ fmt=string.format
 ```
 
 ## Testing
-Code for demos, tests.   <img align=right width=150  src="tpurple.png"> 
+Code for demos, tests.   <img align=right height=150  src="tpurple.png"> 
 To disable a test, move it from `go` to `no`.
 
 ```lua
@@ -629,7 +629,7 @@ function go.num( n,n1)
 ```
 
 ## Start
-This code can get used in two ways.   <img align=right width=150  src="sgreen.png"> 
+This code can get used in two ways.   <img align=right height=150  src="sgreen.png"> 
 - If used in `lua shortr.lua` then it is _top-level_ code.   
   In this case, this code is in control and it will call
   one or more of the `go` demos.
