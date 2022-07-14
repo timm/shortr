@@ -50,6 +50,15 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 |Names |  |  | [***obj(txt :str,base :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
 |Columns | COL | Create | [***COL(at :?int=0, txt :?str="") : COL***](#4)|Superclass constructor for columns.|
 | |  | Update | [***add(x :any, inc :?int=1)***](#5)|`inc` times repeat: add `x`|
+|Lib | Maths | Update | [***big :num***](#6)|Return `math.huge`|
+| |  |  | [***R(n :?num=1)***](#7)|If `n` missing return a random number 0..1. Else return 1..`n`.|
+| | Lists |  | [***kap(t :tab,f :fun) :tab***](#8)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***map(t :tab,f :fun) :tab***](#9)|Filter through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***per(t :tab,p :float) :any***](#10)|Returns the items `p`-th way through `t`.|
+| |  |  | [***sort(t :tab,f :fun) :tab***](#11)|Sort list in place. Return list. `fun` defaults to `<`.|
+| |  |  | [***sort(t :tab,f :fun) :tab***](#12)|Sort list in place. Return list. `fun` defaults to `<`.|
+| | Misc |  | [***ako(x) :tab***](#13)|Return arg's metatable.|
+| |  |  | [***same(x) :x***](#14)|Return arg, un changed.|
 
 
 
@@ -133,46 +142,60 @@ local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 By defining names before the code, the code can be written in any order.
 
 ```lua
-local cat,chat,csv,fmt,kap,lines,map
+local ako,big,cat,chat,csv,fmt,isa,kap,lines,map
 local new,obj,per,push,R,rogues,same,sort,trim,words
 
 ```
 
 > ***obj(txt :str,base :?class)  :class***<a id=4></a><br>Make a class, perhaps as a kid of `base`. 
 
+Identity, methods, inheritance, polymorphism, encapsulation, all in 8 lines :-).
+
 Instances have a unique `id` and use the `cat` function for pretty printing.
-Every class must have a `CLASS:new()` function.
+Every class must have a `CLASS:new()` function. 
+Also, inheritance is implemented by copying over the parent methods
+(so the parent has to be fully implemented before calling `obj`).
 
 ```lua
 local _id=0
 function obj(txt,base,  t,new,i)
   function new(k,...) 
-    _id=_id+1; i=setmetatable({_id=id},k); k.new(i,...); return i end
-  t={__tostring=cat}
+    _id=_id+1; i=setmetatable({_id=_id},k); k.new(i,...); return i end
+  t={__tostring=cat,super=base}
   for k,v in pairs(base or {}) do t[k] = v end
   t.is, t.__index =  txt, t
 	return setmetatable(t,{__call=new}) end
-
-local COL,ROW,ROWS   = obj"COL", obj"ROW", obj"ROWS"
-local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL) 
 
 ```
 
 ## Columns
 ### COL
+Superclass of NUM and SYM.
+
+**RESPONSIBILITIES** : 
+- Create or clone a duplicate structure 
+- Discretize values into a few bins (for building trees)
+- Distance calculations (for clustering)
+- Likelihood calculations (for Bayes)
+- Query  central tendency and diversity and other things
+- Update summarization
 #### Create
 > ***COL(at :?int=0, txt :?str="") : COL***<a id=5></a><br>Superclass constructor for columns. 
 
 
 ```lua
+local COL=obj"COL"
 function COL:new(at,txt)
   self.at  = at or 0     
   self.txt = txt or ""  
   self.n   = 0 end     
 
+function COL:clone()
+  return ako(self)(self.at, self.txt) end
+
 ```
 
-#### Reports
+#### Query
 > dist(x:any, y:any) :num > Return distance. For missing values, assume max distance. <
 
 ```lua
@@ -198,9 +221,10 @@ function COL:add(x,inc)
 #### Create
 
 ```lua
+local SOME=obj("SOME",COL)
 function SOME:new(...)
-  COL.new(self, ...)
-  self.kept,self.ok,self.max,self.n = {},true,the.Some,0  end
+  self.super.new(self, ...)
+  self.kept, self.ok, self.max = {}, true, the.Some end
 
 ```
 
@@ -215,7 +239,7 @@ function SOME:add1(x,inc)
 
 ```
 
-#### Reports
+#### Query
 
 ```lua
 function SOME:has()
@@ -231,13 +255,15 @@ function SOME:has()
 ```lua
 local NUM=obj("NUM",COL)
 function NUM:new(...)
-  COL.new(self, ...)
+  self.super.new(self, ...)
   self.kept = SOME()          
   self.w = self.txt:find"-$" and -1 or 1 end
 
+--function NUM:clone() return NUM(self.at, self.txt) end
+
 ```
 
-#### Report
+#### Query
 
 ```lua
 function NUM.div(i) 
@@ -270,25 +296,72 @@ local function rogues()
 ```
 
 ### Maths
+> ***big :num***<a id=7></a><br>Return `math.huge` 
+
 
 ```lua
-R=math.random
+big = math.huge
+```
+
+> ***R(n :?num=1)***<a id=8></a><br>If `n` missing return a random number 0..1. Else return 1..`n`. 
+
+
+```lua
+R = math.random
 ```
 
 ### Lists
+> ***kap(t :tab,f :fun) :tab***<a id=9></a><br>Filter key,values through `fun`. Remove slots where `fun` returns nil 
+
 
 ```lua
-function same(x)      return x end
-function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
 function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
-function sort(t,f)    table.sort(t,f); return t end
-function push(t,x)    t[1+#t]=x; return x end
-function per(t,p)     p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 
+```
+
+> ***map(t :tab,f :fun) :tab***<a id=10></a><br>Filter through `fun`. Remove slots where `fun` returns nil 
+
+
+```lua
+function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
+
+```
+
+> ***per(t :tab,p :float) :any***<a id=11></a><br>Returns the items `p`-th way through `t`. 
+
+
+```lua
+function per(t,p)  p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
+
+```
+
+> ***sort(t :tab,f :fun) :tab***<a id=12></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
+
+
+```lua
+function sort(t,f) table.sort(t,f); return t end
+
+```
+
+> ***sort(t :tab,f :fun) :tab***<a id=13></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
+
+
+```lua
+function push(t,x) t[1+#t]=x; return x end
 
 ```
 
 ### Misc
+> ***ako(x) :tab***<a id=14></a><br>Return arg's metatable. 
+
+
+```lua
+function ako(x) return getmetatable(x) end
+
+```
+
+> ***same(x) :x***<a id=15></a><br>Return arg, un changed. 
+
 
 ```lua
 function same(x) return x end
@@ -357,11 +430,21 @@ function go.all()
       fails=fails+1 end end end
 
 function go.the()  chat(the);    return true end
-function go.some( n) 
-  n = NUM()
-  chat(n)
+function go.some( s) 
+  s = SOME()
+  print(s._id)
+  for j=1,10^3 do s:add(j) end end
+  
+function go.num( n,n1) 
+  the.Some = 16
+  n  = NUM(6,"tim")
+  n1 = n:clone()
   for j=1,10^3 do n:add(j) end
-  chat(n.kept:has()) return true end
+  for j=1,10^3 do n1:add(j) end
+  chat(n.kept:has())
+  chat(n1.kept:has())
+  chat(n1)
+  return true end
 
 ```
 
