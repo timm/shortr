@@ -186,8 +186,8 @@ function SOME:has()
   return self.kept  end
 
 -- ### NUM
--- <img align=right width=150 src="n.png">
 -- Summarize a sequence of numbers.
+-- <img align=right width=150 src="n.png">
 -- #### Create
 -- -> NUM(at:?num=0, txt:?str="") :NUM -> Constructor.
 local NUM=obj("NUM",COL)

@@ -276,8 +276,8 @@ function SOME:has()
 ```
 
 ### NUM
-<img align=right width=150 src="n.png">
 Summarize a sequence of numbers.
+<img align=right width=150 src="n.png">
 #### Create
 > ***NUM(at :?num=0, txt :?str="")  :NUM***<a id=12></a><br>Constructor. 
 
