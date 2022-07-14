@@ -184,6 +184,7 @@ function SOME:has()
 
 -- ### NUM
 -- <img align=right width=150 src="n.png">
+-- Summarize a sequence of numbers.
 -- #### Create
 -- -> NUM(at:?num=0, txt:?str="") :NUM -> Constructor.
 local NUM=obj("NUM",COL)
@@ -223,6 +224,8 @@ function NUM:add1(x,inc)
   for j=1,inc do self.kept:add(x) end end 
 
 -- ## Lib
+-- <img align=right width=150 src="l.png">
+-- Musc utils.
 -- ### Lint
 -- > rogues() > Warn if our code introduced a rogue global. <
 local function rogues()

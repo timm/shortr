@@ -274,6 +274,7 @@ function SOME:has()
 
 ### NUM
 <img align=right width=150 src="n.png">
+Summarize a sequence of numbers.
 #### Create
 > ***NUM(at :?num=0, txt :?str="")  :NUM***<a id=12></a><br>Constructor. 
 
@@ -327,6 +328,8 @@ function NUM:add1(x,inc)
 ```
 
 ## Lib
+<img align=right width=150 src="l.png">
+Musc utils.
 ### Lint
 > rogues() > Warn if our code introduced a rogue global. <
 
