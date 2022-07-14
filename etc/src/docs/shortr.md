@@ -64,24 +64,25 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  | Query | [***div(i :NUM)  :tab***](#18)|Return `div`ersity of a column (tendency to depart central tendency).|
 | |  |  | [***mid(i :NUM))  :tab***](#19)|Return a columns' `mid`ddle|
 | |  |  | [***norm(i :NUM, x :num)  :num***](#20)|Normalize `x` 0..1 for lo..hi|
-| | SYM | Update | [***SYM(at :?int=0, txt :?str="")  :SYM***](#21)|Constructor.|
-| |  | Discretize | [***bin(x :any)***](#22)|Return `x` mapped to a finite range (just return x).|
-| |  |  | [***merge(j :SYM) :SYM***](#23)|Combine self with `j`.|
-| |  |  | [***merges(i :SYM,t :tab) :tab***](#24)|Merge a list of bins (for symbolic y-values).|
-| |  | Distance | [***dist(x :any,y :any)  :num***](#25)|Return distance 0..1 between `x,y`.|
-| |  | Likelihood | [***like(x :any,prior :num)  :num***](#26)|Return how much `x` might belong to `i`.|
-| |  | Report | [***div() :tab***](#27)|Return `div`ersity of a column (its entropy).|
-| |  | Update | [***add(x :any, n :?int=1)***](#28)|Add `n` count to `self.kept[n]`.|
-|MISC | Lib | Maths | [***big :num***](#29)|Return `math.huge`|
-| |  |  | [***R(n :?num=1)***](#30)|If `n` missing return a random number 0..1. Else return 1..`n`.|
-| |  | Lists | [***kap(t :tab,f :fun) :tab***](#31)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
-| |  |  | [***map(t :tab,f :fun) :tab***](#32)|Filter through `fun`. Remove slots where `fun` returns nil|
-| |  |  | [***per(t :tab,p :float) :any***](#33)|Returns the items `p`-th way through `t`.|
-| |  |  | [***sort(t :tab,f :fun) :tab***](#34)|Sort list in place. Return list. `fun` defaults to `<`.|
+| |  | Update | [***add(i :NUM, x :num, n :?int=1)***](#21)|`n` times,update `i`'s SOME object.|
+| | SYM |  | [***SYM(at :?int=0, txt :?str="")  :SYM***](#22)|Constructor.|
+| |  | Discretize | [***bin(x :any)***](#23)|Return `x` mapped to a finite range (just return x).|
+| |  |  | [***merge(j :SYM) :SYM***](#24)|Combine self with `j`.|
+| |  |  | [***merges(i :SYM,t :tab) :tab***](#25)|Merge a list of bins (for symbolic y-values).|
+| |  | Distance | [***dist(x :any,y :any)  :num***](#26)|Return distance 0..1 between `x,y`.|
+| |  | Likelihood | [***like(x :any,prior :num)  :num***](#27)|Return how much `x` might belong to `i`.|
+| |  | Report | [***div() :tab***](#28)|Return `div`ersity of a column (its entropy).|
+| |  | Update | [***add(x :any, n :?int=1)***](#29)|Add `n` count to `self.kept[n]`.|
+|MISC | Lib | Maths | [***big :num***](#30)|Return `math.huge`|
+| |  |  | [***R(n :?num=1)***](#31)|If `n` missing return a random number 0..1. Else return 1..`n`.|
+| |  | Lists | [***kap(t :tab,f :fun) :tab***](#32)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***map(t :tab,f :fun) :tab***](#33)|Filter through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***per(t :tab,p :float) :any***](#34)|Returns the items `p`-th way through `t`.|
 | |  |  | [***sort(t :tab,f :fun) :tab***](#35)|Sort list in place. Return list. `fun` defaults to `<`.|
-| |  | Other | [***ako(x) :tab***](#36)|Return arg's metatable.|
-| |  |  | [***same(x) :x***](#37)|Return arg, un changed.|
-| | Testing | Thing2string | [***go.all()***](#38)|Runs all the tests (called from command-line by `-g all`).|
+| |  |  | [***sort(t :tab,f :fun) :tab***](#36)|Sort list in place. Return list. `fun` defaults to `<`.|
+| |  | Other | [***ako(x) :tab***](#37)|Return arg's metatable.|
+| |  |  | [***same(x) :x***](#38)|Return arg, un changed.|
+| | Testing | Thing2string | [***go.all()***](#39)|Runs all the tests (called from command-line by `-g all`).|
 
 
 
@@ -452,6 +453,8 @@ function NUM:norm(x)
 ```
 
 #### Update
+> ***add(i :NUM, x :num, n :?int=1)***<a id=21></a><br>`n` times,update `i`'s SOME object. 
+
 
 ```lua
 function NUM:add1(x,inc)
@@ -466,7 +469,7 @@ Summarize a sequence of symbols.
 **RESPONSIBILITIES** : 
 - Same as COL.
 
-> ***SYM(at :?int=0, txt :?str="")  :SYM***<a id=21></a><br>Constructor. 
+> ***SYM(at :?int=0, txt :?str="")  :SYM***<a id=22></a><br>Constructor. 
 
 
 ```lua
@@ -478,7 +481,7 @@ function SYM:new(...)
 ```
 
 #### Discretize   
-> ***bin(x :any)***<a id=22></a><br>Return `x` mapped to a finite range (just return x). 
+> ***bin(x :any)***<a id=23></a><br>Return `x` mapped to a finite range (just return x). 
 
 
 ```lua
@@ -486,7 +489,7 @@ function SYM:bin(x) return x end
 
 ```
 
-> ***merge(j :SYM) :SYM***<a id=23></a><br>Combine self with `j`. 
+> ***merge(j :SYM) :SYM***<a id=24></a><br>Combine self with `j`. 
 
 
 ```lua
@@ -498,7 +501,7 @@ function SYM:merge(j,     k)
 
 ```
 
-> ***merges(i :SYM,t :tab) :tab***<a id=24></a><br>Merge a list of bins (for symbolic y-values). 
+> ***merges(i :SYM,t :tab) :tab***<a id=25></a><br>Merge a list of bins (for symbolic y-values). 
 
 
 ```lua
@@ -507,7 +510,7 @@ function SYM:merges(t,...) return t end
 ```
 
 #### Distance
-> ***dist(x :any,y :any)  :num***<a id=25></a><br>Return distance 0..1 between `x,y`. 
+> ***dist(x :any,y :any)  :num***<a id=26></a><br>Return distance 0..1 between `x,y`. 
 
 Assume max distance for missing values.
 
@@ -518,7 +521,7 @@ function SYM:dist(x,y)
 ```
 
 #### Likelihood  
-> ***like(x :any,prior :num)  :num***<a id=26></a><br>Return how much `x` might belong to `i`. 
+> ***like(x :any,prior :num)  :num***<a id=27></a><br>Return how much `x` might belong to `i`. 
 
 
 ```lua
@@ -528,7 +531,7 @@ function SYM:ike(x,prior)
 ```
 
 #### Report
-> ***div() :tab***<a id=27></a><br>Return `div`ersity of a column (its entropy). 
+> ***div() :tab***<a id=28></a><br>Return `div`ersity of a column (its entropy). 
 
 FYI, diversity is the  tendency _not_ to be at the central tendency.
 
@@ -551,7 +554,7 @@ function SYM:mid()
 ```
 
 #### Update
-> ***add(x :any, n :?int=1)***<a id=28></a><br>Add `n` count to `self.kept[n]`. 
+> ***add(x :any, n :?int=1)***<a id=29></a><br>Add `n` count to `self.kept[n]`. 
 
 
 ```lua
@@ -573,14 +576,14 @@ local function rogues()
 ```
 
 #### Maths
-> ***big :num***<a id=29></a><br>Return `math.huge` 
+> ***big :num***<a id=30></a><br>Return `math.huge` 
 
 
 ```lua
 big = math.huge
 ```
 
-> ***R(n :?num=1)***<a id=30></a><br>If `n` missing return a random number 0..1. Else return 1..`n`. 
+> ***R(n :?num=1)***<a id=31></a><br>If `n` missing return a random number 0..1. Else return 1..`n`. 
 
 
 ```lua
@@ -588,7 +591,7 @@ R = math.random
 ```
 
 #### Lists
-> ***kap(t :tab,f :fun) :tab***<a id=31></a><br>Filter key,values through `fun`. Remove slots where `fun` returns nil 
+> ***kap(t :tab,f :fun) :tab***<a id=32></a><br>Filter key,values through `fun`. Remove slots where `fun` returns nil 
 
 
 ```lua
@@ -596,7 +599,7 @@ function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
 
 ```
 
-> ***map(t :tab,f :fun) :tab***<a id=32></a><br>Filter through `fun`. Remove slots where `fun` returns nil 
+> ***map(t :tab,f :fun) :tab***<a id=33></a><br>Filter through `fun`. Remove slots where `fun` returns nil 
 
 
 ```lua
@@ -604,7 +607,7 @@ function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
 
 ```
 
-> ***per(t :tab,p :float) :any***<a id=33></a><br>Returns the items `p`-th way through `t`. 
+> ***per(t :tab,p :float) :any***<a id=34></a><br>Returns the items `p`-th way through `t`. 
 
 
 ```lua
@@ -612,7 +615,7 @@ function per(t,p)  p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 
 ```
 
-> ***sort(t :tab,f :fun) :tab***<a id=34></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
+> ***sort(t :tab,f :fun) :tab***<a id=35></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
 
 
 ```lua
@@ -620,7 +623,7 @@ function sort(t,f) table.sort(t,f); return t end
 
 ```
 
-> ***sort(t :tab,f :fun) :tab***<a id=35></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
+> ***sort(t :tab,f :fun) :tab***<a id=36></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
 
 
 ```lua
@@ -629,7 +632,7 @@ function push(t,x) t[1+#t]=x; return x end
 ```
 
 #### Other
-> ***ako(x) :tab***<a id=36></a><br>Return arg's metatable. 
+> ***ako(x) :tab***<a id=37></a><br>Return arg's metatable. 
 
 
 ```lua
@@ -637,7 +640,7 @@ function ako(x) return getmetatable(x) end
 
 ```
 
-> ***same(x) :x***<a id=37></a><br>Return arg, un changed. 
+> ***same(x) :x***<a id=38></a><br>Return arg, un changed. 
 
 
 ```lua
@@ -699,7 +702,7 @@ local go,no,fails={},{},0
 
 ```
 
-> ***go.all()***<a id=38></a><br>Runs all the tests (called from command-line by `-g all`). 
+> ***go.all()***<a id=39></a><br>Runs all the tests (called from command-line by `-g all`). 
 
 Resets `the` and the random number seed before each call. 
 

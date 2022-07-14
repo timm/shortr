@@ -301,6 +301,7 @@ function NUM:norm(x)
   return (a[#a]-a[1])<1E-9 or (x-a[1])/(a[#a]-a[1]) end
 
 -- #### Update
+-- -> add(i:NUM, x:num, n:?int=1) -> `n` times,update `i`'s SOME object.
 function NUM:add1(x,inc)
   for j=1,inc do self.kept:add(x) end end 
 
