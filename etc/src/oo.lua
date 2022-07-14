@@ -143,7 +143,7 @@ function COL:clone()
   return ako(self)(self.at, self.txt) end
 
 -- #### Query
--- -> dist(x:any, y:any) :num > Return distance. For missing values, assume max distance. <
+-- -> dist(x:any, y:any) :num -> Return distance. For missing values, assume max distance. <
 function COL:dist(x,y)
   return x=="?" and y=="?" and 1 or self:dist1(x,y) end
 

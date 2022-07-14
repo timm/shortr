@@ -49,7 +49,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  |  | [***cli(the :tab) :tab***](#2)|Updates settings from the command line.|
 |Names |  |  | [***obj(txt :str,base :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
 |Columns | COL | Create | [***COL(at :?int=0, txt :?str="") : COL***](#4)|Superclass constructor for columns.|
-| |  | Query | [***dist(x :any, y :any)  :num > Return distance. For missing values, assume max distance. <***](#5)||
+| |  | Query | [***dist(x :any, y :any)  :num***](#5)|Return distance. For missing values, assume max distance. <|
 | |  | Update | [***add(x :any, inc :?int=1)***](#6)|`inc` times repeat: add `x`|
 |Lib | Maths | Update | [***big :num***](#7)|Return `math.huge`|
 | |  |  | [***R(n :?num=1)***](#8)|If `n` missing return a random number 0..1. Else return 1..`n`.|
@@ -197,7 +197,7 @@ function COL:clone()
 ```
 
 #### Query
-> ***dist(x :any, y :any)  :num > Return distance. For missing values, assume max distance. <***<a id=6></a><br> 
+> ***dist(x :any, y :any)  :num***<a id=6></a><br>Return distance. For missing values, assume max distance. < 
 
 
 ```lua
