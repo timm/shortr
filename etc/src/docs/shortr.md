@@ -50,7 +50,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 |Names |  |  | [***obj(txt :str,base :?class)  :class***](#4)|Make a class, perhaps as a kid of `base`.|
 |Columns | COL | Create | [***COL(at?int=0, txt :?str="") : COL***](#5)|Superclass constructor for columns.|
 | |  |  | [***clone()  :COL --> Return some of the same structure.***](#6)||
-| |  | Query | [***dist(x :any, y :any)  :num***](#7)|Return distance. For missing values, assume max distance.<|
+| |  | Query | [***dist(x :any, y :any)  :num***](#7)|Return distance. For missing values, assume max distance.|
 | |  | Update | [***add(x :any, inc :?int=1)***](#8)|`inc` times repeat: add `x`|
 | | SOME | Create | [***SOME(at?int=0, txt :?str="") : SOME***](#9)|Constructor.|
 | |  | Update | [***add(x :num)***](#10)|If full then at odds `self.some/self.n`, keep `x`(replacing some older item, at random). Otherwise, just add.|
@@ -236,7 +236,7 @@ function COL:clone()
 ```
 
 #### Query
-> ***dist(x :any, y :any)  :num***<a id=7></a><br>Return distance. For missing values, assume max distance.< 
+> ***dist(x :any, y :any)  :num***<a id=7></a><br>Return distance. For missing values, assume max distance. 
 
 
 ```lua
@@ -435,7 +435,7 @@ TL;DR, to make statisticians happy, do not
 divide by 2, but 2*1.28 = 2.56.
 
 ```lua
-function NUM.div(i) 
+function NUM:div() 
   local a=self.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
 
 ```
@@ -444,7 +444,7 @@ function NUM.div(i)
 
 
 ```lua
-function NUM.mid(i) 
+function NUM:mid() 
   local a=self.kept:has(); return per(a,.5) end
 
 ```
@@ -715,7 +715,7 @@ function cat(t,   u,pub)
 
 
 ```lua
-mfmt=string.format
+fmt=string.format
 
 ```
 

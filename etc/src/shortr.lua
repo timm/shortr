@@ -147,7 +147,7 @@ function COL:clone()
   return ako(self)(self.at, self.txt) end
 
 -- #### Query
--- -> dist(x:any, y:any) :num -> Return distance. For missing values, assume max distance.<
+-- -> dist(x:any, y:any) :num -> Return distance. For missing values, assume max distance.
 function COL:dist(x,y)
   return x=="?" and y=="?" and 1 or self:dist1(x,y) end
 
@@ -288,11 +288,11 @@ function NUM:like(x,...)
 
 -- TL;DR, to make statisticians happy, do not
 -- divide by 2, but 2*1.28 = 2.56.
-function NUM.div(i) 
+function NUM:div() 
   local a=self.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
 
 -- -> mid(i:NUM)) :tab -> Return a columns' `mid`ddle 
-function NUM.mid(i) 
+function NUM:mid() 
   local a=self.kept:has(); return per(a,.5) end
 
 -- -> norm(i:NUM, x:num) :num -> Normalize `x` 0..1 for lo..hi 
@@ -429,7 +429,7 @@ function cat(t,   u,pub)
   return (t.is or "").."{"..table.concat(u," ").."}"  end
 
 -- -> fmt(s:str,...) :str -> Emulate printf.  
-mfmt=string.format
+fmt=string.format
 
 -- ### Testing
 -- Code for demos, tests.   <img align=right height=100  src="tpurple.png"> 
