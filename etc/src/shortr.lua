@@ -370,7 +370,7 @@ function cat(t,   u,pub)
 
 fmt=string.format
 
--- ### Testing
+-- ## Testing
 -- Code for demos, tests.   <img align=right width=150  src="tpurple.png"> 
 -- To disable a test, move it from `go` to `no`.
 local go,no,fails={},{},0
@@ -386,6 +386,8 @@ function go.all()
       print("FAIL:",k)
       fails=fails+1 end end end
 
+-- To disable a test, move it from `go` to `no`.
+-- To disable a test, move it from `go` to `no`.
 function go.the()  chat(the);    return true end
 function go.some( s) 
   the.Some = 16
