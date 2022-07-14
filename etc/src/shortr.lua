@@ -369,12 +369,12 @@ function SYM:add1(x,n)
 -- > rogues() > Warn if our code introduced a rogue global. <
 local function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
--- ##.# Maths
+-- #### Maths
 -- -> big:num -> Return `math.huge`
 big = math.huge
 -- -> R(n:?num=1) -> If `n` missing return a random number 0..1. Else return 1..`n`. 
 R = math.random
--- #.## Lists
+-- #### Lists
 -- -> kap(t:tab,f:fun):tab -> Filter key,values through `fun`. Remove slots where `fun` returns nil
 function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
 
@@ -418,7 +418,7 @@ function words(s,sep,fun,      t)
   fun = fun or same
   t={};for x in s:gmatch(fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
 
--- #i### Thing2string
+-- #### Thing2string
 function chat(t) print(cat(t)); return t end
 function cat(t,   u,pub) 
   pub=function(k,v) return tostring(k):sub(1,1)~="_" end
