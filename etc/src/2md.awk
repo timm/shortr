@@ -31,5 +31,4 @@ function dump(what,a,     s,sep,f) {
   print(what ? "\n```"LANG"\n"s"\n```\n" : s)
   split("",a,"") }
 
-function trim(s)   { {gsub(/(^[ \t]+|[ \t]+$)/,"",s); return s}
-  
+function trim(s)   { gsub(/(^[ \t]+|[ \t]+$)/,"",s); return s}
