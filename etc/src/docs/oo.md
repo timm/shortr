@@ -1,53 +1,86 @@
-# SHORTr.lua : less (but better) XAI
-<img align=right width=400 src="xai4.jpeg"> AI and XAI (explainable artificial intelligence) need not be hard. 
-E.g. here's a few hundred lines of LUA to search N items to find and 
-explain the best ones, using just log(N) evals.
+> ******<a id=1></a><br> 
 
-This code starts with a help string (from which we extract our global settings)
-and ends with a library of demos (see the `go` functions at end of file).  
-- Each setting can be (optionally) updated by a command-line flag.
-- Demos can be run separately or  all at once (using `-g all`).
-  To handle regression tests, we report back to the operating system 
-  the failures seen when the demos run.
+> ******<a id=2></a><br> 
 
-This code uses the following classes.
-- ROWS hold many ROWs which are summarized in COLs.
-- COLs can be either SYMbolic or NUMeric). 
-- Two helper classes are:
-  - SOME: keeps a sample of data from a NUMeric column.
-  - BIN:  tracks what goal variables are seen within some range.
+> ******<a id=3></a><br> 
 
-Data from disk is read into a ROWS, from which we 
-do some clustering (and each cluster is new ROWS object, containing a subset
-of the data). A decision tree is built that reports the difference between the 
-better and worst classes (and that tree is nothing but tree of ROWS with a `kids` pointer
-to sub-ROWS).
-
-More technically, using the independent variables, we do recursive random projections using 
-[FASTMAP](https://www.ijcai.org/Proceedings/2018/0198.pdf#page=2) and [Aha's heterogeneous distance measures](https://link.springer.com/content/pdf/10.1007/BF00153759.pdf#page=6). 
-At each level of the recursion, pairs of
-remote points are ranked (using the dependent variables) and all
-the data associated with the best/worst points are labeled `bests`
-or `rests`.  Supervised discretization and an entropy-based
-decision tree is then used to distinguish the best `bests` from
-the worst `rests`. Note that all this access the dependent variables just _log2(N)_ times.
-
-<a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
-<a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow?logo=Checkmarx&logoColor=white"></a>
-<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a>
-<a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a>
-<a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
-<br clear=all>
+> ******<a id=4></a><br> 
 
 
-|Category|Class|Protocol|What|Notes|
-|:---------|:----|:--------|:---|:----|
+> ******<a id=5></a><br> 
+
+> ******<a id=6></a><br> 
+
+> ******<a id=7></a><br> 
+
+> ******<a id=8></a><br> 
+
+> ******<a id=9></a><br> 
+
+> ******<a id=10></a><br> 
 
 
+> ******<a id=11></a><br> 
+
+> ******<a id=12></a><br> 
+
+> ******<a id=13></a><br> 
+
+> ******<a id=14></a><br> 
+
+> ******<a id=15></a><br> 
+
+> ******<a id=16></a><br> 
 
 
-## Config
--> help :str -> Help text for this code. 
+> ******<a id=17></a><br> 
+
+> ******<a id=18></a><br> 
+
+> ******<a id=19></a><br> 
+
+> ******<a id=20></a><br> 
+
+> ******<a id=21></a><br> 
+
+
+> ******<a id=22></a><br> 
+
+> ******<a id=23></a><br> 
+
+> ******<a id=24></a><br> 
+
+> ******<a id=25></a><br> 
+
+> ******<a id=26></a><br> 
+
+> ******<a id=27></a><br> 
+
+> ******<a id=28></a><br> 
+
+> ******<a id=29></a><br> 
+
+
+> ******<a id=30></a><br> 
+
+> ******<a id=31></a><br> 
+
+> ******<a id=32></a><br> 
+
+> ******<a id=33></a><br> 
+
+> ******<a id=34></a><br> 
+
+> ******<a id=35></a><br> 
+
+
+> ******<a id=36></a><br> 
+
+
+> ******<a id=37></a><br> 
+
+> ***`help` :str -> Help text for this code.***<a id=38></a><br> 
+
 
 ```lua
 local help = [[
@@ -65,7 +98,8 @@ oo.lua : stuff that is cool
 
 ```
 
--> the :table -> Config settings. Extracted from `help`. e.g. `the.cohen=.35`. 
+> ***`the` :table -> Config settings. Extracted from `help`. e.g. `the.cohen=.35`.***<a id=39></a><br> 
+
 
 ```lua
 local the={}
@@ -78,9 +112,12 @@ help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",function(k,x) the[k]=thing(x) en
 
 ```
 
--> cli(the:tab):tab -> Updates settings from the command line. 
-e.g. `-c .2` -- updates `the.cohen`. To flip booleans, just mention them 
-on the command line; e.g. `-h` will flip `the.help=false` to `the.help=true`.
+> ***cli(`the` :tab) :tab -> Updates settings from the command line.***<a id=40></a><br> 
+
+> ******<a id=41></a><br> 
+
+> ******<a id=42></a><br> 
+
 
 ```lua
 local function cli(t)
@@ -94,14 +131,17 @@ local function cli(t)
 
 ```
 
-## Names
-`b4` is a list of names known before this code. Used by `rogue()` (see below)
+> ******<a id=43></a><br> 
+
+> ******<a id=44></a><br> 
+
 
 ```lua
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 ```
 
-By defining names before the code, the code can be written in any order.
+> ******<a id=45></a><br> 
+
 
 ```lua
 local cat,chat,csv,fmt,kap,lines,map
@@ -109,8 +149,10 @@ local new,obj,per,push,R,rogues,same,sort,trim,words
 
 ```
 
--> obj(txt:str,base:?class) :class -> Make a class, perhaps as a kid of `base`.
-Instances have a unique `id` and use the `cat` function for pretty printing.
+> ***obj(`txt` :str,`base` :?class)  :class -> Make a class, perhaps as a kid of `base`.***<a id=46></a><br> 
+
+> ******<a id=47></a><br> 
+
 
 ```lua
 local _id=0
@@ -127,10 +169,14 @@ local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL)
 
 ```
 
-## Columns
-### COL
-#### Create
--> COL(at:?int=0, txt:?str=""): COL -> Superclass constructor for columns. 
+> ******<a id=48></a><br> 
+
+> ******<a id=49></a><br> 
+
+> ******<a id=50></a><br> 
+
+> ***COL(`at` :?int=0, `txt` :?str="") : COL -> Superclass constructor for columns.***<a id=51></a><br> 
+
 
 ```lua
 function COL:new(at,txt)
@@ -140,8 +186,10 @@ function COL:new(at,txt)
 
 ```
 
-#### Reports
-> dist(x:any, y:any) :num > Return distance. For missing values, assume max distance. <
+> ******<a id=52></a><br> 
+
+> ******<a id=53></a><br> 
+
 
 ```lua
 function COL:dist(x,y)
@@ -149,8 +197,10 @@ function COL:dist(x,y)
 
 ```
 
-#### Update
--> add(x:any, inc:?int=1) -> `inc` times repeat: add `x` 
+> ******<a id=54></a><br> 
+
+> ***add(`x` :any, `inc` :?int=1) -> `inc` times `repeat` : add `x`***<a id=55></a><br> 
+
 
 ```lua
 function COL:add(x,inc)
@@ -161,8 +211,10 @@ function COL:add(x,inc)
 
 ```
 
-### SOME
-#### Create
+> ******<a id=56></a><br> 
+
+> ******<a id=57></a><br> 
+
 
 ```lua
 function SOME:new(...)
@@ -171,7 +223,8 @@ function SOME:new(...)
 
 ```
 
-#### Update
+> ******<a id=58></a><br> 
+
 
 ```lua
 function SOME:add1(x,inc)
@@ -182,7 +235,8 @@ function SOME:add1(x,inc)
 
 ```
 
-#### Reports
+> ******<a id=59></a><br> 
+
 
 ```lua
 function SOME:has()
@@ -192,8 +246,10 @@ function SOME:has()
 
 ```
 
-### NUM
-#### Create
+> ******<a id=60></a><br> 
+
+> ******<a id=61></a><br> 
+
 
 ```lua
 local NUM=obj("NUM",COL)
@@ -204,7 +260,8 @@ function NUM:new(...)
 
 ```
 
-#### Report
+> ******<a id=62></a><br> 
+
 
 ```lua
 function NUM.div(i) 
@@ -219,7 +276,8 @@ function NUM:norm(x)
 
 ```
 
-#### Update
+> ******<a id=63></a><br> 
+
 
 ```lua
 function NUM:add1(x,inc)
@@ -227,22 +285,27 @@ function NUM:add1(x,inc)
 
 ```
 
-## Lib
-### Lint
-> rogues() > Warn if our code introduced a rogue global. <
+> ******<a id=64></a><br> 
+
+> ******<a id=65></a><br> 
+
+> ******<a id=66></a><br> 
+
 
 ```lua
 local function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 ```
 
-### Maths
+> ******<a id=67></a><br> 
+
 
 ```lua
 R=math.random
 ```
 
-### Lists
+> ******<a id=68></a><br> 
+
 
 ```lua
 function same(x)      return x end
@@ -255,13 +318,15 @@ function per(t,p)     p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 
 ```
 
-### Misc
+> ******<a id=69></a><br> 
+
 
 ```lua
 function same(x) return x end
 ```
 
-### String2things
+> ******<a id=70></a><br> 
+
 
 
 ```lua
@@ -276,7 +341,8 @@ function lines(file, fun)
 
 ```
 
-> the :table > Config settings. Extracted from `help`. <
+> ******<a id=71></a><br> 
+
 
 ```lua
 function thing(x) 
@@ -291,7 +357,8 @@ function words(s,sep,fun,      t)
 
 ```
 
-### Thing2string
+> ******<a id=72></a><br> 
+
 
 ```lua
 function chat(t) print(cat(t)); return t end
@@ -307,7 +374,8 @@ fmt=string.format
 
 ```
 
-### Testing
+> ******<a id=73></a><br> 
+
 
 ```lua
 local go,fails={},0
@@ -332,7 +400,8 @@ function go.some( n)
 
 ```
 
-## Start
+> ******<a id=74></a><br> 
+
 
 ```lua
 the=cli(the)
