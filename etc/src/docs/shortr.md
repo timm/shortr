@@ -72,16 +72,16 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  | Likelihood | [***like(x :any,prior :num)  :num***](#26)|Return how much `x` might belong to `i`.|
 | |  | Report | [***div() :tab***](#27)|Return `div`ersity of a column (its entropy).|
 | |  | Update | [***add(x :any, n :?int=1)***](#28)|Add `n` count to `self.kept[n]`.|
-|Lib | Maths |  | [***big :num***](#29)|Return `math.huge`|
+|MISC | Lib | Lint | [***big :num***](#29)|Return `math.huge`|
 | |  |  | [***R(n :?num=1)***](#30)|If `n` missing return a random number 0..1. Else return 1..`n`.|
-| | Lists |  | [***kap(t :tab,f :fun) :tab***](#31)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***kap(t :tab,f :fun) :tab***](#31)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
 | |  |  | [***map(t :tab,f :fun) :tab***](#32)|Filter through `fun`. Remove slots where `fun` returns nil|
 | |  |  | [***per(t :tab,p :float) :any***](#33)|Returns the items `p`-th way through `t`.|
 | |  |  | [***sort(t :tab,f :fun) :tab***](#34)|Sort list in place. Return list. `fun` defaults to `<`.|
 | |  |  | [***sort(t :tab,f :fun) :tab***](#35)|Sort list in place. Return list. `fun` defaults to `<`.|
-| | Misc |  | [***ako(x) :tab***](#36)|Return arg's metatable.|
+| |  | Other | [***ako(x) :tab***](#36)|Return arg's metatable.|
 | |  |  | [***same(x) :x***](#37)|Return arg, un changed.|
-|Testing | Thing2string |  | [***go.all()***](#38)|Runs all the tests (called from command-line by `-g all`).|
+| | Testing | String2things | [***go.all()***](#38)|Runs all the tests (called from command-line by `-g all`).|
 
 
 
@@ -560,10 +560,11 @@ function SYM:add1(x,n)
 
 ```
 
-## Lib
+## MISC
+### Lib
 <img align=right height=100 src="l.png">
 Musc utils.
-### Lint
+#### Lint
 > rogues() > Warn if our code introduced a rogue global. <
 
 ```lua
@@ -571,7 +572,7 @@ local function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 ```
 
-### Maths
+##.# Maths
 > ***big :num***<a id=29></a><br>Return `math.huge` 
 
 
@@ -586,7 +587,7 @@ big = math.huge
 R = math.random
 ```
 
-### Lists
+#.## Lists
 > ***kap(t :tab,f :fun) :tab***<a id=31></a><br>Filter key,values through `fun`. Remove slots where `fun` returns nil 
 
 
@@ -627,7 +628,7 @@ function push(t,x) t[1+#t]=x; return x end
 
 ```
 
-### Misc
+#### Other
 > ***ako(x) :tab***<a id=36></a><br>Return arg's metatable. 
 
 
@@ -643,7 +644,7 @@ function ako(x) return getmetatable(x) end
 function same(x) return x end
 ```
 
-### String2things
+#### String2things
 
 
 ```lua
@@ -673,7 +674,7 @@ function words(s,sep,fun,      t)
 
 ```
 
-### Thing2string
+#i### Thing2string
 
 ```lua
 function chat(t) print(cat(t)); return t end
@@ -689,7 +690,7 @@ fmt=string.format
 
 ```
 
-## Testing
+### Testing
 Code for demos, tests.   <img align=right height=100  src="tpurple.png"> 
 To disable a test, move it from `go` to `no`.
 
@@ -748,7 +749,7 @@ function go.num( n,n1)
 
 ```
 
-## Start
+### Start
 This code can get used in two ways.   <img align=right height=100  src="sgreen.png"> 
 - If used in `lua shortr.lua` then it is _top-level_ code.   
   In this case, this code is in control and it will call

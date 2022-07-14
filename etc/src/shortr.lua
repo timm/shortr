@@ -361,19 +361,20 @@ function SYM:mid()
 function SYM:add1(x,n)
   self.kept[x] = n  + (self.kept[x] or 0) end 
 
--- ## Lib
+-- ## MISC
+-- ### Lib
 -- <img align=right height=100 src="l.png">
 -- Musc utils.
--- ### Lint
+-- #### Lint
 -- > rogues() > Warn if our code introduced a rogue global. <
 local function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
--- ### Maths
+-- ##.# Maths
 -- -> big:num -> Return `math.huge`
 big = math.huge
 -- -> R(n:?num=1) -> If `n` missing return a random number 0..1. Else return 1..`n`. 
 R = math.random
--- ### Lists
+-- #.## Lists
 -- -> kap(t:tab,f:fun):tab -> Filter key,values through `fun`. Remove slots where `fun` returns nil
 function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
 
@@ -389,13 +390,13 @@ function sort(t,f) table.sort(t,f); return t end
 -- -> sort(t:tab,f:fun):tab -> Sort list in place. Return list. `fun` defaults to `<`.
 function push(t,x) t[1+#t]=x; return x end
 
--- ### Misc
+-- #### Other
 -- -> ako(x):tab -> Return arg's metatable.
 function ako(x) return getmetatable(x) end
 
 -- -> same(x):x -> Return arg, un changed.
 function same(x) return x end
--- ### String2things
+-- #### String2things
 
 function csv(file,fun)
   lines(file, function(line) fun(words(line, ",", thing)) end) end 
@@ -417,7 +418,7 @@ function words(s,sep,fun,      t)
   fun = fun or same
   t={};for x in s:gmatch(fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
 
--- ### Thing2string
+-- #i### Thing2string
 function chat(t) print(cat(t)); return t end
 function cat(t,   u,pub) 
   pub=function(k,v) return tostring(k):sub(1,1)~="_" end
@@ -429,7 +430,7 @@ function cat(t,   u,pub)
 
 fmt=string.format
 
--- ## Testing
+-- ### Testing
 -- Code for demos, tests.   <img align=right height=100  src="tpurple.png"> 
 -- To disable a test, move it from `go` to `no`.
 local go,no,fails={},{},0
@@ -467,7 +468,7 @@ function go.num( n,n1)
     n:add(v) end
   return assert( 3.90== n:div()//.01 * .01) end
 
--- ## Start
+-- ### Start
 -- This code can get used in two ways.   <img align=right height=100  src="sgreen.png"> 
 -- - If used in `lua shortr.lua` then it is _top-level_ code.   
 --   In this case, this code is in control and it will call
