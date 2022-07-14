@@ -371,7 +371,9 @@ function cat(t,   u,pub)
 fmt=string.format
 
 -- ### Testing
-local go,fails={},0
+-- Code for demos, tests.   <img align=right width=150  src="tpurple.png"> 
+-- To disable a test, move it from `go` to `no`.
+local go,no,fails={},{},0
 
 function go.all() 
   local defaults={}

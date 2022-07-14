@@ -566,9 +566,11 @@ fmt=string.format
 ```
 
 ### Testing
+Code for demos, tests.   <img align=right width=150  src="tpurple.png"> 
+To disable a test, move it from `go` to `no`.
 
 ```lua
-local go,fails={},0
+local go,no,fails={},{},0
 
 function go.all() 
   local defaults={}
