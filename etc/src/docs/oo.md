@@ -44,22 +44,22 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 
 |Category|Class|Protocol|What|Notes|
 |:---------|:----|:--------|:---|:----|
-|Config |  |  | [***help  :str***](#)|Help text for this code.|
-| |  |  | [***the  :table***](#1)|Config settings. Extracted from `help`. e.g. `the.cohen=.35`.|
-| |  |  | [***cli(the :tab) :tab***](#2)|Updates settings from the command line.|
-|Names |  |  | [***obj(txt :str,base :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
-|Columns | COL | Create | [***COL(at :?int=0, txt :?str="") : COL***](#4)|Superclass constructor for columns.|
-| |  | Query | [***dist(x :any, y :any)  :num***](#5)|Return distance. For missing values, assume max distance. <|
-| |  | Update | [***add(x :any, inc :?int=1)***](#6)|`inc` times repeat: add `x`|
-|Lib | Maths | Update | [***big :num***](#7)|Return `math.huge`|
-| |  |  | [***R(n :?num=1)***](#8)|If `n` missing return a random number 0..1. Else return 1..`n`.|
-| | Lists |  | [***kap(t :tab,f :fun) :tab***](#9)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
-| |  |  | [***map(t :tab,f :fun) :tab***](#10)|Filter through `fun`. Remove slots where `fun` returns nil|
-| |  |  | [***per(t :tab,p :float) :any***](#11)|Returns the items `p`-th way through `t`.|
-| |  |  | [***sort(t :tab,f :fun) :tab***](#12)|Sort list in place. Return list. `fun` defaults to `<`.|
+|Config |  |  | [***help  :str***](#1)|Help text for this code.|
+| |  |  | [***the  :table***](#2)|Config settings. Extracted from `help`. e.g. `the.cohen=.35`.|
+| |  |  | [***cli(the :tab) :tab***](#3)|Updates settings from the command line.|
+|Names |  |  | [***obj(txt :str,base :?class)  :class***](#4)|Make a class, perhaps as a kid of `base`.|
+|Columns | COL | Create | [***COL(at :?int=0, txt :?str="") : COL***](#5)|Superclass constructor for columns.|
+| |  | Query | [***dist(x :any, y :any)  :num***](#6)|Return distance. For missing values, assume max distance. <|
+| |  | Update | [***add(x :any, inc :?int=1)***](#7)|`inc` times repeat: add `x`|
+|Lib | Maths | Update | [***big :num***](#8)|Return `math.huge`|
+| |  |  | [***R(n :?num=1)***](#9)|If `n` missing return a random number 0..1. Else return 1..`n`.|
+| | Lists |  | [***kap(t :tab,f :fun) :tab***](#10)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***map(t :tab,f :fun) :tab***](#11)|Filter through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***per(t :tab,p :float) :any***](#12)|Returns the items `p`-th way through `t`.|
 | |  |  | [***sort(t :tab,f :fun) :tab***](#13)|Sort list in place. Return list. `fun` defaults to `<`.|
-| | Misc |  | [***ako(x) :tab***](#14)|Return arg's metatable.|
-| |  |  | [***same(x) :x***](#15)|Return arg, un changed.|
+| |  |  | [***sort(t :tab,f :fun) :tab***](#14)|Sort list in place. Return list. `fun` defaults to `<`.|
+| | Misc |  | [***ako(x) :tab***](#15)|Return arg's metatable.|
+| |  |  | [***same(x) :x***](#16)|Return arg, un changed.|
 
 
 
