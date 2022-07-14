@@ -191,6 +191,8 @@ function SOME:has()
 
 -- **RESPONSIBILITIES** : 
 -- - Same as COL and knows if we want to minimize or maximize these values (see `w`).
+-- **COLLOBERATIONS** : 
+-- - Uses SOME to keep a sample of the data seen.
 
 -- #### Create
 -- -> NUM(at:?num=0, txt:?str="") :NUM -> Constructor.
@@ -203,6 +205,71 @@ function NUM:new(...)
   self.super.new(self, ...)
   self.kept = SOME()          
   self.w = self.txt:find"-$" and -1 or 1 end
+
+-- #### Discretize
+-- To discretize a numeric column, first map all the numbers into a finite number
+-- of bins (say, divided on "(hi-lo)/16"). Then look at the class distrubutions
+-- in each bin. While two adjacent bins have similar distributions, then merge them
+-- and go look for anything else that might be merged. 
+
+-- Q: For that to work, don't you need to to collect information on _two_ columns.
+--    (one you are trying to discretize and another holding the class distribution)?   
+-- A:  Yes indeed. The class [BIN](bin.md) does that. Here, we define some services to help
+-- [BIN](bin.md) do its work.
+
+-- -> bin(x:any) -> Return `x` mapped to a finite number of bins 
+function NUM:bin(x)
+  local a = self.kept:has()
+  local b = (a[#a] - a[1])/the.bins
+  return a[#a]==a[1] and 1 or math.floor(x/b+.5)*b end
+
+-- > merge(j:NUM) :NUM -> merge two NUMs 
+function NUM:merge(j,     k)
+  k = self:clone()
+  for _,kept in pairs{self.kept, j.kept} do
+    for _,x in pairs(kept) do k:add(x) end end
+  return k end
+
+-- -> merges(t:[BIN]) :[BIN] -> merge a list of BINs (for numeric y-values) 
+-- Note the last line of `merges`: if anything merged, then loop again looking for other merges.
+-- Else, time to finish up (expand the bins to cover all gaps across the number line).
+-- FYI, to see what happens when this code calls `merged`, goto [BIN](bin.md).
+
+-- Q: why is this defined here (and not in the BIN class)?  
+-- A: The `merges` of several
+-- BINs is different for NUMs and SYMs (in SYMs, we can't merge anything so `merges` just 
+-- returns the original list, unchanged).
+function NUM:merges(b4, min) 
+  local function fillInTheGaps(bins)
+    bins[1].lo, bins[#bins].hi = -big, big
+    if #bins>1 then
+      for n=2,#bins do bins[n].lo = bins[n-1].hi end end
+    return bins 
+  end ------------- 
+  local n,now = 1,{}
+  while n <= #b4 do
+    local merged= n<#b4 and b4[n]:merged(b4[n+1],min) --"merged" defined in bin.md
+    now[#now+1] = merged or b4[n]
+    n           = n + (merged and 2 or 1)  -- if merged, skip passed the merged bin
+  end
+  return #now < #b4 and self:merges(now,min) or fillInTheGaps(now) end
+
+-- #### Distance
+-- > dist(x:num,y:num): num > Return distance 0..1 between `x,y`. <
+-- This code assume max distance for missing values.
+function NUM:dist(x,y)
+  if x=="?" and y=="?" then return 1 end
+  if     x=="?" then y = self:norm(y); x = y<.5 and 1 or 0 
+  elseif y=="?" then x = self:norm(x); y = x<.5 and 1 or 0
+  else   x,y = self:norm(x), self:norm(y) end
+  return math.abs(x - y) end 
+
+-- #### Likelihood
+-- -> like(x:any) -> Return the likelihood that `x` belongs to `i`. <
+function NUM:like(x,...)
+  local sd,mu=self:div(), self:mid()
+  if sd==0 then return x==mu and 1 or 1/big end
+  return math.exp(-.5*((x - mu)/sd)^2) / (sd*((2*math.pi)^0.5)) end  
 
 -- #### Query
 -- -> div(i:NUM) :tab -> Return `div`ersity of a column (tendency to depart central tendency). 
