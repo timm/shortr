@@ -351,7 +351,7 @@ function SYM:div()
   for x,n in pairs(self.kept) do if n > 0 then ent=ent + fun(n/self.n) end end
   return ent end
 
--- > mid():num  > Return the most common symbol (the `mid`ddle (central tendency). 
+-- -> mid():num  -> Return the most common symbol (the `mid`ddle (central tendency). 
 function SYM:mid()
   local max,mode=-1,nil
   for x,n in pairs(self.kept) do if n > most then most,mode = n,x end end
