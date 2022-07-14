@@ -168,7 +168,7 @@ function SOME:new(...)
 
 -- #### Update
 -- -> add(i:SOME: x:num) -> If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random). Otherwise, just add.
-ffunction SOME:add1(x,inc)
+function SOME:add1(x,inc)
   for j=1,inc do
     local a= self.kept
     if     #a  < self.max        then self.ok=false; push(a,x) 
@@ -176,7 +176,7 @@ ffunction SOME:add1(x,inc)
 
 -- #### Query
 -- -> has(i:SOME):tab -> Ensure contents are sorted. Return those contents.
-ffunction SOME:has()
+function SOME:has()
   self.kept = self.ok and self.kept or sort(self.kept)
   self.ok=true
   return self.kept  end
@@ -302,12 +302,14 @@ function go.all()
 
 function go.the()  chat(the);    return true end
 function go.some( s) 
+  the.Some = 16
   s = SOME()
-  print(s._id)
-  for j=1,10^3 do s:add(j) end end
+  for j=1,10^3 do s:add(j) end
+  local m=0
+  for _,n in pairs(s:has()) do if n> 200 and n<300 then m =m+1 end end
+  return m>1 and m<12 end
   
 function go.num( n,n1) 
-  the.Some = 16
   n  = NUM(6,"tim")
   n1 = n:clone()
   for j=1,10^3 do n:add(j) end
