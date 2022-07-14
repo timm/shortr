@@ -83,7 +83,13 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  |  | [***same(x) :x***](#37)|Return arg, un changed.|
 | |  | Maths | [***big :num***](#38)|Return `math.huge`|
 | |  |  | [***R(n :?num=1)***](#39)|If `n` missing return a random number 0..1. Else return 1..`n`.|
-| | Testing | Thing2string | [***go.all()***](#40)|Runs all the tests (called from command-line by `-g all`).|
+| |  | String2things | [***csv(file :str,  fun :fun) :tab***](#40)|Call `fun` with lines, split on ",".|
+| |  |  | [***lines(file :str,  fun :fun) :tab i-> Call `fun` with lines.***](#41)||
+| |  |  | [***words(s :str, sep :str, fun :fun) :tab***](#42)|Return `t` filled with `s`, split  on `sep`.|
+| |  | Thing2string | [***chat(t :tab)***](#43)|Print table (as string). Return `t`.|
+| |  |  | [***cat(t :tab) :str***](#44)|Return table as string. For key-indexed lists, show keys (sorted).|
+| |  |  | [***fmt(s :str,...)  :str***](#45)|Emulate printf.|
+| | Testing |  | [***go.all()***](#46)|Runs all the tests (called from command-line by `-g all`).|
 
 
 
@@ -650,11 +656,20 @@ R = math.random
 
 #### String2things
 
+> ***csv(file :str,  fun :fun) :tab***<a id=40></a><br>Call `fun` with lines, split on ",". 
+
+Coerces strings to nums, bools, etc (where appropriate).
 
 ```lua
 function csv(file,fun)
   lines(file, function(line) fun(words(line, ",", thing)) end) end 
 
+```
+
+> ***lines(file :str,  fun :fun) :tab i-> Call `fun` with lines.***<a id=41></a><br> 
+
+
+```lua
 function lines(file, fun)
   local file = io.input(file)
   while true do
@@ -663,15 +678,10 @@ function lines(file, fun)
 
 ```
 
-> the :table > Config settings. Extracted from `help`. <
+> ***words(s :str, sep :str, fun :fun) :tab***<a id=42></a><br>Return `t` filled with `s`, split  on `sep`. 
+
 
 ```lua
-function thing(x) 
-  x = x:match"^%s*(.-)%s*$"
-  if x=="true" then return true elseif x=="false" then return false end
-  return math.tointeger(x) or tonumber(x) or x end 
-
-
 function words(s,sep,fun,      t)
   fun = fun or same
   t={};for x in s:gmatch(fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
@@ -679,9 +689,18 @@ function words(s,sep,fun,      t)
 ```
 
 #### Thing2string
+> ***chat(t :tab)***<a id=43></a><br>Print table (as string). Return `t`. 
+
 
 ```lua
 function chat(t) print(cat(t)); return t end
+
+```
+
+> ***cat(t :tab) :str***<a id=44></a><br>Return table as string. For key-indexed lists, show keys (sorted). 
+
+
+```lua
 function cat(t,   u,pub) 
   pub=function(k,v) return tostring(k):sub(1,1)~="_" end
   if type(t)~="table" then return tostring(t) end
@@ -690,7 +709,13 @@ function cat(t,   u,pub)
   table.sort(u)
   return (t.is or "").."{"..table.concat(u," ").."}"  end
 
-fmt=string.format
+```
+
+> ***fmt(s :str,...)  :str***<a id=45></a><br>Emulate printf. 
+
+
+```lua
+mfmt=string.format
 
 ```
 
@@ -703,7 +728,7 @@ local go,no,fails={},{},0
 
 ```
 
-> ***go.all()***<a id=40></a><br>Runs all the tests (called from command-line by `-g all`). 
+> ***go.all()***<a id=46></a><br>Runs all the tests (called from command-line by `-g all`). 
 
 Resets `the` and the random number seed before each call. 
 

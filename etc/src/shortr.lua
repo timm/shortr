@@ -398,28 +398,28 @@ R = math.random
 
 -- #### String2things
 
+-- -> csv(file:str,  fun:fun):tab -> Call `fun` with lines, split on ",". 
+-- Coerces strings to nums, bools, etc (where appropriate).
 function csv(file,fun)
   lines(file, function(line) fun(words(line, ",", thing)) end) end 
 
+-- -> lines(file:str,  fun:fun):tab i-> Call `fun` with lines. 
 function lines(file, fun)
   local file = io.input(file)
   while true do
     local line = io.read()
     if not line then return io.close(file) else fun(line) end end end
 
--- > the :table > Config settings. Extracted from `help`. <
-function thing(x) 
-  x = x:match"^%s*(.-)%s*$"
-  if x=="true" then return true elseif x=="false" then return false end
-  return math.tointeger(x) or tonumber(x) or x end 
-
-
+-- -> words(s:str, sep:str, fun:fun):tab -> Return `t` filled with `s`, split  on `sep`. 
 function words(s,sep,fun,      t)
   fun = fun or same
   t={};for x in s:gmatch(fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t end
 
 -- #### Thing2string
+-- -> chat(t:tab) -> Print table (as string). Return `t`. 
 function chat(t) print(cat(t)); return t end
+
+-- -> cat(t:tab):str  -> Return table as string. For key-indexed lists, show keys (sorted). 
 function cat(t,   u,pub) 
   pub=function(k,v) return tostring(k):sub(1,1)~="_" end
   if type(t)~="table" then return tostring(t) end
@@ -428,7 +428,8 @@ function cat(t,   u,pub)
   table.sort(u)
   return (t.is or "").."{"..table.concat(u," ").."}"  end
 
-fmt=string.format
+-- -> fmt(s:str,...) :str -> Emulate printf.  
+mfmt=string.format
 
 -- ### Testing
 -- Code for demos, tests.   <img align=right height=100  src="tpurple.png"> 
