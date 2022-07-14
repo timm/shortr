@@ -49,19 +49,22 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  |  | [***cli(the :tab) :tab***](#3)|Updates settings from the command line.|
 |Names |  |  | [***obj(txt :str,base :?class)  :class***](#4)|Make a class, perhaps as a kid of `base`.|
 |Columns | COL | Create | [***COL(at?int=0, txt :?str="") : COL***](#5)|Superclass constructor for columns.|
-| |  | Query | [***dist(x :any, y :any)  :num***](#6)|Return distance. For missing values, assume max distance. <|
-| |  | Update | [***add(x :any, inc :?int=1)***](#7)|`inc` times repeat: add `x`|
-| | NUM | Create | [***NUM(at :?num=0, txt :?str="")  :NUM***](#8)|Constructor.|
-| |  | Query | [***div(i :NUM)  :tab***](#9)|Return `div`ersity of a column (tendency to depart central tendency).|
-|Lib | Maths | Update | [***big :num***](#10)|Return `math.huge`|
-| |  |  | [***R(n :?num=1)***](#11)|If `n` missing return a random number 0..1. Else return 1..`n`.|
-| | Lists |  | [***kap(t :tab,f :fun) :tab***](#12)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
-| |  |  | [***map(t :tab,f :fun) :tab***](#13)|Filter through `fun`. Remove slots where `fun` returns nil|
-| |  |  | [***per(t :tab,p :float) :any***](#14)|Returns the items `p`-th way through `t`.|
-| |  |  | [***sort(t :tab,f :fun) :tab***](#15)|Sort list in place. Return list. `fun` defaults to `<`.|
-| |  |  | [***sort(t :tab,f :fun) :tab***](#16)|Sort list in place. Return list. `fun` defaults to `<`.|
-| | Misc |  | [***ako(x) :tab***](#17)|Return arg's metatable.|
-| |  |  | [***same(x) :x***](#18)|Return arg, un changed.|
+| |  |  | [***clone()  :COL --> Return some of the same structure.***](#6)||
+| |  | Query | [***dist(x :any, y :any)  :num***](#7)|Return distance. For missing values, assume max distance.<|
+| |  | Update | [***add(x :any, inc :?int=1)***](#8)|`inc` times repeat: add `x`|
+| | SOME | Create | [***SOME(at?int=0, txt :?str="") : SOME***](#9)|Constructor.|
+| |  | Update | [***add(i :SOME : x :num)***](#10)|-- If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random).|
+| | NUM | Create | [***NUM(at :?num=0, txt :?str="")  :NUM***](#11)|Constructor.|
+| |  | Query | [***div(i :NUM)  :tab***](#12)|Return `div`ersity of a column (tendency to depart central tendency).|
+|Lib | Maths | Update | [***big :num***](#13)|Return `math.huge`|
+| |  |  | [***R(n :?num=1)***](#14)|If `n` missing return a random number 0..1. Else return 1..`n`.|
+| | Lists |  | [***kap(t :tab,f :fun) :tab***](#15)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***map(t :tab,f :fun) :tab***](#16)|Filter through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***per(t :tab,p :float) :any***](#17)|Returns the items `p`-th way through `t`.|
+| |  |  | [***sort(t :tab,f :fun) :tab***](#18)|Sort list in place. Return list. `fun` defaults to `<`.|
+| |  |  | [***sort(t :tab,f :fun) :tab***](#19)|Sort list in place. Return list. `fun` defaults to `<`.|
+| | Misc |  | [***ako(x) :tab***](#20)|Return arg's metatable.|
+| |  |  | [***same(x) :x***](#21)|Return arg, un changed.|
 
 
 
@@ -193,13 +196,19 @@ function COL:new(at,txt)
   self.txt = txt or ""  
   self.n   = 0 end     
 
+```
+
+> ***clone()  :COL --> Return some of the same structure.***<a id=6></a><br> 
+
+
+```lua
 function COL:clone()
   return ako(self)(self.at, self.txt) end
 
 ```
 
 #### Query
-> ***dist(x :any, y :any)  :num***<a id=6></a><br>Return distance. For missing values, assume max distance. < 
+> ***dist(x :any, y :any)  :num***<a id=7></a><br>Return distance. For missing values, assume max distance.< 
 
 
 ```lua
@@ -209,7 +218,7 @@ function COL:dist(x,y)
 ```
 
 #### Update
-> ***add(x :any, inc :?int=1)***<a id=7></a><br>`inc` times repeat: add `x` 
+> ***add(x :any, inc :?int=1)***<a id=8></a><br>`inc` times repeat: add `x` 
 
 
 ```lua
@@ -222,7 +231,10 @@ function COL:add(x,inc)
 ```
 
 ### SOME
+Reservoir sampler. Keep no more than `the.Same` numbers.
 #### Create
+> ***SOME(at?int=0, txt :?str="") : SOME***<a id=9></a><br>Constructor. 
+
 
 ```lua
 local SOME=obj("SOME",COL)
@@ -233,9 +245,12 @@ function SOME:new(...)
 ```
 
 #### Update
+> ***add(i :SOME : x :num)***<a id=10></a><br>-- If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random). 
+
+Otherwise, just add.
 
 ```lua
-function SOME:add1(x,inc)
+ffunction SOME:add1(x,inc)
   for j=1,inc do
     local a= self.kept
     if     #a  < self.max        then self.ok=false; push(a,x) 
@@ -255,7 +270,7 @@ function SOME:has()
 
 ### NUM
 #### Create
-> ***NUM(at :?num=0, txt :?str="")  :NUM***<a id=8></a><br>Constructor. 
+> ***NUM(at :?num=0, txt :?str="")  :NUM***<a id=11></a><br>Constructor. 
 
 
 ```lua
@@ -268,7 +283,7 @@ function NUM:new(...)
 ```
 
 #### Query
-> ***div(i :NUM)  :tab***<a id=9></a><br>Return `div`ersity of a column (tendency to depart central tendency). 
+> ***div(i :NUM)  :tab***<a id=12></a><br>Return `div`ersity of a column (tendency to depart central tendency). 
 
 
 <img align=right src="normal.png"> 
@@ -316,14 +331,14 @@ local function rogues()
 ```
 
 ### Maths
-> ***big :num***<a id=10></a><br>Return `math.huge` 
+> ***big :num***<a id=13></a><br>Return `math.huge` 
 
 
 ```lua
 big = math.huge
 ```
 
-> ***R(n :?num=1)***<a id=11></a><br>If `n` missing return a random number 0..1. Else return 1..`n`. 
+> ***R(n :?num=1)***<a id=14></a><br>If `n` missing return a random number 0..1. Else return 1..`n`. 
 
 
 ```lua
@@ -331,7 +346,7 @@ R = math.random
 ```
 
 ### Lists
-> ***kap(t :tab,f :fun) :tab***<a id=12></a><br>Filter key,values through `fun`. Remove slots where `fun` returns nil 
+> ***kap(t :tab,f :fun) :tab***<a id=15></a><br>Filter key,values through `fun`. Remove slots where `fun` returns nil 
 
 
 ```lua
@@ -339,7 +354,7 @@ function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
 
 ```
 
-> ***map(t :tab,f :fun) :tab***<a id=13></a><br>Filter through `fun`. Remove slots where `fun` returns nil 
+> ***map(t :tab,f :fun) :tab***<a id=16></a><br>Filter through `fun`. Remove slots where `fun` returns nil 
 
 
 ```lua
@@ -347,7 +362,7 @@ function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
 
 ```
 
-> ***per(t :tab,p :float) :any***<a id=14></a><br>Returns the items `p`-th way through `t`. 
+> ***per(t :tab,p :float) :any***<a id=17></a><br>Returns the items `p`-th way through `t`. 
 
 
 ```lua
@@ -355,7 +370,7 @@ function per(t,p)  p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 
 ```
 
-> ***sort(t :tab,f :fun) :tab***<a id=15></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
+> ***sort(t :tab,f :fun) :tab***<a id=18></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
 
 
 ```lua
@@ -363,7 +378,7 @@ function sort(t,f) table.sort(t,f); return t end
 
 ```
 
-> ***sort(t :tab,f :fun) :tab***<a id=16></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
+> ***sort(t :tab,f :fun) :tab***<a id=19></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
 
 
 ```lua
@@ -372,7 +387,7 @@ function push(t,x) t[1+#t]=x; return x end
 ```
 
 ### Misc
-> ***ako(x) :tab***<a id=17></a><br>Return arg's metatable. 
+> ***ako(x) :tab***<a id=20></a><br>Return arg's metatable. 
 
 
 ```lua
@@ -380,7 +395,7 @@ function ako(x) return getmetatable(x) end
 
 ```
 
-> ***same(x) :x***<a id=18></a><br>Return arg, un changed. 
+> ***same(x) :x***<a id=21></a><br>Return arg, un changed. 
 
 
 ```lua

@@ -139,11 +139,12 @@ function COL:new(at,txt)
   self.txt = txt or ""  
   self.n   = 0 end     
 
+-- -> clone() :COL --> Return some of the same structure.
 function COL:clone()
   return ako(self)(self.at, self.txt) end
 
 -- #### Query
--- -> dist(x:any, y:any) :num -> Return distance. For missing values, assume max distance. <
+-- -> dist(x:any, y:any) :num -> Return distance. For missing values, assume max distance.<
 function COL:dist(x,y)
   return x=="?" and y=="?" and 1 or self:dist1(x,y) end
 
@@ -156,14 +157,18 @@ function COL:add(x,inc)
     self:add1(x,inc) end end
 
 -- ### SOME
+-- Reservoir sampler. Keep no more than `the.Same` numbers.
 -- #### Create
+-- -> SOME(at?int=0, txt:?str=""): SOME -> Constructor.
 local SOME=obj("SOME",COL)
 function SOME:new(...)
   self.super.new(self, ...)
   self.kept, self.ok, self.max = {}, true, the.Some end
 
 -- #### Update
-function SOME:add1(x,inc)
+-- -> add(i:SOME: x:num) -> -- If full then at odds `i.some/i.n`, keep `x`(replacing some older item, at random).
+-- Otherwise, just add.
+ffunction SOME:add1(x,inc)
   for j=1,inc do
     local a= self.kept
     if     #a  < self.max        then self.ok=false; push(a,x) 
