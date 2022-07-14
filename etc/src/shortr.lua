@@ -160,8 +160,8 @@ function COL:add(x,inc)
     self:add1(x,inc) end end
 
 -- ### SOME
--- <img align=right height=100 src="s.png">
--- Given a finite buffer of some small size `max`, then after reading 
+-- Given a finite buffer  <img align=right height=100 src="s.png">
+-- some small size `max`, then after reading 
 -- a very large set of `n` numbers, we should only be keeping `max/n` of those nums.
 -- #### Create
 -- -> SOME(at?int=0, txt:?str=""): SOME -> Constructor.
@@ -365,29 +365,21 @@ function SYM:add1(x,n)
 -- ## MISC
 -- ### Lib
 -- <img align=right height=100 src="l.png">
--- Musc utils.
+
 -- #### Lint
 -- > rogues() > Warn if our code introduced a rogue global. <
 local function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
--- #### Maths
--- -> big:num -> Return `math.huge`
-big = math.huge
--- -> R(n:?num=1) -> If `n` missing return a random number 0..1. Else return 1..`n`. 
-R = math.random
+
 -- #### Lists
 -- -> kap(t:tab,f:fun):tab -> Filter key,values through `fun`. Remove slots where `fun` returns nil
 function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
-
 -- -> map(t:tab,f:fun):tab -> Filter through `fun`. Remove slots where `fun` returns nil
 function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
-
 -- -> per(t:tab,p:float):any -> Returns the items `p`-th way through `t`.
 function per(t,p)  p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
-
 -- -> sort(t:tab,f:fun):tab -> Sort list in place. Return list. `fun` defaults to `<`.
 function sort(t,f) table.sort(t,f); return t end
-
 -- -> sort(t:tab,f:fun):tab -> Sort list in place. Return list. `fun` defaults to `<`.
 function push(t,x) t[1+#t]=x; return x end
 
@@ -397,6 +389,13 @@ function ako(x) return getmetatable(x) end
 
 -- -> same(x):x -> Return arg, un changed.
 function same(x) return x end
+
+-- #### Maths
+-- -> big:num -> Return `math.huge`
+big = math.huge
+-- -> R(n:?num=1) -> If `n` missing return a random number 0..1. Else return 1..`n`. 
+R = math.random
+
 -- #### String2things
 
 function csv(file,fun)
