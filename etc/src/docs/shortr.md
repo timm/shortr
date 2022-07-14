@@ -51,15 +51,17 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 |Columns | COL | Create | [***COL(at?int=0, txt :?str="") : COL***](#5)|Superclass constructor for columns.|
 | |  | Query | [***dist(x :any, y :any)  :num***](#6)|Return distance. For missing values, assume max distance. <|
 | |  | Update | [***add(x :any, inc :?int=1)***](#7)|`inc` times repeat: add `x`|
-|Lib | Maths | Update | [***big :num***](#8)|Return `math.huge`|
-| |  |  | [***R(n :?num=1)***](#9)|If `n` missing return a random number 0..1. Else return 1..`n`.|
-| | Lists |  | [***kap(t :tab,f :fun) :tab***](#10)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
-| |  |  | [***map(t :tab,f :fun) :tab***](#11)|Filter through `fun`. Remove slots where `fun` returns nil|
-| |  |  | [***per(t :tab,p :float) :any***](#12)|Returns the items `p`-th way through `t`.|
-| |  |  | [***sort(t :tab,f :fun) :tab***](#13)|Sort list in place. Return list. `fun` defaults to `<`.|
-| |  |  | [***sort(t :tab,f :fun) :tab***](#14)|Sort list in place. Return list. `fun` defaults to `<`.|
-| | Misc |  | [***ako(x) :tab***](#15)|Return arg's metatable.|
-| |  |  | [***same(x) :x***](#16)|Return arg, un changed.|
+| | NUM | Create | [***NUM(at :?num=0, txt :?str="")  :NUM***](#8)|Constructor.|
+| |  | Query | [***div(i :NUM)  :tab***](#9)|Return `div`ersity of a column (tendency to depart central tendency).|
+|Lib | Maths | Update | [***big :num***](#10)|Return `math.huge`|
+| |  |  | [***R(n :?num=1)***](#11)|If `n` missing return a random number 0..1. Else return 1..`n`.|
+| | Lists |  | [***kap(t :tab,f :fun) :tab***](#12)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***map(t :tab,f :fun) :tab***](#13)|Filter through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***per(t :tab,p :float) :any***](#14)|Returns the items `p`-th way through `t`.|
+| |  |  | [***sort(t :tab,f :fun) :tab***](#15)|Sort list in place. Return list. `fun` defaults to `<`.|
+| |  |  | [***sort(t :tab,f :fun) :tab***](#16)|Sort list in place. Return list. `fun` defaults to `<`.|
+| | Misc |  | [***ako(x) :tab***](#17)|Return arg's metatable.|
+| |  |  | [***same(x) :x***](#18)|Return arg, un changed.|
 
 
 
@@ -253,6 +255,8 @@ function SOME:has()
 
 ### NUM
 #### Create
+> ***NUM(at :?num=0, txt :?str="")  :NUM***<a id=8></a><br>Constructor. 
+
 
 ```lua
 local NUM=obj("NUM",COL)
@@ -261,11 +265,25 @@ function NUM:new(...)
   self.kept = SOME()          
   self.w = self.txt:find"-$" and -1 or 1 end
 
---function NUM:clone() return NUM(self.at, self.txt) end
-
 ```
 
 #### Query
+> ***div(i :NUM)  :tab***<a id=9></a><br>Return `div`ersity of a column (tendency to depart central tendency). 
+
+
+<img align=right src="normal.png"> 
+
+Q: In the code for `div`, where does the magic number 2.56 come from?   
+A: Intuitively, the diversity can be measured by (a) ignoring outliers from, say, the top
+and bottom 10% then (b) reporting the high-low values of the rest, perhaps divided by two
+(since we reporting divergence from some middle point). 
+But with a little bit of mathemagic, we can turn that (90th-10th)/2 report into some more
+standard.
+Recall that &pm;1 to &pm;2 sds covers 68 to 95% of the Gaussian prob.
+In between, at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd. 
+
+TL;DR, to make statisticians happy, do not
+divide by 2, but 2*1.28 = 2.56.
 
 ```lua
 function NUM.div(i) 
@@ -298,14 +316,14 @@ local function rogues()
 ```
 
 ### Maths
-> ***big :num***<a id=8></a><br>Return `math.huge` 
+> ***big :num***<a id=10></a><br>Return `math.huge` 
 
 
 ```lua
 big = math.huge
 ```
 
-> ***R(n :?num=1)***<a id=9></a><br>If `n` missing return a random number 0..1. Else return 1..`n`. 
+> ***R(n :?num=1)***<a id=11></a><br>If `n` missing return a random number 0..1. Else return 1..`n`. 
 
 
 ```lua
@@ -313,7 +331,7 @@ R = math.random
 ```
 
 ### Lists
-> ***kap(t :tab,f :fun) :tab***<a id=10></a><br>Filter key,values through `fun`. Remove slots where `fun` returns nil 
+> ***kap(t :tab,f :fun) :tab***<a id=12></a><br>Filter key,values through `fun`. Remove slots where `fun` returns nil 
 
 
 ```lua
@@ -321,7 +339,7 @@ function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
 
 ```
 
-> ***map(t :tab,f :fun) :tab***<a id=11></a><br>Filter through `fun`. Remove slots where `fun` returns nil 
+> ***map(t :tab,f :fun) :tab***<a id=13></a><br>Filter through `fun`. Remove slots where `fun` returns nil 
 
 
 ```lua
@@ -329,7 +347,7 @@ function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
 
 ```
 
-> ***per(t :tab,p :float) :any***<a id=12></a><br>Returns the items `p`-th way through `t`. 
+> ***per(t :tab,p :float) :any***<a id=14></a><br>Returns the items `p`-th way through `t`. 
 
 
 ```lua
@@ -337,7 +355,7 @@ function per(t,p)  p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 
 ```
 
-> ***sort(t :tab,f :fun) :tab***<a id=13></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
+> ***sort(t :tab,f :fun) :tab***<a id=15></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
 
 
 ```lua
@@ -345,7 +363,7 @@ function sort(t,f) table.sort(t,f); return t end
 
 ```
 
-> ***sort(t :tab,f :fun) :tab***<a id=14></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
+> ***sort(t :tab,f :fun) :tab***<a id=16></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
 
 
 ```lua
@@ -354,7 +372,7 @@ function push(t,x) t[1+#t]=x; return x end
 ```
 
 ### Misc
-> ***ako(x) :tab***<a id=15></a><br>Return arg's metatable. 
+> ***ako(x) :tab***<a id=17></a><br>Return arg's metatable. 
 
 
 ```lua
@@ -362,7 +380,7 @@ function ako(x) return getmetatable(x) end
 
 ```
 
-> ***same(x) :x***<a id=16></a><br>Return arg, un changed. 
+> ***same(x) :x***<a id=18></a><br>Return arg, un changed. 
 
 
 ```lua

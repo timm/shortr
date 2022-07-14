@@ -177,15 +177,29 @@ function SOME:has()
 
 -- ### NUM
 -- #### Create
+-- -> NUM(at:?num=0, txt:?str="") :NUM -> Constructor.
 local NUM=obj("NUM",COL)
 function NUM:new(...)
   self.super.new(self, ...)
   self.kept = SOME()          
   self.w = self.txt:find"-$" and -1 or 1 end
 
---function NUM:clone() return NUM(self.at, self.txt) end
-
 -- #### Query
+-- -> div(i:NUM) :tab -> Return `div`ersity of a column (tendency to depart central tendency). 
+
+-- <img align=right src="normal.png"> 
+
+-- Q: In the code for `div`, where does the magic number 2.56 come from?   
+-- A: Intuitively, the diversity can be measured by (a) ignoring outliers from, say, the top
+-- and bottom 10% then (b) reporting the high-low values of the rest, perhaps divided by two
+-- (since we reporting divergence from some middle point). 
+-- But with a little bit of mathemagic, we can turn that (90th-10th)/2 report into some more
+-- standard.
+-- Recall that &pm;1 to &pm;2 sds covers 68 to 95% of the Gaussian prob.
+-- In between, at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd. 
+
+-- TL;DR, to make statisticians happy, do not
+-- divide by 2, but 2*1.28 = 2.56.
 function NUM.div(i) 
   local a=i.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
 
