@@ -42,7 +42,7 @@
 -- TABLE.OF.CONTENTS
 
 -- ## Config
--- > help :str > Help text for this code. <
+-- -> help :str -> Help text for this code. 
 local help = [[
 
 oo.lua : stuff that is cool
@@ -56,7 +56,7 @@ oo.lua : stuff that is cool
  -s  seed   random number seed   = 10019
  -S  Some   some items to keep   = 256]]
 
--- > the :table > Config settings. Extracted from `help`. e.g. `the.cohen=.35`.  <
+-- -> the :table -> Config settings. Extracted from `help`. e.g. `the.cohen=.35`. 
 local the={}
 local function thing(x) 
   x = x:match"^%s*(.-)%s*$"
@@ -65,7 +65,7 @@ local function thing(x)
 
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",function(k,x) the[k]=thing(x) end)
 
--- > cli(the:tab):tab > Updates settings from the command line. <
+-- -> cli(the:tab):tab -> Updates settings from the command line. 
 -- e.g. `-c .2` -- updates `the.cohen`. To flip booleans, just mention them 
 -- on the command line; e.g. `-h` will flip `the.help=false` to `the.help=true`.
 local function cli(t)
@@ -84,7 +84,7 @@ local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 local cat,chat,csv,fmt,kap,lines,map
 local new,obj,per,push,R,rogues,same,sort,trim,words
 
--- > obj(txt:str,base:?class) :class > Make a class, perhaps as a kid of `base`.
+-- -> obj(txt:str,base:?class) :class -> Make a class, perhaps as a kid of `base`.
 -- Instances have a unique `id` and use the `cat` function for pretty printing.
 local _id=0
 function obj(txt,base,  t,new,i)
@@ -101,7 +101,7 @@ local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL)
 -- ## Columns
 -- ### COL
 -- #### Create
--- > COL(at:?int=0, txt:?str=""): COL > Superclass constructor for columns. <
+-- -> COL(at:?int=0, txt:?str=""): COL -> Superclass constructor for columns. 
 function COL:new(at,txt)
   self.at  = at or 0     
   self.txt = txt or ""  
@@ -113,7 +113,7 @@ function COL:dist(x,y)
   return x=="?" and y=="?" and 1 or self:dist1(x,y) end
 
 -- #### Update
--- > add(x:any, inc:?int=1) > `inc` times repeat: add `x` <
+-- -> add(x:any, inc:?int=1) -> `inc` times repeat: add `x` 
 function COL:add(x,inc)
   if x ~= "?" then 
     inc = inc or 1

@@ -1,6 +1,6 @@
 BEGIN {LANG="lua"
        COM="^-- "
-       HINT = COM ">"
+       HINT = " -> "
        split("",tmp,"")
        print "\n|Category|Class|Protocol|What|Notes|" >> "/dev/stderr"
        print "|:---------|:----|:--------|:---|:----|" >> "/dev/stderr"
@@ -11,12 +11,10 @@ BEGIN {LANG="lua"
                   }
                   {now=b4}
 $0 ~ COM          {now=0} 
-$0 ~ HINT         {sep="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                   sep= sep sep sep sep sep 
-                   split($0,h,/[><]/) 
+$0 ~ COM HINT     {split($0,h,HINT) 
                    h[2]=gensub(/([A-Za-z0-9_]+)[ \t]*:/,"`\\1`:","g",h[2])
                    gsub(/:/," :",h[2])
-                   $0= "> ***"trim(h[2])"***<a id="++n"></a>"sep"<br>"trim(h[3])" \n" 
+                   $0="> ***"trim(h[2])"***<a id="++n"></a>"sep"<br>"trim(h[3])" \n" 
                    print("|"Category" | "Class" | "Protocol" | [***"trim(h[2])"***](#"n")|"trim(h[3])"|")>>"/dev/stderr"
                    Category=Class=Protocol=""
                   }
@@ -33,8 +31,5 @@ function dump(what,a,     s,sep,f) {
   print(what ? "\n```"LANG"\n"s"\n```\n" : s)
   split("",a,"") }
 
-function trim(s)   {
-  sub(/^[ \t]*/,"",s)
-  sub(/[ \t]*$/,"",s)
-  return s }
+function trim(s)   { {gsub(/(^[ \t]+|[ \t]+$)/,"",s); return s}
   
