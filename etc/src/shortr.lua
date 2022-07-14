@@ -188,8 +188,16 @@ function SOME:has()
 -- ### NUM
 -- Summarize a sequence of numbers.
 -- <img align=right width=150 src="n.png">
+
+-- **RESPONSIBILITIES** : 
+-- - Same as COL and knows if we want to minimize or maximize these values (see `w`).
+
 -- #### Create
 -- -> NUM(at:?num=0, txt:?str="") :NUM -> Constructor.
+-- Q: Where we use the `w` weight?  
+-- A: See the `better` method inside [ROW](row.md) where `w` is used to 
+--    weight the dependent variables. In that code, one ROW is better than another
+--    when that weight rewards changing to that value.
 local NUM=obj("NUM",COL)
 function NUM:new(...)
   self.super.new(self, ...)
