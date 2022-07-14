@@ -42,18 +42,18 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 
 |Category|Class|Protocol|What|Notes|
 |:---------|:----|:--------|:---|:----|
-|Config |  |  | [***`help` :str***](#1)|Help text for this code.|
-| |  |  | [***`the` :table***](#2)|Config settings. Extracted from `help`. e.g. `the.cohen=.35`.|
-| |  |  | [***cli(`the` :tab) :tab***](#3)|Updates settings from the command line.|
-|Names |  |  | [***obj(`txt` :str,`base` :?class)  :class***](#4)|Make a class, perhaps as a kid of `base`.|
-|Columns | COL | Create | [***COL(`at` :?int=0, `txt` :?str="") : COL***](#5)|Superclass constructor for columns.|
-| |  | Update | [***add(`x` :any, `inc` :?int=1)***](#6)|`inc` times repeat: add `x`|
+|Config |  |  | [***help  :str***](#)|Help text for this code.|
+| |  |  | [***the  :table***](#1)|Config settings. Extracted from `help`. e.g. `the.cohen=.35`.|
+| |  |  | [***cli(the :tab) :tab***](#2)|Updates settings from the command line.|
+|Names |  |  | [***obj(txt :str,base :?class)  :class***](#3)|Make a class, perhaps as a kid of `base`.|
+|Columns | COL | Create | [***COL(at :?int=0, txt :?str="") : COL***](#4)|Superclass constructor for columns.|
+| |  | Update | [***add(x :any, inc :?int=1)***](#5)|`inc` times repeat: add `x`|
 
 
 
 
 ## Config
-> ***`help` :str***<a id=1></a><br>Help text for this code. 
+> ***`help`:str***<a id=1></a><br>Help text for this code. 
 
 
 ```lua
@@ -72,7 +72,7 @@ oo.lua : stuff that is cool
 
 ```
 
-> ***`the` :table***<a id=2></a><br>Config settings. Extracted from `help`. e.g. `the.cohen=.35`. 
+> ***`the`:table***<a id=2></a><br>Config settings. Extracted from `help`. e.g. `the.cohen=.35`. 
 
 
 ```lua
@@ -86,7 +86,7 @@ help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",function(k,x) the[k]=thing(x) en
 
 ```
 
-> ***cli(`the` :tab) :tab***<a id=3></a><br>Updates settings from the command line. 
+> ***cli(`the`:tab) :tab***<a id=3></a><br>Updates settings from the command line. 
 
 e.g. `-c .2` -- updates `the.cohen`. To flip booleans, just mention them 
 on the command line; e.g. `-h` will flip `the.help=false` to `the.help=true`.
@@ -118,7 +118,7 @@ local new,obj,per,push,R,rogues,same,sort,trim,words
 
 ```
 
-> ***obj(`txt` :str,`base` :?class)  :class***<a id=4></a><br>Make a class, perhaps as a kid of `base`. 
+> ***obj(`txt`:str,`base`:?class)  :class***<a id=4></a><br>Make a class, perhaps as a kid of `base`. 
 
 Instances have a unique `id` and use the `cat` function for pretty printing.
 
@@ -140,7 +140,7 @@ local NUM, SOME, SYM = obj("NUM",COL), obj("SOME",COL), obj("SYM",COL)
 ## Columns
 ### COL
 #### Create
-> ***COL(`at` :?int=0, `txt` :?str="") : COL***<a id=5></a><br>Superclass constructor for columns. 
+> ***COL(`at`:?int=0, `txt`:?str="") : COL***<a id=5></a><br>Superclass constructor for columns. 
 
 
 ```lua
@@ -161,7 +161,7 @@ function COL:dist(x,y)
 ```
 
 #### Update
-> ***add(`x` :any, `inc` :?int=1)***<a id=6></a><br>`inc` times repeat: add `x` 
+> ***add(`x`:any, `inc`:?int=1)***<a id=6></a><br>`inc` times repeat: add `x` 
 
 
 ```lua
