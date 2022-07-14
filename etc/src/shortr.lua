@@ -331,18 +331,18 @@ function SYM:merge(j,     k)
 -- -> merges(i:SYM,t:tab):tab -> Merge a list of bins (for symbolic y-values). 
 function SYM:merges(t,...) return t end
 
--- ### Distance
+-- #### Distance
 -- -> dist(x:any,y:any) :num -> Return distance 0..1 between `x,y`. 
 -- Assume max distance for missing values.
 function SYM:dist(x,y)
   return  (x=="?" or y=="?")  and 1 or x==y and 0 or 1 end
 
--- ### Likelihood  
+-- #### Likelihood  
 -- -> like(i:SYM,x:any,prior:num) :num -> Return how much `x` might belong to `i`. 
 function SYM:ike(x,prior)
    return ((self.kept[x] or 0)+the.m*prior) / (self.n+the.m) end
 
--- ### Report
+-- #### Report
 -- -> div():tab -> Return `div`ersity of a column (its entropy). 
 -- FYI, diversity is the  tendency _not_ to be at the central tendency.
 function SYM:div()
@@ -356,7 +356,7 @@ function SYM:mid()
   for x,n in pairs(self.kept) do if n > most then most,mode = n,x end end
   return mode end
 
--- ### Update
+-- #### Update
 -- -> add(SYM: x:any, n:?int=1) -> Add `n` count to `self.kept[n]`. 
 function SYM:add1(x,n)
   self.kept[x] = n  + (self.kept[x] or 0) end 
