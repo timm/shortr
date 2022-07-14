@@ -132,7 +132,7 @@ function obj(txt,base,  t,new,i)
 -- - Query  central tendency and diversity and other things
 -- - Update summarization
 -- #### Create
--- -> COL(at:?int=0, txt:?str=""): COL -> Superclass constructor for columns. 
+-- -> COL(at?int=0, txt:?str=""): COL -> Superclass constructor for columns. 
 local COL=obj"COL"
 function COL:new(at,txt)
   self.at  = at or 0     
@@ -176,6 +176,7 @@ function SOME:has()
   return self.kept  end
 
 -- ### NUM
+-- <img src="num.png" align=right width=400>
 -- #### Create
 local NUM=obj("NUM",COL)
 function NUM:new(...)

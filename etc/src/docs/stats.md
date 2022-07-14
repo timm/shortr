@@ -1,32 +1,4 @@
-
-# [:high_brightness: SHORTr : less (but better) XAI](all.md)
-
-<a href="all.md"><img align=right width=400 src="stark.jpeg"></a>
-
-AI and XAI (explainable artificial intelligence) need not be
-hard.  E.g. here's a few hundred lines of LUA
-to search N items to  find and explain the best ones, using just
-log(N) evals.  
-
-**start here:**  ([help](all.md) ([install](/INSTALL.md) ([design notes](design.md))))                                                                                               
-**build:**       ([Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)-- just for doc)                                                                           
-**demos:**       ([go](go.md))                                                                                                                                                      
-**apps:**         ([nb](nb.md) ([tree](tree.md)))   
-**functions:**   ([lib](lib.md))     
-**columns:**    ([cols](cols.md) ([num](num.md) ([some](some.md) ([sym](sym.md)))))  
-**rows:** ([row](row.md) ([rows](rows.md)))   
-**trees:** ([bin](bin.md) ([tree](tree.md))))
-
-<a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
-<a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow?logo=Checkmarx&logoColor=white"></a>
-<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br>
-<a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a>
-<a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
-<br clear=all>
-
 ## Summarize data
-
-
 
 ```lua
 local the=require"the"
@@ -87,34 +59,19 @@ function go.ALL()
 
 
 (go[arg[2]] or same)()  
-```
 
+```
 
 local Rows=obj("Row", function(i,row) i.rows={}; i.cols=nil; i.categories={} end)
 function Rows.add(i,row)
   rs.kepts = rs.cols and maps(r.kepts,row,update) or i:categorize(kap(row,init) end)
-
-
-
-```lua
 --
-```
-
-
 function Rows.categorize(i,cols)
   for _,col in pairs(cols) do if not col.ignorep then 
      push(col.txt:find"[!+-]$" and i.categories.y or i.categories.y, col) end end 
   return end
-
-
-
-```lua
 --
-```
-
-
 function make(f,rows) 
   local function make1(row) if rows then rows:add(row) else rows=Rows(row) end
   if type(src)=="table" then map(rows,make1) else csv(src,make1) end
   return rows end
-

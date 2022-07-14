@@ -1,29 +1,3 @@
-
-# [:high_brightness: SHORTr : less (but better) XAI](all.md)
-
-<a href="all.md"><img align=right width=400 src="stark.jpeg"></a>
-
-AI and XAI (explainable artificial intelligence) need not be
-hard.  E.g. here's a few hundred lines of LUA
-to search N items to  find and explain the best ones, using just
-log(N) evals.  
-
-**start here:**  ([help](all.md) ([install](/INSTALL.md) ([design notes](design.md))))                                                                                               
-**build:**       ([Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)-- just for doc)                                                                           
-**demos:**       ([go](go.md))                                                                                                                                                      
-**apps:**         ([nb](nb.md) ([tree](tree.md)))   
-**functions:**   ([lib](lib.md))     
-**columns:**    ([cols](cols.md) ([num](num.md) ([some](some.md) ([sym](sym.md)))))  
-**rows:** ([row](row.md) ([rows](rows.md)))   
-**trees:** ([bin](bin.md) ([tree](tree.md))))
-
-<a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
-<a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow?logo=Checkmarx&logoColor=white"></a>
-<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br>
-<a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a>
-<a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
-<br clear=all>
-
 ## Class NUM
 Summarize numbers
 
@@ -40,26 +14,20 @@ Summarize numbers
 - [SOME](some.md) : used to store a sample of the items seen oo far.
 ------------------------------------------------------------
 
-
-
 ```lua
 local all = require"all"
 local big,obj,per,push,the = all.big,all.obj,all.per,all.push,all.the
 local SOME = require"some"
+
 ```
 
-
 ### Create
-> ***[NUM](num.md#create)(`at`:?int, `txt`:?str) :[NUM](num.md#create)***<br>
-Summarize a stream of numbers.
-
+> NUM(at:?int, txt:?str) :NUM > Summarize a stream of numbers. <
 
 Q: Where we use the `w` weight?  
 A: See the `better` method inside [ROW](row.md) where `w` is used to 
    weight the dependent variables. In that code, one ROW is better than another
    when that weight rewards changing to that value.
-
-
 
 ```lua
 local NUM = obj("NUM", function(i,at,txt) 
@@ -69,19 +37,15 @@ local NUM = obj("NUM", function(i,at,txt)
   i.kept = SOME(the.Some)          -- :SOME  holds a sample of items seen so far
   i.w = i.txt:find"-$" and -1 or 1 -- :num   do we seek less or more of this?
   end)
+
 ```
 
-
-> ***clone(`i`:[NUM](num.md#create)) :[NUM](num.md#create)***<br>
-Return a class of the same structure.
-
-
-
+> clone(i:NUM) :NUM > Return a class of the same structure. <
 
 ```lua
 function NUM.clone(i) return NUM(i.at, i.txt) end
-```
 
+```
 
 ### Discretize
 To discretize a numeric column, first map all the numbers into a finite number
@@ -94,25 +58,17 @@ Q: For that to work, don't you need to to collect information on _two_ columns.
 A:  Yes indeed. The class [BIN](bin.md) does that. Here, we define some services to help
 [BIN](bin.md) do its work.
 
-> ***bin(`i`:`[NUM](num.md#create)`: `x`:any)***<br>
-Return `x` mapped to a finite number of bins
-
-
-
+> bin(i:NUM: x:any) > Return `x` mapped to a finite number of bins <
 
 ```lua
 function NUM.bin(i,x)
   local a = i.kept:has()
   local b = (a[#a] - a[1])/the.bins
   return a[#a]==a[1] and 1 or math.floor(x/b+.5)*b end
+
 ```
 
-
-> ***merge(`i`:[NUM](num.md#create),`j`:[NUM](num.md#create)) :[NUM](num.md#create)***<br>
-merge two NUMs
-
-
-
+> merge(i:NUM,j:NUM) :NUM > merge two NUMs <
 
 ```lua
 function NUM.merge(i,j,     k)
@@ -120,12 +76,10 @@ function NUM.merge(i,j,     k)
   for _,kept in pairs{i.kept, j.kept} do
     for _,x in pairs(kept) do k:add(x) end end
   return k end
+
 ```
 
-
-> ***merges(`i`:[NUM](num.md#create),`t`:[[BIN](bin.md#create)]) :[[BIN](bin.md#create)]***<br>
-merge a list of BINs (for numeric y-values)
-
+> merges(i:NUM,t:[BIN]) :[BIN] > merge a list of BINs (for numeric y-values) <
 Note the last line of `merges`: if anything merged, then loop again looking for other merges.
 Else, time to finish up (expand the bins to cover all gaps across the number line).
 FYI, to see what happens when this code calls `merged`, goto [BIN](bin.md).
@@ -134,8 +88,6 @@ Q: why is this defined here (and not in the BIN class)?
 A: The `merges` of several
 BINs is different for NUMs and SYMs (in SYMs, we can't merge anything so `merges` just 
 returns the original list, unchanged).
-
-
 
 ```lua
 function NUM.merges(i,b4, min) 
@@ -152,16 +104,12 @@ function NUM.merges(i,b4, min)
     n           = n + (merged and 2 or 1)  -- if merged, skip passed the merged bin
   end
   return #now < #b4 and i:merges(now,min) or fillInTheGaps(now) end
+
 ```
 
-
 ### Distance
-> ***dist(`i`:[NUM](num.md#create), `x`:num,`y`:num): num***<br>
-Return distance 0..1 between `x,y`.
-
+> dist(i:NUM, x:num,y:num): num > Return distance 0..1 between `x,y`. <
 This code assume max distance for missing values.
-
-
 
 ```lua
 function NUM.dist(i,x,y)
@@ -170,28 +118,22 @@ function NUM.dist(i,x,y)
   elseif y=="?" then x = i:norm(x); y = x<.5 and 1 or 0
   else   x,y = i:norm(x), i:norm(y) end
   return math.abs(x - y) end 
+
 ```
 
-
 ### Likelihood
-> ***like(`i`:[NUM](num.md#create), `x`:any)***<br>
-Return the likelihood that `x` belongs to `i`.
-
-
-
+> like(i:NUM, x:any) > Return the likelihood that `x` belongs to `i`. <
 
 ```lua
 function NUM.like(i,x,...)
   local sd,mu=i:div(), i:mid()
   if sd==0 then return x==mu and 1 or 1/big end
   return math.exp(-.5*((x - mu)/sd)^2) / (sd*((2*math.pi)^0.5)) end  
+
 ```
 
-
 ### Report
-> ***div(`i`:[NUM](num.md#create)) :tab***<br>
-Return `div`ersity of a column (tendency to depart central tendency).
-
+> div(i:NUM) :tab > Return `div`ersity of a column (tendency to depart central tendency). <
 
 <img align=right src="normal.png"> 
 
@@ -207,58 +149,41 @@ In between, at &pm;1.28, we cover 90%. So (p90-p10)/(2*1.28) returns one sd.
 TL;DR, to make statisticians happy, do not
 divide by 2, but 2*1.28 = 2.56.
 
-
-
 ```lua
 function NUM.div(i) 
   local a=i.kept:has(); return (per(a,.9) - per(a,.1))/2.56 end
+
 ```
 
-
-> ***mid(`i`:[NUM](num.md#create))) :tab***<br>
-Return a columns' `mid`ddle
-
-
-
+> mid(i:NUM)) :tab > Return a columns' `mid`ddle <
 
 ```lua
 function NUM.mid(i) 
   local a=i.kept:has(); return per(a,.5) end
+
 ```
 
-
-> ***norm(`i`:[NUM](num.md#create), `x`:num) :num***<br>
-Normalize `x` 0..1 for lo..hi
-
-
-
+> norm(i:NUM, x:num) :num > Normalize `x` 0..1 for lo..hi <
 
 ```lua
 function NUM.norm(i,x)
   local a=i.kept:has(); return (a[#a]-a[1])<1E-9 or (x-a[1])/(a[#a]-a[1]) end
+
 ```
 
-
 ### Update
-> ***add(`i`:[NUM](num.md#create), `x`:num, `n`:?int=1)***<br>
-`n` times,update `i`'s SOME object.
-
-
-
+> add(i:NUM, x:num, n:?int=1) > `n` times,update `i`'s SOME object. <
 
 ```lua
 function NUM.add(i,x,n)
   if x ~="? " then 
    for _ = 1,(n or 1) do i.n=i.n+1; i.kept:add(x) end end end
+
 ```
 
-
 That's all folks.
-
-
 
 ```lua
 return NUM
 ```
-
 

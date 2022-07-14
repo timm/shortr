@@ -1,110 +1,68 @@
-
-# [:high_brightness: SHORTr : less (but better) XAI](all.md)
-
-<a href="all.md"><img align=right width=400 src="stark.jpeg"></a>
-
-AI and XAI (explainable artificial intelligence) need not be
-hard.  E.g. here's a few hundred lines of LUA
-to search N items to  find and explain the best ones, using just
-log(N) evals.  
-
-**start here:**  ([help](all.md) ([install](/INSTALL.md) ([design notes](design.md))))                                                                                               
-**build:**       ([Makefile](https://github.com/timm/shortr/blob/master/etc/src/Makefile)-- just for doc)                                                                           
-**demos:**       ([go](go.md))                                                                                                                                                      
-**apps:**         ([nb](nb.md) ([tree](tree.md)))   
-**functions:**   ([lib](lib.md))     
-**columns:**    ([cols](cols.md) ([num](num.md) ([some](some.md) ([sym](sym.md)))))  
-**rows:** ([row](row.md) ([rows](rows.md)))   
-**trees:** ([bin](bin.md) ([tree](tree.md))))
-
-<a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a>
-<a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow?logo=Checkmarx&logoColor=white"></a>
-<a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br>
-<a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a>
-<a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
-<br clear=all>
-
 ## Start-up, test suite, demos
-
-
 
 ```lua
 local all = require"all"
-local chat,chunks,cli,csv = all.chat, all.chunks, all.cli, all.csv
-local maps,on = all.maps, all.on
-local settings,sort,splice, the = all.settings, all.sort, all.splice, all.the
+local any,cat,chat,chunks,cli,csv = all.any, all.cat,all.chat, all.chunks, all.cli, all.csv
+local fmt,many,map,maps,on,rnd = all.fmt, all.many, all.map,all.maps, all.on,all.rnd
+local settings,sort,splice, small,sum,the = all.settings, all.sort, all.splice, all.small, all.sum,all.the
 
 local COLS,NUM = require"cols", require"num"
 local SOME, SYM, NB  = require"some", require"sym", require"nb"
 local ABCD,ROWS      = require"abcd", require"rows"
 require "tree"
-```
 
+```
 
 To disable a test, rename it from `go` to `no`.
 
-
-
 ```lua
 local go,no = {},{}
-```
 
+```
 
 Print `the`.
 
-
-
 ```lua
 function go.THE() chat(the); return true end
-```
 
+```
 
 Sort some numbers.
 
-
-
 ```lua
 function go.SORT() chat(sort{10,5,1,15,0}); return true end
+
 ```
 
-
 Iterate over 2 lists
-
-
 
 ```lua
 function go.MAPS() 
   chat(maps({1,2,3},{10,20,30}, 
        function(x,y) return x+y end)); return true end
+
 ```
 
-
  Summarize stream of numbers
-
-
 
 ```lua
 function go.NUM() 
   local n=NUM(); for i=1,1000 do n:add(i) end; chat(n)
   print(n:div())
   return true end
+
 ```
 
-
 Keep a sample of 32 nums (out of 1000).
-
-
 
 ```lua
 function go.SOME() 
   local s=SOME(32); for i=1,1000 do s:add(i) end
   chat(sort(s.kept)); return true end 
+
 ```
 
-
  Summarize stream of symbols
-
-
 
 ```lua
 function go.SYM() 
@@ -112,42 +70,34 @@ function go.SYM()
   for i=1,1000 do for _,c in pairs{"a","a","b"} do s:add(c) end end
   print(s:div())
   chat(sort(s.kept)); return true end 
-```
 
+```
 
 Print CSV file.
 
-
-
 ```lua
 function go.CSV() csv(the.file, chat); return true end
-```
 
+```
 
 Try initializing some columns from a list of names.
 
-
-
 ```lua
 function go.COLS() chat(COLS{"aa","Bb","Cc-"}.x); return true end
+
 ```
 
-
 Load data from a csv file to a ROWS object.
-
-
 
 ```lua
 function go.ROWS( rs) 
   rs=ROWS():fill(the.file)
   chat(rs.cols.x[1])
   chat(rs.cols.y); return true end
+
 ```
 
-
 Print klass names
-
-
 
 ```lua
 function go.KLASS() 
@@ -156,12 +106,10 @@ function go.KLASS()
   for _,row in pairs(ROWS():fill(file).rows) do s:add(row:klass()) end
   chat(s.kept)
   return true end
+
 ```
 
-
 Load data from a csv file to a ROWS object.
-
-
 
 ```lua
 function go.BETTERS( rs,best,m,rest) 
@@ -199,16 +147,57 @@ function go.BINS( rs, m,best,rest)
   return true
 end
 
+function go.DIST(rs)
+  rs=ROWS():fill(the.file) 
+  for j=1,20 do 
+    local x=any(rs.rows)
+    local y=x:far()
+    print(j,fmt("%4.4f",x-y), cat(x.cells), cat(y.cells)) end 
+  return true end
+
+function go.HALF(rs,xy)
+  rs=ROWS():fill(the.file) 
+  xy=rs:half()
+  chat(rs:clone(xy.xs):mids())
+  chat(rs:clone(xy.ys):mids())
+  print(xy.y < xy.x)
+  return true end
+
+local function _calc(c,p) return math.log(math.log(1-c)/math.log(1-p),2) end
+function go.BEST(rs,xy,bests,rests,best,n)
+  rs=ROWS():fill(the.file) 
+  rows = rs.rows
+  local n1,n2=20,20
+  bests1,rests1=rs:best(rows,n1) 
+  print("bests1",cat(rs:clone(bests1):mids()))
+  print("rests1",cat(rs:clone(rests1):mids()))
+  n=sum(rs.rows,function(row) return row.evaled and 1 or 0 end); print("eval1",n)
+
+  bests2,rests2=rs:best(bests1,n2)
+  print("bests2",cat(rs:clone(bests2):mids()))
+  print("rests2",cat(rs:clone(rests2):mids()))
+  n=sum(rs.rows,function(row) return row.evaled and 1 or 0 end); print("eval1",n)
+
+  for j,row in pairs(sort(rs.rows)) do row.rank=100*j/#rs.rows//1 end
+  print("bests1",cat(sort(map(bests1,function(r) return r.rank end))))
+  print("bests2",cat(sort(map(bests2,function(r) return r.rank end))))
+  print("rand", cat(sort(map(many(rs.rows,n),function(r) return r.rank end))))
+
+  print("\ntree")
+  rows1=bests2
+  rows2=splice(rests1,#rests1-3*#rows1)
+  print("size",#rows1,#rows2)
+  rs:tree{rows1,rows2}:branches()
+
+  print(rnd(_calc(.99,.05),1))
+  return true end
+   
 ```
 
-
 ### Start
-
-
 
 ```lua
 the = cli(the)
 on(the, go)
 ```
-
 
