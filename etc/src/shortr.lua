@@ -176,7 +176,6 @@ function SOME:has()
   return self.kept  end
 
 -- ### NUM
--- <img src="num.png" align=right width=400>
 -- #### Create
 local NUM=obj("NUM",COL)
 function NUM:new(...)

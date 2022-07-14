@@ -252,7 +252,6 @@ function SOME:has()
 ```
 
 ### NUM
-<img src="num.png" align=right width=400>
 #### Create
 
 ```lua
