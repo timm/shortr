@@ -657,8 +657,10 @@ function ROW:around( rows)
 ```lua
 function ROW:far(rows) return per(self:around(rows), the.Far).row end
 
-
 ```
+
+### ROWS
+**RESPONSIBILITIES** : <img align=right height=100 src="rcolor.png">
 
 ## MISC
 ### Lib

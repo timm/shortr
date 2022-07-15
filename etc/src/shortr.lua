@@ -411,6 +411,8 @@ function ROW:around( rows)
 -- -> far(i:ROW,rows:?[ROW]):ROW -> find something `far` away.
 function ROW:far(rows) return per(self:around(rows), the.Far).row end
 
+-- ### ROWS
+-- **RESPONSIBILITIES** : <img align=right height=100 src="rcolor.png">
 
 -- ## MISC
 -- ### Lib
