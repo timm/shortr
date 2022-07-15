@@ -5,16 +5,16 @@ BEGIN {LANG="lua"
        print "\n|Category|Class|Protocol|What|Notes|" >> "/dev/stderr"
        print "|:---------|:----|:--------|:---|:----|" >> "/dev/stderr"
 }
-                  { if ($0 ~ (COM "## ")) Category = $3 
-                    if ($0 ~ (COM "### ")) Class = $3 
-                    if ($0 ~ (COM "#### ")) Protocol = $3 
+                  { if ($0 ~ (COM "## ")) Category = "**"$3"**" 
+                    if ($0 ~ (COM "### ")) Class = "**"$3"**"
+                    if ($0 ~ (COM "#### ")) Protocol = "**"$3"**" 
                   }
                   {now=b4}
 $0 ~ COM          {now=0} 
 $0 ~ HINT         {split($0,h,/ -> /) 
                    gsub(/:/," :",h[2])
                    n++
-                   print("|**"Category"** | **"Class"** | **"Protocol"** | [***"trim(h[2])"***](#"n")|"trim(h[3])"|")>>"/dev/stderr"
+                   print("|"Category" | "Class" | "Protocol" | [***"trim(h[2])"***](#"n")|"trim(h[3])"|")>>"/dev/stderr"
                    #h[2]=gensub(/([A-Za-z0-9_]+)[ \t]*:/,"`\\1`:","g",h[2])
                    $0="> ***"trim(h[2])"***<a id="n"></a>"sep"<br>"trim(h[3])" \n" 
                    Category=Class=Protocol=""

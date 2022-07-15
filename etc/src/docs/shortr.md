@@ -42,73 +42,73 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 
 |Category|Class|Protocol|What|Notes|
 |:---------|:----|:--------|:---|:----|
-|**Config** | **** | **** | [***help  :str***](#1)|Help text for this code.|
-|**** | **** | **** | [***the  :table***](#2)|Config settings. Extracted from `help`. e.g. `the.cohen=.35`.|
-|**** | **** | **** | [***cli(the :tab) :tab***](#3)|Updates settings from the command line.|
-|**Names** | **** | **** | [***obj(txt :str,base :?class)  :class***](#4)|Make a class, perhaps as a kid of `base`.|
+|**Config** |  |  | [***help  :str***](#1)|Help text for this code.|
+| |  |  | [***the  :table***](#2)|Config settings. Extracted from `help`. e.g. `the.cohen=.35`.|
+| |  |  | [***cli(the :tab) :tab***](#3)|Updates settings from the command line.|
+|**Names** |  |  | [***obj(txt :str,base :?class)  :class***](#4)|Make a class, perhaps as a kid of `base`.|
 |**Columns** | **COL** | **Create** | [***COL(at?int=0, txt :?str="") : COL***](#5)|Superclass constructor for columns.|
-|**** | **** | **** | [***clone()  :COL --> Return some of the same structure.***](#6)||
-|**** | **** | **Query** | [***dist(x :any, y :any)  :num***](#7)|Return distance. For missing values, assume max distance.|
-|**** | **** | **Update** | [***add(x :any, inc :?int=1)***](#8)|`inc` times repeat: add `x`|
-|**** | **SOME** | **Create** | [***SOME(at?int=0, txt :?str="") : SOME***](#9)|Constructor.|
-|**** | **** | **Update** | [***add(x :num)***](#10)|If full then at odds `self.some/self.n`, keep `x`(replacing some older item, at random). Otherwise, just add.|
-|**** | **** | **Query** | [***has(i :SOME) :tab***](#11)|Ensure contents are sorted. Return those contents.|
-|**** | **NUM** | **Create** | [***NUM(at :?num=0, txt :?str="")  :NUM***](#12)|Constructor.|
-|**** | **** | **Discretize** | [***bin(x :any)***](#13)|Return `x` mapped to a finite number of bins|
-|**** | **** | **** | [***merge(j :NUM)  :NUM***](#14)|combine `self` with `j`.|
-|**** | **** | **** | [***merges(t :[BIN])  :[BIN]***](#15)|merge a list of BINs (for numeric y-values)|
-|**** | **** | **Distance** | [***dist(x :num,y :num) : num***](#16)|Return distance 0..1 between `x,y`.|
-|**** | **** | **Likelihood** | [***like(x :any)***](#17)|Return the likelihood that `x` belongs to `i`. <|
-|**** | **** | **Query** | [***div(i :NUM)  :tab***](#18)|Return `div`ersity of a column (tendency to depart central tendency).|
-|**** | **** | **** | [***mid(i :NUM))  :tab***](#19)|Return a columns' `mid`ddle|
-|**** | **** | **** | [***norm(i :NUM, x :num)  :num***](#20)|Normalize `x` 0..1 for lo..hi|
-|**** | **** | **Update** | [***add(i :NUM, x :num, n :?int=1)***](#21)|`n` times,update `i`'s SOME object.|
-|**** | **SYM** | **** | [***SYM(at :?int=0, txt :?str="")  :SYM***](#22)|Constructor.|
-|**** | **** | **Discretize** | [***bin(x :any)***](#23)|Return `x` mapped to a finite range (just return x).|
-|**** | **** | **** | [***merge(j :SYM) :SYM***](#24)|Combine self with `j`.|
-|**** | **** | **** | [***merges(i :SYM,t :tab) :tab***](#25)|Merge a list of bins (for symbolic y-values).|
-|**** | **** | **Distance** | [***dist(x :any,y :any)  :num***](#26)|Return distance 0..1 between `x,y`.|
-|**** | **** | **Likelihood** | [***like(x :any,prior :num)  :num***](#27)|Return how much `x` might belong to `i`.|
-|**** | **** | **Report** | [***div() :tab***](#28)|Return `div`ersity of a column (its entropy).|
-|**** | **** | **** | [***mid() :num***](#29)|Return the most common symbol (the `mid`ddle (central tendency).|
-|**** | **** | **Update** | [***add(x :any, n :?int=1)***](#30)|Add `n` count to `self.kept[n]`.|
+| |  |  | [***clone()  :COL --> Return some of the same structure.***](#6)||
+| |  | **Query** | [***dist(x :any, y :any)  :num***](#7)|Return distance. For missing values, assume max distance.|
+| |  | **Update** | [***add(x :any, inc :?int=1)***](#8)|`inc` times repeat: add `x`|
+| | **SOME** | **Create** | [***SOME(at?int=0, txt :?str="") : SOME***](#9)|Constructor.|
+| |  | **Update** | [***add(x :num)***](#10)|If full then at odds `self.some/self.n`, keep `x`(replacing some older item, at random). Otherwise, just add.|
+| |  | **Query** | [***has(i :SOME) :tab***](#11)|Ensure contents are sorted. Return those contents.|
+| | **NUM** | **Create** | [***NUM(at :?num=0, txt :?str="")  :NUM***](#12)|Constructor.|
+| |  | **Discretize** | [***bin(x :any)***](#13)|Return `x` mapped to a finite number of bins|
+| |  |  | [***merge(j :NUM)  :NUM***](#14)|combine `self` with `j`.|
+| |  |  | [***merges(t :[BIN])  :[BIN]***](#15)|merge a list of BINs (for numeric y-values)|
+| |  | **Distance** | [***dist(x :num,y :num) : num***](#16)|Return distance 0..1 between `x,y`.|
+| |  | **Likelihood** | [***like(x :any)***](#17)|Return the likelihood that `x` belongs to `i`. <|
+| |  | **Query** | [***div(i :NUM)  :tab***](#18)|Return `div`ersity of a column (tendency to depart central tendency).|
+| |  |  | [***mid(i :NUM))  :tab***](#19)|Return a columns' `mid`ddle|
+| |  |  | [***norm(i :NUM, x :num)  :num***](#20)|Normalize `x` 0..1 for lo..hi|
+| |  | **Update** | [***add(i :NUM, x :num, n :?int=1)***](#21)|`n` times,update `i`'s SOME object.|
+| | **SYM** |  | [***SYM(at :?int=0, txt :?str="")  :SYM***](#22)|Constructor.|
+| |  | **Discretize** | [***bin(x :any)***](#23)|Return `x` mapped to a finite range (just return x).|
+| |  |  | [***merge(j :SYM) :SYM***](#24)|Combine self with `j`.|
+| |  |  | [***merges(i :SYM,t :tab) :tab***](#25)|Merge a list of bins (for symbolic y-values).|
+| |  | **Distance** | [***dist(x :any,y :any)  :num***](#26)|Return distance 0..1 between `x,y`.|
+| |  | **Likelihood** | [***like(x :any,prior :num)  :num***](#27)|Return how much `x` might belong to `i`.|
+| |  | **Report** | [***div() :tab***](#28)|Return `div`ersity of a column (its entropy).|
+| |  |  | [***mid() :num***](#29)|Return the most common symbol (the `mid`ddle (central tendency).|
+| |  | **Update** | [***add(x :any, n :?int=1)***](#30)|Add `n` count to `self.kept[n]`.|
 |**Data** | **ROW** | **Create** | [***ROW(of : ROWS, cells :tab)***](#31)|Constructor|
-|**** | **** | **Query** | [***better(j :ROW) :boolean***](#32)|should `self` proceed before `j`?|
-|**** | **** | **** | [***klass(i :ROW) :any***](#33)|Return the class value of this record.|
-|**** | **** | **Distance** | [***i :ROW - j :ROW***](#34)|return distance between `i` and `j`|
-|**** | **** | **** | [***around(rows :?[ROW]) :tab***](#35)|return rows in this table|
-|**** | **** | **** | [***far(i :ROW,rows :?[ROW]) :ROW***](#36)|find something `far` away.|
-|**** | **COLS** | **Creation** | [***is.PRED(x :str) :boll***](#37)|Return true if `x` satisfies `PRED`.|
-|**** | **Update** | **** | [***add(row :ROW)***](#38)|Update columns using data from `row`.|
-|**** | **ROWS** | **Create** | [***ROWS(names :?[str], rows :?[ROW})  :ROWS***](#39)|Place to store many ROWS|
-|**** | **** | **** | [***clone(init :?[ROW])  :ROWS***](#40)|Return a ROWS with same structure as `self`.|
-|**** | **** | **** | [***fill(i :ROWS : src :(str|tab)) :ROWS***](#41)|copy the data from `src` into `self`.|
-|**** | **** | **Likelihood** | [***like(row;ROW,nklasses :num,nrows :num) :num***](#42)|Return P(H)*&prod;<sub>j</sub> (P(E<sub>j</sub>|H)).|
-|**** | **** | **Cluster** | [***best(rows :[ROW], stop :?num, rests :?tab={})  :[ROW]***](#43)|Recursively select best half.|
-|**** | **** | **** | [***half(rows :[ROW], stop :?num, rests :?tab={})  :[ROW]***](#44)|Recursively select best half.|
-|**** | **** | **Report** | [***mids(p :?int=2,cols=?[COL]=i.cols.y) :tab***](#45)|Return `mid` of columns rounded to `p` places.|
+| |  | **Query** | [***better(j :ROW) :boolean***](#32)|should `self` proceed before `j`?|
+| |  |  | [***klass(i :ROW) :any***](#33)|Return the class value of this record.|
+| |  | **Distance** | [***i :ROW - j :ROW***](#34)|return distance between `i` and `j`|
+| |  |  | [***around(rows :?[ROW]) :tab***](#35)|return rows in this table|
+| |  |  | [***far(i :ROW,rows :?[ROW]) :ROW***](#36)|find something `far` away.|
+| | **COLS** | **Creation** | [***is.PRED(x :str) :boll***](#37)|Return true if `x` satisfies `PRED`.|
+| | **Update** |  | [***add(row :ROW)***](#38)|Update columns using data from `row`.|
+| | **ROWS** | **Create** | [***ROWS(names :?[str], rows :?[ROW})  :ROWS***](#39)|Place to store many ROWS|
+| |  |  | [***clone(init :?[ROW])  :ROWS***](#40)|Return a ROWS with same structure as `self`.|
+| |  |  | [***fill(i :ROWS : src :(str|tab)) :ROWS***](#41)|copy the data from `src` into `self`.|
+| |  | **Likelihood** | [***like(row;ROW,nklasses :num,nrows :num) :num***](#42)|Return P(H)*&prod;<sub>j</sub> (P(E<sub>j</sub>|H)).|
+| |  | **Cluster** | [***best(rows :[ROW], stop :?num, rests :?tab={})  :[ROW]***](#43)|Recursively select best half.|
+| |  |  | [***half(rows :[ROW], stop :?num, rests :?tab={})  :[ROW]***](#44)|Recursively select best half.|
+| |  | **Report** | [***mids(p :?int=2,cols=?[COL]=i.cols.y) :tab***](#45)|Return `mid` of columns rounded to `p` places.|
 |**MISC** | **Lib** | **Lint** | [***rogues()***](#46)|Warn if our code introduced a rogue global.|
-|**** | **** | **Lists** | [***kap(t :tab,f :fun) :tab***](#47)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
-|**** | **** | **** | [***map(t :tab,f :fun) :tab***](#48)|Filter through `fun`. Remove slots where `fun` returns nil|
-|**** | **** | **** | [***per(t :tab,p :float) :any***](#49)|Returns the items `p`-th way through `t`.|
-|**** | **** | **** | [***any(a :tab) :any***](#50)|Return any item, picked at random.|
-|**** | **** | **** | [***many(a :tab,n :number) :any***](#51)|Return any `n`' items, picked at random.|
-|**** | **** | **Maths** | [***big :num***](#52)|Return `math.huge`|
-|**** | **** | **** | [***R(n :?num=1)***](#53)|If `n` missing return a random number 0..1. Else return 1..`n`.|
-|**** | **** | **** | [***rnd(num, places :int) :num***](#54)|Return `x` rounded to some number of `place`  &#9312; . <|
-|**** | **** | **Sorting** | [***gt(x :str) :function***](#55)|Returns functions that sorts increasing on `x`.|
-|**** | **** | **** | [***lt(x :str) :function***](#56)|Returns functions that sorts decreasing on `x`.|
-|**** | **** | **** | [***sort(t :tab,f :fun) :tab***](#57)|Sort list in place. Return list. `fun` defaults to `<`.|
-|**** | **** | **Other** | [***ako(x) :tab***](#58)|Return arg's metatable.|
-|**** | **** | **** | [***same(x) :x***](#59)|Return arg, un changed.|
-|**** | **** | **String2things** | [***csv(file :str,  fun :fun) :tab***](#60)|Call `fun` with lines, split on ",".|
-|**** | **** | **** | [***lines(file :str,  fun :fun) :tab***](#61)|Call `fun` with lines.|
-|**** | **** | **** | [***words(s :str, sep :str, fun :fun) :tab***](#62)|Return `t` filled with `s`, split  on `sep`.|
-|**** | **** | **Thing2string** | [***chat(t :tab)***](#63)|Print table (as string). Return `t`.|
-|**** | **** | **** | [***cat(t :tab) :str***](#64)|Return table as string. For key-indexed lists, show keys (sorted).|
-|**** | **** | **** | [***fmt(s :str,...)  :str***](#65)|Emulate printf.|
-|**** | **Testing** | **** | [***go.all()***](#66)|Runs all the tests (called from command-line by `-g all`).|
-|**** | **Start** | **** | [***main()***](#67)|Start code.|
+| |  | **Lists** | [***kap(t :tab,f :fun) :tab***](#47)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***map(t :tab,f :fun) :tab***](#48)|Filter through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***per(t :tab,p :float) :any***](#49)|Returns the items `p`-th way through `t`.|
+| |  |  | [***any(a :tab) :any***](#50)|Return any item, picked at random.|
+| |  |  | [***many(a :tab,n :number) :any***](#51)|Return any `n`' items, picked at random.|
+| |  | **Maths** | [***big :num***](#52)|Return `math.huge`|
+| |  |  | [***R(n :?num=1)***](#53)|If `n` missing return a random number 0..1. Else return 1..`n`.|
+| |  |  | [***rnd(num, places :int) :num***](#54)|Return `x` rounded to some number of `place`  &#9312; . <|
+| |  | **Sorting** | [***gt(x :str) :function***](#55)|Returns functions that sorts increasing on `x`.|
+| |  |  | [***lt(x :str) :function***](#56)|Returns functions that sorts decreasing on `x`.|
+| |  |  | [***sort(t :tab,f :fun) :tab***](#57)|Sort list in place. Return list. `fun` defaults to `<`.|
+| |  | **Other** | [***ako(x) :tab***](#58)|Return arg's metatable.|
+| |  |  | [***same(x) :x***](#59)|Return arg, un changed.|
+| |  | **String2things** | [***csv(file :str,  fun :fun) :tab***](#60)|Call `fun` with lines, split on ",".|
+| |  |  | [***lines(file :str,  fun :fun) :tab***](#61)|Call `fun` with lines.|
+| |  |  | [***words(s :str, sep :str, fun :fun) :tab***](#62)|Return `t` filled with `s`, split  on `sep`.|
+| |  | **Thing2string** | [***chat(t :tab)***](#63)|Print table (as string). Return `t`.|
+| |  |  | [***cat(t :tab) :str***](#64)|Return table as string. For key-indexed lists, show keys (sorted).|
+| |  |  | [***fmt(s :str,...)  :str***](#65)|Emulate printf.|
+| | **Testing** |  | [***go.all()***](#66)|Runs all the tests (called from command-line by `-g all`).|
+| | **Start** |  | [***main()***](#67)|Start code.|
 
 
 
