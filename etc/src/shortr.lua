@@ -364,12 +364,10 @@ self.kept[x] = n  + (self.kept[x] or 0) end
 -- ## Data
 -- ### ROW
 -- **RESPONSIBILITIES** : 
--- - Create or clone a duplicate structure 
--- - Discretize values into a few bins (for building trees)
--- - Distance calculations (for clustering)
--- - Likelihood calculations (for Bayes)
--- - Query  central tendency and diversity and other things
--- - Update summarization
+-- - Store one record
+-- - Distance calculations to other ROWs
+-- - Sort on ROW before another.
+-- - Report the klass of this row.
 -- #### Create
 -- -> ROW(of: ROWS, cells:tab) -> Constructor
 local ROW = obj"ROW"
