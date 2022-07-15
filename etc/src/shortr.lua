@@ -370,7 +370,7 @@ self.kept[x] = n  + (self.kept[x] or 0) end
 -- - Likelihood calculations (for Bayes)
 -- - Query  central tendency and diversity and other things
 -- - Update summarization
--- ### Create
+-- #### Create
 -- -> ROW(of: ROWS, cells:tab) -> Constructor
 local ROW = obj"ROW"
 function ROW:new(of,cells)
@@ -378,7 +378,7 @@ function ROW:new(of,cells)
   self._of    = of        -- :ROWS -- back pointer to data space that contains this
   self.evaled = false end -- :bool -- true if we ever use the dependent variables.
 
--- ### Query
+-- #### Query
 -- -> better(j:ROW):boolean -> should `self` proceed before `j`?
 function ROW:__lt(j)
   self.evaled, j.evaled = true, true
@@ -395,7 +395,7 @@ function ROW.klass(i)
   self.evaled = true
   return self.cells[self._of.cols.klass.at] end
 
--- ### Distance
+-- #### Distance
 -- -> i:ROW - j:ROW -> return distance between `i` and `j`
 function ROW:__sub(j) 
   local d, cols = 0, self._of.cols.x

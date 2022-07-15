@@ -73,10 +73,10 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  | Report | [***div() :tab***](#28)|Return `div`ersity of a column (its entropy).|
 | |  |  | [***mid() :num***](#29)|Return the most common symbol (the `mid`ddle (central tendency).|
 | |  | Update | [***add(x :any, n :?int=1)***](#30)|Add `n` count to `self.kept[n]`.|
-|Data | Create |  | [***ROW(of : ROWS, cells :tab)***](#31)|Constructor|
-| | Query |  | [***better(j :ROW) :boolean***](#32)|should `self` proceed before `j`?|
+|Data | ROW | Create | [***ROW(of : ROWS, cells :tab)***](#31)|Constructor|
+| |  | Query | [***better(j :ROW) :boolean***](#32)|should `self` proceed before `j`?|
 | |  |  | [***klass(i :ROW) :any***](#33)|Return the class value of this record.|
-| | Distance |  | [***i :ROW - j :ROW***](#34)|return distance between `i` and `j`|
+| |  | Distance | [***i :ROW - j :ROW***](#34)|return distance between `i` and `j`|
 | |  |  | [***around(rows :?[ROW]) :tab***](#35)|return rows in this table|
 | |  |  | [***far(i :ROW,rows :?[ROW]) :ROW***](#36)|find something `far` away.|
 |MISC | Lib | Lists | [***kap(t :tab,f :fun) :tab***](#37)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
@@ -588,7 +588,7 @@ self.kept[x] = n  + (self.kept[x] or 0) end
 - Likelihood calculations (for Bayes)
 - Query  central tendency and diversity and other things
 - Update summarization
-### Create
+#### Create
 > ***ROW(of : ROWS, cells :tab)***<a id=31></a><br>Constructor 
 
 
@@ -601,7 +601,7 @@ function ROW:new(of,cells)
 
 ```
 
-### Query
+#### Query
 > ***better(j :ROW) :boolean***<a id=32></a><br>should `self` proceed before `j`? 
 
 
@@ -628,7 +628,7 @@ function ROW.klass(i)
 
 ```
 
-### Distance
+#### Distance
 > ***i :ROW - j :ROW***<a id=34></a><br>return distance between `i` and `j` 
 
 
