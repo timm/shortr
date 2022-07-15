@@ -726,6 +726,7 @@ function COLS:add(row)
 **RESPONSIBILITIES** : <img align=right height=100 src="rcolor.png">
 - Store many ROWs
 - Summarize ROWs in columns.   
+
 **COLLABORATORS**: 
 - ROW, NUM, SYM, COLS
 
