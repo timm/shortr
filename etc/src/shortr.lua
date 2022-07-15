@@ -4,7 +4,6 @@
 -- <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a>
 -- <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 
-
 -- # [:high_brightness: SHORTr : less (but better) XAI](oo.md)
 -- <img align=right width=600 src="xai4.jpeg"> 
 -- AI and XAI (explainable artificial intelligence) need not be hard. 
@@ -104,8 +103,8 @@ local function cli(t)
 -- `b4` is a list of names known before this code. Used by `rogue()` (see below)
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 -- By defining names before the code, the code can be written in any order.
-local ako,big,cat,chat,csv,fmt,isa,kap,lines,map
-local new,obj,per,push,R,rogues,same,sort,trim,words
+local ako,big,cat,chat,csv,fmt,gt,isa,kap,lines,lt,map
+local new,obj,per,push,R,rogues,rnds,same,sort,trim,words
 
 -- -> obj(txt:str,base:?class) :class -> Make a class, perhaps as a kid of `base`.
 -- Identity, methods, inheritance, polymorphism, encapsulation, all in 8 lines :-).
@@ -380,6 +379,22 @@ function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
 function per(t,p)  p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 -- -> sort(t:tab,f:fun):tab -> Sort list in place. Return list. `fun` defaults to `<`.
 function sort(t,f) table.sort(t,f); return t end
+
+-- #### Maths
+-- -> big:num -> Return `math.huge`
+big = math.huge
+-- -> R(n:?num=1) -> If `n` missing return a random number 0..1. Else return 1..`n`. 
+R = math.random
+-- -> rnd(num, places:int):num  -> Return `x` rounded to some number of `place`  &#9312; . <
+function m.rnd(x, places)  --   &#9312;
+  local mult = 10^(places or 2)
+  return math.floor(x * mult + 0.5) / mult end
+
+-- #### Sorting
+-- -> gt(x:str):function -> Returns functions that sorts increasing on `x`.
+function lt(x) return function(a,b) return a[x] > b[x] end end
+-- -> tt(x:str):function -> Returns functions that sorts decreasing on `x`.
+function gt(x) return function(a,b) return a[x] < b[x] end end
 -- -> sort(t:tab,f:fun):tab -> Sort list in place. Return list. `fun` defaults to `<`.
 function push(t,x) t[1+#t]=x; return x end
 
@@ -390,11 +405,11 @@ function ako(x) return getmetatable(x) end
 -- -> same(x):x -> Return arg, un changed.
 function same(x) return x end
 
--- #### Maths
--- -> big:num -> Return `math.huge`
-big = math.huge
--- -> R(n:?num=1) -> If `n` missing return a random number 0..1. Else return 1..`n`. 
-R = math.random
+
+-- > rnds(t:num, places:?int=2):num > Return items in `t` rounds to `places`. <
+function m.rnds(t, places)
+  local u={};for k,x in pairs(t) do u[k]=m.rnd(x,places or 2)end;return u end
+
 
 -- #### String2things
 

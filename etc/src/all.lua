@@ -25,7 +25,7 @@ USAGE:
    
 OPTIONS:
   -M  --Min    min size of space                    =  .5
-  -b  --bins   max number of bins                   =  16
+  -b  --bins  :e  max number of bins                   =  16
   -F  --Far    how far to look for remove points    =  .95
   -k  --k      Bayes hack: low attribute frequency  =  2
   -m  --m      Bayes hack: low class frequency      =  1

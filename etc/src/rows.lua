@@ -58,11 +58,11 @@ function ROWS.best(i, rows, stop, rests)
   rows = rows or i.rows
   stop = stop or 2*small(the.Min,#rows)
   rests= rests or {}
-  if #rows <= stop then return rows,rests,x end
+  if #rows <= stop then return rows,rests end
   local xy = i:half(rows,stop,x)
   if xy.y < xy.x then xy.xs, xy.ys, xy.x, xy.y  = xy.ys, xy.xs, xy.y, xy.x end
   for _,row in pairs(xy.ys) do push(rests,row) end
-  return i:best(xy.xs, stop, rests, xy.x) end
+  return i:best(xy.xs, stop, rests) end
 
 function ROWS.half(i,rows,stop,x)
   rows = rows or i.rows

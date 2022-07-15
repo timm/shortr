@@ -23,7 +23,7 @@ local SOME = require"some"
 -- Q: Where we use the `w` weight?  
 -- A: See the `better` method inside [ROW](row.md) where `w` is used to 
 --    weight the dependent variables. In that code, one ROW is better than another
---    when that weight rewards changing to that value.
+--    when that weight rewards changing to that value.)
 local NUM = obj("NUM", function(i,at,txt) 
   i.at   = at or 0                 -- :num   column position 
   i.txt  = txt or ""               -- :str   column name 
