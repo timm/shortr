@@ -581,8 +581,7 @@ self.kept[x] = n  + (self.kept[x] or 0) end
 
 ## Data
 ### ROW
-<img align=right height=100 src="r.png">
-**RESPONSIBILITIES** : 
+**RESPONSIBILITIES** : <img align=right height=100 src="r.png">
 - Store one record
 - Distance calculations to other ROWs
 - Sort on ROW before another.
