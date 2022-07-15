@@ -103,6 +103,7 @@ local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 local ako,big,cat,chat,csv,fmt,gt,isa,kap,lines,lt,main,map
 local new,obj,per,push,R,rogues,rnds,same,sort,trim,words
 
+any,many,small
 -- -> obj(txt:str,base:?class) :class -> Make a class, perhaps as a kid of `base`.
 -- Identity, methods, inheritance, polymorphism, encapsulation, all in 8 lines :-).
 
@@ -509,7 +510,7 @@ function m.rnds(t, places)
 function csv(file,fun)
   lines(file, function(line) fun(words(line, ",", thing)) end) end 
 
--- -> lines(file:str,  fun:fun):tab i-> Call `fun` with lines. 
+-- -> lines(file:str,  fun:fun):tab -> Call `fun` with lines. 
 function lines(file, fun)
   local file = io.input(file)
   while true do

@@ -93,7 +93,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  | Other | [***ako(x) :tab***](#49)|Return arg's metatable.|
 | |  |  | [***same(x) :x***](#50)|Return arg, un changed.|
 | |  | String2things | [***csv(file :str,  fun :fun) :tab***](#51)|Call `fun` with lines, split on ",".|
-| |  |  | [***lines(file :str,  fun :fun) :tab i-> Call `fun` with lines.***](#52)||
+| |  |  | [***lines(file :str,  fun :fun) :tab***](#52)|Call `fun` with lines.|
 | |  |  | [***words(s :str, sep :str, fun :fun) :tab***](#53)|Return `t` filled with `s`, split  on `sep`.|
 | |  | Thing2string | [***chat(t :tab)***](#54)|Print table (as string). Return `t`.|
 | |  |  | [***cat(t :tab) :str***](#55)|Return table as string. For key-indexed lists, show keys (sorted).|
@@ -187,6 +187,7 @@ By defining names before the code, the code can be written in any order.
 local ako,big,cat,chat,csv,fmt,gt,isa,kap,lines,lt,main,map
 local new,obj,per,push,R,rogues,rnds,same,sort,trim,words
 
+any,many,small
 ```
 
 > ***obj(txt :str,base :?class)  :class***<a id=4></a><br>Make a class, perhaps as a kid of `base`. 
@@ -847,7 +848,7 @@ function csv(file,fun)
 
 ```
 
-> ***lines(file :str,  fun :fun) :tab i-> Call `fun` with lines.***<a id=52></a><br> 
+> ***lines(file :str,  fun :fun) :tab***<a id=52></a><br>Call `fun` with lines. 
 
 
 ```lua
