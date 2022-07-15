@@ -536,7 +536,7 @@ function ROWS.add(t)
 -- <img align=right height=100 src="l.png">
 
 -- #### Lint
--- > rogues() > Warn if our code introduced a rogue global. <
+-- -> rogues() -> Warn if our code introduced a rogue global. 
                   -- - Report the klass of this row.
 local function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
