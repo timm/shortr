@@ -1,4 +1,3 @@
--- <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a> 
 -- <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a>
 -- <a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow?logo=Checkmarx&logoColor=white"></a>
 -- <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a>
@@ -43,8 +42,6 @@
 -- TABLE.OF.CONTENTS
 
 -- ## Config
--- <img align=right height=100 src="cdown.png">
-
 -- -> help :str -> Help text for this code. 
 local help = [[
 
@@ -410,6 +407,46 @@ function ROW:around( rows)
 
 -- -> far(i:ROW,rows:?[ROW]):ROW -> find something `far` away.
 function ROW:far(rows) return per(self:around(rows), the.Far).row end
+
+-- ### COLS
+-- **RESPONSIBILITIES** : <img align=right height=100 src="cdown.png">
+-- - Create a set of NUMs and SYMs (from the row of column names)
+-- - Given a row, update the NUMs and SYM,
+
+-- #### Creation
+-- -> is.PRED(x:str):boll -> Return true if `x` satisfies `PRED`.
+local is={}
+is.skip=  function(x) return (x or ""):find":$"     end -- what to ignore
+is.klass= function(x) return (x or ""):find"!$"     end -- single goal
+is.goal=  function(x) return (x or ""):find"[!+-]$" end -- dependent column
+is.num=   function(x) return (x or ""):find"^[A-Z]" end -- NUM or SYM?
+
+-- > COLS(names:[str]) :COLS -> Factory for making NUMs and SYMs.
+-- All the columns are stored in `i.all`. Dependent and independent columns
+-- are also held in `i.y` and `i.x` (respectively). Anything we are skipping
+-- will make it into `all`, but not `x,y`. Ditto for any klass column (which,
+-- if not empty, will be stored in `klass`.
+local COLS = obj"COLS"
+function COLS:new(names) 
+  self.names = names   -- :[str]       list of known columns names
+  self.all   = {}      -- :[NUM|SYM]   all the columns
+  self.x     = {}      -- :[NUM|SYM]   list of pointers to just the independent columns
+  self.y     = {}      -- :[NUM|SYM]   list of pointers to just the dependent columns
+  self.klass = nil     -- :?(NUM|SYM)  pointer to the klass column, may be nil.
+  for at,txt in pairs(names) do 
+    local col = (is.num(txt) and NUM or SYM)(at,txt) 
+    push(self.all, col)
+    if not is.skip(txt) then
+      push(is.goal(txt) and self.y or self.x, col)
+      if is.klass(txt) then i.klass = col end end end end
+
+-- ### Update
+-- -> add(row:ROW) -> Update columns using data from `row`. 
+-- This code only updates the `x,y` columns (so we do not take up space
+-- collecting data on "skipped" columns). 
+function COLS:add(row)
+  for _,cols in pairs{self.x,self.y} do
+    for _,col in pairs(cols) do col:add(row.cells[col.at]) end end end
 
 -- ### ROWS
 -- **RESPONSIBILITIES** : <img align=right height=100 src="rcolor.png">
