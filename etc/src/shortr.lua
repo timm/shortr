@@ -470,7 +470,7 @@ function ROWS:new(names,rows)
 function ROWS:clone(init)
   return ROWS(self.cols.names,init) end
 
--- -> fill(src:str|tab):ROWS -> copy the data from `src` into `self`.
+-- -> fill(src:strOrtab):ROWS -> copy the data from `src` into `self`.
 function ROWS:fill(src)
   local iterate = type(src)=="table" and map or csv
   iterate(src, function(t) self:add(t) end) 
