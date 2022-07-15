@@ -80,26 +80,33 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  |  | [***far(i :ROW,rows :?[ROW]) :ROW***](#36)|find something `far` away.|
 | | COLS | Creation | [***is.PRED(x :str) :boll***](#37)|Return true if `x` satisfies `PRED`.|
 | | Update |  | [***add(row :ROW)***](#38)|Update columns using data from `row`.|
-|MISC | Lib | Lists | [***kap(t :tab,f :fun) :tab***](#39)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
-| |  |  | [***map(t :tab,f :fun) :tab***](#40)|Filter through `fun`. Remove slots where `fun` returns nil|
-| |  |  | [***per(t :tab,p :float) :any***](#41)|Returns the items `p`-th way through `t`.|
-| |  |  | [***sort(t :tab,f :fun) :tab***](#42)|Sort list in place. Return list. `fun` defaults to `<`.|
-| |  | Maths | [***big :num***](#43)|Return `math.huge`|
-| |  |  | [***R(n :?num=1)***](#44)|If `n` missing return a random number 0..1. Else return 1..`n`.|
-| |  |  | [***rnd(num, places :int) :num***](#45)|Return `x` rounded to some number of `place`  &#9312; . <|
-| |  | Sorting | [***gt(x :str) :function***](#46)|Returns functions that sorts increasing on `x`.|
-| |  |  | [***lt(x :str) :function***](#47)|Returns functions that sorts decreasing on `x`.|
-| |  |  | [***sort(t :tab,f :fun) :tab***](#48)|Sort list in place. Return list. `fun` defaults to `<`.|
-| |  | Other | [***ako(x) :tab***](#49)|Return arg's metatable.|
-| |  |  | [***same(x) :x***](#50)|Return arg, un changed.|
-| |  | String2things | [***csv(file :str,  fun :fun) :tab***](#51)|Call `fun` with lines, split on ",".|
-| |  |  | [***lines(file :str,  fun :fun) :tab***](#52)|Call `fun` with lines.|
-| |  |  | [***words(s :str, sep :str, fun :fun) :tab***](#53)|Return `t` filled with `s`, split  on `sep`.|
-| |  | Thing2string | [***chat(t :tab)***](#54)|Print table (as string). Return `t`.|
-| |  |  | [***cat(t :tab) :str***](#55)|Return table as string. For key-indexed lists, show keys (sorted).|
-| |  |  | [***fmt(s :str,...)  :str***](#56)|Emulate printf.|
-| | Testing |  | [***go.all()***](#57)|Runs all the tests (called from command-line by `-g all`).|
-| | Start |  | [***main()***](#58)|Start code.|
+| | ROWS | Create | [***ROWS(names :?[str], rows :?[ROW})  :ROWS***](#39)|Place to store many ROWS|
+| |  |  | [***clone(init :?[ROW])  :ROWS***](#40)|Return a ROWS with same structure as `self`.|
+| |  |  | [***fill(i :ROWS : src :(str|tab)) :ROWS***](#41)|copy the data from `src` into `self`.|
+| |  | Likelihood | [***like(row;ROW,nklasses :num,nrows :num) :num***](#42)|Return P(H)*&prod;<sub>j</sub> (P(E<sub>j</sub>|H)).|
+| |  | Cluster | [***best(rows :[ROW], stop :?num, rests :?tab={})  :[ROW]***](#43)|Recursively select best half.|
+| |  |  | [***half(rows :[ROW], stop :?num, rests :?tab={})  :[ROW]***](#44)|Recursively select best half.|
+|MISC | Lib | Lists | [***kap(t :tab,f :fun) :tab***](#45)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***map(t :tab,f :fun) :tab***](#46)|Filter through `fun`. Remove slots where `fun` returns nil|
+| |  |  | [***per(t :tab,p :float) :any***](#47)|Returns the items `p`-th way through `t`.|
+| |  |  | [***any(a :tab) :any***](#48)|Return any item, picked at random.|
+| |  |  | [***many(a :tab,n :number) :any***](#49)|Return any `n`' items, picked at random.|
+| |  | Maths | [***big :num***](#50)|Return `math.huge`|
+| |  |  | [***R(n :?num=1)***](#51)|If `n` missing return a random number 0..1. Else return 1..`n`.|
+| |  |  | [***rnd(num, places :int) :num***](#52)|Return `x` rounded to some number of `place`  &#9312; . <|
+| |  | Sorting | [***gt(x :str) :function***](#53)|Returns functions that sorts increasing on `x`.|
+| |  |  | [***lt(x :str) :function***](#54)|Returns functions that sorts decreasing on `x`.|
+| |  |  | [***sort(t :tab,f :fun) :tab***](#55)|Sort list in place. Return list. `fun` defaults to `<`.|
+| |  | Other | [***ako(x) :tab***](#56)|Return arg's metatable.|
+| |  |  | [***same(x) :x***](#57)|Return arg, un changed.|
+| |  | String2things | [***csv(file :str,  fun :fun) :tab***](#58)|Call `fun` with lines, split on ",".|
+| |  |  | [***lines(file :str,  fun :fun) :tab***](#59)|Call `fun` with lines.|
+| |  |  | [***words(s :str, sep :str, fun :fun) :tab***](#60)|Return `t` filled with `s`, split  on `sep`.|
+| |  | Thing2string | [***chat(t :tab)***](#61)|Print table (as string). Return `t`.|
+| |  |  | [***cat(t :tab) :str***](#62)|Return table as string. For key-indexed lists, show keys (sorted).|
+| |  |  | [***fmt(s :str,...)  :str***](#63)|Emulate printf.|
+| | Testing |  | [***go.all()***](#64)|Runs all the tests (called from command-line by `-g all`).|
+| | Start |  | [***main()***](#65)|Start code.|
 
 
 
@@ -184,10 +191,9 @@ local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 By defining names before the code, the code can be written in any order.
 
 ```lua
-local ako,big,cat,chat,csv,fmt,gt,isa,kap,lines,lt,main,map
+local ako,any,big,cat,chat,csv,fmt,gt,isa,kap,lines,lt,main,many,map
 local new,obj,per,push,R,rogues,rnds,same,sort,trim,words
 
-any,many,small
 ```
 
 > ***obj(txt :str,base :?class)  :class***<a id=4></a><br>Make a class, perhaps as a kid of `base`. 
@@ -716,6 +722,103 @@ function COLS:add(row)
 
 ### ROWS
 **RESPONSIBILITIES** : <img align=right height=100 src="rcolor.png">
+- Store many ROWs
+- Summarize ROWs in columns.   
+**COLLABORATORS**: 
+- ROW, NUM, SYM, COLS
+
+#### Create
+> ***ROWS(names :?[str], rows :?[ROW})  :ROWS***<a id=39></a><br>Place to store many ROWS 
+
+ and summarize them (in `i.cols`).
+
+```lua
+local ROWS=obj"ROWS"
+function ROWS:new(names,rows)
+  self.rows, self.cols = {}, (names and COLS(names) or nil)
+  for _,row in pairs(rows or {}) do self:add(row) end end
+
+```
+
+> ***clone(init :?[ROW])  :ROWS***<a id=40></a><br>Return a ROWS with same structure as `self`. 
+
+Optionally, `init`ialize it with some rows. Add a pointer back to the 
+original table that spawned `eve`rything else (useful for some distance calcs).
+
+```lua
+function ROWS:clone(init)
+  return ROWS(self.cols.names,init) end
+
+```
+
+> ***fill(i :ROWS : src :(str|tab)) :ROWS***<a id=41></a><br>copy the data from `src` into `self`. 
+
+
+```lua
+function ROWS:fill(src)
+  local iterate = type(src)=="table" and map or csv
+  iterate(src, function(t) self:add(t) end) 
+  return self end
+
+```
+
+#### Likelihood
+> ***like(row;ROW,nklasses :num,nrows :num) :num***<a id=42></a><br>Return P(H)*&prod;<sub>j</sub> (P(E<sub>j</sub>|H)). 
+
+Do it with logs to handle very small numbers.
+
+```lua
+function ROWS:like(row, nklasses, nrows)
+  local prior,like,inc,x
+  prior = (#self.rows + the.k) / (nrows + the.k * nklasses)
+  like  = math.log(prior)
+  row = row.cells and row.cells or row
+  for _,col in pairs(self.cols.x) do
+    x = row[col.at]
+    if x ~= nil and x ~= "?" then
+      inc  = col:like(x,prior)
+      like = like + math.log(inc) end end
+  return like end
+
+```
+
+#### Cluster
+> ***best(rows :[ROW], stop :?num, rests :?tab={})  :[ROW]***<a id=43></a><br>Recursively select best half. 
+
+
+```lua
+function ROWS:best(rows, stop, rests)
+  rows = rows or self.rows
+  stop = stop or 2*small(the.Min,#rows)
+  rests= rests or {}
+  if #rows <= stop then return rows,rests end
+  local xy = self:half(rows,stop,x)
+  if xy.y < xy.x then xy.xs, xy.ys, xy.x, xy.y  = xy.ys, xy.xs, xy.y, xy.x end
+  for _,row in pairs(xy.ys) do push(rests,row) end
+  return i:best(xy.xs, stop, rests) end
+
+```
+
+> ***half(rows :[ROW], stop :?num, rests :?tab={})  :[ROW]***<a id=44></a><br>Recursively select best half. 
+
+
+```lua
+function ROWS.half(i,rows,stop,x)
+  rows = rows or i.rows
+  stop = stop or 2*small(the.Min,#rows)
+  local some    = many(rows,the.Some)
+  x             = x or any(some):far(some)
+  local y       = x:far(some)
+  local c       = x - y
+  local project = function(r) return {r=r, x=((r-x)^2+c^2-(r-y)^2)/(2*c)} end 
+  local rxs     = map(rows, project)
+  local xs,ys   = {},{} 
+  for j,rx in pairs(sort(rxs, lt"x")) do push(j<=#rows*.5 and xs or ys, rx.r) end
+  return {xs=xs, ys=ys, x=x, y=y, c=c} end
+
+
+
+```
 
 ## MISC
 ### Lib
@@ -732,76 +835,84 @@ local function rogues()
 ```
 
 #### Lists
-> ***kap(t :tab,f :fun) :tab***<a id=39></a><br>Filter key,values through `fun`. Remove slots where `fun` returns nil 
+> ***kap(t :tab,f :fun) :tab***<a id=45></a><br>Filter key,values through `fun`. Remove slots where `fun` returns nil 
 
 
 ```lua
 function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
 ```
 
-> ***map(t :tab,f :fun) :tab***<a id=40></a><br>Filter through `fun`. Remove slots where `fun` returns nil 
+> ***map(t :tab,f :fun) :tab***<a id=46></a><br>Filter through `fun`. Remove slots where `fun` returns nil 
 
 
 ```lua
 function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
 ```
 
-> ***per(t :tab,p :float) :any***<a id=41></a><br>Returns the items `p`-th way through `t`. 
+> ***per(t :tab,p :float) :any***<a id=47></a><br>Returns the items `p`-th way through `t`. 
 
 
 ```lua
 function per(t,p)  p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 ```
 
-> ***sort(t :tab,f :fun) :tab***<a id=42></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
+> ***any(a :tab) :any***<a id=48></a><br>Return any item, picked at random. 
 
 
 ```lua
-function sort(t,f) table.sort(t,f); return t end
+function any(a, i)  i=R()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
+```
+
+> ***many(a :tab,n :number) :any***<a id=49></a><br>Return any `n`' items, picked at random. 
+
+
+```lua
+function many(a,n, u) u={}; for j=1,n do u[1+#u]= any(a) end;return u end
+
 
 ```
 
 #### Maths
-> ***big :num***<a id=43></a><br>Return `math.huge` 
+> ***big :num***<a id=50></a><br>Return `math.huge` 
 
 
 ```lua
 big = math.huge
 ```
 
-> ***R(n :?num=1)***<a id=44></a><br>If `n` missing return a random number 0..1. Else return 1..`n`. 
+> ***R(n :?num=1)***<a id=51></a><br>If `n` missing return a random number 0..1. Else return 1..`n`. 
 
 
 ```lua
 R = math.random
 ```
 
-> ***rnd(num, places :int) :num***<a id=45></a><br>Return `x` rounded to some number of `place`  &#9312; . < 
+> ***rnd(num, places :int) :num***<a id=52></a><br>Return `x` rounded to some number of `place`  &#9312; . < 
 
 
 ```lua
-function m.rnd(x, places)  --   &#9312;
+function rnd(x, places)  --   &#9312;
   local mult = 10^(places or 2)
   return math.floor(x * mult + 0.5) / mult end
 
 ```
 
 #### Sorting
-> ***gt(x :str) :function***<a id=46></a><br>Returns functions that sorts increasing on `x`. 
+> ***gt(x :str) :function***<a id=53></a><br>Returns functions that sorts increasing on `x`. 
 
 
 ```lua
 function lt(x) return function(a,b) return a[x] > b[x] end end
 ```
 
-> ***lt(x :str) :function***<a id=47></a><br>Returns functions that sorts decreasing on `x`. 
+> ***lt(x :str) :function***<a id=54></a><br>Returns functions that sorts decreasing on `x`. 
 
 
 ```lua
 function lt(x) return function(a,b) return a[x] < b[x] end end
 ```
 
-> ***sort(t :tab,f :fun) :tab***<a id=48></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
+> ***sort(t :tab,f :fun) :tab***<a id=55></a><br>Sort list in place. Return list. `fun` defaults to `<`. 
 
 
 ```lua
@@ -810,7 +921,7 @@ function push(t,x) t[1+#t]=x; return x end
 ```
 
 #### Other
-> ***ako(x) :tab***<a id=49></a><br>Return arg's metatable. 
+> ***ako(x) :tab***<a id=56></a><br>Return arg's metatable. 
 
 
 ```lua
@@ -818,7 +929,7 @@ function ako(x) return getmetatable(x) end
 
 ```
 
-> ***same(x) :x***<a id=50></a><br>Return arg, un changed. 
+> ***same(x) :x***<a id=57></a><br>Return arg, un changed. 
 
 
 ```lua
@@ -838,7 +949,7 @@ function m.rnds(t, places)
 
 #### String2things
 
-> ***csv(file :str,  fun :fun) :tab***<a id=51></a><br>Call `fun` with lines, split on ",". 
+> ***csv(file :str,  fun :fun) :tab***<a id=58></a><br>Call `fun` with lines, split on ",". 
 
 Coerces strings to nums, bools, etc (where appropriate).
 
@@ -848,7 +959,7 @@ function csv(file,fun)
 
 ```
 
-> ***lines(file :str,  fun :fun) :tab***<a id=52></a><br>Call `fun` with lines. 
+> ***lines(file :str,  fun :fun) :tab***<a id=59></a><br>Call `fun` with lines. 
 
 
 ```lua
@@ -860,7 +971,7 @@ function lines(file, fun)
 
 ```
 
-> ***words(s :str, sep :str, fun :fun) :tab***<a id=53></a><br>Return `t` filled with `s`, split  on `sep`. 
+> ***words(s :str, sep :str, fun :fun) :tab***<a id=60></a><br>Return `t` filled with `s`, split  on `sep`. 
 
 
 ```lua
@@ -871,7 +982,7 @@ function words(s,sep,fun,      t)
 ```
 
 #### Thing2string
-> ***chat(t :tab)***<a id=54></a><br>Print table (as string). Return `t`. 
+> ***chat(t :tab)***<a id=61></a><br>Print table (as string). Return `t`. 
 
 
 ```lua
@@ -879,7 +990,7 @@ function chat(t) print(cat(t)); return t end
 
 ```
 
-> ***cat(t :tab) :str***<a id=55></a><br>Return table as string. For key-indexed lists, show keys (sorted). 
+> ***cat(t :tab) :str***<a id=62></a><br>Return table as string. For key-indexed lists, show keys (sorted). 
 
 
 ```lua
@@ -893,7 +1004,7 @@ function cat(t,   u,pub)
 
 ```
 
-> ***fmt(s :str,...)  :str***<a id=56></a><br>Emulate printf. 
+> ***fmt(s :str,...)  :str***<a id=63></a><br>Emulate printf. 
 
 
 ```lua
@@ -910,7 +1021,7 @@ local go,no,fails={},{},0
 
 ```
 
-> ***go.all()***<a id=57></a><br>Runs all the tests (called from command-line by `-g all`). 
+> ***go.all()***<a id=64></a><br>Runs all the tests (called from command-line by `-g all`). 
 
 Resets `the` and the random number seed before each call. 
 
@@ -961,7 +1072,7 @@ function go.num( n,n1)
 ```
 
 ### Start
-> ***main()***<a id=58></a><br>Start code. 
+> ***main()***<a id=65></a><br>Start code. 
 
 This code can get used in two ways.   <img align=right height=100  src="sgreen.png"> 
 - If used in `lua shortr.lua` then it is _top-level_ code.   

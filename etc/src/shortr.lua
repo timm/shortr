@@ -100,10 +100,9 @@ local function cli(t)
 -- `b4` is a list of names known before this code. Used by `rogue()` (see below)
 local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 -- By defining names before the code, the code can be written in any order.
-local ako,big,cat,chat,csv,fmt,gt,isa,kap,lines,lt,main,map
+local ako,any,big,cat,chat,csv,fmt,gt,isa,kap,lines,lt,main,many,map
 local new,obj,per,push,R,rogues,rnds,same,sort,trim,words
 
-any,many,small
 -- -> obj(txt:str,base:?class) :class -> Make a class, perhaps as a kid of `base`.
 -- Identity, methods, inheritance, polymorphism, encapsulation, all in 8 lines :-).
 
@@ -451,6 +450,73 @@ function COLS:add(row)
 
 -- ### ROWS
 -- **RESPONSIBILITIES** : <img align=right height=100 src="rcolor.png">
+-- - Store many ROWs
+-- - Summarize ROWs in columns.   
+-- **COLLABORATORS**: 
+-- - ROW, NUM, SYM, COLS
+
+-- #### Create
+-- -> ROWS(names:?[str], rows:?[ROW}) :ROWS -> Place to store many ROWS
+--  and summarize them (in `i.cols`).
+local ROWS=obj"ROWS"
+function ROWS:new(names,rows)
+  self.rows, self.cols = {}, (names and COLS(names) or nil)
+  for _,row in pairs(rows or {}) do self:add(row) end end
+
+-- -> clone(init:?[ROW]) :ROWS -> Return a ROWS with same structure as `self`. 
+-- Optionally, `init`ialize it with some rows. Add a pointer back to the 
+-- original table that spawned `eve`rything else (useful for some distance calcs).
+function ROWS:clone(init)
+  return ROWS(self.cols.names,init) end
+
+-- -> fill(i:ROWS: src:(str|tab)):ROWS -> copy the data from `src` into `self`.
+function ROWS:fill(src)
+  local iterate = type(src)=="table" and map or csv
+  iterate(src, function(t) self:add(t) end) 
+  return self end
+
+-- #### Likelihood
+-- -> like(row;ROW,nklasses:num,nrows:num):num -> Return P(H)*&prod;<sub>j</sub> (P(E<sub>j</sub>|H)). 
+-- Do it with logs to handle very small numbers.
+function ROWS:like(row, nklasses, nrows)
+  local prior,like,inc,x
+  prior = (#self.rows + the.k) / (nrows + the.k * nklasses)
+  like  = math.log(prior)
+  row = row.cells and row.cells or row
+  for _,col in pairs(self.cols.x) do
+    x = row[col.at]
+    if x ~= nil and x ~= "?" then
+      inc  = col:like(x,prior)
+      like = like + math.log(inc) end end
+  return like end
+
+-- #### Cluster
+-- -> best(rows:[ROW], stop:?num, rests:?tab={}) :[ROW] -> Recursively select best half.
+function ROWS:best(rows, stop, rests)
+  rows = rows or self.rows
+  stop = stop or 2*small(the.Min,#rows)
+  rests= rests or {}
+  if #rows <= stop then return rows,rests end
+  local xy = self:half(rows,stop,x)
+  if xy.y < xy.x then xy.xs, xy.ys, xy.x, xy.y  = xy.ys, xy.xs, xy.y, xy.x end
+  for _,row in pairs(xy.ys) do push(rests,row) end
+  return i:best(xy.xs, stop, rests) end
+
+-- -> half(rows:[ROW], stop:?num, rests:?tab={}) :[ROW] -> Recursively select best half.
+function ROWS.half(i,rows,stop,x)
+  rows = rows or i.rows
+  stop = stop or 2*small(the.Min,#rows)
+  local some    = many(rows,the.Some)
+  x             = x or any(some):far(some)
+  local y       = x:far(some)
+  local c       = x - y
+  local project = function(r) return {r=r, x=((r-x)^2+c^2-(r-y)^2)/(2*c)} end 
+  local rxs     = map(rows, project)
+  local xs,ys   = {},{} 
+  for j,rx in pairs(sort(rxs, lt"x")) do push(j<=#rows*.5 and xs or ys, rx.r) end
+  return {xs=xs, ys=ys, x=x, y=y, c=c} end
+
+
 
 -- ## MISC
 -- ### Lib
@@ -469,8 +535,11 @@ function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
 function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
 -- -> per(t:tab,p:float):any -> Returns the items `p`-th way through `t`.
 function per(t,p)  p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
--- -> sort(t:tab,f:fun):tab -> Sort list in place. Return list. `fun` defaults to `<`.
-function sort(t,f) table.sort(t,f); return t end
+-- -> any(a:tab):any -> Return any item, picked at random. 
+function any(a, i)  i=R()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
+-- -> many(a:tab,n:number):any -> Return any `n`' items, picked at random. 
+function many(a,n, u) u={}; for j=1,n do u[1+#u]= any(a) end;return u end
+
 
 -- #### Maths
 -- -> big:num -> Return `math.huge`
@@ -478,7 +547,7 @@ big = math.huge
 -- -> R(n:?num=1) -> If `n` missing return a random number 0..1. Else return 1..`n`. 
 R = math.random
 -- -> rnd(num, places:int):num  -> Return `x` rounded to some number of `place`  &#9312; . <
-function m.rnd(x, places)  --   &#9312;
+function rnd(x, places)  --   &#9312;
   local mult = 10^(places or 2)
   return math.floor(x * mult + 0.5) / mult end
 
