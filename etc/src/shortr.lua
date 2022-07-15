@@ -518,14 +518,14 @@ function ROWS.half(i,rows,stop,x)
   return {xs=xs, ys=ys, x=x, y=y, c=c} end
 
 -- #### Report
--- ->  mids(p:?int=2,cols=?[COL]=i.cols.y):tab --> Return `mid` of columns rounded to `p` places.
+-- ->  mids(p:?int=2,cols=?[COL]=i.cols.y):tab -> Return `mid` of columns rounded to `p` places.
 function ROWS:mids(p,cols) 
   local t={n=#self.rows}
   for _,col in pairs(cols or self.cols.y) do t[col.txt]=col:mid(p) end
   return rnds(t,p or 2) end
 
 -- ### Update
--- add(row:ROW) --> add `row` to ROWS, update the summaries in `self.cols`.
+-- add(row:ROW) -> add `row` to ROWS, update the summaries in `self.cols`.
 function ROWS.add(t) 
   t = t.cells and t or ROW(i,t)
   if self.cols then self.cols:add(push(self.rows, t)) else self.cols=COLS(t.cells) end 

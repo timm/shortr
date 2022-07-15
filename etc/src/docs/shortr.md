@@ -86,7 +86,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  | Likelihood | [***like(row;ROW,nklasses :num,nrows :num) :num***](#42)|Return P(H)*&prod;<sub>j</sub> (P(E<sub>j</sub>|H)).|
 | |  | Cluster | [***best(rows :[ROW], stop :?num, rests :?tab={})  :[ROW]***](#43)|Recursively select best half.|
 | |  |  | [***half(rows :[ROW], stop :?num, rests :?tab={})  :[ROW]***](#44)|Recursively select best half.|
-| |  | Report | [***mids(p :?int=2,cols=?[COL]=i.cols.y) :tab --> Return `mid` of columns rounded to `p` places.***](#45)||
+| |  | Report | [***mids(p :?int=2,cols=?[COL]=i.cols.y) :tab***](#45)|Return `mid` of columns rounded to `p` places.|
 |MISC | Lib | Lint | [***rogues()***](#46)|Warn if our code introduced a rogue global.|
 | |  | Lists | [***kap(t :tab,f :fun) :tab***](#47)|Filter key,values through `fun`. Remove slots where `fun` returns nil|
 | |  |  | [***map(t :tab,f :fun) :tab***](#48)|Filter through `fun`. Remove slots where `fun` returns nil|
@@ -822,7 +822,7 @@ function ROWS.half(i,rows,stop,x)
 ```
 
 #### Report
-> ***mids(p :?int=2,cols=?[COL]=i.cols.y) :tab --> Return `mid` of columns rounded to `p` places.***<a id=45></a><br> 
+> ***mids(p :?int=2,cols=?[COL]=i.cols.y) :tab***<a id=45></a><br>Return `mid` of columns rounded to `p` places. 
 
 
 ```lua
@@ -834,7 +834,7 @@ function ROWS:mids(p,cols)
 ```
 
 ### Update
-add(row:ROW) --> add `row` to ROWS, update the summaries in `self.cols`.
+add(row:ROW) -> add `row` to ROWS, update the summaries in `self.cols`.
 
 ```lua
 function ROWS.add(t) 
