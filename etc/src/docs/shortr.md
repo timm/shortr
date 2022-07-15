@@ -581,6 +581,7 @@ self.kept[x] = n  + (self.kept[x] or 0) end
 
 ## Data
 ### ROW
+<img align=right height=100 src="r.png">
 **RESPONSIBILITIES** : 
 - Store one record
 - Distance calculations to other ROWs
@@ -666,6 +667,7 @@ function ROW:far(rows) return per(self:around(rows), the.Far).row end
 
 #### Lint
 > rogues() > Warn if our code introduced a rogue global. <
+                  -- - Report the klass of this row.
 
 ```lua
 local function rogues()
