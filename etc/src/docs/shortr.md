@@ -82,7 +82,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | | **Update** |  | [***add(row :ROW)***](#38)|Update columns using data from `row`.|
 | | **ROWS** | **Create** | [***ROWS(names :?[str], rows :?[ROW])  :ROWS***](#39)|Place to store many ROWS|
 | |  |  | [***clone(init :?[ROW])  :ROWS***](#40)|Return a ROWS with same structure as `self`.|
-| |  |  | [***fill(i :ROWS : src :(str|tab)) :ROWS***](#41)|copy the data from `src` into `self`.|
+| |  |  | [***fill(src :(str|tab)) :ROWS***](#41)|copy the data from `src` into `self`.|
 | |  | **Likelihood** | [***like(row;ROW,nklasses :num,nrows :num) :num***](#42)|Return P(H)*&prod;<sub>j</sub> (P(E<sub>j</sub>|H)).|
 | |  | **Cluster** | [***best(rows :[ROW], stop :?num, rests :?tab={})  :[ROW]***](#43)|Recursively select best half.|
 | |  |  | [***half(rows :[ROW], stop :?num, rests :?tab={})  :[ROW]***](#44)|Recursively select best half.|
@@ -754,7 +754,7 @@ function ROWS:clone(init)
 
 ```
 
-> ***fill(i :ROWS : src :(str|tab)) :ROWS***<a id=41></a><br>copy the data from `src` into `self`. 
+> ***fill(src :(str|tab)) :ROWS***<a id=41></a><br>copy the data from `src` into `self`. 
 
 
 ```lua
