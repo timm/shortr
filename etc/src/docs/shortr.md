@@ -98,6 +98,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  |  | [***cat(t :tab) :str***](#53)|Return table as string. For key-indexed lists, show keys (sorted).|
 | |  |  | [***fmt(s :str,...)  :str***](#54)|Emulate printf.|
 | | Testing |  | [***go.all()***](#55)|Runs all the tests (called from command-line by `-g all`).|
+| | Start |  | [***main()***](#56)|Start code.|
 
 
 
@@ -184,7 +185,7 @@ local b4={}; for k,v in pairs(_ENV) do b4[k]=k end
 By defining names before the code, the code can be written in any order.
 
 ```lua
-local ako,big,cat,chat,csv,fmt,gt,isa,kap,lines,lt,map
+local ako,big,cat,chat,csv,fmt,gt,isa,kap,lines,lt,main,map
 local new,obj,per,push,R,rogues,rnds,same,sort,trim,words
 
 ```
@@ -906,6 +907,8 @@ function go.num( n,n1)
 ```
 
 ### Start
+> ***main()***<a id=56></a><br>Start code. 
+
 This code can get used in two ways.   <img align=right height=100  src="sgreen.png"> 
 - If used in `lua shortr.lua` then it is _top-level_ code.   
   In this case, this code is in control and it will call
@@ -914,12 +917,11 @@ This code can get used in two ways.   <img align=right height=100  src="sgreen.p
   In this case, something else will control how this is used.
 
 ```lua
-if    pcall(debug.getlocal, 4, 1) -- true if this is an included call.
-then  return {ROWS=ROWS, the=the}  
-else  the=cli(the)
-      if the.help then print(help) elseif go[the.go] then go[the.go]() end
-      rogues()
-      os.exit(fails)
-end
+function main()
+  if pcall(debug.getlocal, 4, 1) then return {ROWS=ROWS, the=the} end
+  the = cli(the)
+  if the.help then print(help) elseif go[the.go] then go[the.go]() end
+  rogues()
+  os.exit(fails) end
 ```
 
