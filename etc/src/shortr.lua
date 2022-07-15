@@ -515,7 +515,22 @@ function ROWS.half(i,rows,stop,x)
   local xs,ys   = {},{} 
   for j,rx in pairs(sort(rxs, lt"x")) do push(j<=#rows*.5 and xs or ys, rx.r) end
   return {xs=xs, ys=ys, x=x, y=y, c=c} end
-S
+
+-- #### Report
+-- ->  mids(p:?int=2,cols=?[COL]=i.cols.y):tab --> Return `mid` of columns rounded to `p` places.
+function ROWS:mids(p,cols) 
+  local t={n=#self.rows}
+  for _,col in pairs(cols or self.cols.y) do t[col.txt]=col:mid(p) end
+  return rnds(t,p or 2) end
+
+-- ### Update
+-- add(row:ROW) --> add `row` to ROWS, update the summaries in `self.cols`.
+function ROWS.add(t) 
+  t = t.cells and t or ROW(i,t)
+  if self.cols then self.cols:add(push(self.rows, t)) else self.cols=COLS(t.cells) end 
+  return t end
+
+
 -- ## MISC
 -- ### Lib
 -- <img align=right height=100 src="l.png">
@@ -547,6 +562,9 @@ R = math.random
 function rnd(x, places)  --   &#9312;
   local mult = 10^(places or 2)
   return math.floor(x * mult + 0.5) / mult end
+-- > rnds(t:num, places:?int=2):num -> Return items in `t` rounds to `places`. 
+function rnds(t, places)
+  local u={};for k,x in pairs(t) do u[k]=rnd(x,places or 2)end;return u end
 
 -- #### Sorting
 -- -> gt(x:str):function -> Returns functions that sorts increasing on `x`.
@@ -563,14 +581,7 @@ function ako(x) return getmetatable(x) end
 -- -> same(x):x -> Return arg, un changed.
 function same(x) return x end
 
-
--- > rnds(t:num, places:?int=2):num > Return items in `t` rounds to `places`. <
-function m.rnds(t, places)
-  local u={};for k,x in pairs(t) do u[k]=m.rnd(x,places or 2)end;return u end
-
-
 -- #### String2things
-
 -- -> csv(file:str,  fun:fun):tab -> Call `fun` with lines, split on ",". 
 -- Coerces strings to nums, bools, etc (where appropriate).
 function csv(file,fun)
