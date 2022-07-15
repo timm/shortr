@@ -80,7 +80,7 @@ the worst `rests`. Note that all this access the dependent variables just _log2(
 | |  |  | [***far(i :ROW,rows :?[ROW]) :ROW***](#36)|find something `far` away.|
 | | **COLS** | **Creation** | [***is.PRED(x :str) :boll***](#37)|Return true if `x` satisfies `PRED`.|
 | | **Update** |  | [***add(row :ROW)***](#38)|Update columns using data from `row`.|
-| | **ROWS** | **Create** | [***ROWS(names :?[str], rows :?[ROW})  :ROWS***](#39)|Place to store many ROWS|
+| | **ROWS** | **Create** | [***ROWS(names :?[str], rows :?[ROW])  :ROWS***](#39)|Place to store many ROWS|
 | |  |  | [***clone(init :?[ROW])  :ROWS***](#40)|Return a ROWS with same structure as `self`.|
 | |  |  | [***fill(i :ROWS : src :(str|tab)) :ROWS***](#41)|copy the data from `src` into `self`.|
 | |  | **Likelihood** | [***like(row;ROW,nklasses :num,nrows :num) :num***](#42)|Return P(H)*&prod;<sub>j</sub> (P(E<sub>j</sub>|H)).|
@@ -731,7 +731,7 @@ function COLS:add(row)
 - ROW, NUM, SYM, COLS
 
 #### Create
-> ***ROWS(names :?[str], rows :?[ROW})  :ROWS***<a id=39></a><br>Place to store many ROWS 
+> ***ROWS(names :?[str], rows :?[ROW])  :ROWS***<a id=39></a><br>Place to store many ROWS 
 
  and summarize them (in `i.cols`).
 

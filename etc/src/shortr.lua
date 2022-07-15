@@ -457,7 +457,7 @@ function COLS:add(row)
 -- - ROW, NUM, SYM, COLS
 
 -- #### Create
--- -> ROWS(names:?[str], rows:?[ROW}) :ROWS -> Place to store many ROWS
+-- -> ROWS(names:?[str], rows:?[ROW]) :ROWS -> Place to store many ROWS
 --  and summarize them (in `i.cols`).
 local ROWS=obj"ROWS"
 function ROWS:new(names,rows)
