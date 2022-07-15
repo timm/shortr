@@ -515,9 +515,7 @@ function ROWS.half(i,rows,stop,x)
   local xs,ys   = {},{} 
   for j,rx in pairs(sort(rxs, lt"x")) do push(j<=#rows*.5 and xs or ys, rx.r) end
   return {xs=xs, ys=ys, x=x, y=y, c=c} end
-
-
-
+S
 -- ## MISC
 -- ### Lib
 -- <img align=right height=100 src="l.png">
@@ -539,7 +537,6 @@ function per(t,p)  p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 function any(a, i)  i=R()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
 -- -> many(a:tab,n:number):any -> Return any `n`' items, picked at random. 
 function many(a,n, u) u={}; for j=1,n do u[1+#u]= any(a) end;return u end
-
 
 -- #### Maths
 -- -> big:num -> Return `math.huge`

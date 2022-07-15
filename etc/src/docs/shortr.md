@@ -815,9 +815,7 @@ function ROWS.half(i,rows,stop,x)
   local xs,ys   = {},{} 
   for j,rx in pairs(sort(rxs, lt"x")) do push(j<=#rows*.5 and xs or ys, rx.r) end
   return {xs=xs, ys=ys, x=x, y=y, c=c} end
-
-
-
+S
 ```
 
 ## MISC
@@ -868,7 +866,6 @@ function any(a, i)  i=R()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
 
 ```lua
 function many(a,n, u) u={}; for j=1,n do u[1+#u]= any(a) end;return u end
-
 
 ```
 
