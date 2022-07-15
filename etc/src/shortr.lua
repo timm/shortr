@@ -359,7 +359,60 @@ function SYM:mid()
 -- #### Update
 -- -> add(x:any, n:?int=1) -> Add `n` count to `self.kept[n]`. 
 function SYM:add1(x,n)
-  self.kept[x] = n  + (self.kept[x] or 0) end 
+self.kept[x] = n  + (self.kept[x] or 0) end 
+
+-- ## Data
+-- ### ROW
+-- **RESPONSIBILITIES** : 
+-- - Create or clone a duplicate structure 
+-- - Discretize values into a few bins (for building trees)
+-- - Distance calculations (for clustering)
+-- - Likelihood calculations (for Bayes)
+-- - Query  central tendency and diversity and other things
+-- - Update summarization
+-- ### Create
+-- -> ROW(of: ROWS, cells:tab) -> Constructor
+local ROW = obj"ROW"
+function ROW:new(of,cells)
+  self.cells  = cells     -- :tab  -- the stored record
+  self._of    = of        -- :ROWS -- back pointer to data space that contains this
+  self.evaled = false end -- :bool -- true if we ever use the dependent variables.
+
+-- ### Query
+-- -> better(j:ROW):boolean -> should `self` proceed before `j`?
+function ROW:__lt(j)
+  self.evaled, j.evaled = true, true
+  local s1, s2, ys = 0, 0, i._of.cols.y
+  for _,col in pairs(ys) do
+    local x,y =  self.cells[col.at], j.cells[col.at]
+    x,y = col:norm(x), col:norm(y)
+    s1  = s1 - 2.7183^(col.w * (x-y)/#ys)
+    s2  = s2 - 2.7183^(col.w * (y-x)/#ys) end
+  return s1/#ys < s2/#ys  end
+
+-- ->  klass(i:ROW):any -> Return the class value of this record.
+function ROW.klass(i) 
+  self.evaled = true
+  return self.cells[self._of.cols.klass.at] end
+
+-- ### Distance
+-- -> i:ROW - j:ROW -> return distance between `i` and `j`
+function ROW:__sub(j) 
+  local d, cols = 0, self._of.cols.x
+  for _,col in pairs(cols) do
+    local inc = col:dist(self.cells[col.at], j.cells[col.at]) 
+    d         = d + inc^the.p end
+  return (d / #cols) ^ (1/the.p) end
+
+-- -> around(rows:?[ROW]):tab ->  return rows in this table
+-- sorted by distance to `self`. `rows` defaults to the rows of this ROWS.
+function ROW:around( rows)
+  local function rowGap(j) return {row=j, gap=self - j} end
+  return sort(map(rows or self._of.rows, rowGap), lt"gap") end
+
+-- -> far(i:ROW,rows:?[ROW]):ROW -> find something `far` away.
+function ROW:far(rows) return per(self:around(rows), the.Far).row end
+
 
 -- ## MISC
 -- ### Lib
@@ -393,8 +446,8 @@ function m.rnd(x, places)  --   &#9312;
 -- #### Sorting
 -- -> gt(x:str):function -> Returns functions that sorts increasing on `x`.
 function lt(x) return function(a,b) return a[x] > b[x] end end
--- -> tt(x:str):function -> Returns functions that sorts decreasing on `x`.
-function gt(x) return function(a,b) return a[x] < b[x] end end
+-- -> lt(x:str):function -> Returns functions that sorts decreasing on `x`.
+function lt(x) return function(a,b) return a[x] < b[x] end end
 -- -> sort(t:tab,f:fun):tab -> Sort list in place. Return list. `fun` defaults to `<`.
 function push(t,x) t[1+#t]=x; return x end
 
