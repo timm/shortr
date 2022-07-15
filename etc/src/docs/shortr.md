@@ -40,7 +40,7 @@ decision tree is then used to distinguish the best `bests` from
 the worst `rests`. Note that all this access the dependent variables just _log2(N)_ times.
 
 
-|Category|Class|Protocol|What|Notes|
+|CATEGORY|CLASS|PROTOCOL|WHAT|NOTES|
 |:---------|:----|:--------|:---|:----|
 |**Config** |  |  | [***help  :str***](#1)|Help text for this code.|
 | |  |  | [***the  :table***](#2)|Config settings. Extracted from `help`. e.g. `the.cohen=.35`.|
