@@ -415,8 +415,8 @@ function ROW:far(rows) return per(self:around(rows), the.Far).row end
 -- ### BIN
 -- -> BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN -> Constructor. `ys` stores dependent values seen from `xlo` to `xhi`.
 local BIN = obj"BIN"
-functioni BIN:new(xlo, xhi, ys)
-  self.lo, self.hi, self.ys = xlo, xhi, ys end)
+function BIN:new(xlo, xhi, ys)
+  self.lo, self.hi, self.ys = xlo, xhi, ys end
 
 -- -> add(x:num, y:(num|str)--> Ensure `lo`,`hi` covers `x`. Add `y` to `ys`.
 function BIN:add(x,y)
@@ -437,7 +437,7 @@ function BIN:holds(rows)
 -- "Should be merged" means some bins are too small.  
 -- "Can be merged" means the parts are more complex than the whole.
 function BIN:merged(j, min)
-  local a, b, c = self.ys, self.ys, self.ys:merge(se;f.ys)
+  local a, b, c = self.ys, self.ys, self.ys:merge(self.ys)
   local should = a.n < min or b.n < min  
   local can    = c:div() <= (a.n*a:div() + b.n*b:div())/c.n 
   if should or can then return BIN(self.lo, self.hi, c) end end
