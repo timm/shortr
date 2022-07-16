@@ -19,7 +19,7 @@
       (let ((z (ignore-errors (read-from-string y))))
         (if (numberp z) z y)))))
 
-(defun cli (flag help default)
+(defun cli ( flag help default)
   (let* ((args #+clisp ext:*args* #+sbcl sb-ext:*posix-argv*)
          (it (member flag args :test 'equal)))
     (cond ((not it) default)
@@ -27,12 +27,19 @@
           ((equal default nil) t)
           (t (it (second it))))))
 
-(setf *opt* (mapcar (lambda (x) (cons (car x) (apply 'cli (cdr x))))  *opt*))
+(setf *opt* (mapcar (lambda (x) (cons (car x) (apply 'cli (cdr x))))*opt*))
+
+(print *opt*)
+(defmacro my (x) `(cdr (assoc *opt* ',x)))
+(defmacro aif (test then &optional else) `(let ((it ,test)) (if it ,then ,else)))
+
+(with-open-file (stream (my file))
+  (while loop (setf if (read stream nil)) do  (print it)))
 
 (defstruct (cols (:constructor %make-cols)) all x y names)
 
 (defun make-cols (lst &aux (self (%make-cols :names lst)))
-   (setf (cols-all self) (mapcar (lambda (x) (make-col x (incf at)))))
+   (setf (cols-all self) (mapcar (lambda (x) (make-col x (incf at))))))
 
 
-
+(print *opt*)
