@@ -19,9 +19,12 @@
 -- This code uses the following classes.
 -- - ROWS hold many ROWs which are summarized in COLs.
 -- - COLs can be either SYMbolic or NUMeric). 
--- - Two helper classes are:
+-- - Three helper classes are:
 --   - SOME: keeps a sample of data from a NUMeric column.
 --   - BIN:  tracks what goal variables are seen within some range.
+--   - COLS: this is a factory that turns column names into NUMs or SYMs.
+-- - NB is an application class that uses the above to implement a Bayes classifier.
+-- - ABCD is metrics class that computes recall, accuracy, etc for a classifier.
 
 -- Data from disk is read into a ROWS, from which we 
 -- do some clustering (and each cluster is new ROWS object, containing a subset
@@ -37,7 +40,7 @@
 -- the data associated with the best/worst points are labeled `bests`
 -- or `rests`.  Supervised discretization and an entropy-based
 -- decision tree is then used to distinguish the best `bests` from
--- the worst `rests`. Note that all this access the dependent variables just _log2(N)_ times.
+-- the worst `rests`. Not that all this access the dependent variables just _log2(N)_ times.
 
 -- TABLE.OF.CONTENTS
 
@@ -408,6 +411,59 @@ function ROW:around( rows)
 -- -> far(i:ROW,rows:?[ROW]):ROW -> find something `far` away.
 function ROW:far(rows) return per(self:around(rows), the.Far).row end
 
+-- ## Discretize
+-- ### BIN
+-- -> BIN(xlo:num,xhi:num,ys:(NUM|SYM)):BIN -> Constructor. `ys` stores dependent values seen from `xlo` to `xhi`.
+local BIN = obj"BIN"
+functioni BIN:new(xlo, xhi, ys)
+  self.lo, self.hi, self.ys = xlo, xhi, ys end)
+
+-- -> add(x:num, y:(num|str)--> Ensure `lo`,`hi` covers `x`. Add `y` to `ys`.
+function BIN:add(x,y)
+  self.lo = math.min(self.lo, x)
+  self.hi = math.max(selt.hi, x)
+  i.ys:add(y) end
+
+-- -> hold(row:ROW): (ROW|nil) -> Returns non-nil if bin straddles the `row`.
+function BIN:hold(row)
+  local x = row.cells[self.ys.at]
+  if x=="?" or self.lo==self.hi or self.lo<x and x<=self.hi then return row end end
+
+-- holds(i:BIN, rows:[ROW]): [ROW] --> Returns the subset of `rows` straddled by this bin.
+function BIN:holds(rows)
+  return map(rows, function(row) return self:hold(row) end) end
+
+-- merge(j:BIN, min:number): (BIN|nil) --> Returns non-nil if `i,j` should/can be merged.
+-- "Should be merged" means some bins are too small.  
+-- "Can be merged" means the parts are more complex than the whole.
+function BIN:merged(j, min)
+  local a, b, c = self.ys, self.ys, self.ys:merge(se;f.ys)
+  local should = a.n < min or b.n < min  
+  local can    = c:div() <= (a.n*a:div() + b.n*b:div())/c.n 
+  if should or can then return BIN(self.lo, self.hi, c) end end
+
+function BIN:show(i)
+  local x,lo,hi = self.ys.txt, self.lo, self.hi
+  if     lo ==  hi  then return fmt("%s == %s", x, lo)
+  elseif hi ==  big then return fmt("%s >  %s", x, lo)
+  elseif lo == -big then return fmt("%s <= %s", x, hi)
+  else                   return fmt("%s <  %s <= %s", lo,x,hi) end end
+
+function BIN.BINS(rows,col,yKlass,y)
+  y      = y or function(row) return row:klass() end
+  yKlass = yKlass or SYM
+  local n,list, dict = 0,{}, {}
+  for _,row in pairs(rows) do
+    local v = row.cells[col.at]
+    if v ~= "?" then
+      n = n + 1
+      local pos = col:bin(v)
+      dict[pos] = dict[pos] or push(list, BIN(v,v,yKlass(col.at, col.txt)))
+      dict[pos]:add(v, y(row)) end end
+  list = col:merges(sort(list, lt"lo"), small(the.Min, n))
+  return {bins= list,
+          div = sum(list,function(z) return z.ys:div()*z.ys.n/n end)} end
+
 -- ### COLS
 -- **RESPONSIBILITIES** : <img align=right height=100 src="cdown.png">
 -- - Create a set of NUMs and SYMs (from the row of column names)
@@ -543,16 +599,19 @@ local function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 
 -- #### Lists
+-- -> any(a:tab):any -> Return any item, picked at random. 
+function any(a, i)  i=R()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
+-- -> many(a:tab,n:number):any -> Return any `n`' items, picked at random. 
+function many(a,n, u) u={}; for j=1,n do u[1+#u]= any(a) end;return u end
 -- -> kap(t:tab,f:fun):tab -> Filter key,values through `fun`. Remove slots where `fun` returns nil
 function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
 -- -> map(t:tab,f:fun):tab -> Filter through `fun`. Remove slots where `fun` returns nil
 function map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x) end;return u end
 -- -> per(t:tab,p:float):any -> Returns the items `p`-th way through `t`.
 function per(t,p)  p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
--- -> any(a:tab):any -> Return any item, picked at random. 
-function any(a, i)  i=R()*#a//1; i=math.max(1,math.min(i,#a)); return a[i] end
--- -> many(a:tab,n:number):any -> Return any `n`' items, picked at random. 
-function many(a,n, u) u={}; for j=1,n do u[1+#u]= any(a) end;return u end
+-- -> sum(t:tab, f:?fun=same): num -> sum items in `t`, filtered through `fun` 
+function sum(t,f,   u) 
+   u=0; for _,x in pairs(t) do u=u + (f or same)(x) end; return u end
 
 -- #### Maths
 -- -> big:num -> Return `math.huge`
@@ -581,6 +640,9 @@ function ako(x) return getmetatable(x) end
 
 -- -> same(x):x -> Return arg, un changed.
 function same(x) return x end
+
+-- > small(min,x) :num > Defined what `small` means. 
+function small(min,x) return math.max(4,min<1 and x^min or x) end
 
 -- #### String2things
 -- -> csv(file:str,  fun:fun):tab -> Call `fun` with lines, split on ",". 
