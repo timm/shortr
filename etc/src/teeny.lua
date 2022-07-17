@@ -1,4 +1,3 @@
-local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local all,the,help={},{},[[
 
 TEENY.lua: dont fuse on non-numerics
@@ -16,48 +15,75 @@ OPTIONS:
  -p p        distance coefficient  = 2
  -S samples  samples               = 64
  -s seed     random number seed    = 10019]]
-
+-- ## Names
+-- Store old names (so, on last line, we can check for rogue locals)
+local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
+-- Names of utils
 local any,big,cat,chat,coerce,csv,data,fmt,lt
 local map,max,min,per,push,rand,shuffle,sort
+
+-- Place to store test suites (to disable a test, move it `go` to `no`.
 local go,no = {},{}
 
+-- Polymorphism, encapsulation, classes, instances. In 3 lines. :-)
 local function obj(txt,fun,  t,i) 
   local function new(k,...) i=setmetatable({},k); fun(i,...); return i end
   t={__tostring = cat}; t.__index = t;return setmetatable(t,{__call=new}) end
--- -----------------------------------------------------------------------------
-local SYM=obj("SYM",function(self,at,txt) 
+-----------------------------------------------------------------------------
+-- ## Columns
+-- ### Sym
+-- #### Create
+-- Summarizes streams of symbols. 
+local SYM=obj("SYM", function(self,at,txt) 
   self.n=0; self.at=at or 0; self.txt=txt or ""; self.kept={} end)
 
-function SYM:add(x,n) 
-  n = n or 1
-  if x~="?" then self.n=self.n+n; self.kept[x]=n + (self.kept[x]+0) end end
-
-function SYM:dist(x,y) return (x=="?" or  y=="?") and 1 or x==y and 0 or 1 end
-
-function SYM:bin(x) return x end
-function SYM:div() 
-  return sum(self.kept, function(n) return -n/i.n*mathlog(n/i.n,2) end) end
-
+-- Create a new SYM by merging two others.
 function SYM:merge(other,    k)
   k= SYM(self.at, self.txt)
   for x,n in pairs(self.kept)  do k:add(x,n) end
   for x,n in pairs(other.kept) do k:add(x,n) end
   return k end
 
+-- #### Update
+-- Add a symbols `x`. Do it `n` times.
+function SYM:add(x,n) 
+  n = n or 1
+  if x~="?" then self.n=self.n+n; self.kept[x]=n + (self.kept[x]+0) end end
+
+-- #### Query
+-- Entropy
+function SYM:div() 
+  return sum(self.kept, function(n) return -n/i.n*math.log(n/i.n,2) end) end
+
+-- #### Distance
+function SYM:dist(x,y) return (x=="?" or  y=="?") and 1 or x==y and 0 or 1 end
+
+-- #### Discretization
+-- Discretize a symbol (do nothing)
+function SYM:bin(x) return x end
+-- Merge adjacent bins of symbols (do nothing since SYM ranges can't merge)
 function SYM:merges(t,...) return t end
--- -----------------------------------------------------------------------------
-local NUM=obj("NUM",function(self,at,txt) 
+
+-- ### Num
+-- #### Create
+-- Summarize streams of numbers
+local NUM=obj("NUM", function(self,at,txt) 
   self.n=0; self.at=at or 0; self.txt=txt or ""
   self.w = (txt or ""):find"-$" and -1 or 1
   self.ok, self.kept = false,{} end)
 
-function NUM:add(x,  pos) 
+-- #### Update
+-- Add a number `x`. If no more space,  at prob `some/n`, replace any old number.
+function NUM:add(x)
   if x~="?" then 
     self.n = self.n + 1
+    local pos
     if #self.kept < the.some        then pos= #i.kept+1 
     elseif rand() < the.some/self.n then pos= rand(#i.kept) end
     if pos then self.kept[pos]=x; self.ok=false end end end
 
+-- Adding numbers means the kept nums are no longer sorted.
+-- If anyone asks for them, sort them before returning them.
 function NUM:has()
   self.kept = self.ok and self.kept or sort(self.kept)
   self.ok = true
@@ -97,7 +123,7 @@ function NUM:merges(b4, min)
   return #now < #b4 and self:merges(now,min) or fillInTheGaps(now) end
 
 -- -----------------------------------------------------------------------------
-local META=obj("META",function(self,  col)
+local META=obj("META", function(self,  col)
   self.names, self.x, self.y, self.all= names, {},{},{}
   for k,v in pairs(names) do
     col= push(self.all, (v:find"^[A-Z]" and NUM or SYM)(at,txt))
@@ -152,7 +178,7 @@ function BIN:add(x,y)
   self:has(y) end
 
 function BIN:merged(j, min)
-  local a, b, c = self.has, self.has, self.has:merge(j.has)
+  local a, b, c = self.has, j.has, self.has:merge(j.has)
   local should = a.n < min or b.n < min  
   local can    = c:div() <= (a.n*a:div() + b.n*b:div())/c.n 
   if should or can then return BIN(a.col,self.lo, j.hi, c) end end
@@ -170,7 +196,7 @@ function constrast(col,rows1,rows2)
   return { bin=list,
            div=sum(list,function(z) return z.has:div()*z.ys.n/n end)} end 
 -- -----------------------------------------------------------------------------
-local DATA=obj("DATA",function() self.rows, self.cols = {},nil end)
+local DATA=obj("DATA", function() self.rows, self.cols = {},nil end)
 
 function DATA:file(x) for t in csv(x) do self:add(t) end; return self end
 
