@@ -30,7 +30,8 @@ local go,no = {},{}
 local the = {}
 -- ### Objects
 
--- -> obj(str,fun): class -> Polymorphism, encapsulation, classes, instances. In 3 lines. :-)
+-- -> obj(str,fun): class -> `Fun` is a constructor for instances of class `str`.
+-- BTW, polymorphism, encapsulation, classes, instance, constructors, all  in 3 lines. :-)
 local function obj(txt,fun,  t,i) 
   local function new(k,...) i=setmetatable({},k); fun(i,...); return i end
   t={__tostring = cat}; t.__index = t;return setmetatable(t,{__call=new}) end
