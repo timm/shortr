@@ -71,27 +71,32 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1em;
   font-weight: normal;
   font-family: "roboto-black";
-  xtext-transform: uppercase;
-  margin: 0px 0 15px 0;
+  margin: 0px 0 5px 0;
 }
 
 h1 {
   font-size: 2.8em;
   margin-top: 11px;
+  margin-bottom: 5px;
 }
 h2 {
+  text-transform: uppercase;
   font-size: 2.1em;
   margin: 10px 0 15px 0;
   border-top: 2px solid #ccc;
 }
 h3 {
-   color: #954121;
+   margin-left: 50px; text-align: left;
+   xcolor: #219161;
    font-size: 1.7em; }
 
 h4 {
-  text-decoration: italic;
+   font-size: 1.1em; 
+  font-style: italic;
+font-weight: 400 !important;
+  xfont-weight: normal;
 }
-h3,h4,h5,h6 {text-align:right;}
+h4,h5,h6 {text-align:right;}
 
 hr {
   order: 0;
@@ -391,7 +396,8 @@ ul.sections > li > div {
     padding: 11px 25px 1px 50px;
   }
   ul.sections > li > div.content {
-    padding: 9px 15px 16px 25px;
+    xpadding: 9px 15px 16px 25px;
+    padding: 9px 15px 4px 25px;
   }
 }
 

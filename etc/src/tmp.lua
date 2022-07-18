@@ -1,3 +1,19 @@
+-- SHORTr : less (but better) XAI
+--    
+--    
+-- AI and XAI (explainable artificial intelligence) need not be
+-- hard.  E.g. here's a few hundred lines of LUA
+-- to search N items to  find and explain the best ones, using just
+-- log(N) evals.  
+--    
+-- <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a><br>
+-- <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a><br>
+-- <a href=".."><img src="https://img.shields.io/badge/checked--by-syntastic-yellow?logo=Checkmarx&logoColor=white"></a><br>
+-- <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a><br>
+-- <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
+-- <br clear=all>
+--    
+--    
 local help=[[
 
 TEENY.lua: dont fuse on non-numerics
@@ -16,7 +32,6 @@ OPTIONS:
  -p p        distance coefficient  = 2
  -S samples  samples               = 64
  -s seed     random number seed    = 10019]]
------------------------------------------------------------------------------
 -- ## Names
 
 -- Store old names (so, on last line, we can check for rogue locals)
@@ -30,19 +45,19 @@ local go,no = {},{}
 local the = {}
 -- ### Objects
 
--- -> obj(str,fun): class -> Polymorphism, encapsulation, classes, instances. In 3 lines. :-)
+--**obj(str,fun): class**<br>Polymorphism, encapsulation, classes, instances. In 3 lines. :-)
 local function obj(txt,fun,  t,i) 
   local function new(k,...) i=setmetatable({},k); fun(i,...); return i end
   t={__tostring = cat}; t.__index = t;return setmetatable(t,{__call=new}) end
 
--- -> SYM(?num=0, ?str="") -> Summarizes streams of symbols. 
+--**SYM(?num=0, ?str="")**<br>Summarizes streams of symbols.
 local SYM=obj("SYM", function(self,at,txt) 
   self.n   = 0          -- number of items seen
   self.at  = at or 0    -- column number
   self.txt = txt or ""  -- column name
   self.kept= {}   end)  -- counters for symbols
 
--- -> NUM(?num=0, ?str="") -> Summarize streams of numbers.
+--**NUM(?num=0, ?str="")**<br>Summarize streams of numbers.
 local NUM=obj("NUM", function(self,at,txt) 
   self.n   = 0                        -- number of items seen
   self.at  = at   or 0                -- column number
@@ -52,7 +67,7 @@ local NUM=obj("NUM", function(self,at,txt)
   self.kept= {}                       -- some sample of the seen items
   self.ok  = true end)                -- true if `kept` is sorted
 
--- -> META([str]+) -> Factory for making NUMs or SYMs from list of col names.
+--**META([str]+)**<br>Factory for making NUMs or SYMs from list of col names.
 -- Column names starting with upper case are NUMs (others are SYMs).
 -- Anything adding with "!+-" is a dependent goal column.
 -- Column names ending with "`:`" are "skipped"; i.e. they
@@ -69,7 +84,7 @@ local META=obj("META", function(self,  names)
       if v:find"!$" then self.klass = col end
       push(v:find"[!+-]$" and self.y or self.x, col) end end end)
 
--- -> ROW(tab) -> Stores one record.
+--**ROW(tab)**<br>Stores one record.
 -- Implementation note: ROWs are created when data is read from CSV files.
 -- After that, if a ROW is added to more than one DATA object then the same
 -- ROW will be held in different DATAs. This makes certain labelling and
@@ -79,23 +94,22 @@ local ROW=obj("ROW", function(self,cells)
   self.label  = false       -- true if we have decided  this ROW is "best"?
   self.evaled = false end)  -- have we accessed this row's y-values?
 
--- -> DATA() -> Stores `rows` and their summaries in `cols`.
+--**DATA()**<br>Stores `rows` and their summaries in `cols`.
 local DATA=obj("DATA", function(self) 
   self.rows = {}        -- [ROW] records, stored as ROW
   self.cols = nil end)  -- a META instance (if nil, no data read yet)
 
--- -> BIN( NUM|SYM, num, ?num=lo, ?SYM) -> Values from same rows in 2 columns
+--**BIN( NUM|SYM, num, ?num=lo, ?SYM)**<br>Values from same rows in 2 columns
 local BIN=obj("BIN",function(self,col, lo, hi, has) 
   self.col = col               -- What column does this bin handle?
   self.lo  = lo                -- Lowest value of column1.
   self.hi  = hi or lo          -- Highest value of column1
   self.has = has or SYM() end) -- Symbol counts of column2 values.
------------------------------------------------------------------------------
 -- ## Columns
 -- ### Sym
 -- #### Create
 
--- -> SYM:merge(SYM): SYM ->  Create a new SYM by merging two others.
+--**`SYM`:  merge(SYM): SYM**<br>Create a new SYM by merging two others.
 function SYM:merge(other,    k)
   k= SYM(self.at, self.txt)
   for x,n in pairs(self.kept)  do k:add(x,n) end
@@ -103,31 +117,31 @@ function SYM:merge(other,    k)
   return k end
 -- #### Update
 
--- -> SYM:add(any,?num=1) -> Add a symbols `x`. Do it `n` times.
+--**`SYM`:  add(any,?num=1)**<br>Add a symbols `x`. Do it `n` times.
 function SYM:add(x,n) 
   n = n or 1
   if x~="?" then self.n=self.n+n; self.kept[x]=n + (self.kept[x]+0) end end
 -- #### Query
 
--- -> SYM:div():num -> Diversity. Return entropy.
+--**`SYM`:  div():num**<br>Diversity. Return entropy.
 function SYM:div() 
   return sum(self.kept, function(n) return -n/i.n*math.log(n/i.n,2) end) end
 -- #### Distance
 
--- -> SYM:dist(atom,atom):num -> Identical symbols have distance 0. Otherwise, 1.
+--**`SYM`:  dist(atom,atom):num**<br>Identical symbols have distance 0. Otherwise, 1.
 -- If any unknowns, assume max distance.
 function SYM:dist(x,y) return (x=="?" or  y=="?") and 1 or x==y and 0 or 1 end
 -- #### Discretization
 
--- -> SYM:bin(any):any -> Discretize a symbol (do nothing)
+--**`SYM`:  bin(any):any**<br>Discretize a symbol (do nothing)
 function SYM:bin(x) return x end
--- -> SYM:merges(t,...):t ->  Merge adjacent bins (do nothing: SYM ranges dont't merge)
+--**`SYM`:  merges(t,...):t**<br>Merge adjacent bins (do nothing: SYM ranges dont't merge)
 function SYM:merges(t,...) return t end
 
 -- ### Num
 -- #### Update
 
--- -> NUM:add(num) -> Add `x`. If no space, at prob `some/n`, replace any old number.
+--**`NUM`:  add(num)**<br>Add `x`. If no space, at prob `some/n`, replace any old number.
 function NUM:add(x)
   if x~="?" then 
     self.n = self.n + 1
@@ -139,20 +153,20 @@ function NUM:add(x)
       self.kept[pos]=x end end end
 -- #### Query
 
--- -> NUM:has() -> Return `kept`, ensuring it is sorted.
+--**`NUM`:  has()**<br>Return `kept`, ensuring it is sorted.
 function NUM:has()
   self.kept = self.ok and self.kept or sort(self.kept)
   self.ok = true
   return self.kept end
 
--- -> NUM:norm(x):num -> Normalize x,y to 0..1.
+--**`NUM`:  norm(x):num**<br>Normalize x,y to 0..1.
 function NUM:norm(x)
   local a =  self:has()
   local lo,hi = a[1], a[#a]
   return x=="?" and x or math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi-lo+1/big) end
 -- #### Distance
 
--- -> NUM:dist(x,y):num -> Normalize x,y to 0..1, report their difference.
+--**`NUM`:  dist(x,y):num**<br>Normalize x,y to 0..1, report their difference.
 -- If any unknowns, assume max distance.
 function NUM:dist(x,y)
   if x=="?" and y=="?" then return 1
@@ -162,14 +176,14 @@ function NUM:dist(x,y)
   return math.abs(x-y) end
 -- #### Discretization
 
--- -> NUM:bin(any):any -> Discretize a num to one of `the.bins` bin.
+--**`NUM`:  bin(any):any**<br>Discretize a num to one of `the.bins` bin.
 function NUM:bin(x)
   local a = self:has()
   local lo,hi = a[1], a[#a]
   local b = (hi - lo)/the.bins
   return hi==lo and 1 or math.floor(x/b+.5)*b end
 
--- -> NUM:merges(t,...):t -> Prune superflous bins. Repeat till no more found.
+--**`NUM`:  merges(t,...):t**<br>Prune superflous bins. Repeat till no more found.
 function NUM:merges(b4, min) 
   local function fillInTheGaps(bins)
     bins[1].lo, bins[#bins].hi = -big, big
@@ -184,17 +198,16 @@ function NUM:merges(b4, min)
     n           = n + (merged and 2 or 1)  -- if merged, skip passed the merged bin
   end
   return #now < #b4 and self:merges(now,min) or fillInTheGaps(now) end
---------------------------------------------------------------------------------
 -- ### Data
 -- #### Udpate
 
--- -> META:add(ROW) ->  update the non-skipped columns with values from ROW
+--**`META`:  add(ROW)**<br>update the non-skipped columns with values from ROW
 function META:add(row)
   for _,cols in pairs{self.x, self.y} do 
     for _,col in pairs(cols) do col:add(row.cells[col.at]) end end end
 -- #### Distance
 
--- -> META:dist(ROW,ROW) :num ->  Using `x` columns, compute distance.
+--**`META`:  dist(ROW,ROW) :num**<br>Using `x` columns, compute distance.
 function META:dist(r1,r2)
   local d,x1,x2 = 0
   for _,col in pairs(self.x) do 
@@ -217,7 +230,7 @@ function META:half(rows,b4)
   return i end 
 -- #### Optimization
 
--- -> META:best(ROW,ROW) :bool -> Multi-objective comparisons. True if moving to self losses least than moving to other.
+--**`META`:  best(ROW,ROW) :bool**<br>Multi-objective comparisons. True if moving to self losses least than moving to other.
 function META:best(r1,r2)
   r1.evaled,r2.evaled = true,true
   local s1, s2, ys, e = 0, 0, self.y, math.exp(1)
@@ -228,7 +241,7 @@ function META:best(r1,r2)
     s2      = s2 - e^(col.w * (y-x)/#ys) end
   return s1/#ys < s2/#ys  end
 
--- -> META:bests([ROW]):bests=[ROW],rests=[ROW] -> Recursively apply `best`. Return most preferred rows, and the rest.
+--**`META`:  bests([ROW]):bests=[ROW],rests=[ROW]**<br>Recursively apply `best`. Return most preferred rows, and the rest.
 function META:bests(rows,    b4,stop,rests)
   rests = rests or {}
   stop  = stop or (#rows)^the.min
@@ -284,7 +297,6 @@ function constrast(col,rows)
   list = col:merges(sort(list,lt"lo"), n^the.min)
   return { bins=list,
            div=sum(list,function(z) return z.has:div()*z.ys.n/n end)} end 
--------------------------------------------------------------------------------
 function DATA:file(x) for t in csv(x) do self:add(t) end; return self end
 
 function DATA:adds(t) for _,t1 in pairs(t) do self:add(t1) end; return self end
@@ -294,7 +306,6 @@ function DATA:add(t)
   then self.cols:add(push(i.rows, t.cells and t or ROW(t))) 
   else self.cols=META(t) end end
 
-------------------------------------------------------------------------------
 -- ## Lib
 big=math.huge 
 min=math.min
