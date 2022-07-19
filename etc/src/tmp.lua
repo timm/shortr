@@ -1,44 +1,71 @@
 -- <span id="forkongithub"><a href="https://github.com/timm/shortr">Fork me on GitHub</a></span>
 -- 
--- <em>"Dr. Hoenikker used to say that any scientist<br>
---      who couldn't explain to an eight-year-old <br>
---      what he was doing was a charlatan."<br></em>-   Kurt Vonnegut, Cat's Cradle
--- 
--- <em>"If you cannot - in the long run - (explain to)<br>
---     everyone what you have been doing,<br>
+-- <em>"If you cannot - in the long run - (explain to)
+--     everyone what you have been doing,
 --     your doing  has been worthless."</em><br>- Erwin Schrodinger
 -- 
---    
+-- <em>And I say, hey-ey-ey-a-ey, hey-ey-ey-ey
+--     I said "Hey, a-what's going on?"</em> <br>- 4 Non Blondes
+-- 
 -- AI and XAI (explainable artificial intelligence) need not be
 -- hard.  E.g. here's a few hundred lines of LUA
 -- to search N items to  find and explain the best ones, using just
 -- log(N) evals.  
 -- 
+-- This code makes extensive use of a ROWS object.  Data from disk
+-- becomes a ROWS. ROWS are recursive bi-clustered by partitioning on
+-- the distance to two distant points (found after a few dozen random
+-- projections).  Each cluster is new ROWS object, containing a subset
+-- of the data. A decision tree is built that reports the difference
+-- between the "best" and "worst" clusters (defined using a multi-objective
+-- domination predicate) and that tree is just a  ser
+-- of ROWS with `kids` pointer to sub-RWS).  This process
+-- only needs log2(N) queries to y-values (while clustering,
+-- just on the pairs of
+-- distance objects).
+-- 
+-- This code starts with a help string (from which we extract our global settings)
+-- and ends with a library of demos (see the `go` functions at end of file).  
+-- Each setting can be (optionally) updated by a command-line flag.
+-- Demos can be run separately or  all at once (using `-g all`).
+--   For regression tests, we report the failures seen when the demos run.
+-- 
 -- <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a>
--- <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a>
+-- <[a](a) href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a>
 -- <a href=".."><img src="https://img.shields.io/badge/Lua-%232C2D72.svg?logo=lua&logoColor=white"></a><br>
 -- <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 -- <br clear=all>
 --    
 local help=[[
 
-TINYXAI.lua: dont fuse on non-numerics
+XPLAN.lua: semi-supervised multi-objective explanation 
+(c)2022, Tim Menzies <timm@ieee.org>, BSD-2 license
+
+SYNOPSIS:
+  Data, with multiple dependent goals, is recursive
+  bi-clustered on independent variables by partitioning
+  on the distance to two distant points (found after a
+  few dozen random projections).  A decision tree reports
+  the difference between the "best" and "worst" clusters
+  (defined using a multi-objective domination predicate).
+  This process only makes log2(N) queries to y-values
+  (while clustering, just on the pairs of distance objects).
 
 USAGE:
-  lua tinyxai.lua [OPTIONS]
+  lua xplan.lua [OPTIONS]
 
 OPTIONS:
- -b bins     max number of bins    = 16
- -c cohen    difference in nums    = .35
- -f file     source                = ../../data/auto93.csv
- -F Far      how far is far        = .95
- -g go       action                = help
- -h help     show help             = false
- -m min      size of small         = .5
- -p p        distance coefficient  = 2
- -r rests    number of rests to use= 4
- -S Samples  samples               = 64
- -s seed     random number seed    = 10019]]
+ -b bins         max number of bins    = 16
+ -c cohen        difference in nums    = .35
+ -f file         source                = ../../data/auto93.csv
+ -F Far          how far is far        = .95
+ -g go           action                = nothing
+ -h help         show help             = false
+ -m min          size of small         = .5
+ -p p            distance coefficient  = 2
+ -r rests        number of rests to use= 4
+ -P Projections  number of random projections   = 64
+ -s seed         random number seed    = 10019 ]]
 
 -- ## Names
 
@@ -49,8 +76,8 @@ OPTIONS:
 -- Store old names (so, on last line, we can check for rogue locals)
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 -- Define new names from library code (so we can mention them before defining them).
-local any,big,cat,chat,cli,coerce,csv,data,fmt,lt
-local map,max,min,per,push,rand,shuffle,sort
+local any,big,cat,chat,cli,coerce,csv,data,fmt,kap,lt
+local map,max,min,on,per,push,rand,rnd,rnds,shuffle,sort,sum
 -- Place to store test suites (to disable a test, move it `go` to `no`.
 local go,no = {},{}
 -- Place to store the settings (and this variable is parsed from help text; e.g. `the.bins=16`).
@@ -265,12 +292,13 @@ function COLS:dist(r1,r2)
   return (d/#self.x)^(1/the.p) end
 
 --**`COLS`:  half([ROW])**<br>Divide `rows` by their distance to two distant points A,B
--- Find two distant points by `the,samples` times, look at random pairs.
+-- Find two distant points A,B using a few dozen random projections.
 function COLS:half(rows,   b4)
   local function ABc (A,B) return {A=A, B=B, As={}, Bs={}, c=self:dist(A,B)} end
   local ABcs={}
-  for n=1,the.Samples do push(ABcs, ABc(b4 or any(rows), -- if b4, use it for one pole
-                                        any(rows))) end
+  for n=1,the.Projections do 
+     push(ABcs, ABc(b4 or any(rows), -- if b4, use it for one pole
+                    any(rows))) end
   local i = per(sort(ABcs,lt"c"), the.Far) -- avoid outliers: don't go right to the edge
   local function xCs(C)     
           return {x = (self:dist(C,i.A)^2+i.c^2-self:dist(C,i.B)^2)/(2*i.c),
@@ -414,6 +442,7 @@ function per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
 
 function push(t,x) t[1+#t]=x; return x end
 function map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x)end;return u end
+function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
 function sum(t,f,     u) u=0; for _,x in pairs(t) do u=u+f(x)    end;return u end
 
 --**rnd(num,  `places`:  int):num**<br>Return `x` rounded to some number of `place`  &#9312; . <
@@ -423,7 +452,6 @@ function rnd(x, places)  --   &#9312;
 --**rnds( `t`:  num,  `places`:  ?int=2):num**<br>Return items in `t` rounds to `places`.
 function rnds(t, places)
   local u={};for k,x in pairs(t) do u[k]=rnd(x,places or 2)end;return u end
-
 
 function sort(t,f) table.sort(t,f); return t end
 function lt(x)     return function(a,b) return a[x] < b[x] end end
@@ -440,8 +468,10 @@ function cli(t)
   for k,v in pairs(t) do
     v = tostring(v)
     for n,x in ipairs(arg) do if x=="-"..(k:sub(1,1)) then 
-      x = v=="false" and "true" or v=="true" and "false" or arg[n+1] end end
-    t[k] =  coerce(v) end end
+      v = v=="false" and "true" or v=="true" and "false" or arg[n+1] end end
+    t[k] =  coerce(v) end 
+  if t.help then os.exit(go.help()) end
+  return t end
 
 function chat(t) print(cat(t)) return t end 
 function cat(t,   show,u)  
@@ -461,14 +491,29 @@ function csv(file,fun)
      t={};for x in s:gmatch(fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t 
   end -------------------------------------------------------------
   lines(file, function(line) fun(words(line, ",", coerce)) end) end 
+
+--**on(tab,tab)**<br>Runs some (or all) of the demos. Return number of failures.
+-- Resets `the` and the random number seed before each demo. 
+function on(the,go) 
+  local the, fails, defaults=cli(the), 0, {}
+  for k,v in pairs(the) do defaults[k]=v end 
+  local todos = sort(kap(go,function(k,_) return k end))
+  for _,todo in pairs(the.go=="all" and todos or {the.go}) do
+    if type(go[todo])=="function" then
+      for k,v in pairs(defaults) do the[k]=v end 
+      math.randomseed(the.seed)
+      if true ~= go[todo]() then 
+        print("FAIL:",todo)
+        fails=fails+1 end end end 
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end
+  os.exit(fails) end
  -- -----------------------------------------------------------------------------
 -- ## Start-up
-function go.the() chat(the) end
+function go.the() chat(the) ; return true end
+function go.help() 
+  print(help:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),""); return true end 
 
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",function(k,x) the[k]=coerce(x)end) 
-
-cli(the)
-if the.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"")) end 
-math.randomseed(the.seed)
-if go[the.go] then go[the.go]() end
-for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end
+if   pcall(debug.getlocal, 4, 1) 
+then return {ROWS=ROWS, the=the} 
+else on(the,go) end
