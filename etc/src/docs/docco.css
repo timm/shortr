@@ -558,7 +558,7 @@ tr,p { line-height: 14px; }
                     right:-60px;transform:rotate(45deg);
                      -webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);
                      -o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8); }
-}
+} 
 
 h1,h2 { color: rgb(15,25,68); }
 b, strong {

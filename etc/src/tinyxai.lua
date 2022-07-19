@@ -17,6 +17,7 @@ OPTIONS:
  -r rests    number of rests to use= 4
  -S Samples  samples               = 64
  -s seed     random number seed    = 10019]]
+
 ------------ Names
 ------ Locals
 -- Store old names (so, on last line, we can check for rogue locals)
@@ -92,7 +93,7 @@ local BIN=obj("BIN",function(self,col, lo, hi, has)
   self.hi  = hi or lo          -- Highest value of column1
   self.has = has or SYM() end) -- Symbol counts of column2 values.
 
-------------  Columns
+------------  Columns
 --------- Sym
 ------ Create
 --- SYM:merge(SYM): SYM --  Create a new SYM by merging two others.
@@ -189,7 +190,7 @@ function NUM:merges(b4, min)
   bins[1].lo,bins[#bins].hi = -big,big            -- grow to plus/minus infinity
   return bins end 
 
------------- Data
+------------ Data
 --------- COLS
 ------ Update
 --- COLS:add(ROW) --  update the non-skipped columns with values from ROW
@@ -284,7 +285,7 @@ function BIN:selects(rows,    select,tmp)
   tmp= map(rows,select) 
   if #tmp < #rows then return rows end end
 
--------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 function ROWS:clone(t) return ROWS():add(self.cols.names):adds(t or {}) end
 
 function ROWS:file(x) for t in csv(x) do self:add(t) end; return self end
@@ -332,7 +333,7 @@ function ROWS:grow(rows,stop,when)
   self.when=when
   if #rows < stop then return self end
   self.kids = map(self:splitter(rows), kid) end
-------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- ## Lib
 big=math.huge 
 min=math.min
@@ -392,7 +393,7 @@ function csv(file,fun)
      t={};for x in s:gmatch(fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t 
   end -------------------------------------------------------------
   lines(file, function(line) fun(words(line, ",", coerce)) end) end 
--- -----------------------------------------------------------------------------
+ -- -----------------------------------------------------------------------------
 -- ## Start-up
 function go.the() chat(the) end
 
