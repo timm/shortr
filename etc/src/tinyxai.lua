@@ -9,19 +9,20 @@ OPTIONS:
  -b bins     max number of bins    = 16
  -c cohen    difference in nums    = .35
  -f file     source                = ../../data/auto93.csv
- -F far      how far is far        = .95
+ -F Far      how far is far        = .95
  -g go       action                = help
  -h help     show help             = false
  -m min      size of small         = .5
  -p p        distance coefficient  = 2
- -S samples  samples               = 64
+ -r rests    number of rests to use= 4
+ -S Samples  samples               = 64
  -s seed     random number seed    = 10019]]
 ------------ Names
 ------ Locals
 -- Store old names (so, on last line, we can check for rogue locals)
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 -- Define new names from library code (so we can mention them before defining them).
-local any,big,cat,chat,coerce,csv,data,fmt,lt
+local any,big,cat,chat,cli,coerce,csv,data,fmt,lt
 local map,max,min,per,push,rand,shuffle,sort
 -- Place to store test suites (to disable a test, move it `go` to `no`.
 local go,no = {},{}
@@ -92,7 +93,6 @@ local BIN=obj("BIN",function(self,col, lo, hi, has)
   self.has = has or SYM() end) -- Symbol counts of column2 values.
 
 ------------  Columns
--- Columns summarize sets of rows.
 --------- Sym
 ------ Create
 --- SYM:merge(SYM): SYM --  Create a new SYM by merging two others.
@@ -113,13 +113,19 @@ function SYM:add(x,n)
 function SYM:div() 
   return sum(self.kept, function(n) return -n/i.n*math.log(n/i.n,2) end) end
 
+--- SYM:mid():num -- Return `mid`dle (mode) symbol.
+function SYM:mid() 
+  local most,mode = -1,nil
+  for x,n in pairs(self.kept) do if n>most then most,mode=n,x end end
+  return mode end
+
 ------  Distance
 --- SYM:dist(atom,atom):num -- Identical symbols have distance 0. Otherwise, 1.
 -- If any unknowns, assume max distance.
 function SYM:dist(x,y) return (x=="?" or  y=="?") and 1 or x==y and 0 or 1 end
 
 ------ Discretization
---- SYM:bin(any):any -0 Discretize a symbol (do nothing)
+--- SYM:bin(any):any -- Discretize a symbol (do nothing)
 function SYM:bin(x) return x end
 --- SYM:merges(t,...):SYM --  Merge adjacent bins (do nothing: SYM ranges dont't merge)
 function SYM:merges(t,...) return t end
@@ -143,6 +149,9 @@ function NUM:has()
   self.kept = self.ok and self.kept or sort(self.kept)
   self.ok = true
   return self.kept end
+
+--- NUM:mid():num -- Return `mid`dle (median) number.
+function NUM:mid() return per(self.has(),.5) end
 
 --- NUM:norm(x):num -- Normalize x,y to 0..1.
 function NUM:norm(x)
@@ -182,7 +191,7 @@ function NUM:merges(b4, min)
 
 ------------ Data
 --------- COLS
-------  Update
+------ Update
 --- COLS:add(ROW) --  update the non-skipped columns with values from ROW
 function COLS:add(row)
   for _,cols in pairs{self.x, self.y} do 
@@ -201,21 +210,19 @@ function COLS:dist(r1,r2)
 --- COLS:half([ROW]) -- Divide `rows` by their distance to two distant points A,B
 -- Find two distant points by `the,samples` times, look at random pairs.
 function COLS:half(rows,   b4)
-  local abc, i, xCs 
-  abc = function(A,B) return {A=A, B=B, As={}, Bs={}, c=self:dist(A,B)} end
-  local tmp={}
-  for n=1,the.samples do 
-    push(tmp, abc(b4 or any(rows), -- if b4, use it for one pole
-              any(rows))) end
-  i   = per(sort(tmp,lt"c"), the.far)
-  xCs = function(C)     
+  local function ABc (A,B) return {A=A, B=B, As={}, Bs={}, c=self:dist(A,B)} end
+  local ABcs={}
+  for n=1,the.Samples do push(ABcs, ABc(b4 or any(rows), -- if b4, use it for one pole
+                                        any(rows))) end
+  local i = per(sort(ABcs,lt"c"), the.Far) -- avoid outliers: don't go right to the edge
+  local function xCs(C)     
           return {x = (self:dist(C,i.A)^2+i.c^2-self:dist(C,i.B)^2)/(2*i.c),
                   C = C} end
   for j,xC in pairs(sort(map(rows,xCs),lt"x")) do
     push(j<#rows/2 and i.As or i.Bs, xC.C) end 
   return i end 
 
------- Optimization
+------ Optimize
 ---  COLS:best(ROW,ROW) :bool -- Multi-objective comparisons. True if moving to self losses least than moving to other.
 function COLS:best(r1,r2)
   r1.evaled,r2.evaled = true,true
@@ -227,7 +234,7 @@ function COLS:best(r1,r2)
     s2      = s2 - e^(col.w * (y-x)/#ys) end
   return s1/#ys < s2/#ys  end
 
---- COLS:bests([ROW]):bests=[ROW],rests=[ROW] -- Recursively apply `best`. Return most preferred rows, and the rest.
+--- COLS:bests([ROW]):bests=[ROW],rests=[ROW] -- Recursively apply `best` to findReturn most preferred rows, and the rest.
 function COLS:bests(rows,    b4,stop,rests)
   rests = rests or {}
   stop  = stop or (#rows)^the.min
@@ -259,6 +266,8 @@ function BIN:add(x,y)
   self.hi = max(x,self.hi)
   self:has(y) end
 
+------ Query
+--- BIN:show() -- pretty print the range
 function BIN:show(i)
   local x,lo,hi = self.ys.txt, self.lo, self.hi
   if     lo ==  hi  then return fmt("%s == %s", x, lo)
@@ -266,7 +275,8 @@ function BIN:show(i)
   elseif lo == -big then return fmt("%s <= %s", x, hi)
   else                   return fmt("%s <  %s <= %s", lo,x,hi) end end
 
-
+--- BIN:selects([ROW]):[ROW] -- Returns the subset of rows that fall within this BIN. 
+-- Returns nil if the subset is same size as original sets.
 function BIN:selects(rows,    select,tmp)
   function select(row,  v)
     v= row.cells[self.col.at]
@@ -274,30 +284,9 @@ function BIN:selects(rows,    select,tmp)
   tmp= map(rows,select) 
   if #tmp < #rows then return rows end end
 
--- XXX start here
-function ROWS:tree(gaurd,stop)
-  self.gaurd = gaurd.
-  stop = stop or (#self.rows)^the.min
-  bests,rests= cols:bests(rows)
-  for i=3*#bests+1,#rests do rests[i]= nil end
-  local binsDiv = function(col) return constrast(col,bests,rests) end
-  cols.kids= map(sort(map(cols.x,binsDiv),lt"div")[1].bins,
-                 function(bin) 
-                   local tmp= bin:selects(row),bin)
-                   if tmp then return self:clone(tmp):tree(bin,stop) end end ) end
-      
-function constrast(col,rows)
-  for _,row in pairs(rows) do
-    local v = row[col.at]
-    if v ~= "?" then
-      n=n+1
-      local pos = col:bin(v)
-      dict[pos] = dict[pos] or push(list, BIN(col,v))
-      dict[pos]:add(v,row.label) end end 
-  list = col:merges(sort(list,lt"lo"), n^the.min)
-  return { bins=list,
-           div=sum(list,function(z) return z.has:div()*z.ys.n/n end)} end 
 -------------------------------------------------------------------------------
+function ROWS:clone(t) return ROWS():add(self.cols.names):adds(t or {}) end
+
 function ROWS:file(x) for t in csv(x) do self:add(t) end; return self end
 
 function ROWS:adds(t) for _,t1 in pairs(t) do self:add(t1) end; return self end
@@ -307,6 +296,42 @@ function ROWS:add(t)
   then self.cols:add(push(i.rows, t.cells and t or ROW(t))) 
   else self.cols=COLS(t) end end
 
+-- ROWS:mids(?int=2,?[COL]=self.cols.y):[key=num] -- Return `mid` of columns rounded to `p` places.
+function ROWS:mids(p,cols) 
+  local t={n=#self.rows}
+  for _,col in pairs(cols or self.cols.y) do t[col.txt]=col:mid(p) end
+  return rnds(t,p or 2) end
+
+function ROWS:splitter(rows)
+  function split(col)
+    for _,row in pairs(rows) do
+      local v = row.cells[col.at]
+      if v ~= "?" then
+        n=n+1
+        local pos = col:bin(v)
+        dict[pos] = dict[pos] or push(list, BIN(col,v))
+        dict[pos]:add(v,row.label) end end 
+    list = col:merges(sort(list,lt"lo"), n^the.min)
+    return {bins = list,
+            div  = sum(list,function(z) return z.has:div()*z.ys.n/n end)} 
+  end -----------------------------------------------------
+  return sort(map(self.cols.x, split),lt"div")[1].bin end
+
+function ROWS:tree()
+  local bests,rests= self.cols:bests(self.rows)
+  local rows={}
+  for _,best in pairs(bests) do push(rows,    best).label=1 end
+  for i = 1,the.rests*#bests do push(rows,rests[i]).label=0 end
+  self:grow(rows, (#rows)^the.min) 
+  return self end
+
+function ROWS:grow(rows,stop,when)
+  local function kid(bin)
+    local t = bin:selects(rows)
+    if t then return self:clone(t):grow(t,stop,bin) end end 
+  self.when=when
+  if #rows < stop then return self end
+  self.kids = map(self:splitter(rows), kid) end
 ------------------------------------------------------------------------------
 -- ## Lib
 big=math.huge 
@@ -322,6 +347,15 @@ function push(t,x) t[1+#t]=x; return x end
 function map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x)end;return u end
 function sum(t,f,     u) u=0; for _,x in pairs(t) do u=u+f(x)    end;return u end
 
+--- rnd(num, places:int):num  -- Return `x` rounded to some number of `place`  &#9312; . <
+function rnd(x, places)  --   &#9312;
+  local mult = 10^(places or 2)
+  return math.floor(x * mult + 0.5) / mult end
+--- rnds(t:num, places:?int=2):num -- Return items in `t` rounds to `places`. 
+function rnds(t, places)
+  local u={};for k,x in pairs(t) do u[k]=rnd(x,places or 2)end;return u end
+
+
 function sort(t,f) table.sort(t,f); return t end
 function lt(x)     return function(a,b) return a[x] < b[x] end end
 
@@ -332,6 +366,13 @@ function coerce(x)
   x = x:match"^%s*(.-)%s*$" 
   if x=="true" then return true elseif x=="false" then return false 
   else return math.tointeger(x) or tonumber(x) or x end  end
+
+function cli(t)
+  for k,v in pairs(t) do
+    v = tostring(v)
+    for n,x in ipairs(arg) do if x=="-"..(k:sub(1,1)) then 
+      x = v=="false" and "true" or v=="true" and "false" or arg[n+1] end end
+    t[k] =  coerce(v) end end
 
 function chat(t) print(cat(t)) return t end 
 function cat(t,   show,u)  
@@ -355,11 +396,9 @@ function csv(file,fun)
 -- ## Start-up
 function go.the() chat(the) end
 
-help:gsub("\n ([-]%S)[%s]+([%S]+)[^\n]+= ([%S]+)",function(f,key,x) 
-  for n,y in ipairs(arg) do if y==f then 
-    x = x=="false" and "true" or x=="true" and "false" or arg[n+1] end end
-  the[key] = coerce(x) end) 
+help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",function(k,x) the[k]=coerce(x)end) 
 
+cli(the)
 if the.help then os.exit(print(help:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),"")) end 
 math.randomseed(the.seed)
 if go[the.go] then go[the.go]() end

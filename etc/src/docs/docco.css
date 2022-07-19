@@ -93,7 +93,8 @@ h3 {
 h4 {
    font-size: 1.1em; 
   font-style: italic;
-font-weight: 400 !important;
+  font-weight: normal;
+  color: #888;
   xfont-weight: normal;
 }
 h4,h5,h6 {text-align:right;}
