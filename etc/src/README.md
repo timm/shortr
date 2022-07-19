@@ -1,12 +1,12 @@
 <span id="forkongithub"><a href="https://github.com/timm/shortr">Fork me on GitHub</a></span>
 
-<em>“Dr. Hoenikker used to say that any scientist<br>
+<em>"Dr. Hoenikker used to say that any scientist<br>
      who couldn't explain to an eight-year-old <br>
      what he was doing was a charlatan."<br></em>-   Kurt Vonnegut, Cat's Cradle
 
-<em>If you cannot - in the long run - (explain to)<br>
+<em>"If you cannot - in the long run - (explain to)<br>
     everyone what you have been doing,<br>
-    your doing  has been worthless.</em><br>- Erwin Schrodinger
+    your doing  has been worthless."</em><br>- Erwin Schrodinger
 
    
 AI and XAI (explainable artificial intelligence) need not be
