@@ -1,9 +1,9 @@
 local help=[[
 
-TEENY.lua: dont fuse on non-numerics
+TINYXAI.lua: dont fuse on non-numerics
 
 USAGE:
-  lua teeny.lua [OPTIONS]
+  lua tinyxai.lua [OPTIONS]
 
 OPTIONS:
  -b bins     max number of bins    = 16
@@ -16,9 +16,8 @@ OPTIONS:
  -p p        distance coefficient  = 2
  -S samples  samples               = 64
  -s seed     random number seed    = 10019]]
------------------------------------------------------------------------------
--- ## Names
-
+------------ Names
+------ Locals
 -- Store old names (so, on last line, we can check for rogue locals)
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 -- Define new names from library code (so we can mention them before defining them).
@@ -28,22 +27,32 @@ local map,max,min,per,push,rand,shuffle,sort
 local go,no = {},{}
 -- Place to store the settings (and this variable is parsed from help text; e.g. `the.bins=16`).
 local the = {}
--- ### Objects
 
--- -> obj(str,fun): class -> `Fun` is a constructor for instances of class `str`.
+------  Objects
+---  obj(str,fun): class -- `Fun` is a constructor for instances of class `str`.
 -- BTW, polymorphism, encapsulation, classes, instance, constructors, all  in 3 lines. :-)
 local function obj(txt,fun,  t,i) 
   local function new(k,...) i=setmetatable({},k); fun(i,...); return i end
   t={__tostring = cat}; t.__index = t;return setmetatable(t,{__call=new}) end
 
--- -> SYM(?num=0, ?str="") -> Summarizes streams of symbols. 
+--- ROW(tab) -- Stores one record. ROWs are stored in a contained called ROWS.
+-- Implementation note: ROWs are created when data is read from CSV files.
+-- After that, if a ROW is added to more than one ROWS object then the same
+-- ROW will be held in different ROWSs. This makes certain labelling and
+-- record keep tasks easier (e.g. tracking how many rows we have evaluated).
+local ROW=obj("ROW", function(self,cells) 
+  self.cells = {}           -- place to hold one record
+  self.label  = false       -- true if we have decided  this ROW is "best"?
+  self.evaled = false end)  -- have we accessed this row's y-values?
+
+---  SYM(?num=0, ?str="") -- Summarizes streams of symbols in ROWs 
 local SYM=obj("SYM", function(self,at,txt) 
   self.n   = 0          -- number of items seen
   self.at  = at or 0    -- column number
   self.txt = txt or ""  -- column name
   self.kept= {}   end)  -- counters for symbols
 
--- -> NUM(?num=0, ?str="") -> Summarize streams of numbers.
+--- NUM(?num=0, ?str="") -- Summarize streams of numbers in ROWs
 local NUM=obj("NUM", function(self,at,txt) 
   self.n   = 0                        -- number of items seen
   self.at  = at   or 0                -- column number
@@ -51,14 +60,14 @@ local NUM=obj("NUM", function(self,at,txt)
   self.txt = txt                      -- column name
   self.w   = txt:find"-$" and -1 or 1 -- If minimizing, then -1. Else 1
   self.kept= {}                       -- some sample of the seen items
-  self.ok  = true end)                -- true if `kept` is sorted
+  self.ok  = false end)               -- true if sorted, set to false by each add
 
--- -> META([str]+) -> Factory for making NUMs or SYMs from list of col names.
+---  COLS([str]+) -- Factory for making NUMs or SYMs from list of col names.
 -- Column names starting with upper case are NUMs (others are SYMs).
 -- Anything adding with "!+-" is a dependent goal column.
--- Column names ending with "`:`" are "skipped"; i.e. they
--- are not added to the list of independent or dependent columns.
-local META=obj("META", function(self,  names)
+-- Column names ending with "`:`" are "skipped"; i.e. 
+-- not added to the list of independent or dependent columns.
+local COLS=obj("COLS", function(self,  names)
   self.names= names -- list of column names
   self.all  = {}    -- [NUM|SYM] all names, converted to NUMs or SYMs
   self.x    = {}    -- [NUM|SYM] just the independent columns
@@ -70,65 +79,54 @@ local META=obj("META", function(self,  names)
       if v:find"!$" then self.klass = col end
       push(v:find"[!+-]$" and self.y or self.x, col) end end end)
 
--- -> ROW(tab) -> Stores one record.
--- Implementation note: ROWs are created when data is read from CSV files.
--- After that, if a ROW is added to more than one DATA object then the same
--- ROW will be held in different DATAs. This makes certain labelling and
--- record keep tasks easier (e.g. tracking how many rows we have evaluated).
-local ROW=obj("ROW", function(self,cells) 
-  self.cells = {}           -- place to hold one record
-  self.label  = false       -- true if we have decided  this ROW is "best"?
-  self.evaled = false end)  -- have we accessed this row's y-values?
-
--- -> DATA() -> Stores `rows` and their summaries in `cols`.
-local DATA=obj("DATA", function(self) 
+--- ROWS() -- Stores `rows` and their summaries in `cols`.
+local ROWS=obj("ROWS", function(self) 
   self.rows = {}        -- [ROW] records, stored as ROW
-  self.cols = nil end)  -- a META instance (if nil, no data read yet)
+  self.cols = nil end)  -- a COLS instance (if nil, no data read yet)
 
--- -> BIN( NUM|SYM, num, ?num=lo, ?SYM) -> Values from same rows in 2 columns
+--- BIN( NUM|SYM, num, ?num=lo, ?SYM) -- Values from same rows in 2 columns
 local BIN=obj("BIN",function(self,col, lo, hi, has) 
   self.col = col               -- What column does this bin handle?
   self.lo  = lo                -- Lowest value of column1.
   self.hi  = hi or lo          -- Highest value of column1
   self.has = has or SYM() end) -- Symbol counts of column2 values.
------------------------------------------------------------------------------
--- ## Columns
--- ### Sym
--- #### Create
 
--- -> SYM:merge(SYM): SYM ->  Create a new SYM by merging two others.
+------------  Columns
+-- Columns summarize sets of rows.
+--------- Sym
+------ Create
+--- SYM:merge(SYM): SYM --  Create a new SYM by merging two others.
 function SYM:merge(other,    k)
   k= SYM(self.at, self.txt)
   for x,n in pairs(self.kept)  do k:add(x,n) end
   for x,n in pairs(other.kept) do k:add(x,n) end
   return k end
--- #### Update
 
--- -> SYM:add(any,?num=1) -> Add a symbols `x`. Do it `n` times.
+------ Update
+--- SYM:add(any,?num=1) -- Add a symbols `x`. Do it `n` times.
 function SYM:add(x,n) 
   n = n or 1
   if x~="?" then self.n=self.n+n; self.kept[x]=n + (self.kept[x]+0) end end
--- #### Query
 
--- -> SYM:div():num -> Diversity. Return entropy.
+------ Query
+---  SYM:div():num -- Diversity. Return entropy.
 function SYM:div() 
   return sum(self.kept, function(n) return -n/i.n*math.log(n/i.n,2) end) end
--- #### Distance
 
--- -> SYM:dist(atom,atom):num -> Identical symbols have distance 0. Otherwise, 1.
+------  Distance
+--- SYM:dist(atom,atom):num -- Identical symbols have distance 0. Otherwise, 1.
 -- If any unknowns, assume max distance.
 function SYM:dist(x,y) return (x=="?" or  y=="?") and 1 or x==y and 0 or 1 end
--- #### Discretization
 
--- -> SYM:bin(any):any -> Discretize a symbol (do nothing)
+------ Discretization
+--- SYM:bin(any):any -0 Discretize a symbol (do nothing)
 function SYM:bin(x) return x end
--- -> SYM:merges(t,...):t ->  Merge adjacent bins (do nothing: SYM ranges dont't merge)
+--- SYM:merges(t,...):SYM --  Merge adjacent bins (do nothing: SYM ranges dont't merge)
 function SYM:merges(t,...) return t end
 
--- ### Num
--- #### Update
-
--- -> NUM:add(num) -> Add `x`. If no space, at prob `some/n`, replace any old number.
+--------- Num
+------ Update
+--- NUM:add(num) -- Add `x`. If no space, at prob `some/n`, replace any old number.
 function NUM:add(x)
   if x~="?" then 
     self.n = self.n + 1
@@ -138,22 +136,22 @@ function NUM:add(x)
     if pos then 
       self.ok=false  -- the `kept` list is no longer in sorted order
       self.kept[pos]=x end end end
--- #### Query
 
--- -> NUM:has() -> Return `kept`, ensuring it is sorted.
+------ Query
+---  NUM:has() -- Return `kept`, ensuring it is sorted.
 function NUM:has()
   self.kept = self.ok and self.kept or sort(self.kept)
   self.ok = true
   return self.kept end
 
--- -> NUM:norm(x):num -> Normalize x,y to 0..1.
+--- NUM:norm(x):num -- Normalize x,y to 0..1.
 function NUM:norm(x)
   local a =  self:has()
   local lo,hi = a[1], a[#a]
   return x=="?" and x or math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi-lo+1/big) end
--- #### Distance
 
--- -> NUM:dist(x,y):num -> Normalize x,y to 0..1, report their difference.
+------ Distance
+--- NUM:dist(x,y):num -- Normalize x,y to 0..1, report their difference.
 -- If any unknowns, assume max distance.
 function NUM:dist(x,y)
   if x=="?" and y=="?" then return 1
@@ -161,54 +159,54 @@ function NUM:dist(x,y)
   elseif y=="?" then x=self:norm(x); y=x<.5 and 1 or 0
   else   x,y = self:norm(x), self:norm(y) end
   return math.abs(x-y) end
--- #### Discretization
 
--- -> NUM:bin(any):any -> Discretize a num to one of `the.bins` bin.
+------ Discretization
+--- NUM:bin(any):any -- Discretize a num to one of `the.bins`.
 function NUM:bin(x)
   local a = self:has()
   local lo,hi = a[1], a[#a]
   local b = (hi - lo)/the.bins
   return hi==lo and 1 or math.floor(x/b+.5)*b end
 
--- -> NUM:merges(t,...):t -> Prune superflous bins. Repeat till no more found.
+--- NUM:merges([BIN],...) :[BIN] -- Prune superflous bins. 
 function NUM:merges(b4, min) 
-  local function fillInTheGaps(bins)
-    bins[1].lo, bins[#bins].hi = -big, big
-    if #bins>1 then
-      for n=2,#bins do bins[n].lo = bins[n-1].hi end end
-    return bins 
-  end ------------- 
   local n,now = 1,{}
   while n <= #b4 do
-    local merged= n<#b4 and b4[n]:merged(b4[n+1],min) --"merged" defined in BIN
-    now[#now+1] = merged or b4[n]
-    n           = n + (merged and 2 or 1)  -- if merged, skip passed the merged bin
-  end
-  return #now < #b4 and self:merges(now,min) or fillInTheGaps(now) end
---------------------------------------------------------------------------------
--- ### Data
--- #### Udpate
+    local merged = n<#b4 and b4[n]:merged(b4[n+1],min) -- defined in BIN
+    now[#now+1]  = merged or b4[n]
+    n            = n + (merged and 2 or 1)  -- if merged, skip over merged bin
+  end -- end while
+  if #now < #b4 then return self:merges(now,min) end     -- seek others to merge
+  bins[1].lo,bins[#bins].hi = -big,big            -- grow to plus/minus infinity
+  return bins end 
 
--- -> META:add(ROW) ->  update the non-skipped columns with values from ROW
-function META:add(row)
+------------ Data
+--------- COLS
+------  Update
+--- COLS:add(ROW) --  update the non-skipped columns with values from ROW
+function COLS:add(row)
   for _,cols in pairs{self.x, self.y} do 
     for _,col in pairs(cols) do col:add(row.cells[col.at]) end end end
--- #### Distance
 
--- -> META:dist(ROW,ROW) :num ->  Using `x` columns, compute distance.
-function META:dist(r1,r2)
+------ Distance
+--- COLS:dist(ROW,ROW) :num --  Using `x` columns, compute distance.
+function COLS:dist(r1,r2)
   local d,x1,x2 = 0
   for _,col in pairs(self.x) do 
     x1 = r1.cells[col.at]
     x2 = r2.cells[col.at]
     d  = d+(col:dist(x1,x2))^the.p end
   return (d/#self.x)^(1/the.p) end
--- #### Clustering
 
-function META:half(rows,b4)
-  local tmp, abc, i, xCs = {}
+--- COLS:half([ROW]) -- Divide `rows` by their distance to two distant points A,B
+-- Find two distant points by `the,samples` times, look at random pairs.
+function COLS:half(rows,   b4)
+  local abc, i, xCs 
   abc = function(A,B) return {A=A, B=B, As={}, Bs={}, c=self:dist(A,B)} end
-  for n=1,the.samples do push(tmp, abc(b4 or any(rows), any(rows))) end
+  local tmp={}
+  for n=1,the.samples do 
+    push(tmp, abc(b4 or any(rows), -- if b4, use it for one pole
+              any(rows))) end
   i   = per(sort(tmp,lt"c"), the.far)
   xCs = function(C)     
           return {x = (self:dist(C,i.A)^2+i.c^2-self:dist(C,i.B)^2)/(2*i.c),
@@ -216,10 +214,10 @@ function META:half(rows,b4)
   for j,xC in pairs(sort(map(rows,xCs),lt"x")) do
     push(j<#rows/2 and i.As or i.Bs, xC.C) end 
   return i end 
--- #### Optimization
 
--- -> META:best(ROW,ROW) :bool -> Multi-objective comparisons. True if moving to self losses least than moving to other.
-function META:best(r1,r2)
+------ Optimization
+---  COLS:best(ROW,ROW) :bool -- Multi-objective comparisons. True if moving to self losses least than moving to other.
+function COLS:best(r1,r2)
   r1.evaled,r2.evaled = true,true
   local s1, s2, ys, e = 0, 0, self.y, math.exp(1)
   for _,col in pairs(ys) do
@@ -229,8 +227,8 @@ function META:best(r1,r2)
     s2      = s2 - e^(col.w * (y-x)/#ys) end
   return s1/#ys < s2/#ys  end
 
--- -> META:bests([ROW]):bests=[ROW],rests=[ROW] -> Recursively apply `best`. Return most preferred rows, and the rest.
-function META:bests(rows,    b4,stop,rests)
+--- COLS:bests([ROW]):bests=[ROW],rests=[ROW] -- Recursively apply `best`. Return most preferred rows, and the rest.
+function COLS:bests(rows,    b4,stop,rests)
   rests = rests or {}
   stop  = stop or (#rows)^the.min
   if #rows < stop then return rows,rests end -- return best=[ROW],rests=[ROW] 
@@ -244,16 +242,30 @@ function META:bests(rows,    b4,stop,rests)
   end
   return self:best(bests, best, stop,rests) end
 
+------------ COLS
+--------- BINS
+------ Create
+--- BIN:merged(BIN, num) -- Combine two bins if we should or can do so.
+function BIN:merged(j, min)
+  local a, b, c = self.has, j.has, self.has:merge(j.has)
+  local should = a.n < min or b.n < min  -- "should" if either too small
+  local can    = c:div() <= (a.n*a:div() + b.n*b:div())/c.n -- "can" if whole simpler than parts.
+  if should or can then return BIN(a.col,self.lo, j.hi, c) end end
+
+------ Update
+--- BIN:add(num,sym) -- extend `lo,hi` to cover `x`; remember we saw `y.
 function BIN:add(x,y)
   self.lo = min(x,self.lo)
   self.hi = max(x,self.hi)
   self:has(y) end
 
-function BIN:merged(j, min)
-  local a, b, c = self.has, j.has, self.has:merge(j.has)
-  local should = a.n < min or b.n < min  
-  local can    = c:div() <= (a.n*a:div() + b.n*b:div())/c.n 
-  if should or can then return BIN(a.col,self.lo, j.hi, c) end end
+function BIN:show(i)
+  local x,lo,hi = self.ys.txt, self.lo, self.hi
+  if     lo ==  hi  then return fmt("%s == %s", x, lo)
+  elseif hi ==  big then return fmt("%s >  %s", x, lo)
+  elseif lo == -big then return fmt("%s <= %s", x, hi)
+  else                   return fmt("%s <  %s <= %s", lo,x,hi) end end
+
 
 function BIN:selects(rows,    select,tmp)
   function select(row,  v)
@@ -263,7 +275,7 @@ function BIN:selects(rows,    select,tmp)
   if #tmp < #rows then return rows end end
 
 -- XXX start here
-function DATA:tree(gaurd,stop)
+function ROWS:tree(gaurd,stop)
   self.gaurd = gaurd.
   stop = stop or (#self.rows)^the.min
   bests,rests= cols:bests(rows)
@@ -286,14 +298,14 @@ function constrast(col,rows)
   return { bins=list,
            div=sum(list,function(z) return z.has:div()*z.ys.n/n end)} end 
 -------------------------------------------------------------------------------
-function DATA:file(x) for t in csv(x) do self:add(t) end; return self end
+function ROWS:file(x) for t in csv(x) do self:add(t) end; return self end
 
-function DATA:adds(t) for _,t1 in pairs(t) do self:add(t1) end; return self end
+function ROWS:adds(t) for _,t1 in pairs(t) do self:add(t1) end; return self end
 
-function DATA:add(t) 
+function ROWS:add(t) 
   if   self.cols 
   then self.cols:add(push(i.rows, t.cells and t or ROW(t))) 
-  else self.cols=META(t) end end
+  else self.cols=COLS(t) end end
 
 ------------------------------------------------------------------------------
 -- ## Lib

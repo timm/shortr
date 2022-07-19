@@ -27,13 +27,7 @@ htmls:  $(subst .lua,.html,docs/$(subst lua ,html docs/,$(LUAS))) ## make all ht
 	(cd $(WEB); git  add *; git commit -am save; git push)
 
 docs/%.html: %.lua  README.md ## make html
-	 (cat README.md | sed 's/^/-- /'  ; gawk '\
-      function trim(x) {sub(/^[ \t]+/,"",x); sub(/[ \t]+$$/,"",x); return x }\
-      BEGIN            { FS=" -> "}\
-      /^[-]+$$/         {next}\
-     NF==3 && /^-- ->/ { $$2=gensub(/([A-Za-z0-9_]+):/," `\\1`:  ","g",$$2);\
-                         print "--**"trim($$2)"**<br>"trim($$3) ; next}\
-       1' $< ) > tmp.lua
+	(cat README.md | sed 's/^/-- /'  ; gawk -f ../../etc/lua2doc.awk $<) > tmp.lua
 	echo "docco: $< -> $@"
 	docco -l classic  tmp.lua > /dev/null
 	gawk 'sub(/>tmp.lua</,">$(basename $<)<") 1 ' docs/tmp.html > $@
