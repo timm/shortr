@@ -8,11 +8,29 @@
     everyone what you have been doing,<br>
     your doing  has been worthless."</em><br>- Erwin Schrodinger
 
-   
+<em>And I say, hey-ey-ey, hey-ey-ey<br>
+    I said "Hey, a-what's going on?"</em><br>- 4 Non Blondes
+
 AI and XAI (explainable artificial intelligence) need not be
 hard.  E.g. here's a few hundred lines of LUA
 to search N items to  find and explain the best ones, using just
 log(N) evals.  
+
+This code makes extensive use of a ROWS object.  Data from disk
+becomes a ROWS. ROWS are recursive bi-clustered by partitioning on
+the distance to two distant points (found after a few dozen random
+projections).  Each cluster is new ROWS object, containing a subset
+of the data. A decision tree is built that reports the difference
+between the better and worst clusters (and that tree is just a  tree
+of ROWS with a `kids` pointer to sub-ROWS).  This whole process
+only makes log2(N) queries to y-values (just for the pairs of
+distance objects).
+
+This code starts with a help string (from which we extract our global settings)
+and ends with a library of demos (see the `go` functions at end of file).  
+- Each setting can be (optionally) updated by a command-line flag.
+- Demos can be run separately or  all at once (using `-g all`).
+  For regression tests, we report the failures seen when the demos run.
 
 <a href="https://github.com/timm/shortr/actions/workflows/tests.yml"><img src="https://github.com/timm/shortr/actions/workflows/tests.yml/badge.svg"></a>
 <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a>

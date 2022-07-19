@@ -1,6 +1,7 @@
 local help=[[
 
-TINYXAI.lua: dont fuse on non-numerics
+XPLAN.lua: show me what to change
+(c)2022, Tim Menzies <timm@ieee.org>, BSD-2 license
 
 USAGE:
   lua tinyxai.lua [OPTIONS]
@@ -16,7 +17,9 @@ OPTIONS:
  -p p        distance coefficient  = 2
  -r rests    number of rests to use= 4
  -S Samples  samples               = 64
- -s seed     random number seed    = 10019]]
+ -s seed     random number seed    = 10019
+
+ ]]
 
 ------------ Names
 ------ Locals
