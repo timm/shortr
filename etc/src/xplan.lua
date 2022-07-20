@@ -1,6 +1,7 @@
 local help=[[
 
 XPLAN.lua: semi-supervised multi-objective explanation 
+Finds sqrt(N) best things using log2(N) evaluations.
 (c)2022, Tim Menzies <timm@ieee.org>, BSD-2 license
 
 SYNOPSIS:
@@ -26,17 +27,18 @@ OPTIONS:
  -m min          size of small         = .5
  -p p            distance coefficient  = 2
  -r rests        number of rests to use= 4
- -P Projections  number of random projections   = 64
- -s seed         random number seed    = 10019 ]]
+ -P Projections  number of random projections  = 512
+ -s seed         random number seed    = 10019
+ -S Some         how many nums to keep = 512]]
 
 ---- ---- ---- ---- Names
 ---- ---- Locals
 -- Place for names from library
 local l=require"lib"
-local any,big,cat,chat,coerce,csv= l.any, l.big, l.cat,  l.chat, l.coerce, l.csv
-local fmt,kap,lt,map,max,min     = l.fmt, l.kap. l.lt,   l.map,  l.max,    l.min
-local obj,per,push,rand,rnd,rnds = l.obj, l.per, l.push, l.rand, l.rnd,    l.rnds
-local shuffle,sort,sum           = l.shuffle, l.sort, l.sum 
+local any,big,cat,chat,coerce,csv   = l.any,l.big,l.cat,l.chat,l.coerce,l.csv
+local fmt,kap,lt,many,map,max,min   = l.fmt,l.kap,l.lt, l.many,l.map,l.max,l.min
+local obj,per,push,rand,rev,rnd,rnds= l.obj,l.per,l.push,l.rand,l.rev,l.rnd,l.rnds
+local shuffle,sort,sum              = l.shuffle,l.sort,l.sum 
 -- Place for settings (parsed from help text; e.g. `the.bins=16`).
 local the = {}
 
@@ -47,11 +49,11 @@ local the = {}
 -- ROW will be held in different ROWSs. This makes certain labelling and
 -- record keep tasks easier (e.g. tracking how many rows we have evaluated).
 local ROW=obj("ROW", function(self,cells) 
-  self.cells = {}           -- place to hold one record
+  self.cells = cells        -- place to hold one record
   self.label  = false       -- true if we have decided  this ROW is "best"?
   self.evaled = false end)  -- have we accessed this row's y-values?
 
-----  SYM(?num=0, ?str="") -- Summarizes streams of symbols in ROWs 
+---- SYM(?num=0, ?str="") -- Summarizes streams of symbols in ROWs 
 local SYM=obj("SYM", function(self,at,txt) 
   self.n   = 0          -- number of items seen
   self.at  = at or 0    -- column number
@@ -79,11 +81,11 @@ local COLS=obj("COLS", function(self,  names)
   self.x    = {}    -- [NUM|SYM] just the independent columns
   self.y    = {}    -- [NUM|SYM] just the dependent columns
   self.klass= nil   -- SYM       the klass column (if it exists)
-  for k,v in pairs(names) do
-    col= push(self.all, (v:find"^[A-Z]" and NUM or SYM)(at,txt))
-    if not v:find":$" then
-      if v:find"!$" then self.klass = col end
-      push(v:find"[!+-]$" and self.y or self.x, col) end end end)
+  for at,txt in pairs(names) do
+    local col= push(self.all, (txt:find"^[A-Z]" and NUM or SYM)(at,txt))
+    if not txt:find":$" then
+      if txt:find"!$" then self.klass = col end
+      push(txt:find"[!+-]$" and self.y or self.x, col) end end end)
 
 ---- ROWS() -- Stores `rows` and their summaries in `cols`.
 local ROWS=obj("ROWS", function(self) 
@@ -111,12 +113,12 @@ function SYM:merge(other,    k)
 ---- SYM:add(any,?num=1) -- Add a symbols `x`. Do it `n` times.
 function SYM:add(x,n) 
   n = n or 1
-  if x~="?" then self.n=self.n+n; self.kept[x]=n + (self.kept[x]+0) end end
+  if x~="?" then self.n=self.n+n; self.kept[x]=n + (self.kept[x] or 0) end end
 
 ---- ---- Query
 ----  SYM:div():num -- Diversity. Return entropy.
 function SYM:div() 
-  return sum(self.kept, function(n) return -n/i.n*math.log(n/i.n,2) end) end
+  return sum(self.kept, function(n) return -n/self.n*math.log(n/self.n,2) end) end
 
 ---- SYM:mid():num -- Return `mid`dle (mode) symbol.
 function SYM:mid() 
@@ -142,8 +144,8 @@ function NUM:add(x)
   if x~="?" then 
     self.n = self.n + 1
     local pos
-    if #self.kept < the.some        then pos= #i.kept+1 
-    elseif rand() < the.some/self.n then pos= l.rand(#i.kept) end
+    if #self.kept < the.Some        then pos= (#self.kept)+1 
+    elseif rand() < the.Some/self.n then pos= rand(#self.kept) end
     if pos then 
       self.ok=false  -- the `kept` list is no longer in sorted order
       self.kept[pos]=x end end end
@@ -151,12 +153,15 @@ function NUM:add(x)
 ---- ---- Query
 ----  NUM:has() -- Return `kept`, ensuring it is sorted.
 function NUM:has()
-  self.kept = self.ok and self.kept or list.sort(self.kept)
+  self.kept = self.ok and self.kept or sort(self.kept)
   self.ok = true
   return self.kept end
 
 ---- NUM:mid():num -- Return `mid`dle (median) number.
-function NUM:mid() return list.per(self.has(),.5) end
+function NUM:mid() return per(self:has(),.5) end
+
+---- NUM:div():num -- Return `div`ersity of numbers.
+function NUM:div(  a) a=self:has(); return (per(a,.9)-per(a,.1))/2.56 end
 
 ---- NUM:norm(x):num -- Normalize x,y to 0..1.
 function NUM:norm(x)
@@ -212,26 +217,28 @@ function COLS:dist(r1,r2)
     d  = d+(col:dist(x1,x2))^the.p end
   return (d/#self.x)^(1/the.p) end
 
+function COLS:far(r1, rows)
+  local tmp = map(rows, function(r) return {r=r, d=self:dist(r1,r2)} end)
+  return per(sort(tmp, lt"d"), the.Far).r end
+
 ---- COLS:half([ROW]) -- Divide `rows` by their distance to two distant points A,B
 -- Find two distant points A,B using a few dozen random projections.
 function COLS:half(rows,   b4)
-  local function ABc (A,B) return {A=A, B=B, As={}, Bs={}, c=self:dist(A,B)} end
-  local ABcs={}
-  for n=1,the.Projections do 
-     push(ABcs, ABc(b4 or any(rows), -- if b4, use it for one pole
-                    any(rows))) end
-  local i = per(sort(ABcs,lt"c"), the.Far) -- avoid outliers: only go so Far
-  local function xCs(C)     
-          return {x = (self:dist(C,i.A)^2+i.c^2-self:dist(C,i.B)^2)/(2*i.c),
-                  C = C} end
-  for j,xC in pairs(sort(map(rows,xCs),lt"x")) do
-    push(j<#rows/2 and i.As or i.Bs, xC.C) end 
-  return i end 
+  local some=  many(rows, the.Some)
+  A         = b4 or self:far(any(some), some)
+  local B   = self:far(A, some)
+  local c   = self:dist(A,B)
+  local i   = {A=A, B=B, As={}, Bs={}, c=c} 
+  local d   = function(r1,r2) return self:dist(r1,r2) end
+  local fun = function(r) return {r=r, x=(d(r,A)^2 + c^2 - d(r,B)^2)/(2*c)} end
+  for j,rx in pairs(sort(map(rows,fun),lt"x")) do
+    push(j<#rows/2 and i.As or i.Bs, rx.r) end  
+  return i end  
 
 ---- ---- Optimize
 ----  COLS:best(ROW,ROW) :bool -- True if better on multi-objectives
 function COLS:best(r1,r2)
-  r1.evaled,r2.evaled = true,true
+  r1.evaled, r2.evaled = true, true
   local s1, s2, ys, e = 0, 0, self.y, math.exp(1)
   for _,col in pairs(ys) do
     local x = col:norm(r1.cells[col.at])
@@ -250,11 +257,11 @@ function COLS:bests(rows,    b4,stop,rests)
   local best, bests, rests1
   if   self:best(two.A, two.B) 
   then best, bests, rests1 = two.A, two.As, two.Bs
-       for i=#rests1,1,-1 do push(rests,rests1[i]) end --sort L to R, worst to better
+       for _,rest1 in pairs(rev(rests1)) do push(rests,rest1) end --sort L to R, worst to better
   else best, bests, rests1 = two.B, two.Bs, two.As
-       for i=1,#rests1, 1 do push(rests,rests1[i]) end --sort L to R, worst to better
+       for _,rest1 in pairs(rests1) do push(rests,rest1) end --sort L to R, worst to better
   end
-  return self:best(bests, best, stop,rests) end
+  return self:bests(bests, best, stop, rests) end
 
 ---- ---- ---- ---- COLS
 ---- ---- ---- BINS
@@ -296,18 +303,19 @@ function BIN:selects(rows,    select,tmp)
 ---- ---- ROWS
 function ROWS:clone(t) return ROWS():add(self.cols.names):adds(t or {}) end
 
-function ROWS:file(x) for t in csv(x) do self:add(t) end; return self end
+function ROWS:file(x)  csv(x,function(t) self:add(t) end); return self end
 
 function ROWS:adds(t) for _,t1 in pairs(t) do self:add(t1) end; return self end
 
 function ROWS:add(t) 
   if   self.cols 
-  then self.cols:add(push(i.rows, t.cells and t or ROW(t))) 
-  else self.cols=COLS(t) end end
+  then self.cols:add(push(self.rows, t.cells and t or ROW(t))) 
+  else self.cols=COLS(t) end 
+  return self end
 
 -- ROWS:mids(?int=2,?[COL]=self.cols.y):[key=num] -- Return `mid` of columns
 -- rounded to `p` places.
-function ROWS:mids(p,cols) 
+function ROWS:mid(p,cols) 
   local t={n=#self.rows}
   for _,col in pairs(cols or self.cols.y) do t[col.txt]=col:mid(p) end
   return rnds(t,p or 2) end
