@@ -78,16 +78,16 @@ local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 -- Define new names from library code (so we can mention them before defining them).
 local any,big,cat,chat,cli,coerce,csv,data,fmt,kap,lt
 local map,max,min,on,per,push,rand,rnd,rnds,shuffle,sort,sum
--- Place to store test suites (to disable a test, move it `go` to `no`.
+-- Place for test suites (to disable a test, move it `go` to `no`.
 local go,no = {},{}
--- Place to store the settings (and this variable is parsed from help text; e.g. `the.bins=16`).
+-- Place for settings (parsed from help text; e.g. `the.bins=16`).
 local the = {}
 
 -- ####  Objects
 
 
 --**obj(str,fun): class**<br>`Fun` is a constructor for instances of class `str`.
--- BTW, polymorphism, encapsulation, classes, instance, constructors, all  in 3 lines. :-)
+-- Polymorphism, encapsulation, classes, instance, constructors: all in 3 lines. :-)
 local function obj(txt,fun,  t,i) 
   local function new(k,...) i=setmetatable({},k); fun(i,...); return i end
   t={__tostring = cat}; t.__index = t;return setmetatable(t,{__call=new}) end
@@ -148,7 +148,9 @@ local BIN=obj("BIN",function(self,col, lo, hi, has)
   self.hi  = hi or lo          -- Highest value of column1
   self.has = has or SYM() end) -- Symbol counts of column2 values.
 
-------------  Columns
+-- ## Columns
+
+
 -- ### Sym
 
 
@@ -195,7 +197,7 @@ function SYM:dist(x,y) return (x=="?" or  y=="?") and 1 or x==y and 0 or 1 end
 
 --**`SYM`:  bin(any):any**<br>Discretize a symbol (do nothing)
 function SYM:bin(x) return x end
---**`SYM`:  merges(t,...):SYM**<br>Merge adjacent bins (do nothing: SYM ranges dont't merge)
+--**`SYM`:  merges(t,...):SYM**<br>Merge adjacent bins (do nothing: SYMs don't merge)
 function SYM:merges(t,...) return t end
 
 -- ### Num
@@ -267,7 +269,9 @@ function NUM:merges(b4, min)
   bins[1].lo,bins[#bins].hi = -big,big            -- grow to plus/minus infinity
   return bins end 
 
------------- Data
+-- ## Data
+
+
 -- ### COLS
 
 
@@ -299,7 +303,7 @@ function COLS:half(rows,   b4)
   for n=1,the.Projections do 
      push(ABcs, ABc(b4 or any(rows), -- if b4, use it for one pole
                     any(rows))) end
-  local i = per(sort(ABcs,lt"c"), the.Far) -- avoid outliers: don't go right to the edge
+  local i = per(sort(ABcs,lt"c"), the.Far) -- avoid outliers: only go so Far
   local function xCs(C)     
           return {x = (self:dist(C,i.A)^2+i.c^2-self:dist(C,i.B)^2)/(2*i.c),
                   C = C} end
@@ -310,7 +314,7 @@ function COLS:half(rows,   b4)
 -- #### Optimize
 
 
---**`COLS`:  best(ROW,ROW) :bool**<br>Multi-objective comparisons. True if moving to self losses least than moving to other.
+--**`COLS`:  best(ROW,ROW) :bool**<br>True if better on multi-objectives
 function COLS:best(r1,r2)
   r1.evaled,r2.evaled = true,true
   local s1, s2, ys, e = 0, 0, self.y, math.exp(1)
@@ -319,9 +323,10 @@ function COLS:best(r1,r2)
     local y = col:norm(r2.cells[col.at])
     s1      = s1 - e^(col.w * (x-y)/#ys)
     s2      = s2 - e^(col.w * (y-x)/#ys) end
-  return s1/#ys < s2/#ys  end
+  return s1/#ys < s2/#ys end -- i.e. we lose less going to r2->r1 than r2->r1
 
---**`COLS`:  bests([ROW]):bests=[ROW],rests=[ROW]**<br>Recursively apply `best` to findReturn most preferred rows, and the rest.
+--**`COLS`:  bests([ROW]):bests=[ROW],rests=[ROW]**<br>Recursively apply `best`.
+-- Returns `bests` and everything else as `rest`.
 function COLS:bests(rows,    b4,stop,rests)
   rests = rests or {}
   stop  = stop or (#rows)^the.min
@@ -330,9 +335,9 @@ function COLS:bests(rows,    b4,stop,rests)
   local best, bests, rests1
   if   self:best(two.A, two.B) 
   then best, bests, rests1 = two.A, two.As, two.Bs
-       for i=#rests1,1,-1 do push(rests, rests1[i]) end -- rests sorted, L to R, worst to better
+       for i=#rests1,1,-1 do push(rests,rests1[i]) end --sort L to R, worst to better
   else best, bests, rests1 = two.B, two.Bs, two.As
-       for i=1,#rests1, 1 do push(rests, rests1[i]) end -- rests sorted, L to R, worst to better
+       for i=1,#rests1, 1 do push(rests,rests1[i]) end --sort L to R, worst to better
   end
   return self:best(bests, best, stop,rests) end
 
@@ -346,10 +351,12 @@ function COLS:bests(rows,    b4,stop,rests)
 
 
 --**`BIN`:  merged(BIN, num)**<br>Combine two bins if we should or can do so.
+-- "Should" is true if either is too small.   
+-- "Can" is true of the whole is simpler than the parts.
 function BIN:merged(j, min)
   local a, b, c = self.has, j.has, self.has:merge(j.has)
-  local should = a.n < min or b.n < min  -- "should" if either too small
-  local can    = c:div() <= (a.n*a:div() + b.n*b:div())/c.n -- "can" if whole simpler than parts.
+  local should = a.n < min or b.n < min                 
+  local can    = c:div() <= (a.n*a:div() + b.n*b:div())/c.n 
   if should or can then return BIN(a.col,self.lo, j.hi, c) end end
 
 -- #### Update
@@ -372,7 +379,7 @@ function BIN:show(i)
   elseif lo == -big then return fmt("%s <= %s", x, hi)
   else                   return fmt("%s <  %s <= %s", lo,x,hi) end end
 
---**`BIN`:  selects([ROW]):[ROW]**<br>Returns the subset of rows that fall within this BIN.
+--**`BIN`:  selects([ROW]):[ROW]**<br>Returns rows that fall within this BIN.
 -- Returns nil if the subset is same size as original sets.
 function BIN:selects(rows,    select,tmp)
   function select(row,  v)
@@ -381,7 +388,9 @@ function BIN:selects(rows,    select,tmp)
   tmp= map(rows,select) 
   if #tmp < #rows then return rows end end
 
--------------------------------------------------------------------------------
+-- #### ROWS
+
+
 function ROWS:clone(t) return ROWS():add(self.cols.names):adds(t or {}) end
 
 function ROWS:file(x) for t in csv(x) do self:add(t) end; return self end
@@ -393,7 +402,8 @@ function ROWS:add(t)
   then self.cols:add(push(i.rows, t.cells and t or ROW(t))) 
   else self.cols=COLS(t) end end
 
--- ROWS:mids(?int=2,?[COL]=self.cols.y):[key=num] -- Return `mid` of columns rounded to `p` places.
+-- ROWS:mids(?int=2,?[COL]=self.cols.y):[key=num] -- Return `mid` of columns
+-- rounded to `p` places.
 function ROWS:mids(p,cols) 
   local t={n=#self.rows}
   for _,col in pairs(cols or self.cols.y) do t[col.txt]=col:mid(p) end
@@ -411,7 +421,7 @@ function ROWS:splitter(rows)
     list = col:merges(sort(list,lt"lo"), n^the.min)
     return {bins = list,
             div  = sum(list,function(z) return z.has:div()*z.ys.n/n end)} 
-  end -----------------------------------------------------
+  end ---------------------------------------------------
   return sort(map(self.cols.x, split),lt"div")[1].bin end
 
 function ROWS:tree()
@@ -429,8 +439,9 @@ function ROWS:grow(rows,stop,when)
   self.when=when
   if #rows < stop then return self end
   self.kids = map(self:splitter(rows), kid) end
-------------------------------------------------------------------------------
 -- ## Lib
+
+
 big=math.huge 
 min=math.min
 max=math.max
@@ -445,7 +456,7 @@ function map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x)end;return u en
 function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
 function sum(t,f,     u) u=0; for _,x in pairs(t) do u=u+f(x)    end;return u end
 
---**rnd(num,  `places`:  int):num**<br>Return `x` rounded to some number of `place`  &#9312; . <
+--**rnd(num,  `places`:  int):num**<br>Return `x` rounded to some number of `place`.
 function rnd(x, places)  --   &#9312;
   local mult = 10^(places or 2)
   return math.floor(x * mult + 0.5) / mult end
@@ -485,7 +496,7 @@ function csv(file,fun)
     while true do
       local line = io.read()
       if not line then return io.close(file) else fun(line) end end 
-  end -----------------------------
+  end ----------------------------
   function words(s,sep,fun,      t)
      fun = fun or same
      t={};for x in s:gmatch(fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t 
@@ -507,8 +518,9 @@ function on(the,go)
         fails=fails+1 end end end 
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end
   os.exit(fails) end
- -- -----------------------------------------------------------------------------
 -- ## Start-up
+
+
 function go.the() chat(the) ; return true end
 function go.help() 
   print(help:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),""); return true end 
