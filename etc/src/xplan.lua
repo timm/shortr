@@ -32,7 +32,7 @@ OPTIONS:
 ---- ---- ---- ---- Names
 ---- ---- Locals
 -- Place for names from library
-local l=require"lualib"
+local l=require"lib"
 local any,big,cat,chat,coerce,csv= l.any, l.big, l.cat,  l.chat, l.coerce, l.csv
 local fmt,kap,lt,map,max,min     = l.fmt, l.kap. l.lt,   l.map,  l.max,    l.min
 local obj,per,push,rand,rnd,rnds = l.obj, l.per, l.push, l.rand, l.rnd,    l.rnds
@@ -344,4 +344,5 @@ function ROWS:grow(rows,stop,when)
   self.kids = map(self:splitter(rows), kid) end
 ---- ---- ---- ---- Start-up
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",function(k,x) the[k]=coerce(x)end) 
-return {the=the, help=help, ROWS=ROWS, ROW=ROW, NUM=NUM, SYM=SYM, BIN=BIN}
+return {the=the, help=help, 
+        ROWS=ROWS, ROW=ROW, COLS=COLS, NUM=NUM, SYM=SYM, BIN=BIN}
