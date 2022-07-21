@@ -1,21 +1,24 @@
 local help=[[
 
 XPLAN.lua: semi-supervised multi-objective explanation 
-Finds sqrt(N) best things using log2(N) evaluations.
 (c)2022, Tim Menzies <timm@ieee.org>, BSD-2 license
 
 SYNOPSIS:
+  Finds sqrt(N) best things using log2(N) evaluations.
+
+DESCRIPTION:
   Data, with multiple dependent goals, is recursive
   bi-clustered on independent variables by partitioning
-  on the distance to two distant points (found after a
-  few dozen random projections).  A decision tree reports
-  the difference between the "best" and "worst" clusters
-  (defined using a multi-objective domination predicate).
+  on the distance to two distant points (found via
+  random projections).  The delta between best and worst
+  clustered (defined via a multi-objective comparison)
+  is then reported as a decision tree after discretizing
+  numerics to best distinguish best and worst.
   This process only makes log2(N) queries to y-values
   (while clustering, just on the pairs of distance objects).
 
 USAGE:
-  lua xplan.lua [OPTIONS]
+  lua xplaning.lua [OPTIONS]
 
 OPTIONS:
  -b bins         max number of bins    = 16
@@ -27,9 +30,18 @@ OPTIONS:
  -m min          size of small         = .5
  -p p            distance coefficient  = 2
  -r rests        number of rests to use= 4
- -P Projections  number of random projections  = 512
  -s seed         random number seed    = 10019
- -S Some         how many nums to keep = 512]]
+ -S Some         how many nums to keep = 512
+
+FILES:
+  xplain.lua    : main code
+  xplaining.lua : examples of how to use code.
+  lib.lua       : misc LUA support utilities
+  data/*.csv    : misc example data files
+  Makefile      : not needed for execution (useful for doco)
+
+EXIT STATUS:
+  Non-zero only if any start-up actions fail.]]
 
 ---- ---- ---- ---- Names
 ---- ---- Locals
@@ -196,8 +208,8 @@ function NUM:merges(b4, min)
     n            = n + (merged and 2 or 1)  -- if merged, skip over merged bin
   end -- end while
   if #now < #b4 then return self:merges(now,min) end     -- seek others to merge
-  bins[1].lo,bins[#bins].hi = -big,big            -- grow to plus/minus infinity
-  return bins end 
+  now[1].lo, now[#now].hi = -big,big            -- grow to plus/minus infinity
+  return now end 
 
 ---- ---- ---- ---- Data
 ---- ---- ---- COLS
@@ -217,23 +229,26 @@ function COLS:dist(r1,r2)
     d  = d+(col:dist(x1,x2))^the.p end
   return (d/#self.x)^(1/the.p) end
 
+-- To avoid outliers only look so `Far` down the list of neighbors
+-- (sorted by distance to `r1`).
 function COLS:far(r1, rows)
-  local tmp = map(rows, function(r) return {r=r, d=self:dist(r1,r2)} end)
+  local tmp = map(rows, function(r2) return {r=r2, d=self:dist(r1,r2)} end)
   return per(sort(tmp, lt"d"), the.Far).r end
 
----- COLS:half([ROW]) -- Divide `rows` by their distance to two distant points A,B
--- Find two distant points A,B using a few dozen random projections.
+---- COLS:half([ROW]) -- Divide `rows` by their distance to two distant points.
+-- Find two distant points A,B using a random projections. The half of the
+-- the rows nearest `A` are returned as `As` (ditto with `B` and `Bs`).
 function COLS:half(rows,   b4)
-  local some=  many(rows, the.Some)
-  A         = b4 or self:far(any(some), some)
-  local B   = self:far(A, some)
-  local c   = self:dist(A,B)
-  local i   = {A=A, B=B, As={}, Bs={}, c=c} 
-  local d   = function(r1,r2) return self:dist(r1,r2) end
-  local fun = function(r) return {r=r, x=(d(r,A)^2 + c^2 - d(r,B)^2)/(2*c)} end
-  for j,rx in pairs(sort(map(rows,fun),lt"x")) do
-    push(j<#rows/2 and i.As or i.Bs, rx.r) end  
-  return i end  
+  local As,Bs= {},{}
+  local some = many(rows, the.Some)
+  local A    = b4 or self:far(any(some), some)
+  local B    = self:far(A, some)
+  local c    = self:dist(A,B) 
+  rows       = map(rows, function(row,     a,b) 
+                           a,b = self:dist(row,A), self:dist(row,B) 
+                           return {r= row, x= (a^2 + c^2 - b^2)/(2*c)} end)
+  for j,rx in pairs(sort(rows,lt"x")) do push(j<#rows/2 and As or Bs, rx.r) end  
+  return {A=A, B=B, As=As, Bs=Bs, c=c}  end
 
 ---- ---- Optimize
 ----  COLS:best(ROW,ROW) :bool -- True if better on multi-objectives
@@ -249,10 +264,11 @@ function COLS:best(r1,r2)
 
 ---- COLS:bests([ROW]):bests=[ROW],rests=[ROW] -- Recursively apply `best`.
 -- Returns `bests` and everything else as `rest`.
-function COLS:bests(rows,    b4,stop,rests)
+function COLS:bests(rows,    stop,b4,rests,evals)
   rests = rests or {}
+  evals = evals or 0
   stop  = stop or (#rows)^the.min
-  if #rows < stop then return rows,rests end -- return best=[ROW],rests=[ROW] 
+  if #rows < stop then return rows,rests,evals end -- return best=[ROW],rests=[ROW] 
   local two = self:half(rows,b4) -- if b4 supplied, then half will use it as one pole.
   local best, bests, rests1
   if   self:best(two.A, two.B) 
@@ -261,8 +277,16 @@ function COLS:bests(rows,    b4,stop,rests)
   else best, bests, rests1 = two.B, two.Bs, two.As
        for _,rest1 in pairs(rests1) do push(rests,rest1) end --sort L to R, worst to better
   end
-  return self:bests(bests, best, stop, rests) end
+  return self:bests(bests, stop, best,rests, evals+1) end
 
+function COLS:ranks(rows, n)
+  n=NUM(); for _,row in pairs(rows) do n:add(row.rank) end; return n end
+
+function COLS:rank(rows)
+  for j,row in pairs(sort(rows, function(r1,r2) return self:best(r1,r2) end)) do
+    row.evaled = false
+    row.rank = (100 * j /#rows) // 1  end
+  return shuffle(rows) end 
 ---- ---- ---- ---- COLS
 ---- ---- ---- BINS
 ---- ---- Create
@@ -280,12 +304,12 @@ function BIN:merged(j, min)
 function BIN:add(x,y)
   self.lo = min(x,self.lo)
   self.hi = max(x,self.hi)
-  self:has(y) end
+  self.has:add(y) end
 
 ---- ---- Query
----- BIN:show() -- pretty print the range
-function BIN:show(i)
-  local x,lo,hi = self.ys.txt, self.lo, self.hi
+---- BIN:__tostring() -- pretty print the range
+function BIN:__tostring()
+  local x,lo,hi = self.has.txt, self.lo, self.hi
   if     lo ==  hi  then return fmt("%s == %s", x, lo)
   elseif hi ==  big then return fmt("%s >  %s", x, lo)
   elseif lo == -big then return fmt("%s <= %s", x, hi)
@@ -321,7 +345,8 @@ function ROWS:mid(p,cols)
   return rnds(t,p or 2) end
 
 function ROWS:splitter(rows)
-  function split(col)
+  local function split(col)
+    local n,dict,list = 0,{},{}
     for _,row in pairs(rows) do
       local v = row.cells[col.at]
       if v ~= "?" then
@@ -331,12 +356,12 @@ function ROWS:splitter(rows)
         dict[pos]:add(v,row.label) end end 
     list = col:merges(sort(list,lt"lo"), n^the.min)
     return {bins = list,
-            div  = sum(list,function(z) return z.has:div()*z.ys.n/n end)} 
+            div  = sum(list,function(z) return z.has:div()*z.has.n/n end)} 
   end ---------------------------------------------------
-  return sort(map(self.cols.x, split),lt"div")[1].bin end
+  return sort(map(self.cols.x, split),lt"div")[1].bins end
 
 function ROWS:tree()
-  local bests,rests= self.cols:bests(self.rows)
+  local bests,rests,_= self.cols:bests(self.rows)
   local rows={}
   for _,best in pairs(bests) do push(rows,    best).label=1 end
   for i = 1,the.rests*#bests do push(rows,rests[i]).label=0 end
@@ -344,13 +369,16 @@ function ROWS:tree()
   return self end
 
 function ROWS:grow(rows,stop,when)
+  print("rows",#rows)
   local function kid(bin)
     local t = bin:selects(rows)
     if t then return self:clone(t):grow(t,stop,bin) end end 
-  self.when=when
+  self.when = when
   if #rows < stop then return self end
   self.kids = map(self:splitter(rows), kid) end
 ---- ---- ---- ---- Start-up
+
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",function(k,x) the[k]=coerce(x)end) 
+
 return {the=the, help=help, 
         ROWS=ROWS, ROW=ROW, COLS=COLS, NUM=NUM, SYM=SYM, BIN=BIN}

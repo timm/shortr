@@ -39,15 +39,17 @@
 local help=[[
 
 XPLAN.lua: semi-supervised multi-objective explanation 
+Finds sqrt(N) best things using log2(N) evaluations.
 (c)2022, Tim Menzies <timm@ieee.org>, BSD-2 license
 
 SYNOPSIS:
   Data, with multiple dependent goals, is recursive
   bi-clustered on independent variables by partitioning
-  on the distance to two distant points (found after a
-  few dozen random projections).  A decision tree reports
-  the difference between the "best" and "worst" clusters
-  (defined using a multi-objective domination predicate).
+  on the distance to two distant points (found via
+  random projections).  The delta between best and worst
+  clustered (defined via a multi-objective comparison)
+  is then reported as a decision tree after discretizing
+  numerics to best distinguish best and worst.
   This process only makes log2(N) queries to y-values
   (while clustering, just on the pairs of distance objects).
 
@@ -64,8 +66,8 @@ OPTIONS:
  -m min          size of small         = .5
  -p p            distance coefficient  = 2
  -r rests        number of rests to use= 4
- -P Projections  number of random projections   = 64
- -s seed         random number seed    = 10019 ]]
+ -s seed         random number seed    = 10019
+ -S Some         how many nums to keep = 256]]
 
 -- ## Names
 
@@ -73,24 +75,17 @@ OPTIONS:
 -- #### Locals
 
 
--- Store old names (so, on last line, we can check for rogue locals)
-local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
--- Define new names from library code (so we can mention them before defining them).
-local any,big,cat,chat,cli,coerce,csv,data,fmt,kap,lt
-local map,max,min,on,per,push,rand,rnd,rnds,shuffle,sort,sum
--- Place for test suites (to disable a test, move it `go` to `no`.
-local go,no = {},{}
+-- Place for names from library
+local l=require"lib"
+local any,big,cat,chat,coerce,csv   = l.any,l.big,l.cat,l.chat,l.coerce,l.csv
+local fmt,kap,lt,many,map,max,min   = l.fmt,l.kap,l.lt, l.many,l.map,l.max,l.min
+local obj,per,push,rand,rev,rnd,rnds= l.obj,l.per,l.push,l.rand,l.rev,l.rnd,l.rnds
+local shuffle,sort,sum              = l.shuffle,l.sort,l.sum 
 -- Place for settings (parsed from help text; e.g. `the.bins=16`).
 local the = {}
 
 -- ####  Objects
 
-
---**obj(str,fun): class**<br>`Fun` is a constructor for instances of class `str`.
--- Polymorphism, encapsulation, classes, instance, constructors: all in 3 lines. :-)
-local function obj(txt,fun,  t,i) 
-  local function new(k,...) i=setmetatable({},k); fun(i,...); return i end
-  t={__tostring = cat}; t.__index = t;return setmetatable(t,{__call=new}) end
 
 --**ROW(tab)**<br>Stores one record. ROWs are stored in a contained called ROWS.
 -- Implementation note: ROWs are created when data is read from CSV files.
@@ -98,7 +93,7 @@ local function obj(txt,fun,  t,i)
 -- ROW will be held in different ROWSs. This makes certain labelling and
 -- record keep tasks easier (e.g. tracking how many rows we have evaluated).
 local ROW=obj("ROW", function(self,cells) 
-  self.cells = {}           -- place to hold one record
+  self.cells = cells        -- place to hold one record
   self.label  = false       -- true if we have decided  this ROW is "best"?
   self.evaled = false end)  -- have we accessed this row's y-values?
 
@@ -130,11 +125,11 @@ local COLS=obj("COLS", function(self,  names)
   self.x    = {}    -- [NUM|SYM] just the independent columns
   self.y    = {}    -- [NUM|SYM] just the dependent columns
   self.klass= nil   -- SYM       the klass column (if it exists)
-  for k,v in pairs(names) do
-    col= push(self.all, (v:find"^[A-Z]" and NUM or SYM)(at,txt))
-    if not v:find":$" then
-      if v:find"!$" then self.klass = col end
-      push(v:find"[!+-]$" and self.y or self.x, col) end end end)
+  for at,txt in pairs(names) do
+    local col= push(self.all, (txt:find"^[A-Z]" and NUM or SYM)(at,txt))
+    if not txt:find":$" then
+      if txt:find"!$" then self.klass = col end
+      push(txt:find"[!+-]$" and self.y or self.x, col) end end end)
 
 --**ROWS()**<br>Stores `rows` and their summaries in `cols`.
 local ROWS=obj("ROWS", function(self) 
@@ -170,14 +165,14 @@ function SYM:merge(other,    k)
 --**`SYM`:  add(any,?num=1)**<br>Add a symbols `x`. Do it `n` times.
 function SYM:add(x,n) 
   n = n or 1
-  if x~="?" then self.n=self.n+n; self.kept[x]=n + (self.kept[x]+0) end end
+  if x~="?" then self.n=self.n+n; self.kept[x]=n + (self.kept[x] or 0) end end
 
 -- #### Query
 
 
 --**`SYM`:  div():num**<br>Diversity. Return entropy.
 function SYM:div() 
-  return sum(self.kept, function(n) return -n/i.n*math.log(n/i.n,2) end) end
+  return sum(self.kept, function(n) return -n/self.n*math.log(n/self.n,2) end) end
 
 --**`SYM`:  mid():num**<br>Return `mid`dle (mode) symbol.
 function SYM:mid() 
@@ -211,8 +206,8 @@ function NUM:add(x)
   if x~="?" then 
     self.n = self.n + 1
     local pos
-    if #self.kept < the.some        then pos= #i.kept+1 
-    elseif rand() < the.some/self.n then pos= rand(#i.kept) end
+    if #self.kept < the.Some        then pos= (#self.kept)+1 
+    elseif rand() < the.Some/self.n then pos= rand(#self.kept) end
     if pos then 
       self.ok=false  -- the `kept` list is no longer in sorted order
       self.kept[pos]=x end end end
@@ -227,7 +222,10 @@ function NUM:has()
   return self.kept end
 
 --**`NUM`:  mid():num**<br>Return `mid`dle (median) number.
-function NUM:mid() return per(self.has(),.5) end
+function NUM:mid() return per(self:has(),.5) end
+
+--**`NUM`:  div():num**<br>Return `div`ersity of numbers.
+function NUM:div(  a) a=self:has(); return (per(a,.9)-per(a,.1))/2.56 end
 
 --**`NUM`:  norm(x):num**<br>Normalize x,y to 0..1.
 function NUM:norm(x)
@@ -295,28 +293,33 @@ function COLS:dist(r1,r2)
     d  = d+(col:dist(x1,x2))^the.p end
   return (d/#self.x)^(1/the.p) end
 
---**`COLS`:  half([ROW])**<br>Divide `rows` by their distance to two distant points A,B
--- Find two distant points A,B using a few dozen random projections.
+-- To avoid outliers only look so `Far` down the list of neighbors
+-- (sorted by distance to `r1`).
+function COLS:far(r1, rows)
+  local tmp = map(rows, function(r2) return {r=r2, d=self:dist(r1,r2)} end)
+  return per(sort(tmp, lt"d"), the.Far).r end
+
+--**`COLS`:  half([ROW])**<br>Divide `rows` by their distance to two distant points.
+-- Find two distant points A,B using a random projections. The half of the
+-- the rows nearest `A` are returned as `As` (ditto with `B` and `Bs`).
 function COLS:half(rows,   b4)
-  local function ABc (A,B) return {A=A, B=B, As={}, Bs={}, c=self:dist(A,B)} end
-  local ABcs={}
-  for n=1,the.Projections do 
-     push(ABcs, ABc(b4 or any(rows), -- if b4, use it for one pole
-                    any(rows))) end
-  local i = per(sort(ABcs,lt"c"), the.Far) -- avoid outliers: only go so Far
-  local function xCs(C)     
-          return {x = (self:dist(C,i.A)^2+i.c^2-self:dist(C,i.B)^2)/(2*i.c),
-                  C = C} end
-  for j,xC in pairs(sort(map(rows,xCs),lt"x")) do
-    push(j<#rows/2 and i.As or i.Bs, xC.C) end 
-  return i end 
+  local As,Bs= {},{}
+  local some = many(rows, the.Some)
+  local A    = b4 or self:far(any(some), some)
+  local B    = self:far(A, some)
+  local c    = self:dist(A,B) 
+  rows       = map(rows, function(row,     a,b) 
+                           a,b = self:dist(row,A), self:dist(row,B) 
+                           return {r= row, x= (a^2 + c^2 - b^2)/(2*c)} end)
+  for j,rx in pairs(sort(rows,lt"x")) do push(j<#rows/2 and As or Bs, rx.r) end  
+  return {A=A, B=B, As=As, Bs=Bs, c=c}  end
 
 -- #### Optimize
 
 
 --**`COLS`:  best(ROW,ROW) :bool**<br>True if better on multi-objectives
 function COLS:best(r1,r2)
-  r1.evaled,r2.evaled = true,true
+  r1.evaled, r2.evaled = true, true
   local s1, s2, ys, e = 0, 0, self.y, math.exp(1)
   for _,col in pairs(ys) do
     local x = col:norm(r1.cells[col.at])
@@ -334,12 +337,14 @@ function COLS:bests(rows,    b4,stop,rests)
   local two = self:half(rows,b4) -- if b4 supplied, then half will use it as one pole.
   local best, bests, rests1
   if   self:best(two.A, two.B) 
-  then best, bests, rests1 = two.A, two.As, two.Bs
-       for i=#rests1,1,-1 do push(rests,rests1[i]) end --sort L to R, worst to better
-  else best, bests, rests1 = two.B, two.Bs, two.As
-       for i=1,#rests1, 1 do push(rests,rests1[i]) end --sort L to R, worst to better
+  then io.write(".")
+       best, bests, rests1 = two.A, two.As, two.Bs
+       for _,rest1 in pairs(rev(rests1)) do push(rests,rest1) end --sort L to R, worst to better
+  else io.write("-")
+       best, bests, rests1 = two.B, two.Bs, two.As
+       for _,rest1 in pairs(rests1) do push(rests,rest1) end --sort L to R, worst to better
   end
-  return self:best(bests, best, stop,rests) end
+  return self:bests(bests, best, stop, rests) end
 
 -- ## COLS
 
@@ -393,18 +398,19 @@ function BIN:selects(rows,    select,tmp)
 
 function ROWS:clone(t) return ROWS():add(self.cols.names):adds(t or {}) end
 
-function ROWS:file(x) for t in csv(x) do self:add(t) end; return self end
+function ROWS:file(x)  csv(x,function(t) self:add(t) end); return self end
 
 function ROWS:adds(t) for _,t1 in pairs(t) do self:add(t1) end; return self end
 
 function ROWS:add(t) 
   if   self.cols 
-  then self.cols:add(push(i.rows, t.cells and t or ROW(t))) 
-  else self.cols=COLS(t) end end
+  then self.cols:add(push(self.rows, t.cells and t or ROW(t))) 
+  else self.cols=COLS(t) end 
+  return self end
 
 -- ROWS:mids(?int=2,?[COL]=self.cols.y):[key=num] -- Return `mid` of columns
 -- rounded to `p` places.
-function ROWS:mids(p,cols) 
+function ROWS:mid(p,cols) 
   local t={n=#self.rows}
   for _,col in pairs(cols or self.cols.y) do t[col.txt]=col:mid(p) end
   return rnds(t,p or 2) end
@@ -439,93 +445,11 @@ function ROWS:grow(rows,stop,when)
   self.when=when
   if #rows < stop then return self end
   self.kids = map(self:splitter(rows), kid) end
--- ## Lib
-
-
-big=math.huge 
-min=math.min
-max=math.max
-fmt=string.format
-rand=math.random
-
-function any(a)  return a[rand(#a)] end
-function per(t,p) p=p*#t//1; return t[math.max(1,math.min(#t,p))] end
-
-function push(t,x) t[1+#t]=x; return x end
-function map(t,f,     u) u={};for _,x in pairs(t) do u[1+#u]=f(x)end;return u end
-function kap(t,f,  u) u={};for k,x in pairs(t)do u[1+#u]=f(k,x)end;return u end
-function sum(t,f,     u) u=0; for _,x in pairs(t) do u=u+f(x)    end;return u end
-
---**rnd(num,  `places`:  int):num**<br>Return `x` rounded to some number of `place`.
-function rnd(x, places)  --   &#9312;
-  local mult = 10^(places or 2)
-  return math.floor(x * mult + 0.5) / mult end
---**rnds( `t`:  num,  `places`:  ?int=2):num**<br>Return items in `t` rounds to `places`.
-function rnds(t, places)
-  local u={};for k,x in pairs(t) do u[k]=rnd(x,places or 2)end;return u end
-
-function sort(t,f) table.sort(t,f); return t end
-function lt(x)     return function(a,b) return a[x] < b[x] end end
-
-function shuffle(t,   j)
-  for i=#t,2,-1 do j=rand(i); t[i],t[j]=t[j],t[i] end; return t end
-
-function coerce(x)
-  x = x:match"^%s*(.-)%s*$" 
-  if x=="true" then return true elseif x=="false" then return false 
-  else return math.tointeger(x) or tonumber(x) or x end  end
-
-function cli(t)
-  for k,v in pairs(t) do
-    v = tostring(v)
-    for n,x in ipairs(arg) do if x=="-"..(k:sub(1,1)) then 
-      v = v=="false" and "true" or v=="true" and "false" or arg[n+1] end end
-    t[k] =  coerce(v) end 
-  if t.help then os.exit(go.help()) end
-  return t end
-
-function chat(t) print(cat(t)) return t end 
-function cat(t,   show,u)  
-  function show(k,v) return #t==0 and (":%s %s"):format(k,v) or tostring(v) end
-  u={}; for k,v in pairs(t) do u[1+#u]=show(k,v) end
-  return (t._is or "").."{"..table.concat(#t==0 and sort(u) or u," ").."}" end
-
-function csv(file,fun)
-  function lines(file, fun)
-    local file = io.input(file)
-    while true do
-      local line = io.read()
-      if not line then return io.close(file) else fun(line) end end 
-  end ----------------------------
-  function words(s,sep,fun,      t)
-     fun = fun or same
-     t={};for x in s:gmatch(fmt("([^%s]+)",sep)) do t[1+#t]=fun(x) end; return t 
-  end -------------------------------------------------------------
-  lines(file, function(line) fun(words(line, ",", coerce)) end) end 
-
---**on(tab,tab)**<br>Runs some (or all) of the demos. Return number of failures.
--- Resets `the` and the random number seed before each demo. 
-function on(the,go) 
-  local the, fails, defaults=cli(the), 0, {}
-  for k,v in pairs(the) do defaults[k]=v end 
-  local todos = sort(kap(go,function(k,_) return k end))
-  for _,todo in pairs(the.go=="all" and todos or {the.go}) do
-    if type(go[todo])=="function" then
-      for k,v in pairs(defaults) do the[k]=v end 
-      math.randomseed(the.seed)
-      if true ~= go[todo]() then 
-        print("FAIL:",todo)
-        fails=fails+1 end end end 
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end
-  os.exit(fails) end
 -- ## Start-up
 
 
-function go.the() chat(the) ; return true end
-function go.help() 
-  print(help:gsub("[%u][%u%d]+","\27[1;32m%1\27[0m"),""); return true end 
 
 help:gsub("\n [-]%S[%s]+([%S]+)[^\n]+= ([%S]+)",function(k,x) the[k]=coerce(x)end) 
-if   pcall(debug.getlocal, 4, 1) 
-then return {ROWS=ROWS, the=the} 
-else on(the,go) end
+
+return {the=the, help=help, 
+        ROWS=ROWS, ROW=ROW, COLS=COLS, NUM=NUM, SYM=SYM, BIN=BIN}

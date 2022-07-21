@@ -1,4 +1,4 @@
-#MAKEFLAGS += --silent
+MAKEFLAGS += --silent
 SHELL:= /bin/bash#
 R=$(shell git rev-parse --show-toplevel)
 

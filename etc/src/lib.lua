@@ -10,10 +10,22 @@ l.max=math.max
 l.fmt=string.format
 l.rand=math.random
 
+function l.cp2n(C,p) return math.log( math.log(1-C)/math.log(1-p), 2) end
+
+function l.slice(t, start, stop, step)
+  local u={}
+  start = (start or 1)//1
+  stop  = (stop or #t)//1
+  step  = (step or  1)//1 
+  for j=start,stop,step do u[1+#u]=t[j] end
+  return u end
+
 function l.any(a)       return a[l.rand(#a)] end
 function l.many(a,n, u) u={}; for j=1,n do u[1+#u]= l.any(a) end;return u end
 
 function l.per(t,p) p=math.floor((p*#t)+.5); return t[l.max(1,l.min(#t,p))] end
+function l.pers(t,start,inc,   u) 
+  u={}; for p=start,1,inc do u[1+#u]=l.per(t,p) end; return u end
 
 function l.push(t,x)    t[1+#t]=x; return x end
 function l.map(t,f,  u) u={};for _,x in pairs(t)do u[1+#u]=f(x)   end;return u end
@@ -36,7 +48,7 @@ function l.sort(t,f) table.sort(t,f); return t end
 function l.lt(x)     return function(a,b) return a[x] < b[x] end end
 
 function l.shuffle(t,   j)
-  for i=#t,2,-1 do j=rand(i); t[i],t[j]=t[j],t[i] end; return t end
+  for i=#t,2,-1 do j=l.rand(i); t[i],t[j]=t[j],t[i] end; return t end
 
 function l.coerce(x)
   x = x:match"^%s*(.-)%s*$" 
@@ -51,7 +63,7 @@ function l.cli(t,help)
     t[k] =  l.coerce(v) end 
   if t.help then 
     os.exit(print(help:gsub("[%u][%u%d]+","\27[1;36m%1\27[0m")
-                      :gsub(" ([-]%S)",  " \27[1;31m%1\27[0m"))) end
+                      :gsub(" ([-][%S]+)",  " \27[1;31m%1\27[0m"),"")) end
   return t end
 
 function l.chat(t) print(l.cat(t)) return t end 

@@ -2,30 +2,12 @@
 local l=require"lib"
 local x=require"xplan"
 
-local any,big,cat,chat,coerce,csv= l.any, l.big, l.cat,  l.chat, l.coerce, l.csv
+local any,big,cat,chat,coerce,cp2n,csv= l.any, l.big, l.cat,  l.chat, l.coerce, l.cp2n, l.csv
 local fmt,kap,lt,map,max,min     = l.fmt, l.kap, l.lt,   l.map,  l.max,    l.min
-local obj,per,push,rand,rnd,rnds = l.obj, l.per, l.push, l.rand, l.rnd,    l.rnds
-local shuffle,sort,sum           = l.shuffle, l.sort, l.sum 
+local obj,per,pers,push,rand,rnd,rnds = l.obj, l.per, l.pers,l.push, l.rand, l.rnd,    l.rnds
+local shuffle,sort,slice,sum           = l.shuffle, l.sort, l.slice, l.sum 
 
-local the=x.the
-local COLS,NUM,SYM,ROWS = x.COLS, x.NUM, x.SYM, x.ROWS
---- --- --- Main 
----  main(tab,tab) -- Runs some (or all) of the demos. Return number of failures.
--- Resets `the` and the random number seed before each demo. 
-function l.main(the, go, help) 
-  local the, fails, defaults = l.cli(the,help), 0, {}
-  for k,v in pairs(the) do defaults[k]=v end 
-  local todos = l.sort(l.kap(go,function(k,_) return k end))
-  for _,todo in pairs(the.go=="all" and todos or {the.go}) do
-    if type(go[todo])=="function" then
-      for k,v in pairs(defaults) do the[k]=v end 
-      math.randomseed(the.seed)
-      if true ~= go[todo]() then 
-        print("FAIL:",todo)
-        fails=fails+1 end end end 
-  l.rogues()
-  os.exit(fails) end
-
+local the,COLS,NUM,SYM,ROWS = x.the, x.COLS, x.NUM, x.SYM, x.ROWS
 --- --- --- Demos
 --- --- Storage
 -- Disable 
@@ -83,20 +65,63 @@ function go.dist(  r1,r2,rs)
     ok = ok and d>=0 and d<=1 end
   return ok end
 
-function go.half(    rs,two)
+function go.half(    rs,half)
   rs = ROWS():file(the.file)
-  two = rs.cols:half(rs.rows) 
-  for _,row in pairs(rs.rows) do chat(row) end
-  for _,row in pairs(two.As) do chat(row) end
-  for _,row in pairs(two.Bs) do chat(row) end
-  return rs.cols:dist(two.A, two.B) > .5 
-  end
+  half = rs.cols:half(rs.rows) 
+  print(#half.As, #half.Bs)
+  return rs.cols:dist(half.A, half.B) > .5 end
 
-function go.bests(    rs,bests,rests)
+function go.bests(    rs,bests,rests,n,evals)
   rs = ROWS():file(the.file)
-  chat(rs:mid())
-  bests,rests = rs.cols:bests(rs.rows) 
-  chat(rs:clone(bests):mid()) end
+  print("before",cat(rs:mid()))
+  for i=1,20 do 
+    rs = ROWS():file(the.file)
+    rs.rows = rs.cols:rank(rs.rows)
+    bests,rests,evals = rs.cols:bests(rs.rows) 
+    print(evals,
+          rnd(cp2n(.95,the.cohen/6),2),
+          cat(sort(map(bests,function(r) return r.rank end))))
+  end
+  return true end 
+
+function go.ranks(    rs)
+  rs = ROWS():file(the.file)
+  rs.cols:rank(rs.rows) 
+  for _,row in pairs(rs.rows) do print(row.rank) end 
+  return true end
+
+function go.splitter(  rs)
+  rs=ROWS():file(the.file)
+  rs.rows=sort(rs.rows, function(r1,r2) return rs.cols:best(r1,r2) end) 
+  local rows={}
+  for _,row in pairs(slice(rs.rows, 1, 30))       do push(rows,row).label=0 end
+  for _,row in pairs(slice(rs.rows, #rs.rows-30)) do push(rows,row).label=1 end
+  for _,bin in pairs(rs:splitter(rows)) do print(bin) end
+  return true end
+
+function go.tree(    rs)
+  ROWS():file(the.file):tree()
+  for _,row in pairs(rs.rows) do print(row.rank) end 
+  return true end
 
 --- --- --- Start-up
-l.main(x.the, go, x.help)
+--- Setting up to run
+the = l.cli(the,x.help)         -- update "the" from command-line
+local reset = {} 
+for k,v in pairs(the) do reset[k]=v end -- squirrel away a copy of "the"
+local all   = l.sort(l.kap(go,function(k,_) return k end))
+local steps = the.go=="all" and all or {the.go}
+
+-- Run. Reset "the" and random seed before each step.
+-- Any step that does not return true will increment the `fail` count
+local fails=0
+for _,step in pairs(steps) do
+  if type(go[step])=="function" then
+    for k,v in pairs(reset) do the[k]=v end 
+    math.randomseed(the.seed)
+    if true ~= go[step]() then 
+      print("FAIL:",step)
+      fails=fails+1 end end end 
+
+l.rogues()
+os.exit(fails) 
