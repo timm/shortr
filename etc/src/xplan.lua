@@ -18,7 +18,7 @@ DESCRIPTION:
   (while clustering, just on the pairs of distance objects).
 
 USAGE:
-  lua xplaning.lua [OPTIONS]
+  lua xplaning.lua -bcfFghmprsS arg
 
 OPTIONS:
  -b bins         max number of bins    = 16
@@ -109,7 +109,8 @@ local BIN=obj("BIN",function(self,col, lo, hi, has)
   self.col = col               -- What column does this bin handle?
   self.lo  = lo                -- Lowest value of column1.
   self.hi  = hi or lo          -- Highest value of column1
-  self.has = has or SYM() end) -- Symbol counts of column2 values.
+  self.has = has or SYM(col.at,col.txt) end) -- Symbol counts of column2 values.
+
 
 ---- ---- ---- ---- Columns
 ---- ---- ---- Sym
@@ -287,6 +288,7 @@ function COLS:rank(rows)
     row.evaled = false
     row.rank = (100 * j /#rows) // 1  end
   return shuffle(rows) end 
+
 ---- ---- ---- ---- COLS
 ---- ---- ---- BINS
 ---- ---- Create
@@ -344,21 +346,23 @@ function ROWS:mid(p,cols)
   for _,col in pairs(cols or self.cols.y) do t[col.txt]=col:mid(p) end
   return rnds(t,p or 2) end
 
+function ROWS:bins(rows,col)
+  local n,dict,list = 0,{},{}
+  for _,row in pairs(rows) do
+    local v = row.cells[col.at]
+    if v ~= "?" then
+      n=n+1
+      local pos = col:bin(v)
+      dict[pos] = dict[pos] or push(list, BIN(col,v))
+      dict[pos]:add(v,row.label) end end 
+  list = col:merges(sort(list,lt"lo"), n^the.min)
+  print("dict",cat(dict),"sum",sum(list,function(z) return z.has:div()*z.has.n/n end))  
+  return {bins = list,
+          div  = sum(list,function(z) return z.has:div()*z.has.n/n end)} end
+
 function ROWS:splitter(rows)
-  local function split(col)
-    local n,dict,list = 0,{},{}
-    for _,row in pairs(rows) do
-      local v = row.cells[col.at]
-      if v ~= "?" then
-        n=n+1
-        local pos = col:bin(v)
-        dict[pos] = dict[pos] or push(list, BIN(col,v))
-        dict[pos]:add(v,row.label) end end 
-    list = col:merges(sort(list,lt"lo"), n^the.min)
-    return {bins = list,
-            div  = sum(list,function(z) return z.has:div()*z.has.n/n end)} 
-  end ---------------------------------------------------
-  return sort(map(self.cols.x, split),lt"div")[1].bins end
+  local binsDiv = map(self.cols.x, function(col) return self:bins(rows,col) end)
+  return sort(binsDiv, lt"div")[1].bins end
 
 function ROWS:tree()
   local bests,rests,_= self.cols:bests(self.rows)

@@ -96,7 +96,10 @@ function go.splitter(  rs)
   local rows={}
   for _,row in pairs(slice(rs.rows, 1, 30))       do push(rows,row).label=0 end
   for _,row in pairs(slice(rs.rows, #rs.rows-30)) do push(rows,row).label=1 end
-  for _,bin in pairs(rs:splitter(rows)) do print(bin) end
+  for _,col in pairs(rs.cols.x) do
+     print""
+     print(col.txt)
+     for _,bin in pairs(rs:bins(rows,col)) do chat(bin) end end --print(bin.bins) end end
   return true end
 
 function go.tree(    rs)
