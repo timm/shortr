@@ -155,7 +155,7 @@ function NUM:norm(x)
   return x=="?" and x or math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi-lo+1/big) end
 
 ----------------
-
+-- XXX move bins into xplan. add symp to sym
 function XY.merged(i,j, min)
   local y = SYM(i.at, i.txt)
   for x,n in pairs(i.kept) do k:add(x,n) end
@@ -164,14 +164,13 @@ function XY.merged(i,j, min)
   then return XY(i.col, i.xlo, j.xhi, y, rows) end end
 
 function bins(rows,col)
-  local n,dict,list,bin,merges = 0,{},{}
-  function bin(x,     a,b,lo,hi)
+  local function where(x,     a,b,lo,hi)
     a = col:has()
     lo,hi = a[1], a[#a]
     b = (hi - lo)/the.bins
     return hi==lo and 1 or math.floor(x/b+.5)*b 
   end -------------------
-  function merges(b4,min) 
+  local function merges(b4,min) 
     local n,now = 1,{}
     while n <= #b4 do
       local merged = n<#b4 and b4[n]:merged(b4[n+1],min) -- defined in BIN
@@ -182,13 +181,14 @@ function bins(rows,col)
     now[1].lo, now[#now].hi = -big,big            -- grow to plus/minus infinity
     return now 
   end -------- 
+  local n,dict,list = 0,{},{}
   for _,row in pairs(rows) do
     local v = row.raw[col.at]
     if v ~= "?" then
       n=n+1
-      local pos = col.symp and v or bin(col,v) or v
-      dict[pos] = dict[pos] or push(list, XY(col,v))
-      local it  = dict[pos]
+      local bin = col.symp and v or where(col,v) or v
+      dict[bin] = dict[bin] or push(list, XY(col,v))
+      local it  = dict[bin]
       it.xlo = math.min(x,it.xlo)
       it.xhi = math.max(x,it.xhi)
       it.y:add(y) end end
