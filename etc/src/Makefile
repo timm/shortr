@@ -27,7 +27,7 @@ htmls:  $(subst .lua,.html,docs/$(subst lua ,html docs/,$(LUAS))) ## make all ht
 	(cd $(WEB); git  add *; git commit -am save; git push)
 
 docs/%.html: %.lua  README.md ## make html
-	(cat README.md | sed 's/^/-- /'  ; gawk -f ../../etc/lua2doc.awk $<) > tmp.lua
+	gawk -f ../../etc/lua2doc.awk $< > tmp.lua
 	echo "docco: $< -> $@"
 	docco -l classic  tmp.lua > /dev/null
 	gawk 'sub(/>tmp.lua</,">$(basename $<)<") 1 ' docs/tmp.html > $@
