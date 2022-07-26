@@ -56,13 +56,16 @@ function XY:add(x,row)
   self.y:add(row.label)
   self.rows[row.id]=row end
 
-function BIN:merge(other, min)
+-- xxxx merged.
+-- merging syms and merging bins is needed elsehwere
+--    merging bins ashs to walk wholse like of bins
+function XY:merge(other, min)
   local y = SYM(self.y.col.at, self.y.col.txt)
-  for x,n in pairs(self.y.kept)  do y:add(x,n) end
-  for x,n in pairs(other.y.kept) do y:add(x,n) end
+  for what,n in pairs(self.y.kept)  do y:add(what,n) end
+  for what,n in pairs(other.y.kept) do y:add(what,n) end
   local a, b = self.y, other.y
   local should = a.n < min or b.n < min                 
-  local can    = c:div() <= (a.n*a:div() + b.n*b:div())/c.n 
+  local can    = y:div() <= (a.n*a:div() + b.n*b:div())/y.n 
   if should or can then 
     local rows={}
     for _,row in pairs(self.rows)  do rows[row.id]=row end 
@@ -142,13 +145,13 @@ function ROWS:bins(rows,col)
       local pos = col:bin(v)
       dict[pos] = dict[pos] or push(list, XY(col,v))
       dict[pos]:add(v,row) end
-  return  col:merges(sort(list,lt"lo"), n^the.min) end
+  return col:merges(sort(list,lt"lo"), n^the.min) end
   
 ---- ---- ---- COLS
 function COLS:add(row)
   row = row.raw and row or ROW(row)
   for _,cols in pairs{self.x,self.y} do
-    for col in pairs(cols) do  col:add(row.raw[col.at]) end end i
+    for col in pairs(cols) do  col:add(row.raw[col.at]) end end 
   return row end
 
 ---- ---- ---- SYM
