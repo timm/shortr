@@ -149,7 +149,6 @@ local BIN=obj("BIN",function(self,col, lo, hi, has)
   self.hi  = hi or lo          -- Highest value of column1
   self.has = has or SYM(col.at,col.txt) end) -- Symbol counts of column2 values.
 
-
 ---- ---- ---- ---- Columns
 ---- ---- ---- Sym
 ---- ---- Create

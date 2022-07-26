@@ -15,11 +15,11 @@ Boolean flags need no arguments e.g. "-h" sets "help" to "true".   ]]
 local any,cat,chat,cli,coerce,csv,eras,fmt
 local many,push,obj
 
-local _id=0
+_id =  0
 function obj(txt,fun, i)
   local function new(k,...) 
-    i=setmetatable({},k)
-    _id=_id+1; i.id = _id
+    _id = _id + 1
+    i=setmetatable({id=_id},k);
     fun(i,...); return i end
   local t={__tostring = function(x) return txt..cat(x) end}
   t.__index = t;return setmetatable(t,{__call=new}) end
@@ -31,6 +31,7 @@ local SYM=obj("SYM",function(self, at,txt)
   self.n   = 0          -- number of items seen
   self.at  = at or 0    -- column number
   self.txt = txt or ""  -- column name
+  self.symp= true
   self.kept= {}   end)   -- counters for symbols
 
 ---- NUM(?num=0, ?str="") -- Summarize streams of numbers in ROWs
@@ -42,35 +43,6 @@ local NUM=obj("NUM",function(self, at,txt)
   self.w   = txt:find"-$" and -1 or 1 -- If minimizing, then -1. Else 1
   self.kept= {}                       -- some sample of the seen items
   self.ok  = false end )              -- true if sorted, set to false by each add
-
----- XY
-local XY=obj("XY", function(self,col,xlo,xhi,y,rows)
-  self.xlo=xlo
-  self.xhi=xhi or xlo
-  self.y  = y or SYM(col.at,col.txt) 
-  self.rows = rows or {} end)
-
-function XY:add(x,row)
-  self.xlo = math.min(x,self.xlo)
-  self.xhi = math.max(x,self.xhi)
-  self.y:add(row.label)
-  self.rows[row.id]=row end
-
--- xxxx merged.
--- merging syms and merging bins is needed elsehwere
---    merging bins ashs to walk wholse like of bins
-function XY:merge(other, min)
-  local y = SYM(self.y.col.at, self.y.col.txt)
-  for what,n in pairs(self.y.kept)  do y:add(what,n) end
-  for what,n in pairs(other.y.kept) do y:add(what,n) end
-  local a, b = self.y, other.y
-  local should = a.n < min or b.n < min                 
-  local can    = y:div() <= (a.n*a:div() + b.n*b:div())/y.n 
-  if should or can then 
-    local rows={}
-    for _,row in pairs(self.rows)  do rows[row.id]=row end 
-    for _,row in pairs(other.rows) do rows[row.id]=row end 
-    return XY(self.col, self.xlo, other.xhi, y,rows) end end
 
 ---- ---- ROWS
 local COLS=obj("COLS", function(self,names)
@@ -93,6 +65,11 @@ local ROW=obj("ROW",function(self, of,raw)
   self._of=of
   self.raw=raw
   self.cooked=raw end)
+
+local XY=obj("XY", function(self,col,xlo,xhi,y)
+  self.xlo=xlo
+  self.xhi=xhi or xlo
+  self.y = y or SYM(col.at,col.txt)  end)
 
 ---- ---- ---- ---- methods
 ---- ---- ---- ROW
@@ -136,17 +113,6 @@ function ROWS:best()
     if row-some[1]     < close then push(rows,row).label=true end
     if row-some[#some] > far   then push(rows,row).label=false end end end
 
-function ROWS:bins(rows,col)
-  local n,dict,list = 0,{},{}
-  for _,row in pairs(rows) do
-    local v = row.raw[col.at]
-    if v ~= "?" then
-      n=n+1
-      local pos = col:bin(v)
-      dict[pos] = dict[pos] or push(list, XY(col,v))
-      dict[pos]:add(v,row) end
-  return col:merges(sort(list,lt"lo"), n^the.min) end
-  
 ---- ---- ---- COLS
 function COLS:add(row)
   row = row.raw and row or ROW(row)
@@ -160,9 +126,6 @@ function SYM:add(x,n)
   if x~="?" then self.n=self.n+n; self.kept[x]=n + (self.kept[x] or 0) end end
 
 function SYM:dist(x,y) return (x=="?" or  y=="?") and 1 or x==y and 0 or 1 end
-
-function SYM:bin(x) return x end
-function SYM:merge(t,...) return t end
 
 function SYM:div() 
   return sum(self.kept, function(n) return -n/self.n*math.log(n/self.n,2) end) end
@@ -183,28 +146,54 @@ function NUM:has()
   self.ok = true
   return self.kept end
 
+function NUM:div() return (per(self:has(),.9) - per(self:has(),.1))/2.58 end
+function NUM:mid() return per(self:has(),.5) end
+
 function NUM:norm(x)
   local a =  self:has()
   local lo,hi = a[1], a[#a]
   return x=="?" and x or math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi-lo+1/big) end
 
-function NUM:bin(x)
-  local a = self:has()
-  local lo,hi = a[1], a[#a]
-  local b = (hi - lo)/the.bins
-  return hi==lo and 1 or math.floor(x/b+.5)*b end
+----------------
 
-function NUM:merge(b4,min) 
-  local n,now = 1,{}
-  while n <= #b4 do
-    local merged = n<#b4 and b4[n]:merged(b4[n+1],min) -- defined in BIN
-    now[#now+1]  = merged or b4[n]
-    n            = n + (merged and 2 or 1)  -- if merged, skip over merged bin
-  end -- end while
-  if #now < #b4 then return self:merges(now,min) end     -- seek others to merge
-  now[1].lo, now[#now].hi = -big,big            -- grow to plus/minus infinity
-  return now end 
+function XY.merged(i,j, min)
+  local y = SYM(i.at, i.txt)
+  for x,n in pairs(i.kept) do k:add(x,n) end
+  for x,n in pairs(j.kept) do k:add(x,n) end
+  if i.n < min or j.n < min or k:div() <= (i.n*i:div() + j.n*j:div())/k.n 
+  then return XY(i.col, i.xlo, j.xhi, y, rows) end end
 
+function bins(rows,col)
+  local n,dict,list,bin,merges = 0,{},{}
+  function bin(x,     a,b,lo,hi)
+    a = col:has()
+    lo,hi = a[1], a[#a]
+    b = (hi - lo)/the.bins
+    return hi==lo and 1 or math.floor(x/b+.5)*b 
+  end -------------------
+  function merges(b4,min) 
+    local n,now = 1,{}
+    while n <= #b4 do
+      local merged = n<#b4 and b4[n]:merged(b4[n+1],min) -- defined in BIN
+      now[#now+1]  = merged or b4[n]
+      n            = n + (merged and 2 or 1)  -- if merged, skip over merged bin
+    end -- end while
+    if #now < #b4 then return merges(now,min) end     -- seek others to merge
+    now[1].lo, now[#now].hi = -big,big            -- grow to plus/minus infinity
+    return now 
+  end -------- 
+  for _,row in pairs(rows) do
+    local v = row.raw[col.at]
+    if v ~= "?" then
+      n=n+1
+      local pos = col.symp and v or bin(col,v) or v
+      dict[pos] = dict[pos] or push(list, XY(col,v))
+      local it  = dict[pos]
+      it.xlo = math.min(x,it.xlo)
+      it.xhi = math.max(x,it.xhi)
+      it.y:add(y) end end
+  list = sort(list,lt"lo")
+  return col.symp and list or merges(list, n^the.min) end
 
 ---- ---- Distance
 ---- NUM:dist(x,y):num -- Normalize x,y to 0..1, report their difference.
