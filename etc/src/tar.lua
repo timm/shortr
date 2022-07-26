@@ -5,6 +5,7 @@ TAR3: recursively find grow, combine, useful rangess
 OPTIONS:
  -b  --bins  number of bins                           = 16
  -e  --era   process data in "era"s of size, say, 256 = 256
+ -m  --min   minimum lead size                        = .5
  -s  --seed  random number seed                       = 10019
  -S  --samples how many to check                      = 4
  -h  --help  show help                                = false
@@ -12,66 +13,58 @@ OPTIONS:
 Boolean flags need no arguments e.g. "-h" sets "help" to "true".   ]]
 
 ---- ---- ---- ---- Names
+local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local any,cat,chat,cli,coerce,csv,eras,fmt
 local many,push,obj
 
-_id =  0
 function obj(txt,fun, i)
-  local function new(k,...) 
-    _id = _id + 1
-    i=setmetatable({id=_id},k);
-    fun(i,...); return i end
+  local function new(k,...) i=setmetatable({},k); fun(i,...); return i end
   local t={__tostring = function(x) return txt..cat(x) end}
   t.__index = t;return setmetatable(t,{__call=new}) end
 
----- ---- ---- Categories
----- ---- Columns
 -- Summarize stream of symbols
 local SYM=obj("SYM",function(self, at,txt) 
-  self.n   = 0          -- number of items seen
-  self.at  = at or 0    -- column number
-  self.txt = txt or ""  -- column name
-  self.symp= true
-  self.kept= {}   end)   -- counters for symbols
-
----- NUM(?num=0, ?str="") -- Summarize streams of numbers in ROWs
+  self.n,self.at, self.txt,self.kept=0, at or 0,txt or "",{} end)
+-- Summarize streams of numbers in ROWs
 local NUM=obj("NUM",function(self, at,txt)
-  self.n   = 0                        -- number of items seen
-  self.at  = at   or 0                -- column number
-  txt=txt or ""
-  self.txt = txt                      -- column name
-  self.w   = txt:find"-$" and -1 or 1 -- If minimizing, then -1. Else 1
-  self.kept= {}                       -- some sample of the seen items
-  self.ok  = false end )              -- true if sorted, set to false by each add
+  self.n,self.at, self.txt,self.kept=0, at or 0,txt or "",{} 
+  self.w   = txt:find"-$" and -1 or 1 
+  self.ok = false end)
+-- Summarize data from the same rows from two columns
+local XY=obj("XY", function(self,col,xlo,xhi,y)
+  self.xlo=xlo
+  self.xhi=xhi or xlo
+  self.y = y or SYM(col.at,col.txt)  end)
 
----- ---- ROWS
+-- Factory for making NUM, SYM
 local COLS=obj("COLS", function(self,names)
   self.names= names -- list of column names
-  self.all  = {}    -- [NUM|SYM] all names, converted to NUMs or SYMs
-  self.x    = {}    -- [NUM|SYM] just the independent columns
-  self.y    = {}    -- [NUM|SYM] just the dependent columns
-  self.klass= nil   -- SYM       the klass column (if it exists)
+  self.all,self.x,self.y,self.klass={},{},{},nil
   for at,txt in pairs(names) do
     local col= push(self.all, (txt:find"^[A-Z]" and NUM or SYM)(at,txt))
     if not txt:find":$" then
       if txt:find"!$" then self.klass = col end
       push(txt:find"[!+-]$" and self.y or self.x, col) end end end)
 
-local ROWS=obj("ROWS", function(self,file)
-  self.rows={dict={},list={}}
-  self.cols=nil end)
-
-local ROW=obj("ROW",function(self, of,raw)
-  self._of=of
-  self.raw=raw
-  self.cooked=raw end)
-
-local XY=obj("XY", function(self,col,xlo,xhi,y)
-  self.xlo=xlo
-  self.xhi=xhi or xlo
-  self.y = y or SYM(col.at,col.txt)  end)
+-- Hold one row
+local ROW=obj("ROW",function(self,of,t) self._of,self.raw,self.cooked=of,t,t end)
+-- Hold many rows
+local ROWS=obj("ROWS", function(self,file) self.rows,self.cols={}, nil end)
 
 ---- ---- ---- ---- methods
+---- ---- ---- ROWS
+function ROWS:add(row) 
+  row = row.raw and row or ROW(self,row)
+  for _,cols in pairs{self.x, self.y} do
+    for col in pairs(cols) do col:add(row.raw[col.at]) end end 
+  return row end
+
+function ROWS:clone(inits,    out)
+  out = ROWS()
+  out:add{self.cols.names}
+  forall(inits or {}, function(row) out:add(row) end)
+  return out end
+
 ---- ---- ---- ROW
 function ROW:__lt(other)
   self.evaled, other.evaled = true, true
@@ -91,59 +84,31 @@ function ROW:__sub(other)
     d  = d+(x1 -x2)^the.p end
   return (d/#self.x)^(1/the.p) end
 
----- ---- ---- ROWS
--- add many items
-function ROWS:adds(src)
-  if   type(src)=="table" 
-  then for _,row in pairs(src) do self.cols:add(row) end
-  else csv(src, function(row)
-         if self.cols 
-         then row = self.cols:add(row)
-              self.rows.dict[row.id] = push( self.rows.list, row)
-         else self.cols = COLS(row) end end) end end
-
-function ROWS:best()
-  some  = sort(many(shuffle(self.rows.list),the.few)) 
-  close = (some[1] - some[2])/2
-  d13   = some[1] - some[#some - 1]
-  d14   = some[1] - some[#some]
-  far   = (d13+d14)/2
-  rows={}
-  for _,row in pairs(self.rows) do
-    if row-some[1]     < close then push(rows,row).label=true end
-    if row-some[#some] > far   then push(rows,row).label=false end end end
-
----- ---- ---- COLS
-function COLS:add(row)
-  row = row.raw and row or ROW(row)
-  for _,cols in pairs{self.x,self.y} do
-    for col in pairs(cols) do  col:add(row.raw[col.at]) end end 
-  return row end
-
 ---- ---- ---- SYM
 function SYM:add(x,n) 
   n = n or 1
-  if x~="?" then self.n=self.n+n; self.kept[x]=n + (self.kept[x] or 0) end end
+  if x~="?" then self.n=self.n+n; self.kept[x]=n  + (self.kept[x] or 0) end end
 
 function SYM:dist(x,y) return (x=="?" or  y=="?") and 1 or x==y and 0 or 1 end
 
+function SYM:mid(   mode,most) 
+  most = -1
+  for x,n in paris(self.kept) do if n>most then mode,most=x,n end end; return mode end
+ 
 function SYM:div() 
   return sum(self.kept, function(n) return -n/self.n*math.log(n/self.n,2) end) end
 
 ---- ---- ---- NUM
-function NUM:add(x)
+function NUM:add(x,   pos)
   if x~="?" then 
     self.n = self.n + 1
-    local pos
     if #self.kept < the.Some        then pos= (#self.kept)+1 
     elseif rand() < the.Some/self.n then pos= rand(#self.kept) end
-    if pos then 
-      self.ok=false  -- the `kept` list is no longer in sorted order
-      self.kept[pos]=x end end end
+    if pos then self.ok=false  -- the `kept` list is no longer in sorted order
+                self.kept[pos]=x end end end
 
 function NUM:has()
-  self.kept = self.ok and self.kept or sort(self.kept)
-  self.ok = true
+  self.kept=self.ok and self.kept or sort(self.kept); self.ok=true
   return self.kept end
 
 function NUM:div() return (per(self:has(),.9) - per(self:has(),.1))/2.58 end
@@ -154,8 +119,52 @@ function NUM:norm(x)
   local lo,hi = a[1], a[#a]
   return x=="?" and x or math.abs(hi-lo)<1E-9 and 0 or (x-lo)/(hi-lo+1/big) end
 
-----------------
--- XXX move bins into xplan. add symp to sym
+-- If any unknowns, assume max distance.
+function NUM:dist(x,y)
+  if x=="?" and y=="?" then return 1
+  elseif x=="?" then y=self:norm(y); x=y<.5 and 1 or 0 
+  elseif y=="?" then x=self:norm(x); y=x<.5 and 1 or 0
+  else   x,y = self:norm(x), self:norm(y) end
+  return math.abs(x-y) end
+
+---- ---- ---- ---- main control
+function ROWS:ordered(rows,stop,b4,rests)
+  local As,Bs,A,B,c,project={},{}
+  function far(r1)
+    return per(sort(map(rows, function(r2) return {r=r2, d=r1-r2} end),lt"d"),
+               the.far).r end
+  stop = stop or (#rows)^the.min
+  if #rows < stop then 
+    return rests,rows
+  else
+    A = b4 or far(any(rows))
+    B = far(A)
+    c = A-B
+    if B>A then A,B = B,A end
+    project = function(r) return {r=r, x=((r-A)^2+c^2-(r-B)^2)/(2*c)} end
+    local tmp={}
+    for j,row in pairs(reverse(sort(map(rows,project),lt"x"))) do
+      push( j<#rows/2 and rests or tmp, row.r) end
+    return self:ordered(tmp, stop,A,rests) end end 
+ 
+function ROWS:tree(rows)
+  rests0,bests = self:ordered(rows)
+  for _,best in pairs(bests) do best.label=1 end
+  for j,rest in pairs(rests0) do
+    if j > #rests0/2 then break end
+    push(bests, rest).label=0 end
+  return self:grow(bests) end
+
+function ROWS:grow(rows)
+  local function fun(bin) return bin.n * bin.y:div()/#rows end
+  for _,col in pairs(self.cols.x) do 
+    tmp=bins(rows,col)
+    if #tmp>1 then
+      for _,b in pairs(tmp) do
+        push(all,b).score = b.n/#rows * b.y:div() end end end 
+  one = sort(all,gt"score")[1] end 
+    
+---- ---- ---- XY
 function XY.merged(i,j, min)
   local y = SYM(i.at, i.txt)
   for x,n in pairs(i.kept) do k:add(x,n) end
@@ -195,32 +204,30 @@ function bins(rows,col)
   list = sort(list,lt"lo")
   return col.symp and list or merges(list, n^the.min) end
 
----- ---- Distance
----- NUM:dist(x,y):num -- Normalize x,y to 0..1, report their difference.
--- If any unknowns, assume max distance.
-function NUM:dist(x,y)
-  if x=="?" and y=="?" then return 1
-  elseif x=="?" then y=self:norm(y); x=y<.5 and 1 or 0 
-  elseif y=="?" then x=self:norm(x); y=x<.5 and 1 or 0
-  else   x,y = self:norm(x), self:norm(y) end
-  return math.abs(x-y) end
-
-
-
 ---- ---- ---- ---- Lib
+---- ---- ---- Maths
+rand=math.random
+cap=function(x,lo,hi) return math.max(lo,math.min(x,hi)) end
+
 ---- ---- ---- Lists
+function shuffle(t,   j)
+  for i=#t,2,-1 do j=l.rand(i); t[i],t[j]=t[j],t[i] end; return t end
+
+function forall(src, fun)
+  if type(src)=="table" then for _,row in pairs(src) do fun(row) end 
+                        else csv(src,fun) end end
+
 function push(t,x) t[1+#t]=x; return x end
 
-function per(t,p) 
-  p=math.floor((p*#t)+.5); return t[math.max(1,math.min(#t,p))] end
+function per(t,p) return t[ cap(math.floor((p*#t)+.5),1,#t) ] end
 
 function shuffle(t,   j)
   for i=#t,2,-1 do j=l.rand(i); t[i],t[j]=t[j],t[i] end; return t end
 
-function any(a) return a[l.rand(#a)] end
-
+function any(a)       return a[rand(#a)] end
 function many(a,n, u) u={}; for j=1,n do u[1+#u]= any(a) end;return u end
-
+function sum(t,f,  u) u=0; for _,x in pairs(t)do u=u+f(x)       end;return u end
+function map(t,f,  u) u={}; for k,v in pairs(t) do u[1+#u]=f(v) end; return u end
 
 ---- ---- ---- Thing to string
 fmt=string.format
