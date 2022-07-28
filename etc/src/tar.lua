@@ -47,43 +47,13 @@ local COLS=obj("COLS", function(self,names)
       push(txt:find"[!+-]$" and self.y or self.x, col) end end end)
 
 -- Hold one row
-local ROW=obj("ROW",function(self,of,t) self._of,self.raw,self.cooked=of,t,t end)
+local ROW=obj("ROW",function(self,of,t) 
+  self._of,self.raw,self.cooked=of,t,t
+  self.usedy = false end)
 -- Hold many rows
 local ROWS=obj("ROWS", function(self,file) self.rows,self.cols={}, nil end)
 
 ---- ---- ---- ---- methods
----- ---- ---- ROWS
-function ROWS:add(row) 
-  row = row.raw and row or ROW(self,row)
-  for _,cols in pairs{self.x, self.y} do
-    for col in pairs(cols) do col:add(row.raw[col.at]) end end 
-  return row end
-
-function ROWS:clone(inits,    out)
-  out = ROWS()
-  out:add{self.cols.names}
-  forall(inits or {}, function(row) out:add(row) end)
-  return out end
-
----- ---- ---- ROW
-function ROW:__lt(other)
-  self.evaled, other.evaled = true, true
-  local s1, s2, ys, e = 0, 0, self._or.cols.y, math.exp(1)
-  for _,col in pairs(ys) do
-    local x = col:norm(self.raw[col.at])
-    local y = col:norm(other.raw[col.at])
-    s1      = s1 - e^(col.w * (x-y)/#ys)
-    s2      = s2 - e^(col.w * (y-x)/#ys) end
-  return s1/#ys < s2/#ys end -- i.e. we lose less going to r2->r1 than r2->r1
-
-function ROW:__sub(other)
-  local d,x1,x2 = 0
-  for _,col in pairs(self._of.cols.x) do 
-    x1 = r1.raw[col.at]
-    x2 = r2.cells[col.at]
-    d  = d+(x1 -x2)^the.p end
-  return (d/#self.x)^(1/the.p) end
-
 ---- ---- ---- SYM
 function SYM:add(x,n) 
   n = n or 1
@@ -127,6 +97,37 @@ function NUM:dist(x,y)
   else   x,y = self:norm(x), self:norm(y) end
   return math.abs(x-y) end
 
+---- ---- ---- ROW
+function ROW:__lt(other)
+  self.evaled, other.evaled = true, true
+  local s1, s2, ys, e = 0, 0, self._or.cols.y, math.exp(1)
+  for _,col in pairs(ys) do
+    local x = col:norm(self.raw[col.at])
+    local y = col:norm(other.raw[col.at])
+    s1      = s1 - e^(col.w * (x-y)/#ys)
+    s2      = s2 - e^(col.w * (y-x)/#ys) end
+  return s1/#ys < s2/#ys end -- i.e. we lose less going to r2->r1 than r2->r1
+
+function ROW:__sub(other)
+  local d,x1,x2 = 0
+  for _,col in pairs(self._of.cols.x) do 
+    x1 = r1.raw[col.at]
+    x2 = r2.cells[col.at]
+    d  = d+(x1 -x2)^the.p end
+  return (d/#self.x)^(1/the.p) end
+
+---- ---- ---- ROWS
+function ROWS:add(row) 
+  row = row.raw and row or ROW(self,row)
+  for _,cols in pairs{self.x, self.y} do
+    for col in pairs(cols) do col:add(row.raw[col.at]) end end 
+  return row end
+
+function ROWS:clone(inits,    out)
+  out = ROWS()
+  out:add{self.cols.names}
+  forall(inits or {}, function(row) out:add(row) end)
+  return out end
 ---- ---- ---- ---- main control
 function ROWS:ordered(rows,stop,b4,rests)
   local As,Bs,A,B,c,project={},{}
@@ -190,19 +191,19 @@ function bins(rows,col)
     now[1].lo, now[#now].hi = -big,big            -- grow to plus/minus infinity
     return now 
   end -------- 
-  local n,dict,list = 0,{},{}
+  local n,dict,lists,symp = 0,{},{}, col."_is"== "SYM"
   for _,row in pairs(rows) do
     local v = row.raw[col.at]
     if v ~= "?" then
       n=n+1
-      local bin = col.symp and v or where(col,v) or v
+      local bin = symp and v or where(col,v) or v
       dict[bin] = dict[bin] or push(list, XY(col,v))
       local it  = dict[bin]
       it.xlo = math.min(x,it.xlo)
       it.xhi = math.max(x,it.xhi)
-      it.y:add(y) end end
+      it.y:add(y.label) end end
   list = sort(list,lt"lo")
-  return col.symp and list or merges(list, n^the.min) end
+  return symp and list or merges(list, n^the.min) end
 
 ---- ---- ---- ---- Lib
 ---- ---- ---- Maths
