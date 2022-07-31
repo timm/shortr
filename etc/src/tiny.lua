@@ -45,7 +45,7 @@ local       dist,around,far,half,halfsort
 m.dist=    {dist,around,far,half,halfsort}
 
 -- Startup
-local   go={}
+local go={}
 
 ---- ---- ---- ---- Types
 -- Our CSV files have column names on row1. `is` recognizes column types.
@@ -140,29 +140,29 @@ function norm(col,num)
 -- Return the central tendency of `col`umns (median/mode for
 -- numerics/other (respectively).
 function mid(col,places)
-  if col.nump then 
-    local median= per(has(col),.5)  
-    return places and rnd(median,places) or median end -- for numerics
-  local mode,most= -1,nil
-  for x,n in pairs(col.has) do if n>most then mode,most=x,n end end
-  return mode end -- mode for symbols
+  if   col.nump 
+  then local median= per(has(col),.5)  
+       return places and rnd(median,places) or median 
+  else local mode,most= -1,nil
+       for x,n in pairs(col.has) do if n>most then mode,most=x,n end end
+       return mode end end -- mode for symbols
 
 -- Return the diversity of a `col`umns (sd/entropy for
 -- numerics/other (respectively).
 function div(col,places)
-  if col.nump then 
-    local sd = (per(has(col),.9) - per(has(col),.1))/2.58 
-    return places and rnd(sd,places) or sd end
-  local ent=0
-  for _,n in pairs(col.has) do 
-    if n>0 then ent=ent-n/col.n*math.log(n/col.n,2) end end
-  return places and rnd(ent,places) or ent end 
+  local out
+  if   col.nump 
+  then out = (per(has(col),.9) - per(has(col),.1))/2.58 
+  else out = 0
+       for _,n in pairs(col.has) do 
+         if n>0 then out=out-n/col.n*math.log(n/col.n,2) end end end
+  return places and rnd(out,places) or out end 
 
 -- Returns stats collected across a set of `col`umns (stats
 -- selected by `f`). If `places` omitted, then no nums are rounded.
 -- If `cols` is omitted then report the `y` values.
 function stats(data,   f,places,cols,   u)
-  f =  f or mid
+  f = f or mid
   cols =cols or data.about.y
   u={}; for k,col in pairs(cols) do 
     u.n=col.n; u[col.txt]=f(col,places) end; 
