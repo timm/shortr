@@ -161,7 +161,7 @@ function div(col,places)
 -- Returns stats collected across a set of `col`umns (stats
 -- selected by `f`). If `places` omitted, then no nums are rounded.
 -- If `cols` is omitted then report the `y` values.
-function stats(data,f,places,cols,   u)
+function stats(data,   f,places,cols,   u)
   f =  f or mid
   cols =cols or data.about.y
   u={}; for k,col in pairs(cols) do 
@@ -210,7 +210,7 @@ function around(row1,rows)
 -- only apply it to `some` of the rows (controlled by `the.some`).
 -- If `rowAbove` is supplied,
 -- then use that for one of the two distant items. 
-function half(rows, rowAbove)
+function half(rows,  rowAbove)
   local As,Bs,A,B,c,far,project = {},{}
   local some= many(rows,the.some)
   function far(row)     return per(around(row,some), the.far).row end
@@ -226,7 +226,7 @@ function half(rows, rowAbove)
 -- Divide the data, accumulate the worst half, recurse on the rest.
 -- Return the shriving best and the worst. Each returned list is
 -- sorted L to R, best to less.
-function halfsort(rows,rowAbove,stop,worst)
+function halfsort(rows,rowAbove,  stop,worst)
   stop = stop or (#rows)^the.min
   worst = worst or {}
   if   #rows < stop 
@@ -234,10 +234,10 @@ function halfsort(rows,rowAbove,stop,worst)
   else local A,B,As,Bs = half(rows,rowAbove)
        if better(A,B) then 
          for _,row in pairs(reverse(Bs)) do push(worst,row) end
-         return halfsort(reverse(As),A,stop,out)
+         return halfsort(reverse(As),A,stop,worst)
        else
          for _,row in pairs(As) do push(worst,row) end
-         return halfsort(Bs,B,stop,out) end end  end
+         return halfsort(Bs,B,stop,worst) end end  end
      
 ---- ---- ---- ---- Library
 ---- ---- ---- Maths
