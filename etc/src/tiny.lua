@@ -7,7 +7,8 @@ local the= {
      min   = .5,
      nums  = 512,
      p     = 2,
-     seed  = 10019
+     seed  = 10019,
+     some  = 512
      }
 ---- ---- ---- ---- Names
 -- Trap prior names (for liniting, at end)
@@ -20,8 +21,8 @@ m.config={the}
 m.lib={maths={},lists={},read={},write={}}
 local         rand,rnd
 m.lib.maths= {rand,rnd}
-local         rev,sort,lt,gt,push,map,any,per
-m.lib.lists= {rev,sort,lt,gt,push,map,any,per}
+local         rev,sort,lt,gt,push,map,any,many,per
+m.lib.lists= {rev,sort,lt,gt,push,map,any,many,per}
 local         fmt,chat,cat
 m.lib.print= {fmt,chat,cat}
 local        coerce,cli,words,lines,csv,csv2data
@@ -205,13 +206,17 @@ function around(row1,rows)
              lt"d") end
 
 -- Find two distant rows, then divide data according to its
--- distance to those two rows.
+-- distance to those two rows. To reduce the cost of this search,
+-- only apply it to `some` of the rows (controlled by `the.some`).
+-- If `rowAbove` is supplied,
+-- then use that for one of the two distant items. 
 function half(rows, rowAbove)
   local As,Bs,A,B,c,far,project = {},{}
-  function far(row)     return per(around(row,rows), the.far).row end
+  local some= many(rows,the.some)
+  function far(row)     return per(around(row,some), the.far).row end
   function project(row) return {row=row,
-                                x=(dist(row,A)^2 - c^2 + dist(row,B)^2)/(2*c)} end
-  A= rowAbove or far(any(rows))
+                                x=(dist(row,A)^2 + c^2 - dist(row,B)^2)/(2*c)} end
+  A= rowAbove or far(any(some))
   B= far(A)
   c= dist(A,B) 
   for n,rd in pairs(sort(map(rows, project),lt"x")) do 
@@ -264,8 +269,14 @@ function push(t,x) t[1+#t]=x; return x end
 function map(t,f) 
   local u={}; for _,v in pairs(t) do u[1+#u]=f(v) end; return u end
 
--- Return any item (at random) from list `t`.
+-- Return any item (selected at random) from list `t`.
 function any(t) return t[rand(#t)] end
+
+-- Return `num` items (selected at random) from list `t`.
+-- If `num` is more than the size of the list, return that list, shuffled.
+function many(t,num, u) 
+  if num>#t then return shuffle(t) end
+  u={}; for j=1,num do u[1+#u]= any(t) end; return u end
 
 -- Return the `p`-th item in `t` (assumed to be sorted). e.g.
 -- `per(t,.5)` returns the median.
