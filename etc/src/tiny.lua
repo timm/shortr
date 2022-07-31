@@ -1,118 +1,176 @@
-local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local m={}
-
 ---- ---- ---- ---- Config
-local the = {
-       p=2,
-       bins=7,
-       seed=10019,
-       min=.5,
-       far=.95,
-       files="../../data/auto93.csv"}
-
+local the= { 
+     bins  = 7,
+     far   = .95,
+     files = "../../data/auto93.csv",
+     go    = "nothing",
+     min   = .5,
+     nums  = 512,
+     p     = 2,
+     seed  = 10019
+     }
+---- ---- ---- ---- Names
+-- Trap prior names (for liniting, at end)
+local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
+-- Define this module
+local m={}
+-- Config
 m.config={the}
+-- Lib
+m.lib={maths={},lists={},read={},write={}}
+local         rand,rnd
+m.lib.maths= {rand,rnd}
+local         rev,sort,lt,gt,push,map,any,per
+m.lib.lists= {rev,sort,lt,gt,push,map,any,per}
+local         fmt,chat,cat
+m.lib.print= {fmt,chat,cat}
+local        coerce,cli,words,lines,csv,csv2data
+m.lib.read= {coerce,cli,words,lines,csv,csv2data}
 
----- ---- ---- ---- Types
-local    is,col0,row0,cols0,rows0
-m.types={is,col0,row0,cols0,rows0}
+-- Types
+local       is,COL,ROW,ABOUT,DATA
+m.types=   {is,COL,ROW,ABOUT,DATA}
 
-function is(str,key) 
-  local patterns={num  = "^[A-Z]", 
-                  goal = "[!+-]$", 
-                  klass= "!$", 
-                  skip = ":$", 
-                  less = "-$"}
-  return (str or ""):find(patterns[key]) end
+-- Update methods
+local       add,adds,row,clone
+m.update=  {add,adds,row,clone}
 
-function col0(num,txt)
-  return {n    = 0,
-          at   = num or 0, 
-          txt  = txt or "",
-          nump = is(txt,"num"), 
-          w    = is(txt,"less") and -1 or 1,
-          ok   = false,
-          has = {}} end
+-- Query methods
+local       has,norm,mid,div,stats,better
+m.query=   {has,norm,mid,div,stats,better}
 
-function row0(cols, t)
-  return {cols=cols,cells=t,cooked=t} end
+-- Distance methods
+local       dist,around,far,half,halfsort
+m.dist=    {dist,around,far,half,halfsort}
 
-function cols0(names)
-  local i = {names=names,all={}, x={}, y={}, klass=nil}
-  for at,txt in pairs(names) do 
-    local one = push(i.all, col0(at,txt))
-    if not is(txt,"skip") then
-      push(is(txt,"goal") and i.y or i.x, one)
-      if is(txt,"klass") then i.klass=one end end end 
-  return i end
+-- Startup
+local   go={}
 
-function rows0() return {has={},cols=nil} end
+---- ---- ---- ---- Types
+-- Our CSV files have column names on row1. `is` recognizes column types.
+is={num   = "^[A-Z]",  -- numeric cols start with uppercase
+    goal  = "[!+-]$",  -- !=klass, [+,-]=maximize,minimize
+    klass = "!$",      -- klass if "!"
+    skip  = ":$",      -- skip if ":"
+    less  = "-$"}      -- minimize if "-"
+
+-- Summarize data seen in different columns. 
+function COL(num,txt)
+  txt=txt or ""
+  return {n    = 0,                -- how many items seen?
+          at   = num or 0,         -- position ot column
+          txt  = txt,              -- column header
+          nump = txt:find(is.num), -- is this a number?
+          w    = txt:find(is.less) and -1 or 1,
+          ok   = true,             -- false if some update needed
+          has = {}} end            -- place to keep (some) column values.
+
+-- Holds one record of data
+function ROW(about, t)
+  return {about=about,  -- pointer to background column info 
+          cells=t,      -- raw values
+          cooked=t} end -- where we might store (e.g) discretized values
+
+-- Holds `rows`, summarized in `baout`.
+function DATA() return {rows={},about=nil} end
+
+-- Factory for making columns from column header strings.
+-- Goals and none-gaols are cached in `x` and `y` (ignorong
+-- anything that is `skipped`.
+function ABOUT(strs)
+  local about = {names=strs,all={}, x={}, y={}, klass=nil}
+  for at,txt in pairs(strs) do 
+    local one = push(about.all, COL(at,txt))
+    if not txt:find(is.skip) then
+      push(txt:find(is.goal) and about.y or about.x, one)
+      if txt:find(is.klass) then about.klass=one end end end 
+  return about end
 
 ---- ---- ---- ---- Methods
 ---- ---- ---- Update
-local     add,adds,row,clone
-m.update={add,adds,row,clone}
-
+-- Add something into a `col`. For `nump` cols, keep at most 
+-- `the.nums` (after which, replace old items at random). For
+-- other columns, count how many times we have seen `x`.
 function add(col,x)
   if x ~= "?" then
-   col.n = col.n + 1
-   col.ok = true
-   if col.nump then push(col.has,x); col.ok=false 
-               else col.has[x] = 1 + (col.has[x] or 0) end end end
+    col.n = col.n + 1
+    if   not col.nump 
+    then col.has[x] = 1 + (col.has[x] or 0) 
+    else local pos
+         if     #col.has < the.nums      then pos= (#col.has) + 1 
+         elseif rand() < the.nums/self.n then pos= rand(#col.has) end
+         if pos then 
+           col.ok=false  -- the `kept` list is no longer in sorted order
+           col.has[pos]=x end end end end
 
-function adds(cols,t)
-  t = t.cells and t or row0(cols,t)
-  for _,cols in pairs{cols.x,cols.y} do
-    for _,col in pairs(cols) do add(col, t.cells[col.at]) end end 
-  return t end
+-- Add a row of data across all columns. 
+function adds(about,x)
+  local row = x.cells and x or ROW(about,x) -- ensure that "x" is a row.
+  for _,cols in pairs{about.x,about.y} do
+    for _,col in pairs(cols) do add(col, row.cells[col.at]) end end 
+  return row end
 
-function row(rows,t)
- if   rows.cols 
- then push(rows.has, adds(rows.cols,t))
- else rows.cols = cols0(t) end end
+-- Add a `row` to `data`. If this is top row, use
+-- `t` to initial `data.about`.
+function row(data,t)
+  if   data.about 
+  then push(data.rows, adds(data.about,t))
+  else data.about = ABOUT(t) end end
 
-function clone(rows,t)
-  local new= rows0()
-  row(new, rows.cols.names)
-  for _,row1 in pairs(t or {}) do row(new,row1) end
-  return new end
+-- Copy the structure of `data`. Optionally, add rows of
+-- data (from `t`).
+function clone(data,t)
+  local data1= DATA()
+  row(data1, data.about.names)
+  for _,row1 in pairs(t or {}) do row(data1,row1) end
+  return data1 end
 
 ---- ---- ---- Query
-local    has,norm,mid,div,stats,better
-m.query={has,norm,mid,div,stats,better}
-
+-- Return `col.has`, sorting numerics (if needed).
 function has(col)
-  if not col.ok then table.sort(col.has) end
-  col.ok = true
+  if col.nump and not col.ok then table.sort(col.has); col.ok=true end
   return col.has end
 
-function norm(col,x)
-  local a= has(col)
-  return a[#a] - a[1] < 1E-9 and 0 or (x-a[1])/(a[#a]-a[1]) end
+-- Return `num`, normalized to 0..1 for min..max.
+function norm(col,num)
+  local a= has(col) -- "a" contains all our numbers,  sorted.
+  return a[#a] - a[1] < 1E-9 and 0 or (num-a[1])/(a[#a]-a[1]) end
 
-function mid(col)
+-- Return the central tendency of `col`umns (median/mode for
+-- numerics/other (respectively).
+function mid(col,places)
+  if col.nump then 
+    local median= per(has(col),.5)  
+    return places and rnd(median,places) or median end -- for numerics
   local mode,most= -1,nil
-  if col.nump then return per(has(col),.5)  end
   for x,n in pairs(col.has) do if n>most then mode,most=x,n end end
-  return mode end
+  return mode end -- mode for symbols
 
-function div(col)
+-- Return the diversity of a `col`umns (sd/entropy for
+-- numerics/other (respectively).
+function div(col,places)
+  if col.nump then 
+    local sd = (per(has(col),.9) - per(has(col),.1))/2.58 
+    return places and rnd(sd,places) or sd end
   local ent=0
-  if col.nump then return (per(has(col),.9)-per(has(col),.1))/2.58 end
   for _,n in pairs(col.has) do 
     if n>0 then ent=ent-n/col.n*math.log(n/col.n,2) end end
-  return ent end
+  return places and rnd(ent,places) or ent end 
 
-function stats(rows,places,f,cols,   u)
+-- Returns stats collected across a set of `col`umns (stats
+-- selected by `f`). If `places` omitted, then no nums are rounded.
+-- If `cols` is omitted then report the `y` values.
+function stats(data,f,places,cols,   u)
   f =  f or mid
-  cols = cols or rows.cols.y
-  u={}
-  for k,col in pairs(rows.cols.y) do 
-    u.n=col.n; u[col.txt]=rnd(f(col),places) end; 
+  cols =cols or data.about.y
+  u={}; for k,col in pairs(cols) do 
+    u.n=col.n; u[col.txt]=f(col,places) end; 
   return u end
 
+-- Return true if `row1`'s goals are better than `row2`.
 function better(row1,row2)
   local s1,s2,d,n=0,0,0,0
-  local ys,e = row1.cols.y,math.exp(1)
+  local ys,e = row1.about.y,math.exp(1)
   for _,col in pairs(ys) do
     x,y= row1.cells[col.at], row2.cells[col.at]
     x,y= norm(col,x), norm(col,y)
@@ -121,10 +179,9 @@ function better(row1,row2)
   return s1/#ys < s2/#ys end 
 
 ---- ---- ---- Dist
-local   dist,around,far, halve,semisort
-m.dist={dist,around,far,halve,semisort}
-
-function dist(row1,row2)
+-- Return 0..1 for distance between two rows using `cols`
+-- (and `cols`` defaults to the `x` columns).
+function dist(row1,row2,cols)
   local d,n,x,y,dist1=0,0
   function dist1(col,x,y)    
     if x=="?" and y=="?" then return 1 end
@@ -135,132 +192,191 @@ function dist(row1,row2)
          return math.abs(x-y) 
     else return (x=="?" or y=="?") and 1 or x==y and 0 or 1 end 
   end ---------------
-  for _,col in pairs(row1.cols.x) do
+  cols = cols or row1.about.x
+  for _,col in pairs(cols) do
     x,y = row1.cells[col.at], row2.cells[col.at]
     d = d+dist1(col,x,y)^the.p
     n = n + 1 end
   return (d/n)^(1/the.p) end
 
-function around(r1,t)
-  return sort(map(t,function(r2) return {r=r2,d=dist(r1,r2)} end),lt"d") end
+-- Return all rows  sorted by their distance  to `row`.
+function around(row1,rows)
+  return sort(map(rows, function(row2) return {row=row2,d=dist(row1,row2)} end),
+             lt"d") end
 
-function halve(t,old)
-  local function poles(t,old)
-    local A,B
-    local function far(r1,t) return per(around(r1,t), the.far).r end
-    A= old or far(any(t),t)
-    B= far(A,t)
-    return A,B,dist(A,B) 
-  end ---------------------
-  local A,B,c = poles(t,old)
-  local project=function(r) return {r=r,d=(dist(r,A)^2 - c^2 + dist(r,B)^2)/(2*c)} end
-  local As,Bs = {},{}
-  for n,rd in pairs(sort(map(t, project),lt"d")) do 
-    push(n < #t/2 and Bs or As, rd.r) end
+-- Find two distant rows, then divide data according to its
+-- distance to those two rows.
+function half(rows, rowAbove)
+  local As,Bs,A,B,c,far,project = {},{}
+  function far(row)     return per(around(row,rows), the.far).row end
+  function project(row) return {row=row,
+                                x=(dist(row,A)^2 - c^2 + dist(row,B)^2)/(2*c)} end
+  A= rowAbove or far(any(rows))
+  B= far(A)
+  c= dist(A,B) 
+  for n,rd in pairs(sort(map(rows, project),lt"x")) do 
+    push(n < #rows/2 and As or Bs, rd.row) end
   return A,B,As,Bs,c end
 
-function semisort(t,old,stop,out)
-  stop = stop or (#t)^the.min
-  out  = out or {}
-  if #t < stop then
-    for _,row in pairs(t) do push(out,row) end
-    return out end
-  local A,B,As,Bs = halve(t,old)
-  if better(A,B) then 
-    for _,row in pairs(reverse(Bs)) do push(out,row) end
-    return semisort(reverse(As),A,stop,out)
-  else
-    for _,row in pairs(As) do push(out,row) end
-    return semisort(Bs,B,stop,out) end end 
-
+-- Divide the data, accumulate the worst half, recurse on the rest.
+-- Return the shriving best and the worst. Each returned list is
+-- sorted L to R, best to less.
+function halfsort(rows,rowAbove,stop,worst)
+  stop = stop or (#rows)^the.min
+  worst = worst or {}
+  if   #rows < stop 
+  then return rows,worst -- rows is shriving best
+  else local A,B,As,Bs = half(rows,rowAbove)
+       if better(A,B) then 
+         for _,row in pairs(reverse(Bs)) do push(worst,row) end
+         return halfsort(reverse(As),A,stop,out)
+       else
+         for _,row in pairs(As) do push(worst,row) end
+         return halfsort(Bs,B,stop,out) end end  end
+     
 ---- ---- ---- ---- Library
-m.lib.lists={}
-m.lib.string={}
-m.lib.read={}
-m.lib.write={}
-
-local        rand,rnd
-m.lib.maths={rand,rnd}
-
+---- ---- ---- Maths
+-- Random num
 rand=math.random
-function rnd(x, places)  
-  local mult = 10^(places or 2)
-  return math.floor(x * mult + 0.5) / mult end
 
-local        fmt
-m.lib.print={fmt}
-fmt = string.format
+-- Round nums.
+function rnd(num, places)  
+  local mult = 10^(places or 3)
+  return math.floor(num * mult + 0.5) / mult end
 
+---- ---- ---- Lists
+-- In-place reverse, return reversed list
 function rev(t)
   for i=1, math.floor(#t / 2) do t[i],t[#t-i+1] = t[#t-i+1],t[i] end
   return t end
 
-local sort,lt,gt,push,,map,any
+-- In-place sort,  returns sorted list
 function sort(t,f) table.sort(t,f); return t end
+-- Sorting predictates
 function lt(x) return function(a,b) return a[x] < b[x] end end
 function gt(x) return function(a,b) return a[x] > b[x] end end
 
+-- Add `x` to list `t`, returning `x`.
 function push(t,x) t[1+#t]=x; return x end 
+
+-- Return items in `t` filtered through `f`. If `f` ever returns nil
+-- then the returned list will be shorter.
 function map(t,f) 
   local u={}; for _,v in pairs(t) do u[1+#u]=f(v) end; return u end
 
-function any(a) return a[rand(#a)] end
+-- Return any item (at random) from list `t`.
+function any(t) return t[rand(#t)] end
 
+-- Return the `p`-th item in `t` (assumed to be sorted). e.g.
+-- `per(t,.5)` returns the median.
 function per(t,p) 
   p=math.floor((p*#t)+.5); return t[math.max(1,math.min(#t,p))] end
 
-function coerce(x)
-  x = x:match"^%s*(.-)%s*$" 
-  if x=="true" then return true elseif x=="false" then return false 
-  else return math.tointeger(x) or tonumber(x) or x end  end
+---- ---- ---- Print
+-- Emulate Printf
+fmt = string.format
 
+-- Generate a string from `t` and print it (returning `t`).
 function chat(t) print(cat(t)) return t end 
+-- Generate a string from `t`.
 function cat(t,   show,u)  
   if type(t)~="table" then return tostring(t) end
   function show(k,v) return #t==0 and fmt(":%s %s",k,v) or tostring(v) end
   u={}; for k,v in pairs(t) do u[1+#u]=show(k,v) end
   return (t._is or "").."{"..table.concat(#t==0 and sort(u) or u," ").."}" end
 
-function words(s,sep,fun,      t)
+---- ---- ---- Read
+-- Try reading `str` as a boolean, then int, then float, then string.
+function coerce(str)
+  str = str:match"^%s*(.-)%s*$" 
+  if str=="true" then return true elseif str=="false" then return false 
+  else return math.tointeger(str) or tonumber(str) or str end  end
+
+-- Read update for `slot` of table from command line flag `-s` or `--slot`.
+-- If slot's is a boolean, this code flips old value.
+function cli(t)
+  for slot,v in pairs(t) do
+    v = tostring(v)
+    for n,x in ipairs(arg) do 
+      if x=="-"..(slot:sub(1,1)) or x=="--"..slot then
+        v = v=="false" and "true" or v=="true" and "false" or arg[n+1] end end
+    t[slot] =  coerce(v) end
+  return t end
+
+-- Split  `str` on `sepstr`, filter each part through `fun`, return the resulting list.
+function words(str,sepstr,fun,      t)
   fun = fun or function(z) return z end
-  sep = fmt("([^%s]+)",sep)
-  t={};for x in s:gmatch(sep) do t[1+#t]=fun(x) end;return t end 
+  sepstr = fmt("([^%s]+)",sepstr)
+  t={};for x in str:gmatch(sepstr) do t[1+#t]=fun(x) end;return t end 
 
-function lines(file, fun)
-  local src = io.input(file)
+-- Read lines from `filestr`, closing stream at end. Call `fun` on each line.
+function lines(filestr, fun)
+  local src = io.input(filestr)
   while true do
-    local line = io.read()
-    if not line then return io.close(src) else fun(line) end end end 
+    local str = io.read()
+    if not str then return io.close(src) else fun(str) end end end 
 
-function csv(file, fun)
-  lines(file, 
-    function(line) fun(words(line,",",coerce)) end) end
+-- Read lines from `filestr`, converting each into words, passing that to `fun`.
+function csv(filestr, fun)
+  lines(filestr, 
+    function(t) fun(words(t,",",coerce)) end) end
 
-function csv2rows(file,rows)
-  rows=rows0()
-  csv(file, function(t) row(rows,t) end) 
-  return rows end
+-- Read `filestr` into a DATA object. Return that object.
+function csv2data(filestr,data)
+  data=DATA()
+  csv(filestr, function(t) row(data,t) end) 
+  return data end
 
----- ---- ---- ---- Start
-local go={}
-function go.one(rows1,rows2)
-  rows1=csv2rows("../../data/auto93.csv")
-  print("mid1", cat(stats(rows1,2,mid))) 
-  print("div1", cat(stats(rows1,2,div)))
-  rows2=clone(rows1,rows1.has) 
-  print("mid2", cat(stats(rows2,2,mid))) 
-  print("div2", cat(stats(rows2,2,div)))
+---- ---- ---- ---- Tests
+-- Tests fail if they do not return `true`.
+function go.the() chat(the); return true end
+
+function go.one(data1,data2)
+  data1=csv2data("../../data/auto93.csv")
+  print("mid1", cat(stats(data1,mid,2))) 
+  print("div1", cat(stats(data1,div,2)))
+  data2=clone(data1,data1.rows) 
+  print("mid2", cat(stats(data2,mid,2))) 
+  print("div2", cat(stats(data2,div,2)))
+  return true
   end
 
-function go.dist(rows,row1,row2)
-  rows= csv2rows("../../data/auto93.csv")
+function go.dist(data,row1,row2)
+  data= csv2data("../../data/auto93.csv")
+  chat(data)
+  print(#data.rows)
   for i = 1,20 do
-    row1=any(rows.has)
-    row2=any(rows.has)
-    print(dist(row1,row2)) end end
+    row1=any(data.rows)
+    row2=any(data.rows)
+    print(dist(row1,row2)) end 
+  return true end
 
+---- ---- ---- ---- Start-up
+-- Counter for test failures
+local fails=0
 
-math.randomseed(the.seed)
-go.one()
---go.dist()
-for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end
+-- Run one test. Beforehand, reset random number seed. Afterwards,
+-- reset the settings to whatever they were before the test.
+local function run(str)
+  if type(go[str])=="function" then
+    local saved={};for k,v in pairs(the) do saved[k]=v end
+    math.randomseed(the.seed)
+    if true ~= go[str]() then fails=fails+1; print("FAIL",str) end
+    for k,v in pairs(saved) do the[k]=v end  end end 
+
+-- If this code is being loaded via a `require` statement,
+-- just return the names. 
+if pcall(debug.getlocal,4,1) then
+  return {config=config,types=types,update=update,
+          query=query,dist=dist,lib=lib}
+else
+   -- Else, update the settings from command line.
+   the = cli(the)
+   -- Run the tests.
+   local todo ={}; for k,_ in pairs(go) do push(todo,k) end
+   for _,k in pairs(the.go=="all" and sort(todo) or {the.go}) do run(k) end
+   -- Check for any rogue local variables.
+   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end
+   -- Report back to the operating system how many failures were seen.
+   os.exit(fails)
+end
