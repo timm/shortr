@@ -9,46 +9,54 @@ local the= {
      min   = .5,
      nums  = 512,
      p     = 2,
-     seed  = 10019
+     seed  = 10019,
+     some  = 512
      }
 -- ## Names
 
 
 -- Trap prior names (for liniting, at end)
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
--- Define this module
+--**Define this module**<br>
 local m={}
--- Config
+--**Config**<br>
 m.config={the}
--- Lib
+--**Lib**<br>
+-- Just to explain the following format for my names[ace, 
+-- I like to trap all the locals (to pass them to other
+-- modules) while also having all those names global to
+-- my own code. Hence, you will see some lines with much
+-- similar text
+-- in the following definitions.
+
 m.lib={maths={},lists={},read={},write={}}
 local         rand,rnd
 m.lib.maths= {rand,rnd}
-local         rev,sort,lt,gt,push,map,any,per
-m.lib.lists= {rev,sort,lt,gt,push,map,any,per}
+local         rev,sort,lt,gt,push,map,any,many,per
+m.lib.lists= {rev,sort,lt,gt,push,map,any,many,per}
 local         fmt,chat,cat
 m.lib.print= {fmt,chat,cat}
 local        coerce,cli,words,lines,csv,csv2data
 m.lib.read= {coerce,cli,words,lines,csv,csv2data}
 
--- Types
+--**Types**<br>
 local       is,COL,ROW,ABOUT,DATA
 m.types=   {is,COL,ROW,ABOUT,DATA}
 
--- Update methods
+--**Update methods**<br>
 local       add,adds,row,clone
 m.update=  {add,adds,row,clone}
 
--- Query methods
+--**Query methods**<br>
 local       has,norm,mid,div,stats,better
 m.query=   {has,norm,mid,div,stats,better}
 
--- Distance methods
+--**Distance methods**<br>
 local       dist,around,far,half,halfsort
 m.dist=    {dist,around,far,half,halfsort}
 
--- Startup
-local   go={}
+--**Startup**<br>
+local go={}
 
 -- ## Types
 
@@ -151,29 +159,29 @@ function norm(col,num)
 -- Return the central tendency of `col`umns (median/mode for
 -- numerics/other (respectively).
 function mid(col,places)
-  if col.nump then 
-    local median= per(has(col),.5)  
-    return places and rnd(median,places) or median end -- for numerics
-  local mode,most= -1,nil
-  for x,n in pairs(col.has) do if n>most then mode,most=x,n end end
-  return mode end -- mode for symbols
+  if   col.nump 
+  then local median= per(has(col),.5)  
+       return places and rnd(median,places) or median 
+  else local mode,most= -1,nil
+       for x,n in pairs(col.has) do if n>most then mode,most=x,n end end
+       return mode end end -- mode for symbols
 
 -- Return the diversity of a `col`umns (sd/entropy for
 -- numerics/other (respectively).
 function div(col,places)
-  if col.nump then 
-    local sd = (per(has(col),.9) - per(has(col),.1))/2.58 
-    return places and rnd(sd,places) or sd end
-  local ent=0
-  for _,n in pairs(col.has) do 
-    if n>0 then ent=ent-n/col.n*math.log(n/col.n,2) end end
-  return places and rnd(ent,places) or ent end 
+  local out
+  if   col.nump 
+  then out = (per(has(col),.9) - per(has(col),.1))/2.58 
+  else out = 0
+       for _,n in pairs(col.has) do 
+         if n>0 then out=out-n/col.n*math.log(n/col.n,2) end end end
+  return places and rnd(out,places) or out end 
 
 -- Returns stats collected across a set of `col`umns (stats
 -- selected by `f`). If `places` omitted, then no nums are rounded.
 -- If `cols` is omitted then report the `y` values.
-function stats(data,f,places,cols,   u)
-  f =  f or mid
+function stats(data,   f,places,cols,   u)
+  f = f or mid
   cols =cols or data.about.y
   u={}; for k,col in pairs(cols) do 
     u.n=col.n; u[col.txt]=f(col,places) end; 
@@ -219,13 +227,17 @@ function around(row1,rows)
              lt"d") end
 
 -- Find two distant rows, then divide data according to its
--- distance to those two rows.
-function half(rows, rowAbove)
+-- distance to those two rows. To reduce the cost of this search,
+-- only apply it to `some` of the rows (controlled by `the.some`).
+-- If `rowAbove` is supplied,
+-- then use that for one of the two distant items. 
+function half(rows,  rowAbove)
   local As,Bs,A,B,c,far,project = {},{}
-  function far(row)     return per(around(row,rows), the.far).row end
+  local some= many(rows,the.some)
+  function far(row)     return per(around(row,some), the.far).row end
   function project(row) return {row=row,
-                                x=(dist(row,A)^2 - c^2 + dist(row,B)^2)/(2*c)} end
-  A= rowAbove or far(any(rows))
+                                x=(dist(row,A)^2 + c^2 - dist(row,B)^2)/(2*c)} end
+  A= rowAbove or far(any(some))
   B= far(A)
   c= dist(A,B) 
   for n,rd in pairs(sort(map(rows, project),lt"x")) do 
@@ -235,7 +247,7 @@ function half(rows, rowAbove)
 -- Divide the data, accumulate the worst half, recurse on the rest.
 -- Return the shriving best and the worst. Each returned list is
 -- sorted L to R, best to less.
-function halfsort(rows,rowAbove,stop,worst)
+function halfsort(rows,rowAbove,  stop,worst)
   stop = stop or (#rows)^the.min
   worst = worst or {}
   if   #rows < stop 
@@ -243,10 +255,10 @@ function halfsort(rows,rowAbove,stop,worst)
   else local A,B,As,Bs = half(rows,rowAbove)
        if better(A,B) then 
          for _,row in pairs(reverse(Bs)) do push(worst,row) end
-         return halfsort(reverse(As),A,stop,out)
+         return halfsort(reverse(As),A,stop,worst)
        else
          for _,row in pairs(As) do push(worst,row) end
-         return halfsort(Bs,B,stop,out) end end  end
+         return halfsort(Bs,B,stop,worst) end end  end
      
 -- ## Library
 
@@ -284,8 +296,14 @@ function push(t,x) t[1+#t]=x; return x end
 function map(t,f) 
   local u={}; for _,v in pairs(t) do u[1+#u]=f(v) end; return u end
 
--- Return any item (at random) from list `t`.
+-- Return any item (selected at random) from list `t`.
 function any(t) return t[rand(#t)] end
+
+-- Return `num` items (selected at random) from list `t`.
+-- If `num` is more than the size of the list, return that list, shuffled.
+function many(t,num, u) 
+  if num>#t then return shuffle(t) end
+  u={}; for j=1,num do u[1+#u]= any(t) end; return u end
 
 -- Return the `p`-th item in `t` (assumed to be sorted). e.g.
 -- `per(t,.5)` returns the median.

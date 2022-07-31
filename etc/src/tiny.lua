@@ -13,11 +13,18 @@ local the= {
 ---- ---- ---- ---- Names
 -- Trap prior names (for liniting, at end)
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
--- Define this module
+---- Define this module
 local m={}
--- Config
+---- Config
 m.config={the}
--- Lib
+----  Lib
+-- Just to explain the following format for my names[ace, 
+-- I like to trap all the locals (to pass them to other
+-- modules) while also having all those names global to
+-- my own code. Hence, you will see some lines with much
+-- similar text
+-- in the following definitions.
+
 m.lib={maths={},lists={},read={},write={}}
 local         rand,rnd
 m.lib.maths= {rand,rnd}
@@ -28,23 +35,23 @@ m.lib.print= {fmt,chat,cat}
 local        coerce,cli,words,lines,csv,csv2data
 m.lib.read= {coerce,cli,words,lines,csv,csv2data}
 
--- Types
+---- Types
 local       is,COL,ROW,ABOUT,DATA
 m.types=   {is,COL,ROW,ABOUT,DATA}
 
--- Update methods
+---- Update methods
 local       add,adds,row,clone
 m.update=  {add,adds,row,clone}
 
--- Query methods
+---- Query methods
 local       has,norm,mid,div,stats,better
 m.query=   {has,norm,mid,div,stats,better}
 
--- Distance methods
+---- Distance methods
 local       dist,around,far,half,halfsort
 m.dist=    {dist,around,far,half,halfsort}
 
--- Startup
+---- Startup
 local go={}
 
 ---- ---- ---- ---- Types
