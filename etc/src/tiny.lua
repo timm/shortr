@@ -179,9 +179,13 @@ m.lib.string={}
 m.lib.read={}
 m.lib.write={}
 
-local  rand
-m.lib.maths={rand}
+local        rand,rnd
+m.lib.maths={rand,rnd}
+
 rand=math.random
+function rnd(x, places)  
+  local mult = 10^(places or 2)
+  return math.floor(x * mult + 0.5) / mult end
 
 local        fmt
 m.lib.print={fmt}
@@ -191,6 +195,7 @@ function rev(t)
   for i=1, math.floor(#t / 2) do t[i],t[#t-i+1] = t[#t-i+1],t[i] end
   return t end
 
+local sort,lt,gt,push,,map,any
 function sort(t,f) table.sort(t,f); return t end
 function lt(x) return function(a,b) return a[x] < b[x] end end
 function gt(x) return function(a,b) return a[x] > b[x] end end
@@ -200,9 +205,6 @@ function map(t,f)
   local u={}; for _,v in pairs(t) do u[1+#u]=f(v) end; return u end
 
 function any(a) return a[rand(#a)] end
-function rnd(x, places)  
-  local mult = 10^(places or 2)
-  return math.floor(x * mult + 0.5) / mult end
 
 function per(t,p) 
   p=math.floor((p*#t)+.5); return t[math.max(1,math.min(#t,p))] end
