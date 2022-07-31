@@ -1,19 +1,21 @@
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end 
-local add,adds,any,cat,chat,coerce,csv,csv2rows
-local dist,div,fmt,has,is,lines
-local map,mid,norm,per,push,rand,row,rnd
-local sort,stats,the,words
-local col0,row0,cols0,rows0
+local m={}
 
 ---- ---- ---- ---- Config
-the = {p=2,
+local the = {
+       p=2,
        bins=7,
        seed=10019,
        min=.5,
        far=.95,
        files="../../data/auto93.csv"}
 
+m.config={the}
+
 ---- ---- ---- ---- Types
+local    is,col0,row0,cols0,rows0
+m.types={is,col0,row0,cols0,rows0}
+
 function is(str,key) 
   local patterns={num  = "^[A-Z]", 
                   goal = "[!+-]$", 
@@ -35,7 +37,7 @@ function row0(cols, t)
   return {cols=cols,cells=t,cooked=t} end
 
 function cols0(names)
-  local i = {all={}, x={}, y={}, klass=nil}
+  local i = {names=names,all={}, x={}, y={}, klass=nil}
   for at,txt in pairs(names) do 
     local one = push(i.all, col0(at,txt))
     if not is(txt,"skip") then
@@ -47,6 +49,9 @@ function rows0() return {has={},cols=nil} end
 
 ---- ---- ---- ---- Methods
 ---- ---- ---- Update
+local     add,adds,row,clone
+m.update={add,adds,row,clone}
+
 function add(col,x)
   if x ~= "?" then
    col.n = col.n + 1
@@ -65,7 +70,16 @@ function row(rows,t)
  then push(rows.has, adds(rows.cols,t))
  else rows.cols = cols0(t) end end
 
+function clone(rows,t)
+  local new= rows0()
+  row(new, rows.cols.names)
+  for _,row1 in pairs(t or {}) do row(new,row1) end
+  return new end
+
 ---- ---- ---- Query
+local    has,norm,mid,div,stats,better
+m.query={has,norm,mid,div,stats,better}
+
 function has(col)
   if not col.ok then table.sort(col.has) end
   col.ok = true
@@ -107,6 +121,9 @@ function better(row1,row2)
   return s1/#ys < s2/#ys end 
 
 ---- ---- ---- Dist
+local   dist,around,far, halve,semisort
+m.dist={dist,around,far,halve,semisort}
+
 function dist(row1,row2)
   local d,n,x,y,dist1=0,0
   function dist1(col,x,y)    
@@ -151,18 +168,28 @@ function semisort(t,old,stop,out)
   local A,B,As,Bs = halve(t,old)
   if better(A,B) then 
     for _,row in pairs(reverse(Bs)) do push(out,row) end
-    return semisort(As,A,stop,out)
+    return semisort(reverse(As),A,stop,out)
   else
     for _,row in pairs(As) do push(out,row) end
     return semisort(Bs,B,stop,out) end end 
 
 ---- ---- ---- ---- Library
+m.lib.lists={}
+m.lib.string={}
+m.lib.read={}
+m.lib.write={}
+
+local  rand
+m.lib.maths={rand}
 rand=math.random
+
+local        fmt
+m.lib.print={fmt}
 fmt = string.format
+
 function rev(t)
   for i=1, math.floor(#t / 2) do t[i],t[#t-i+1] = t[#t-i+1],t[i] end
   return t end
-
 
 function sort(t,f) table.sort(t,f); return t end
 function lt(x) return function(a,b) return a[x] < b[x] end end
@@ -214,20 +241,24 @@ function csv2rows(file,rows)
 
 ---- ---- ---- ---- Start
 local go={}
-function go.one(rows1)
+function go.one(rows1,rows2)
   rows1=csv2rows("../../data/auto93.csv")
-  chat(stats(rows1,2,mid)) 
-  chat(stats(rows1,2,div)) end
+  print("mid1", cat(stats(rows1,2,mid))) 
+  print("div1", cat(stats(rows1,2,div)))
+  rows2=clone(rows1,rows1.has) 
+  print("mid2", cat(stats(rows2,2,mid))) 
+  print("div2", cat(stats(rows2,2,div)))
+  end
 
 function go.dist(rows,row1,row2)
   rows= csv2rows("../../data/auto93.csv")
-  for i = 1,100 do
+  for i = 1,20 do
     row1=any(rows.has)
     row2=any(rows.has)
-    print(dist(row1,row2)) end
-end
+    print(dist(row1,row2)) end end
+
 
 math.randomseed(the.seed)
 go.one()
-go.dist()
+--go.dist()
 for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end
