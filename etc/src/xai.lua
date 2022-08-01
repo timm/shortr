@@ -1,21 +1,22 @@
 -- For simple XAI (explainable AI), try a little sampling theory and a
 -- little learning.
 --
--- For example, here, at probability _P_, we find _q_
+-- For example, if we apply a sorting heuristic to data, we can binary
+-- chop our way down to good solutions. Assuming such chops, 
+--  at probability _P_, we find _q_
 -- percent "best" items (where "best" is
 -- defined by the Zitzler's multi-objective indicator) using
 -- `n=log2(log(1-P)/log(1-q))` samples. e.g. the 5% best within 10,000 samples
--- is hunted down using less than n=10 samples. We then build a little decision tree
--- (after some supervised descretization) that explains the delta between best
--- and rest.
---  
+-- is hunted down using less than n=10 samples.  Sounds too good to be true?
+-- Well lets check.
+--     
 -- This code starts with a config variable (`the`)
 -- and ends with a library of demos (see the `go` functions at end of file).
 -- Each setting can be (optionally) updated by a command-line flag.
 -- Demos can be run separately or  all at once (using `-g all`).
---   For regression tests, we report the failures seen when the demos run.
+-- For regression tests, we report the failures seen when the demos run.
 --    
--- <img src="abc.png" width=200 align=left>
+-- <img src="xai4.jpeg" width=200 align=left>
 --    
 -- This code makes extensive use of a DATA object.  Data from disk
 -- becomes a DATA. DATA  are recursive bi-clustered by partitioning on
@@ -36,15 +37,16 @@ local the= {
               when = 2022,
               copyright = "BSD-2 clause license",
               how  = "USAGE: lua xai.lua -[bFfgmnpsS] [arg]"},
-     bins   = 16,
-     Far    = .95,
+     balance= 4,        -- ratio rest:best for learning
+     bins   = 16,       -- initial #bins  (before merging)
+     Far    = .95,      -- how far to look for distant pole (in "far")
      files  = "../../data/auto93.csv",
-     go     = "nothing",
-     min    = .5,
-     ratios = 512,
-     p      = 2,
-     seed   = 10019,
-     Some   = 512
+     go     = "nothing", -- start up action
+     min    = .5,        -- cluster down to N^min groupings
+     ratios = 512,       -- max sample size in RATIO coluns
+     p      = 2,         -- distance coeffecient (and p=2 is Euclidean)
+     seed   = 10019,     -- random number seed
+     Some   = 512        -- how many rows to explore (in "far") 
      }
 ---- ---- ---- ---- Names
 ---- Cache names known `b4` we start
@@ -52,46 +54,31 @@ local the= {
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
----- Define this module
-local Tiny={}
----- Config
-Tiny.config={the}
-----  Lib
--- Just to explain the following format for my names[ace,
--- I like to trap all the locals (to pass them to other
--- modules) while also having all those names global to
--- my own code. Hence, you will see some lines with much
--- similar text
--- in the following definitions.
-
-Tiny.lib={maths={},lists={},read={},write={}}
-local            rand,rnd
-Tiny.lib.maths= {rand,rnd}
-local            rev,shuffle,slice,sort,lt,gt,push,map,any,many,per
-Tiny.lib.lists= {rev,shuffle,slice,sort,lt,gt,push,map,any,many,per}
-local            fmt,chat,cat
-Tiny.lib.print= {fmt,chat,cat}
-local           coerce,cli,words,lines,csv,csv2data
-Tiny.lib.read= {coerce,cli,words,lines,csv,csv2data}
-
 ---- Types
-local          is,COL,RATIO,NOM,ROW,ABOUT,DATA
-Tiny.types=   {is,COL,RATIO,NOM,ROW,ABOUT,DATA}
-
----- Update methods
-local          add,adds,row,clone
-Tiny.update=  {add,adds,row,clone}
-
----- Query methods
-local          has,norm,mid,div,stats,better
-Tiny.query=   {has,norm,mid,div,stats,better}
-
----- Distance methods
-local          dist,around,far,half,halfsort
-Tiny.dist=    {dist,around,far,half,halfsort}
-
+local ABOUT,COL,DATA,NOM,RATIO,ROW,XY,
+---- learning functions
+     around,bins,clone,half,has,add,adds,
+     better ,coerce,csv2data,dist,div,
+     halfsort, is, many,mid,norm,
+     row, stats,
+---- General functions
+     any,cat,chat,cli,csv,fmt,gt,
+     lines,lt,map,per,push,
+     rand,rev,rnd,same,shuffle, slice,sort,words
 ---- Startup
 local go={}
+
+---- This module
+local XAI= {
+      the=the, rogues=rogues, go=go,
+      ABOUT=ABOUT,COL=COL,DATA=DATA,NOM=NOM,RATIO=RATIO,ROW=ROW,XY=XY, 
+      around=around,bins=bins,clone=clone,half=half,has=has,add=add,adds=adds,
+      better=better,coerce=coerce,csv2data=csv2data,dist=dist,div=div,
+      halfsort=halfsort, is=is, many=many,mid=mid,norm=norm,
+      row=row, stats=stats,
+      any=any,cat=cat,chat=chat,cli=cli,csv=csv,fmt=fmt,gt=gt,
+      lines=lines,lt=lt,map=map,per=per,push=push,
+      rand=rand,rev=rev,rnd=rnd,same=same,shuffle=shuffle, slice,sort,words}
 
 ---- ---- ---- ---- Types
 -- In this code,  function arguments offer some type hints. 
@@ -101,14 +88,16 @@ local go={}
 -- with UPPER CASE names. Any argument with spaces before it is optional.
 -- Any arguments with more than two spaces before it are local vals (so don't use those).
 
--- Our CSV files have column names on row1. `is` recognizes column types.
+-- **`is` recognizes column types.**  
+-- These column types appear in first row of our  CSV files.
 is={nom   = "^[a-z]",  -- nominal cols start with lowercase
     goal  = "[!+-]$",  -- !=klass, [+,-]=maximize,minimize
     klass = "!$",      -- klass if "!"
     skip  = ":$",      -- skip if ":"
     less  = "-$"}      -- minimize if "-"
 
--- COLs summarize values seen in different columns. If `txt` is
+-- **COLs summarize values seen in different columns.**   
+--  If `txt` is
 -- omitted,
 -- COL returns a "ratio" column that handles nominals (and this
 -- can be overridden with an lowercase `txt` name).
@@ -123,22 +112,23 @@ function COL(str,int)
           ok   = true,             -- false if some update needed
           has  = {}} end           -- place to keep (some) column values.
 
--- RATIO are special COLs that handle ratios.    
--- NOM are special COLs that handle nominals.
+-- **RATIO are special COLs that handle ratios.**      
+-- **NOM are special COLs that handle nominals.**
 function RATIO(str,int,   i) i=COL(str,int); i.nomp=false; return i end
 function NOM(txt,  int,   i) i=COL(str,int); i.nomp=true;  return i end
 
--- ROW holds one record of data
+-- **ROW holds one record of data.**
 function ROW(about, t)
   return {_is="ROW",
           _about=about,  -- pointer to background column info
           cells=t,      -- raw values
-          cooked=t} end -- where we might store (e.g) discretized values
+          cooked=map(t,same)} end -- for (e.g) discretized values
 
--- DATA holds many `ROWs`, whose values are summarized in `ABOUT`.
+-- **DATA holds many `ROWs`**   
+--  whose values are summarized in `ABOUT`.
 function DATA() return {_is="DATA", rows={}, about=nil} end
 
--- ABOUT is a factory for making columns from column header strings.
+-- **ABOUT is a factory for making columns from column header strings.**  
 -- Goals and none-gaols are cached in `x` and `y` (ignorong
 -- anything that is `skipped`.
 function ABOUT(strs)
@@ -150,7 +140,7 @@ function ABOUT(strs)
       if txt:find(is.klass) then about.klass=one end end end
   return about end
 
--- XY summarize data from the same rows from two columns.    
+-- **XY summarize data from the same rows from two columns.**   
 -- `num2` is optional (defaults to `num1`).   
 -- `y` is optional (defaults to a new NOM)
 function XY(txt,at,num1,num2,nom)
@@ -163,7 +153,8 @@ function XY(txt,at,num1,num2,nom)
 
 ---- ---- ---- ---- Functions for Types
 ---- ---- ---- Update
--- Add something into a `col`. For `nomp` cols, keep a count
+-- **Add something into one `col`.**  
+-- For `nomp` cols, keep a count
 -- of how many times we have seen `x'. For other ratio columns,
 -- keep at most `the.ratios` (after which, replace old items at random).   
 -- `incnom` is optional (it is  little hack used during 
@@ -177,27 +168,32 @@ function add(col,x,  inc)
     then col.has[x] = inc + (col.has[x] or 0)
     else local pos
          if     #col.has < the.ratios      then pos= (#col.has) + 1
-         elseif rand() < the.ratios/self.n then pos= rand(#col.has) end
+         elseif rand() < the.ratios/col.n then pos= rand(#col.has) end
          if pos then
            col.ok=false  -- the `kept` list is no longer in sorted order
            col.has[pos]=x end end end end
 
--- Add a row of data across all columns.
+-- **Add a row of values, across all columns.**    
+-- This code implements _row sharing_; i.e. once a row is created,
+-- it is shared across many DATAs. This means that (e.g.) distance 
+-- calcs are normalized across the whole space and not specific sub-spaces.
+-- To disable that, change line one of this function to   
+-- `local row = ROW(about,x.cells and x.cells or x)` 
 function adds(about,x)
   local row = x.cells and x or ROW(about,x) -- ensure that "x" is a row.
   for _,cols in pairs{about.x,about.y} do
     for _,col in pairs(cols) do add(col, row.cells[col.at]) end end
   return row end
 
--- Add a `row` to `data`. If this is top row, use
--- `t` to initial `data.about`.
+-- **Add a `row` to `data`.**   
+-- If this is top row, use `t` to initial `data.about`.
 function row(data,t)
-  if   data.about
+  if   data.about  -- not first row
   then push(data.rows, adds(data.about,t))
   else data.about = ABOUT(t) end end
 
--- Copy the structure of `data`. Optionally, add rows of
--- data (from `t`).
+-- **Copy the structure of `data`.**    
+-- Optionally, add rows of data (from `t`).
 function clone(data,t)
   local data1= DATA()
   row(data1, data.about.names)
@@ -205,19 +201,19 @@ function clone(data,t)
   return data1 end
 
 ---- ---- ---- Query
--- Return `col.has`, sorting numerics (if needed).
+-- **Return `col.has`, sorting numerics (if needed).**
 function has(ratio)
   if not ratio.nomp and not ratio.ok then 
     table.sort(ratio.has); ratio.ok=true end
   return ratio.has end
 
--- Return `num`, normalized to 0..1 for min..max.
+-- **Return `num`, normalized to 0..1 for min..max.**
 function norm(ratio,num)
   local a= has(ratio) -- "a" contains all our numbers,  sorted.
   return a[#a] - a[1] < 1E-9 and 0 or (num-a[1])/(a[#a]-a[1]) end
 
--- Return the central tendency of `col`umns (median/mode for
--- ratios/nominals (respectively).
+-- **Return the central tendency of `col`umns**  
+--  (median/mode for ratios/nominals (respectively).
 function mid(col,places)
   if   col.nomp
   then local mode,most= nil,-1
@@ -226,8 +222,8 @@ function mid(col,places)
   else local median= per(has(col),.5)
        return places and rnd(median,places) or median end end
 
--- Return the diversity of a `col`umns (sd/entropy for
--- ratios/nominals (respectively).
+-- **Return the `div`ersity of a `col`umns**   
+-- (sd/entropy for ratios/nominals (respectively).
 function div(col,places)
   local out
   if   col.nomp
@@ -237,8 +233,9 @@ function div(col,places)
   else out = (per(has(col),.9) - per(has(col),.1))/2.58 end
   return places and rnd(out,places) or out end 
 
--- Returns stats collected across a set of `col`umns (stats
--- selected by `f`). If `places` omitted, then no nums are rounded.
+-- **Returns stats collected across a set of `col`umns**   
+--  Stats
+-- selected by `f`. If `places` omitted, then no nums are rounded.
 -- If `cols` is omitted then report the `y` values.
 function stats(data,   f,places,cols,   u)
   f = f or mid
@@ -247,7 +244,7 @@ function stats(data,   f,places,cols,   u)
     u.n=col.n; u[col.txt]=f(col,places) end;
   return u end
 
--- Return true if `row1`'s goals are better than `row2`.
+-- **Return true if `row1`'s goals are better than `row2`.**
 function better(row1,row2)
   local s1,s2,d,n,x,y=0,0,0,0
   local ys,e = row1._about.y,math.exp(1)
@@ -316,52 +313,57 @@ function halfsort(rows,  rowAbove,          stop,worst)
        else return halfsort(Bs,B,stop,worst or As) end end end
 
 ---- ---- ---- Discretization
-
 function bins(rows,col)
   local function merged(xy1,xy2, minnum)
-    local i,j= xy1,xy2
+    local i,j= xy1.y, xy2.y
     local k = NOM(i.txt, i.at)
     for x,n in pairs(i.has) do add(k,x,n) end
     for x,n in pairs(j.has) do add(k,x,n) end
     if i.n < minnum or j.n < minnum or 
        div(k) <= (i.n*div(i) + j.n*div(j))/k.n 
-    then return XY(i.txt,i.at, i.xlo, j.xhi, k) end 
+    then return XY(col.txt,col.at, xy1.xlo, xy2.xhi, k) end 
   end -------------------------------------
-  local function where(ratio,     a,b,lo,hi)
-    a = has(ratio)
+  local function where(num,     a,b,lo,hi)
+    a = has(col)
     lo,hi = a[1], a[#a]
     b = (hi - lo)/the.bins
-    return hi==lo and 1 or math.floor(x/b+.5)*b 
+    return hi==lo and 1 or math.floor(num/b+.5)*b 
   end -------------------
   local function merges(xys0,minnum) 
     local n,xys1 = 1,{}
     while n <= #xys0 do
-      local merged = n<#xys0 and merged(xys0[n], xys0[n+1],minnum) 
-      xys1[#xys1+1]  = merged or xys0[n]
-      n            = n + (merged and 2 or 1) -- if merged, skip next bin
+      local merged  = n<#xys0 and merged(xys0[n], xys0[n+1],minnum) 
+      xys1[#xys1+1] = merged or xys0[n]
+      n             = n + (merged and 2 or 1) -- if merged, skip next bin
     end -- end while
     if #xys1 < #xys0 -- seek other things to merge
     then return merges(xys1,minnum) 
     else -- grow to plus/minus infinity
-         xys1[1].lo, xys1[#xys1].hi = -math.huge,math.huge 
+         xys1[1].xlo, xys1[#xys1].xhi = -math.huge,math.huge 
+         for n=2,#xys1 do -- fill in gaps between ranges
+           xys1[n].xlo = xys1[n-1].xhi end
          return xys1  end
   end ------------------
-  local n,dict,lists = 0,{},{}
+  local n,dict,list = 0,{},{}
   for _,row in pairs(rows) do
     local v = row.cells[col.at]
     if v ~= "?" then
       n=n+1
-      local bin = col.nomp and v or where(col,v) or v
+      local bin = col.nomp and v or where(v) or v
       dict[bin] = dict[bin] or push(list, XY(col.txt,col.at,v))
       local it  = dict[bin]
       it.xlo = math.min(v,it.xlo)
       it.xhi = math.max(v,it.xhi)
-      add(it.y, y.label) end end
-  list = sort(list,lt"lo")
-  return col.nomp and list or merges(list, n^the.min) end
+      add(it.y, row.label) end end
+  list = sort(list,lt"xlo")
+  list = col.nomp and list or merges(list, n^the.min)
+  return #list > 1 and list or {} end
 
 
 ---- ---- ---- ---- General Functions
+---- ---- ---- Misc
+function same(x) return x end
+
 ---- ---- ---- Maths
 -- Random num
 rand=math.random
@@ -456,38 +458,32 @@ function cli(t)
     t[slot] =  coerce(v) end
   return t end
 
--- Split  `str` on `sepstr`, filter each part through `fun`, return the resulting list.
-function words(str,sepstr,fun,      t)
+-- Split  `str` on `sep`, filter each part through `fun`, return the resulting list.
+function words(str,sep,fun,      t)
   fun = fun or function(z) return z end
-  sepstr = fmt("([^%s]+)",sepstr)
-  t={};for x in str:gmatch(sepstr) do t[1+#t]=fun(x) end;return t end
+  sep = fmt("([^%s]+)",sep)
+  t={};for x in str:gmatch(sep) do t[1+#t]=fun(x) end;return t end
 
 -- Read lines from `filestr`, closing stream at end. Call `fun` on each line.
-function lines(filestr, fun)
-  local src = io.input(filestr)
+function lines(filename, fun)
+  local src = io.input(filename)
   while true do
     local str = io.read()
     if not str then return io.close(src) else fun(str) end end end
 
 -- Read lines from `filestr`, converting each into words, passing that to `fun`.
-function csv(filestr, fun)
-  lines(filestr,
-    function(t) fun(words(t,",",coerce)) end) end
+function csv(filename, fun)
+  lines(filename, function(t) fun(words(t,",",coerce)) end) end
 
--- Read `filestr` into a DATA object. Return that object.
-function csv2data(filestr,data)
+-- Read `filename` into a DATA object. Return that object.
+function csv2data(filename,data)
   data=DATA()
-  csv(filestr, function(t) row(data,t) end)
+  csv(filename, function(t) row(data,t) end)
   return data end
 
 ---- ---- ---- ---- Tests
 -- Tests fail if they do not return `true`.
 function go.the() chat(the); return true end
-
-function go.ratio(    r)
-  r=RATIO()
-  for i=1,100 do add(r,i) end
-  return 50==mid(r) and 31.01==rnd(div(r),2)  end
 
 function go.nom(   n)
   n=NOM()
@@ -495,6 +491,13 @@ function go.nom(   n)
     for _,x in pairs{"a","a","a","a","b","b","c"} do
       add(n,x) end end
   return "a"==mid(n) and 1.38==rnd(div(n),2) end
+
+function go.ratio(    r)
+  r=RATIO()
+  the.ratios=32
+  for i=1,100 do add(r,i) end
+  chat(has(r))
+  return 50==mid(r) and 31.01==rnd(div(r),2)  end
 
 function go.about()
   map(  ABOUT{"Clndrs","Volume","Hp:","Lbs-",
@@ -536,14 +539,28 @@ function go.half(   data)
   chat(B)
   return true end
 
-function go.halfsort(   data,data1,data2,best,rest)
+function go.halfsort(   data,data1,data2,best,rest0,rest)
   data= csv2data("../../data/auto93.csv")
-  best,rest = halfsort(data.rows)
+  best,rest0 = halfsort(data.rows)
+  rest = many(rest0, #best*4)
   data1=clone(data, best)
   data2=clone(data, rest)
   map({stats(data1),stats(data2)},chat) 
   return true end
-  
+
+function go.bins(   data,data1,data2,best,rest0,rest)
+  local data= csv2data("../../data/auto93.csv")
+  local best,rest0 = halfsort(data.rows)
+  local rest = many(rest0, #best*the.balance)
+  local rows ={}
+  for _,row in pairs(rest) do push(rows,row).label="rest" end
+  for _,row in pairs(best) do push(rows,row).label="best" end
+  for _,col in pairs(data.about.x) do
+    print("")
+    map(bins(rows,col),
+        function(xy) print(xy.txt,xy.xlo,xy.xhi, cat(xy.y.has)) end) end
+  return true end
+   
 ---- ---- ---- ---- Start-up
 -- Counter for test failures
 local fails=0
@@ -557,18 +574,12 @@ local function run(str)
     if true ~= go[str]() then fails=fails+1; print("FAIL",str) end
     for k,v in pairs(saved) do the[k]=v end  end end
 
--- If this code is being loaded via a `require` statement,
--- just return the names.
-if pcall(debug.getlocal,4,1) then
-  return Tiny
-else
-   -- Else, update the settings from command line.
-   the = cli(the)
-   -- Run the tests.
-   local todo ={}; for k,_ in pairs(go) do push(todo,k) end
+if pcall(debug.getlocal,4,1) then -- If code loaded via a `require` statement,
+  return XAI                      -- Then just return the names.
+else                              -- Else...
+   the = cli(the)                                           -- update settings
+   local todo ={}; for k,_ in pairs(go) do push(todo,k) end -- Run tests.
    for _,k in pairs(the.go=="all" and sort(todo) or {the.go}) do run(k) end
-   -- Check for any rogue local variables.
-   rogues()
-   -- Report back to the operating system how many failures were seen.
-   os.exit(fails)
+   rogues()       -- Check for rogue local.
+   os.exit(fails) -- Report failures were seen.
 end
