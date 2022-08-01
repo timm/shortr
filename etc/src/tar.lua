@@ -191,7 +191,7 @@ function bins(rows,col)
     now[1].lo, now[#now].hi = -big,big            -- grow to plus/minus infinity
     return now 
   end -------- 
-  local n,dict,lists,symp = 0,{},{}, col."_is"== "SYM"
+  local n,dict,lists,symp = 0,{},{}, col._is== "SYM"
   for _,row in pairs(rows) do
     local v = row.raw[col.at]
     if v ~= "?" then
