@@ -300,17 +300,17 @@ function half(rows,  rowAbove)
   return A,B,As,Bs,c end
 
 -- Divide the data, recursing into the best half. Keep the
--- _first_ non-best half (as an example of _worst_). Return the
+-- _first_ non-best half (as _worst_). Return the
 -- final best and the first worst (so the best best and the worst
 -- worst).
-function halfsort(rows,  rowAbove,          stop,worst)
+function bestOrRest(rows,  rowAbove,          stop,worst)
   stop = stop or (#rows)^the.min
   if   #rows < stop
   then return rows,worst or {} -- rows is shriving best
   else local A,B,As,Bs = half(rows,rowAbove)
-       if better(A,B)
-       then return halfsort(As,A,stop,worst or Bs)
-       else return halfsort(Bs,B,stop,worst or As) end end end
+       if   better(A,B)
+       then return bestOrRest(As,A,stop,worst or Bs)
+       else return bestOrRest(Bs,B,stop,worst or As) end end end
 
 ---- ---- ---- Discretization
 function bins(rows,col)
@@ -318,7 +318,8 @@ function bins(rows,col)
     a = has(col)
     lo,hi = a[1], a[#a]
     b = (hi - lo)/the.bins
-    return hi==lo and 1 or math.floor(num/b+.5)*b end
+    return hi==lo and 1 or math.floor(num/b+.5)*b 
+  end ----------------------------------
   local function merged(xy1,xy2, minnum)
     local i,j= xy1.y, xy2.y
     local k = NOM(i.txt, i.at)
@@ -326,18 +327,19 @@ function bins(rows,col)
     for x,n in pairs(j.has) do add(k,x,n) end
     if i.n < minnum or j.n < minnum or 
        div(k) <= (i.n*div(i) + j.n*div(j))/k.n 
-    then return XY(col.txt,col.at, xy1.xlo, xy2.xhi, k) end end 
+    then return XY(col.txt,col.at, xy1.xlo, xy2.xhi, k) end 
+  end ----------------------------- 
   local function fillInTheGaps(xys)
     xys[1].xlo, xys[#xys].xhi = -math.huge,math.huge 
     for n=2,#xys do xys[n].xlo = xys[n-1].xhi end
-    return xys end
+    return xys 
+  end ------------------------------
   local function merges(xys0,minnum) 
     local n,xys1 = 1,{}
     while n <= #xys0 do
       local merged  = n<#xys0 and merged(xys0[n], xys0[n+1],minnum) 
       xys1[#xys1+1] = merged or xys0[n]
-      n             = n + (merged and 2 or 1) -- if merged, skip next bin
-    end -- end while
+      n = n + (merged and 2 or 1) end -- if merged, skip next bin
     return #xys1 < #xys0 and merges(xys1,minnum) or fillInTheGaps(xys1) 
   end ------------------------
   local n,dict,list = 0,{},{}
@@ -354,6 +356,22 @@ function bins(rows,col)
   list = sort(list,lt"xlo")
   return col.nomp and list or merges(list, n^the.min) end
 
+---- ---- ---- Rules
+function delta(data)
+    best,rest)
+  local rest = many(rest, #best*the.balance)
+  local rows ={}
+  for _,row in pairs(rest) do push(rows,row).label="rest" end
+  for _,row in pairs(best) do push(rows,row).label="best" end
+  best = nil
+  for _,col in pairs(data.about.x) do
+    tmp = bins(rows,col)
+    if #tmp>1 then 
+      for _,xy in pairs(tmp) do
+        score=div(xy.y.has) * xy.y.n/#rows
+        if score > best then
+           out,best = xy,score end end end end end 
+ 
 ---- ---- ---- ---- General Functions
 ---- ---- ---- Misc
 function same(x) return x end
@@ -533,9 +551,9 @@ function go.half(   data)
   chat(B)
   return true end
 
-function go.halfsort(   data,data1,data2,best,rest0,rest)
+function go.bestOrRest(   data,data1,data2,best,rest0,rest)
   data= csv2data("../../data/auto93.csv")
-  best,rest0 = halfsort(data.rows)
+  best,rest0 = bestOrRest(data.rows)
   rest = many(rest0, #best*4)
   data1=clone(data, best)
   data2=clone(data, rest)
@@ -544,7 +562,7 @@ function go.halfsort(   data,data1,data2,best,rest0,rest)
 
 function go.bins(   data,data1,data2,best,rest0,rest)
   local data= csv2data("../../data/auto93.csv")
-  local best,rest0 = halfsort(data.rows)
+  local best,rest0 = bestOrRest(data.rows)
   local rest = many(rest0, #best*the.balance)
   local rows ={}
   for _,row in pairs(rest) do push(rows,row).label="rest" end
