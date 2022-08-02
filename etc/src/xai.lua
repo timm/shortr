@@ -314,6 +314,11 @@ function halfsort(rows,  rowAbove,          stop,worst)
 
 ---- ---- ---- Discretization
 function bins(rows,col)
+  local function where(num,     a,b,lo,hi)
+    a = has(col)
+    lo,hi = a[1], a[#a]
+    b = (hi - lo)/the.bins
+    return hi==lo and 1 or math.floor(num/b+.5)*b end
   local function merged(xy1,xy2, minnum)
     local i,j= xy1.y, xy2.y
     local k = NOM(i.txt, i.at)
@@ -321,14 +326,11 @@ function bins(rows,col)
     for x,n in pairs(j.has) do add(k,x,n) end
     if i.n < minnum or j.n < minnum or 
        div(k) <= (i.n*div(i) + j.n*div(j))/k.n 
-    then return XY(col.txt,col.at, xy1.xlo, xy2.xhi, k) end 
-  end -------------------------------------
-  local function where(num,     a,b,lo,hi)
-    a = has(col)
-    lo,hi = a[1], a[#a]
-    b = (hi - lo)/the.bins
-    return hi==lo and 1 or math.floor(num/b+.5)*b 
-  end -------------------
+    then return XY(col.txt,col.at, xy1.xlo, xy2.xhi, k) end end 
+  local function fillInTheGaps(xys)
+    xys[1].xlo, xys[#xys].xhi = -math.huge,math.huge 
+    for n=2,#xys do xys[n].xlo = xys[n-1].xhi end
+    return xys end
   local function merges(xys0,minnum) 
     local n,xys1 = 1,{}
     while n <= #xys0 do
@@ -336,14 +338,8 @@ function bins(rows,col)
       xys1[#xys1+1] = merged or xys0[n]
       n             = n + (merged and 2 or 1) -- if merged, skip next bin
     end -- end while
-    if #xys1 < #xys0 -- seek other things to merge
-    then return merges(xys1,minnum) 
-    else -- grow to plus/minus infinity
-         xys1[1].xlo, xys1[#xys1].xhi = -math.huge,math.huge 
-         for n=2,#xys1 do -- fill in gaps between ranges
-           xys1[n].xlo = xys1[n-1].xhi end
-         return xys1  end
-  end ------------------
+    return #xys1 < #xys0 and merges(xys1,minnum) or fillInTheGaps(xys1) 
+  end ------------------------
   local n,dict,list = 0,{},{}
   for _,row in pairs(rows) do
     local v = row.cells[col.at]
@@ -356,9 +352,7 @@ function bins(rows,col)
       it.xhi = math.max(v,it.xhi)
       add(it.y, row.label) end end
   list = sort(list,lt"xlo")
-  list = col.nomp and list or merges(list, n^the.min)
-  return #list > 1 and list or {} end
-
+  return col.nomp and list or merges(list, n^the.min) end
 
 ---- ---- ---- ---- General Functions
 ---- ---- ---- Misc
@@ -555,6 +549,7 @@ function go.bins(   data,data1,data2,best,rest0,rest)
   local rows ={}
   for _,row in pairs(rest) do push(rows,row).label="rest" end
   for _,row in pairs(best) do push(rows,row).label="best" end
+  for _,row in pairs(rows) do chat(row.cells) end
   for _,col in pairs(data.about.x) do
     print("")
     map(bins(rows,col),
