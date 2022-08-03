@@ -366,7 +366,8 @@ function bins(rows,col)
     while n <= #xys0 do
       local merged  = n<#xys0 and merged(xys0[n], xys0[n+1]) 
       xys1[#xys1+1] = merged or xys0[n]
-      n = n + (merged and 2 or 1) end -- if merged, skip next bin
+      n = n + (merged and 2 or 1) -- if merged, skip next bin
+    end 
     return #xys0 == #xys1 and xys0 or merges(xys1) end
 
   -- Main code. Divide column values into many bins, then maybe merge them.   
@@ -382,7 +383,8 @@ function bins(rows,col)
       local it  = dict[bin]
       it.xlo = math.min(v,it.xlo)
       it.xhi = math.max(v,it.xhi)
-      add(it.y, row.label) end end
+      add(it.y, row.label) end 
+  end
   list = sort(list,lt"xlo")
   nMin=n^the.min
   return col.isNom and list or fillInTheGaps(merges(list)) end
