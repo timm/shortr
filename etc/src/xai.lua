@@ -32,6 +32,7 @@
 -- distance objects).
 -- 
 -- convenntions "is" [refix is a bookeam. "n" is a number, sprefix=string
+-- _ prefix means internal function
 local the= {
      about ={ what = "XAI.LUA",
               why  = "Multi-objective semi-supervised explanation",
@@ -280,12 +281,35 @@ function around(row1,rows)
   return sort(map(rows, function(row2) return {row=row2,d=dist(row1,row2)} end),
              lt"d") end
 
+---- ---- ---- Clustering
 -- Find two distant rows, then divide data according to its
 -- distance to those two rows. To reduce the cost of this search,
 -- only apply it to `some` of the rows (controlled by `the.Some`).
 -- If `rowAbove` is supplied,
 -- then use that for one of the two distant items.
-function half(rows,  rowAbove)
+local half={}
+function half.splits(rows)
+  local best,rest0 = half._recurse(rows)
+  local rest = many(rest0, #best*the.Balance)
+  local both = {}
+  for _,row in pairs(rest) do push(both,row).label="rest" end
+  for _,row in pairs(best) do push(both,row).label="best" end
+  return best,rest,both end
+
+-- Divide the data, recursing into the best half. Keep the
+-- _first_ non-best half (as _worst_). Return the
+-- final best and the first worst (so the best best and the worst
+-- worst).
+function half._recurse(rows,  rowAbove,          stop,worst)
+  stop = stop or (#rows)^the.min
+  if   #rows < stop
+  then return rows,worst or {} -- rows is shriving best
+  else local A,B,As,Bs = half._split(rows,rowAbove)
+       if   better(A,B)
+       then return half._recurse(As,A,stop,worst or Bs)
+       else return half._recurse(Bs,B,stop,worst or As) end end end
+
+function half._split(rows,  rowAbove)
   local As,Bs,A,B,c,far,project = {},{}
   local some= many(rows,the.Some)
   function far(row)     return per(around(row,some), the.Far).row end
@@ -298,83 +322,61 @@ function half(rows,  rowAbove)
     push(n < #rows/2 and As or Bs, rd.row) end
   return A,B,As,Bs,c end
 
--- Divide the data, recursing into the best half. Keep the
--- _first_ non-best half (as _worst_). Return the
--- final best and the first worst (so the best best and the worst
--- worst).
-local function _bestOrRest1(rows,  rowAbove,          stop,worst)
-  stop = stop or (#rows)^the.min
-  if   #rows < stop
-  then return rows,worst or {} -- rows is shriving best
-  else local A,B,As,Bs = half(rows,rowAbove)
-       if   better(A,B)
-       then return _bestOrRest1(As,A,stop,worst or Bs)
-       else return _bestOrRest1(Bs,B,stop,worst or As) end end end
-
-function bestOrRest(rows)
-  local best,rest0 = _bestOrRest1(rows)
-  local rest = many(rest0, #best*the.Balance)
-  local both = {}
-  for _,row in pairs(rest) do push(both,row).label="rest" end
-  for _,row in pairs(best) do push(both,row).label="best" end
-  return best,rest,both end
-
 ---- ---- ---- Discretization
--- **Return a set of XYs that propose sensible ranges for a  column.**   
--- Look how to divide up the columns. Combine
--- similar divisions (or divisions that have too few examples).
-function bins(rows,col)
-  local nMin -- bins less than this size will be merged
-  -- NOMs divide to themselves.    
-  -- RATIOs get chopped into the.bins divisions.
-  local function where(x,     a,b,lo,hi)
-    if   col.isNom  
-    then return x  
-    else a = has(col)
-         lo,hi = a[1], a[#a]
-         b = (hi - lo)/the.bins
-         return hi==lo and 1 or math.floor(x/b+.5)*b  end end
-  -- Merge two bins if they are too small and it they are too similar.
-  -- Returns nil otherwise (which is used to signal "no merge possible").
-  local function merged(xy1,xy2)   
-    local i,j= xy1.y, xy2.y
-    local k = NOM(i.txt, i.at)
-    for x,n in pairs(i.has) do add(k,x,n) end
-    for x,n in pairs(j.has) do add(k,x,n) end
-    if i.n < nMin or j.n < nMin or -- too small
-       div(k) <= (i.n*div(i) + j.n*div(j))/k.n -- too similar
-    then return XY(col.txt,col.at, xy1.xlo, xy2.xhi, k) end end 
-  -- Stretch over the whole number range.
-  local function fillInTheGaps(xys) 
-    xys[1].xlo, xys[#xys].xhi = -big,big
-    for n=2,#xys do xys[n].xlo = xys[n-1].xhi end 
-    return xys end
-  -- Keep looping while anything can be merged.
-  local function merges(xys0) 
-    local n,xys1 = 1,{}
-    while n <= #xys0 do
-      local merged  = n<#xys0 and merged(xys0[n], xys0[n+1]) 
-      xys1[#xys1+1] = merged or xys0[n]
-      n = n + (merged and 2 or 1) end -- if merged, skip next bin
-    return #xys0 == #xys1 and xys0 or merges(xys1) end
-  -- Begin loop for **bins**. Divide column values into many bins, 
-  -- then maybe merge them.
-  -- FYI, the idiom  x[b]= x[b] or push(list,y) creates a "fast find" index
-  -- for "y" things, as well as keeps them in linear list.
+-- **Divide column values into many bins, then merge unneeded ones**
+-- FYI, the idiom  x[b]= x[b] or push(list,y) creates a "fast find" index
+-- for "y" things, as well as keeps them in linear list. Note: NOMinals
+-- can't get rounded or merged.
+local bins={}
+function bins.find(rows,col)
   local n,dict,list = 0,{},{} 
   for _,row in pairs(rows) do
     local v = row.cells[col.at]
     if v ~= "?" then
       n=n+1
-      local bin = where(v)
+      local bin = col.isNom and v or bins._where(col,v)
       dict[bin] = dict[bin] or push(list, XY(col.txt,col.at,v))
       local it  = dict[bin]
       it.xlo = math.min(v,it.xlo)
       it.xhi = math.max(v,it.xhi)
       add(it.y, row.label) end end
   list = sort(list,lt"xlo")
-  nMin=n^the.min
-  return col.isNom and list or fillInTheGaps(merges(list)) end
+  return col.isNom and list or bins._merges(list,n^the.min) end
+
+-- RATIOs get rounded into  `the.bins` divisions.
+function bins._where(ratio,x,     a,b,lo,hi)
+  a = has(ratio)
+  lo,hi = a[1], a[#a]
+  b = (hi - lo)/the.bins
+  return hi==lo and 1 or math.floor(x/b+.5)*b  end 
+
+-- Keep looping while anything can be merged.
+function bins._merges(xys0,nMin) 
+  local n,xys1 = 1,{}
+  while n <= #xys0 do
+    local xymerged = n<#xys0 and bins._merged(xys0[n], xys0[n+1],nMin) 
+    xys1[#xys1+1]  = xymerged or xys0[n]
+    n              = n + (xymerged and 2 or 1) -- if merged, skip next bin
+  end
+  if   #xys1 < #xys0 
+  then return bins._merges(xys1,nMin) 
+  else xys1[1].xlo = -big
+       for n=2,#xys1 do xys1[n].xlo = xys1[n-1].xhi end 
+       xys1[#xys1].xhi = big
+       return xys1 end end
+
+-- Merge two bins if they are too small or too complex.
+-- Returns nil otherwise (which is used to signal "no merge possible").
+function bins._merged(xy1,xy2,nMin)   
+  local i,j= xy1.y, xy2.y
+  local k = NOM(i.txt, i.at)
+  for x,n in pairs(i.has) do add(k,x,n) end
+  for x,n in pairs(j.has) do add(k,x,n) end
+  local tooSmall  = i.n < nMin or j.n < nMin 
+  local tooComplex= div(k) <= (i.n*div(i) + j.n*div(j))/k.n 
+  if tooSmall or tooComplex then 
+    return XY(xy1.txt,xy1.at, xy1.xlo, xy2.xhi, k) end end 
+
 
 ---- ---- ---- Rules
 -- **Find the xy range that most separates best from rest**   
@@ -392,7 +394,7 @@ function bestxys(data,      nStop,xys)
     local best,rest,both = bestOrRest(data.rows)
     local most,out = 0
     for _,col in pairs(cols) do
-      local xys= bins(both,col)
+      local xys= bins.find(both,col)
         if #xys > 1 then
          for _,xy in pairs(xys) do
            local tmp= score(xy.y, "best", #best, #rest)
@@ -604,10 +606,8 @@ function go.betters(   data,data1,data2)
 
 function go.half(   data)
   data= csv2data("../../data/auto93.csv")
-  local A,B,As,Bs,c= half(data.rows)
-  print(c,#As,#Bs)
-  chat(A)
-  chat(B)
+  local As,Bs,_= half.splits(data.rows)
+  print(#As,#Bs)
   return true end
 
 function go.bestOrRest(   data,data1,data2,best,rest0,rest)
@@ -621,7 +621,7 @@ function go.bestOrRest(   data,data1,data2,best,rest0,rest)
 
 function go.bins(   data,data1,data2,best,rest0,rest)
   local data= csv2data("../../data/auto93.csv")
-  local best,rest0 = bestOrRest(data.rows)
+  local best,rest0 = half.splits(data.rows)
   local rest = many(rest0, #best*the.Balance)
   local rows ={}
   for _,row in pairs(rest) do push(rows,row).label="rest" end
@@ -629,7 +629,7 @@ function go.bins(   data,data1,data2,best,rest0,rest)
   for _,row in pairs(rows) do chat(row.cells) end
   for _,col in pairs(data.about.x) do
     print("")
-    map(bins(rows,col),
+    map(bins.find(rows,col),
         function(xy) print(xy.txt,xy.xlo,xy.xhi, cat(xy.y.has)) end) end
   return true end
    
