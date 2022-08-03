@@ -60,10 +60,11 @@ local function rogues()
 ---- Types
 local ABOUT,COL,DATA,NOM,RATIO,ROW,XY,
 ---- learning functions
-     around,bins,clone,half,has,add,adds,
-     better ,coerce,csv2data,dist,div,
-     halfsort, is, many,mid,norm,
-     row, stats,
+     around,bestOrRest, bestxy,bestxys,
+     bins,clone,half,has,add,adds,
+     better ,big,coerce,csv2data,dist,div,
+     halfsort, is, key,many,mid,norm,
+     printxy,row, selects, stats,
 ---- General functions
      any,cat,chat,cli,csv,fmt,gt,
      lines,lt,map,per,push,
@@ -72,16 +73,9 @@ local ABOUT,COL,DATA,NOM,RATIO,ROW,XY,
 local go={}
 
 ---- This module
-local XAI= {
+local XAI= {-- to be completed later
       the=the, rogues=rogues, go=go,
-      ABOUT=ABOUT,COL=COL,DATA=DATA,NOM=NOM,RATIO=RATIO,ROW=ROW,XY=XY, 
-      around=around,bins=bins,clone=clone,half=half,has=has,add=add,adds=adds,
-      better=better,coerce=coerce,csv2data=csv2data,dist=dist,div=div,
-      halfsort=halfsort, is=is, many=many,mid=mid,norm=norm,
-      row=row, stats=stats,
-      any=any,cat=cat,chat=chat,cli=cli,csv=csv,fmt=fmt,gt=gt,
-      lines=lines,lt=lt,map=map,per=per,push=push,
-      rand=rand,rev=rev,rnd=rnd,same=same,shuffle=shuffle, slice,sort,words}
+      ABOUT=ABOUT,COL=COL,DATA=DATA,NOM=NOM,RATIO=RATIO,ROW=ROW,XY=XY}
 
 ---- ---- ---- ---- Types
 -- In this code,  function arguments offer some type hints. 
@@ -315,17 +309,17 @@ function half(rows,  rowAbove)
 -- _first_ non-best half (as _worst_). Return the
 -- final best and the first worst (so the best best and the worst
 -- worst).
-function bestOrRest1(rows,  rowAbove,          stop,worst)
+local function _bestOrRest1(rows,  rowAbove,          stop,worst)
   stop = stop or (#rows)^the.min
   if   #rows < stop
   then return rows,worst or {} -- rows is shriving best
   else local A,B,As,Bs = half(rows,rowAbove)
        if   better(A,B)
-       then return bestOrRest1(As,A,stop,worst or Bs)
-       else return bestOrRest1(Bs,B,stop,worst or As) end end end
+       then return _bestOrRest1(As,A,stop,worst or Bs)
+       else return _bestOrRest1(Bs,B,stop,worst or As) end end end
 
 function bestOrRest(rows)
-  local best,rest0 = bestOrRest1(rows)
+  local best,rest0 = _bestOrRest1(rows)
   local rest = many(rest0, #best*the.Balance)
   local both = {}
   for _,row in pairs(rest) do push(both,row).label="rest" end
@@ -333,42 +327,57 @@ function bestOrRest(rows)
   return best,rest,both end
 
 ---- ---- ---- Discretization
+-- **Return a set of XYs that propose sensible ranges for a  column.**   
+-- Look how to divide up the columns. Combine
+-- similar divisions (or divisions that have too few examples).
 function bins(rows,col)
   local nMin -- bins less than this size will be merged
-  local function where(num,     a,b,lo,hi)
-    a = has(col)
-    lo,hi = a[1], a[#a]
-    b = (hi - lo)/the.bins
-    return hi==lo and 1 or math.floor(num/b+.5)*b 
-  end ----------------------------------
-  local function merged(xy1,xy2)
+
+  -- NOMs divide to themselves.    
+  -- RATIOs get chopped into the.bins divisions.
+  local function where(x,     a,b,lo,hi)
+    if   col.isNom  
+    then return x  
+    else a = has(col)
+         lo,hi = a[1], a[#a]
+         b = (hi - lo)/the.bins
+         return hi==lo and 1 or math.floor(x/b+.5)*b  end end
+
+  -- Merge two bins if they are too small and it they are too similar.
+  -- Returns nil otherwise (which is used to signal "no merge possible").
+  local function merged(xy1,xy2)   
     local i,j= xy1.y, xy2.y
     local k = NOM(i.txt, i.at)
     for x,n in pairs(i.has) do add(k,x,n) end
     for x,n in pairs(j.has) do add(k,x,n) end
-    if i.n < nMin or j.n < nMin or 
-       div(k) <= (i.n*div(i) + j.n*div(j))/k.n 
-    then return XY(col.txt,col.at, xy1.xlo, xy2.xhi, k) end 
-  end ----------------------------- 
-  local function fillInTheGaps(xys)
+    if i.n < nMin or j.n < nMin or -- too small
+       div(k) <= (i.n*div(i) + j.n*div(j))/k.n -- too similar
+    then return XY(col.txt,col.at, xy1.xlo, xy2.xhi, k) end end 
+
+  -- Stretch over the whole number range.
+  local function fillInTheGaps(xys) 
     xys[1].xlo, xys[#xys].xhi = -big,big
-    for n=2,#xys do xys[n].xlo = xys[n-1].xhi end
-    return xys 
-  end ------------------------------
+    for n=2,#xys do xys[n].xlo = xys[n-1].xhi end 
+    return xys end
+
+  -- Keep looping while anything can be merged.
   local function merges(xys0) 
     local n,xys1 = 1,{}
     while n <= #xys0 do
       local merged  = n<#xys0 and merged(xys0[n], xys0[n+1]) 
       xys1[#xys1+1] = merged or xys0[n]
       n = n + (merged and 2 or 1) end -- if merged, skip next bin
-    return #xys1 < #xys0 and merges(xys1) or fillInTheGaps(xys1) 
-  end ------------------------
-  local n,dict,list = 0,{},{}
+    return #xys1 < #xys0 and merges(xys1) or fillInTheGaps(xys1)  end
+
+  -- Main code. Divide column values into many bins, then maybe merge them.   
+  -- FYI, the idiom  x[b]= x[b] or push(list,y) creates a "fast find" index
+  -- for "y" things, as well as keeps them in linear list.
+  local n,dict,list = 0,{},{} 
   for _,row in pairs(rows) do
     local v = row.cells[col.at]
     if v ~= "?" then
       n=n+1
-      local bin = col.isNom and v or where(v) or v
+      local bin = where(v)
       dict[bin] = dict[bin] or push(list, XY(col.txt,col.at,v))
       local it  = dict[bin]
       it.xlo = math.min(v,it.xlo)
