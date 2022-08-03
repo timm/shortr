@@ -30,6 +30,8 @@
 -- only needs log2(N) queries to y-values (while clustering,
 -- just on the pairs of
 -- distance objects).
+-- 
+-- convenntions "is" [refix is a bookeam. "n" is a number, sprefix=string
 local the= {
      about ={ what = "XAI.LUA",
               why  = "Multi-objective semi-supervised explanation",
@@ -37,16 +39,17 @@ local the= {
               when = 2022,
               copyright = "BSD-2 clause license",
               how  = "USAGE: lua xai.lua -[bFfgmnpsS] [arg]"},
-     balance= 4,        -- ratio rest:best for learning
-     bins   = 16,       -- initial #bins  (before merging)
-     Far    = .95,      -- how far to look for distant pole (in "far")
+     Balance= 4,        -- for delta, ratio rest:best 
+     bins   = 16,       -- for bins, initial #bins  (before merging)
+     Far    = .95,      -- for far, how far to look for distant pole
      files  = "../../data/auto93.csv",
      go     = "nothing", -- start up action
-     min    = .5,        -- cluster down to N^min groupings
-     ratios = 512,       -- max sample size in RATIO coluns
-     p      = 2,         -- distance coeffecient (and p=2 is Euclidean)
+     min    = .5,        -- for bestOrRest, cluster down to N^min groupings
+     ratios = 512,       -- for RATIO, max sample size
+     p      = 2,         -- for dist, distance coeffecient 
      seed   = 10019,     -- random number seed
-     Some   = 512        -- how many rows to explore (in "far") 
+     Some   = 512,       -- for far, how many rows to explore 
+     stop   = 6          -- for delta, min row size.
      }
 ---- ---- ---- ---- Names
 ---- Cache names known `b4` we start
@@ -107,22 +110,23 @@ function COL(str,int)
           n    = 0,                -- how many items seen?
           at   = int or 0,         -- position ot column
           txt  = str,              -- column header
-          nomp = str:find(is.nom), -- is this a nominal?
+          isNom = str:find(is.nom), -- is this a nominal?
           w    = str:find(is.less) and -1 or 1,
           ok   = true,             -- false if some update needed
           has  = {}} end           -- place to keep (some) column values.
 
 -- **RATIO are special COLs that handle ratios.**      
 -- **NOM are special COLs that handle nominals.**
-function RATIO(str,int,   i) i=COL(str,int); i.nomp=false; return i end
-function NOM(txt,  int,   i) i=COL(str,int); i.nomp=true;  return i end
+function RATIO(str,int,   i) i=COL(str,int); i.isNom=false; return i end
+function NOM(txt,  int,   i) i=COL(str,int); i.isNom=true;  return i end
 
 -- **ROW holds one record of data.**
 function ROW(about, t)
   return {_is="ROW",
-          _about=about,  -- pointer to background column info
-          cells=t,      -- raw values
-          cooked=map(t,same)} end -- for (e.g) discretized values
+          _about=about,       -- pointer to background column info
+          cells=t,            -- raw values
+          cooked=map(t,same), -- for (e.g) discretized values
+          evaled=false} end   -- true if we touched the y-values
 
 -- **DATA holds many `ROWs`**   
 --  whose values are summarized in `ABOUT`.
@@ -154,7 +158,7 @@ function XY(txt,at,num1,num2,nom)
 ---- ---- ---- ---- Functions for Types
 ---- ---- ---- Update
 -- **Add something into one `col`.**  
--- For `nomp` cols, keep a count
+-- For `isNom` cols, keep a count
 -- of how many times we have seen `x'. For other ratio columns,
 -- keep at most `the.ratios` (after which, replace old items at random).   
 -- `incnom` is optional (it is  little hack used during 
@@ -164,7 +168,7 @@ function add(col,x,  inc)
   if x ~= "?" then
     inc = inc or 1
     col.n = col.n + inc
-    if   col.nomp
+    if   col.isNom
     then col.has[x] = inc + (col.has[x] or 0)
     else local pos
          if     #col.has < the.ratios      then pos= (#col.has) + 1
@@ -201,9 +205,16 @@ function clone(data,t)
   return data1 end
 
 ---- ---- ---- Query
+-- **Key noms select for more of the best goals**.    
+function key(nom,sGoal,nBest,nRest)
+  local best,rest=0,0
+  for x,n in pairs(nom.has) do
+    if x==sGoal then best=best+n/nBest else rest=rest+n/nRest end end
+  return  best - rest < 1E-3 and 0 or best^2/(best^2 + rest^2) end
+
 -- **Return `col.has`, sorting numerics (if needed).**
 function has(ratio)
-  if not ratio.nomp and not ratio.ok then 
+  if not ratio.isNom and not ratio.ok then 
     table.sort(ratio.has); ratio.ok=true end
   return ratio.has end
 
@@ -215,7 +226,7 @@ function norm(ratio,num)
 -- **Return the central tendency of `col`umns**  
 --  (median/mode for ratios/nominals (respectively).
 function mid(col,places)
-  if   col.nomp
+  if   col.isNom
   then local mode,most= nil,-1
        for x,n in pairs(col.has) do if n > most then mode,most=x,n end end
        return mode -- mode for nominals
@@ -226,7 +237,7 @@ function mid(col,places)
 -- (sd/entropy for ratios/nominals (respectively).
 function div(col,places)
   local out
-  if   col.nomp
+  if   col.isNom
   then out = 0
        for _,n in pairs(col.has) do
          if n>0 then out=out-n/col.n*math.log(n/col.n,2) end end 
@@ -246,6 +257,7 @@ function stats(data,   f,places,cols,   u)
 
 -- **Return true if `row1`'s goals are better than `row2`.**
 function better(row1,row2)
+  row1.evaled, row2.evaled= true,true
   local s1,s2,d,n,x,y=0,0,0,0
   local ys,e = row1._about.y,math.exp(1)
   for _,col in pairs(ys) do
@@ -262,7 +274,7 @@ function dist(row1,row2,cols)
   local d,n,x,y,dist1=0,0
   function dist1(col,x,y)
     if x=="?" and y=="?" then return 1 end
-    if   col.nomp
+    if   col.isNom
     then return (x=="?" or y=="?") and 1 or x==y and 0 or 1 
     else if     x=="?" then y=norm(col,y); x=y<.5 and 1 or 0
          elseif y=="?" then x=norm(col,x); y=x<.5 and 1 or 0
@@ -303,80 +315,118 @@ function half(rows,  rowAbove)
 -- _first_ non-best half (as _worst_). Return the
 -- final best and the first worst (so the best best and the worst
 -- worst).
-function bestOrRest(rows,  rowAbove,          stop,worst)
+function bestOrRest1(rows,  rowAbove,          stop,worst)
   stop = stop or (#rows)^the.min
   if   #rows < stop
   then return rows,worst or {} -- rows is shriving best
   else local A,B,As,Bs = half(rows,rowAbove)
        if   better(A,B)
-       then return bestOrRest(As,A,stop,worst or Bs)
-       else return bestOrRest(Bs,B,stop,worst or As) end end end
+       then return bestOrRest1(As,A,stop,worst or Bs)
+       else return bestOrRest1(Bs,B,stop,worst or As) end end end
+
+function bestOrRest(rows)
+  local best,rest0 = bestOrRest1(rows)
+  local rest = many(rest0, #best*the.Balance)
+  local both = {}
+  for _,row in pairs(rest) do push(both,row).label="rest" end
+  for _,row in pairs(best) do push(both,row).label="best" end
+  return best,rest,both end
 
 ---- ---- ---- Discretization
 function bins(rows,col)
+  local nMin -- bins less than this size will be merged
   local function where(num,     a,b,lo,hi)
     a = has(col)
     lo,hi = a[1], a[#a]
     b = (hi - lo)/the.bins
     return hi==lo and 1 or math.floor(num/b+.5)*b 
   end ----------------------------------
-  local function merged(xy1,xy2, minnum)
+  local function merged(xy1,xy2)
     local i,j= xy1.y, xy2.y
     local k = NOM(i.txt, i.at)
     for x,n in pairs(i.has) do add(k,x,n) end
     for x,n in pairs(j.has) do add(k,x,n) end
-    if i.n < minnum or j.n < minnum or 
+    if i.n < nMin or j.n < nMin or 
        div(k) <= (i.n*div(i) + j.n*div(j))/k.n 
     then return XY(col.txt,col.at, xy1.xlo, xy2.xhi, k) end 
   end ----------------------------- 
   local function fillInTheGaps(xys)
-    xys[1].xlo, xys[#xys].xhi = -math.huge,math.huge 
+    xys[1].xlo, xys[#xys].xhi = -big,big
     for n=2,#xys do xys[n].xlo = xys[n-1].xhi end
     return xys 
   end ------------------------------
-  local function merges(xys0,minnum) 
+  local function merges(xys0) 
     local n,xys1 = 1,{}
     while n <= #xys0 do
-      local merged  = n<#xys0 and merged(xys0[n], xys0[n+1],minnum) 
+      local merged  = n<#xys0 and merged(xys0[n], xys0[n+1]) 
       xys1[#xys1+1] = merged or xys0[n]
       n = n + (merged and 2 or 1) end -- if merged, skip next bin
-    return #xys1 < #xys0 and merges(xys1,minnum) or fillInTheGaps(xys1) 
+    return #xys1 < #xys0 and merges(xys1) or fillInTheGaps(xys1) 
   end ------------------------
   local n,dict,list = 0,{},{}
   for _,row in pairs(rows) do
     local v = row.cells[col.at]
     if v ~= "?" then
       n=n+1
-      local bin = col.nomp and v or where(v) or v
+      local bin = col.isNom and v or where(v) or v
       dict[bin] = dict[bin] or push(list, XY(col.txt,col.at,v))
       local it  = dict[bin]
       it.xlo = math.min(v,it.xlo)
       it.xhi = math.max(v,it.xhi)
       add(it.y, row.label) end end
   list = sort(list,lt"xlo")
-  return col.nomp and list or merges(list, n^the.min) end
+  nMin=n^the.min
+  return col.isNom and list or merges(list) end
 
 ---- ---- ---- Rules
-function delta(data)
-    best,rest)
-  local rest = many(rest, #best*the.balance)
-  local rows ={}
-  for _,row in pairs(rest) do push(rows,row).label="rest" end
-  for _,row in pairs(best) do push(rows,row).label="best" end
-  best = nil
-  for _,col in pairs(data.about.x) do
-    tmp = bins(rows,col)
-    if #tmp>1 then 
-      for _,xy in pairs(tmp) do
-        score=div(xy.y.has) * xy.y.n/#rows
-        if score > best then
-           out,best = xy,score end end end end end 
- 
+-- **Find the xy range that most separates best from rest.**
+function bestxys(data,      nStop,xys)
+  xys = xys or {}
+  nStop = nStop or the.stop
+  if #data.rows > nStop then 
+    local xy = bestxy(data)
+    if xy then 
+      local rows1 = selects(xy, rows)
+      if rows1 then
+        push(xys,xy)
+        return bestxys(clone(data,rows1),nStop,xys) end end  end
+  return xys,data end 
+
+function bestxy(data)
+  local best,rest,both = bestOrRest(data.rows)
+  local most,out = 0
+  for _,col in pairs(cols) do
+    local xys= bins(both,col)
+      if #xys > 1 then
+       for _,xy in pairs(xys) do
+         local tmp= key(xy.y, "best", #best, #rest)
+         if tmp>most then most,out = tmp,xy end end end end 
+  return out end
+
+-- **Print one xy**.
+function printxy(xy)
+  local x,lo,hi = xy.txt, xy.xlo, xy.xhi
+  if     lo ==  hi  then return fmt("%s == %s", x, lo)
+  elseif hi ==  big then return fmt("%s >  %s", x, lo)
+  elseif lo == -big then return fmt("%s <= %s", x, hi)
+  else                   return fmt("%s <  %s <= %s", lo,x,hi) end end
+
+function selects(xy,rows)
+  local out={}
+  for _,row in pairs(rows) do
+    v= row.cells[xy.at]
+    if v=="?" or xy.xlo==xy.xhi or xy.xlo<v and v <=xy.xhi then 
+      push(out,row) end end 
+  if #out < #rows then return out end end
+
+
 ---- ---- ---- ---- General Functions
 ---- ---- ---- Misc
 function same(x) return x end
 
 ---- ---- ---- Maths
+-- Large number
+big=math.huge
 -- Random num
 rand=math.random
 
@@ -563,7 +613,7 @@ function go.bestOrRest(   data,data1,data2,best,rest0,rest)
 function go.bins(   data,data1,data2,best,rest0,rest)
   local data= csv2data("../../data/auto93.csv")
   local best,rest0 = bestOrRest(data.rows)
-  local rest = many(rest0, #best*the.balance)
+  local rest = many(rest0, #best*the.Balance)
   local rows ={}
   for _,row in pairs(rest) do push(rows,row).label="rest" end
   for _,row in pairs(best) do push(rows,row).label="best" end

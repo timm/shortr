@@ -359,9 +359,9 @@ function BIN:__tostring()
 function BIN:selects(rows,    select,tmp)
   function select(row,  v)
     v= row.cells[self.col.at]
-    if v=="?" or self.lo==self.hi or self.lo<v and v <=self.hu then return row end end
+    if v=="?" or self.lo==self.hi or self.lo<v and v <=self.hi then return row end end
   tmp= map(rows,select) 
-  if #tmp < #rows then return rows end end
+  if #tmp < #rows then return tmp end end
 
 ---- ---- ROWS
 function ROWS:clone(t) return ROWS():add(self.cols.names):adds(t or {}) end
