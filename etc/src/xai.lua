@@ -199,13 +199,6 @@ function clone(data,t)
   return data1 end
 
 ---- ---- ---- Query
--- **Key noms select for more of the best goals**.    
-function key(nom,sGoal,nBest,nRest)
-  local best,rest=0,0
-  for x,n in pairs(nom.has) do
-    if x==sGoal then best=best+n/nBest else rest=rest+n/nRest end end
-  return  best - rest < 1E-3 and 0 or best^2/(best^2 + rest^2) end
-
 -- **Return `col.has`, sorting numerics (if needed).**
 function has(ratio)
   if not ratio.isNom and not ratio.ok then 
@@ -332,7 +325,6 @@ function bestOrRest(rows)
 -- similar divisions (or divisions that have too few examples).
 function bins(rows,col)
   local nMin -- bins less than this size will be merged
-
   -- NOMs divide to themselves.    
   -- RATIOs get chopped into the.bins divisions.
   local function where(x,     a,b,lo,hi)
@@ -342,7 +334,6 @@ function bins(rows,col)
          lo,hi = a[1], a[#a]
          b = (hi - lo)/the.bins
          return hi==lo and 1 or math.floor(x/b+.5)*b  end end
-
   -- Merge two bins if they are too small and it they are too similar.
   -- Returns nil otherwise (which is used to signal "no merge possible").
   local function merged(xy1,xy2)   
@@ -353,24 +344,21 @@ function bins(rows,col)
     if i.n < nMin or j.n < nMin or -- too small
        div(k) <= (i.n*div(i) + j.n*div(j))/k.n -- too similar
     then return XY(col.txt,col.at, xy1.xlo, xy2.xhi, k) end end 
-
   -- Stretch over the whole number range.
   local function fillInTheGaps(xys) 
     xys[1].xlo, xys[#xys].xhi = -big,big
     for n=2,#xys do xys[n].xlo = xys[n-1].xhi end 
     return xys end
-
   -- Keep looping while anything can be merged.
   local function merges(xys0) 
     local n,xys1 = 1,{}
     while n <= #xys0 do
       local merged  = n<#xys0 and merged(xys0[n], xys0[n+1]) 
       xys1[#xys1+1] = merged or xys0[n]
-      n = n + (merged and 2 or 1) -- if merged, skip next bin
-    end 
+      n = n + (merged and 2 or 1) end -- if merged, skip next bin
     return #xys0 == #xys1 and xys0 or merges(xys1) end
-
-  -- Main code. Divide column values into many bins, then maybe merge them.   
+  -- Begin loop for **bins**. Divide column values into many bins, 
+  -- then maybe merge them.
   -- FYI, the idiom  x[b]= x[b] or push(list,y) creates a "fast find" index
   -- for "y" things, as well as keeps them in linear list.
   local n,dict,list = 0,{},{} 
@@ -383,15 +371,44 @@ function bins(rows,col)
       local it  = dict[bin]
       it.xlo = math.min(v,it.xlo)
       it.xhi = math.max(v,it.xhi)
-      add(it.y, row.label) end 
-  end
+      add(it.y, row.label) end end
   list = sort(list,lt"xlo")
   nMin=n^the.min
   return col.isNom and list or fillInTheGaps(merges(list)) end
 
 ---- ---- ---- Rules
--- **Find the xy range that most separates best from rest.**
+-- **Find the xy range that most separates best from rest**   
+-- Then call yourself recursively on the rows selected by the bestxy.   
 function bestxys(data,      nStop,xys)
+  -- **score**: rewards ranges with more best than rest.
+  function score(nom,sGoal,nBest,nRest)
+    local best,rest=0,0
+    for x,n in pairs(nom.has) do
+      if x==sGoal then best=best+n/nBest else rest=rest+n/nRest end end
+    return  best - rest < 1E-3 and 0 or best^2/(best + rest) 
+  end -----------------------
+  -- **bestxy** : return best range across all columns and ranges.
+  local function bestxy(data)
+    local best,rest,both = bestOrRest(data.rows)
+    local most,out = 0
+    for _,col in pairs(cols) do
+      local xys= bins(both,col)
+        if #xys > 1 then
+         for _,xy in pairs(xys) do
+           local tmp= score(xy.y, "best", #best, #rest)
+           if tmp>most then most,out = tmp,xy end end end end 
+    return out 
+  end -----------
+  -- **selects**: returns the subset of rows relevant to the bextxy 
+  --   (and if the subset is the same as the all, then return nil since they rule is silly).
+  local function selects(xy,rows)
+    local out={}
+    for _,row in pairs(rows) do
+      v= row.cells[xy.at]
+      if v=="?" or xy.xlo==xy.xhi or xy.xlo<v and v <=xy.xhi then 
+        push(out,row) end end 
+    if #out < #rows then return out end 
+  end------------
   xys = xys or {}
   nStop = nStop or the.stop
   if #data.rows > nStop then 
@@ -403,17 +420,6 @@ function bestxys(data,      nStop,xys)
         return bestxys(clone(data,rows1),nStop,xys) end end  end
   return xys,data end 
 
-function bestxy(data)
-  local best,rest,both = bestOrRest(data.rows)
-  local most,out = 0
-  for _,col in pairs(cols) do
-    local xys= bins(both,col)
-      if #xys > 1 then
-       for _,xy in pairs(xys) do
-         local tmp= key(xy.y, "best", #best, #rest)
-         if tmp>most then most,out = tmp,xy end end end end 
-  return out end
-
 -- **Print one xy**.
 function printxy(xy)
   local x,lo,hi = xy.txt, xy.xlo, xy.xhi
@@ -421,14 +427,6 @@ function printxy(xy)
   elseif hi ==  big then return fmt("%s >  %s", x, lo)
   elseif lo == -big then return fmt("%s <= %s", x, hi)
   else                   return fmt("%s <  %s <= %s", lo,x,hi) end end
-
-function selects(xy,rows)
-  local out={}
-  for _,row in pairs(rows) do
-    v= row.cells[xy.at]
-    if v=="?" or xy.xlo==xy.xhi or xy.xlo<v and v <=xy.xhi then 
-      push(out,row) end end 
-  if #out < #rows then return out end end
 
 
 ---- ---- ---- ---- General Functions
