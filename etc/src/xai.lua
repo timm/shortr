@@ -324,27 +324,25 @@ function half._split(rows,  rowAbove)
 
 ---- ---- ---- Discretization
 -- **Divide column values into many bins, then merge unneeded ones**
--- FYI, the idiom  x[b]= x[b] or push(list,y) creates a "fast find" index
--- for "y" things, as well as keeps them in linear list. Note: NOMinals
--- can't get rounded or merged.
+-- NOMinals can't get rounded or merged.
 local bins={}
 function bins.find(rows,col)
-  local n,dict,list = 0,{},{} 
+  local n,xys= 0,{}
   for _,row in pairs(rows) do
     local v = row.cells[col.at]
     if v ~= "?" then
       n=n+1
-      local bin = col.isNom and v or bins._where(col,v)
-      dict[bin] = dict[bin] or push(list, XY(col.txt,col.at,v))
-      local it  = dict[bin]
-      it.xlo = math.min(v,it.xlo)
-      it.xhi = math.max(v,it.xhi)
-      add(it.y, row.label) end end
-  list = sort(list,lt"xlo")
-  return col.isNom and list or bins._merges(list,n^the.min) end
+      local bin = col.isNom and v or bins._bin(col,v)
+      local xy    = xys[bin] or XY(col.txt,col.at,v)
+      xy.xlo = math.min(v,xy.xlo) 
+      xy.xhi = math.max(v,xy.xhi)
+      add(xy.y, row.label) 
+      xys[bin] = xy end end
+  xys = sort(values(xys),lt"xlo")
+  return col.isNom and xys or bins._merges(xys,n^the.min) end
 
 -- RATIOs get rounded into  `the.bins` divisions.
-function bins._where(ratio,x,     a,b,lo,hi)
+function bins._bin(ratio,x,     a,b,lo,hi)
   a = has(ratio)
   lo,hi = a[1], a[#a]
   b = (hi - lo)/the.bins
@@ -486,6 +484,9 @@ function slice(t, go, stop, inc)
   local u={}
   for j=(go or 1)//1,(stop or #t)//1,(inc or 1)//1 do u[1+#u]=t[j] end
   return u end
+
+-- Extact values from a list
+function values(t) local u={}; for _,v in pairs(t) do u[1+#u]=v end; return u end
 
 -- In-place sort,  returns sorted list
 function sort(t,f) table.sort(t,f); return t end
