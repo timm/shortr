@@ -871,8 +871,9 @@ Returns nil otherwise (which is used to signal “no merge possible”).</p>
     <span class="hljs-keyword">while</span> n &lt;= #xys0 <span class="hljs-keyword">do</span>
       <span class="hljs-keyword">local</span> merged  = n&lt;#xys0 <span class="hljs-keyword">and</span> merged(xys0[n], xys0[n+<span class="hljs-number">1</span>]) 
       xys1[#xys1+<span class="hljs-number">1</span>] = merged <span class="hljs-keyword">or</span> xys0[n]
-      n = n + (merged <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>) <span class="hljs-keyword">end</span> <span class="hljs-comment">-- if merged, skip next bin</span>
-    <span class="hljs-keyword">return</span> #xys1 &lt; #xys0 <span class="hljs-keyword">and</span> merges(xys1) <span class="hljs-keyword">or</span> fillInTheGaps(xys1)  <span class="hljs-keyword">end</span></pre></div></div>
+      n = n + (merged <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span>) <span class="hljs-comment">-- if merged, skip next bin</span>
+    <span class="hljs-keyword">end</span> 
+    <span class="hljs-keyword">return</span> #xys0 == #xys1 <span class="hljs-keyword">and</span> xys0 <span class="hljs-keyword">or</span> merges(xys1) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -898,10 +899,11 @@ for “y” things, as well as keeps them in linear list.</p>
       <span class="hljs-keyword">local</span> it  = dict[bin]
       it.xlo = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">min</span>(v,it.xlo)
       it.xhi = <span class="hljs-built_in">math</span>.<span class="hljs-built_in">max</span>(v,it.xhi)
-      add(it.y, row.label) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+      add(it.y, row.label) <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">end</span>
   list = <span class="hljs-built_in">sort</span>(list,lt<span class="hljs-string">&quot;xlo&quot;</span>)
   nMin=n^the.<span class="hljs-built_in">min</span>
-  <span class="hljs-keyword">return</span> col.isNom <span class="hljs-keyword">and</span> list <span class="hljs-keyword">or</span> merges(list) <span class="hljs-keyword">end</span></pre></div></div>
+  <span class="hljs-keyword">return</span> col.isNom <span class="hljs-keyword">and</span> list <span class="hljs-keyword">or</span> fillInTheGaps(merges(list)) <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         

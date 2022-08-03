@@ -380,8 +380,9 @@ function bins(rows,col)
     while n <= #xys0 do
       local merged  = n<#xys0 and merged(xys0[n], xys0[n+1]) 
       xys1[#xys1+1] = merged or xys0[n]
-      n = n + (merged and 2 or 1) end -- if merged, skip next bin
-    return #xys1 < #xys0 and merges(xys1) or fillInTheGaps(xys1)  end
+      n = n + (merged and 2 or 1) -- if merged, skip next bin
+    end 
+    return #xys0 == #xys1 and xys0 or merges(xys1) end
 
   -- Main code. Divide column values into many bins, then maybe merge them.   
   -- FYI, the idiom  x[b]= x[b] or push(list,y) creates a "fast find" index
@@ -396,10 +397,11 @@ function bins(rows,col)
       local it  = dict[bin]
       it.xlo = math.min(v,it.xlo)
       it.xhi = math.max(v,it.xhi)
-      add(it.y, row.label) end end
+      add(it.y, row.label) end 
+  end
   list = sort(list,lt"xlo")
   nMin=n^the.min
-  return col.isNom and list or merges(list) end
+  return col.isNom and list or fillInTheGaps(merges(list)) end
 
 -- ### Rules
 
