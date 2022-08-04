@@ -61,15 +61,15 @@ local function rogues()
 ---- Types
 local ABOUT,COL,DATA,NOM,RATIO,ROW,XY,
 ---- learning functions
-     around,bestOrRest, bestxy,bestxys,
-     bins,clone,half,has,add,adds,
-     better ,big,coerce,csv2data,dist,div,
-     halfsort, is, key,many,mid,norm,
-     printxy,row, selects, stats,
+     add,add2,adds,around,bestOrRest, bestxy,bestxys,
+     bins,clone,half,has,
+     better, csv2data,dist,div,
+     half, is, key,many,mid,norm,
+     xyShow, row, selects, stats,
 ---- General functions
-     any,cat,chat,cli,csv,fmt,gt,
+     any,big,cat,chat,cli,coerce,csv,fmt,gt,
      lines,lt,map,per,push,
-     rand,rev,rnd,same,shuffle, slice,sort,words
+     rand,rev,rnd,same,shuffle, slice,sort,values,words
 ---- Startup
 local go={}
 
@@ -121,6 +121,7 @@ function ROW(about, t)
           _about=about,       -- pointer to background column info
           cells=t,            -- raw values
           cooked=map(t,same), -- for (e.g) discretized values
+          rank=0,             -- position between 1..100
           evaled=false} end   -- true if we touched the y-values
 
 -- **DATA holds many `ROWs`**   
@@ -151,6 +152,15 @@ function XY(txt,at,num1,num2,nom)
           y   = nom or NOM(txt,at)} end
 
 ---- ---- ---- ---- Functions for Types
+---- ---- ---- Create
+-- **Copy the structure of `data`.**    
+-- Optionally, add rows of data (from `t`).
+function clone(data,t)
+  local data1= DATA()
+  row(data1, data.about.names)
+  for _,row1 in pairs(t or {}) do row(data1,row1) end
+  return data1 end
+
 ---- ---- ---- Update
 -- **Add something into one `col`.**  
 -- For `isNom` cols, keep a count
@@ -172,6 +182,12 @@ function add(col,x,  inc)
            col.ok=false  -- the `kept` list is no longer in sorted order
            col.has[pos]=x end end end end
 
+-- **Add in `x,y` values from one row into an XY.**
+function add2(xy,x,y)
+  xy.xlo = math.min(x, xy.xlo)
+  xy.xhi = math.max(x, xy.xhi)
+  add(xy.y, y) end
+
 -- **Add a row of values, across all columns.**    
 -- This code implements _row sharing_; i.e. once a row is created,
 -- it is shared across many DATAs. This means that (e.g.) distance 
@@ -191,13 +207,14 @@ function row(data,t)
   then push(data.rows, adds(data.about,t))
   else data.about = ABOUT(t) end end
 
--- **Copy the structure of `data`.**    
--- Optionally, add rows of data (from `t`).
-function clone(data,t)
-  local data1= DATA()
-  row(data1, data.about.names)
-  for _,row1 in pairs(t or {}) do row(data1,row1) end
-  return data1 end
+---- ---- ---- Print
+-- **Print one xy**.
+function xyShow(xy)
+  local x,lo,hi = xy.txt, xy.xlo, xy.xhi
+  if     lo ==  hi  then return fmt("%s == %s", x, lo)
+  elseif hi ==  big then return fmt("%s >  %s", x, lo)
+  elseif lo == -big then return fmt("%s <= %s", x, hi)
+  else                   return fmt("%s <  %s <= %s", lo,x,hi) end end
 
 ---- ---- ---- Query
 -- **Return `col.has`, sorting numerics (if needed).**
@@ -245,7 +262,7 @@ function stats(data,   f,places,cols,   u)
 
 -- **Return true if `row1`'s goals are better than `row2`.**
 function better(row1,row2)
-  row1.evaled, row2.evaled= true,true
+  row1.evaled,row2.evaled= true,true
   local s1,s2,d,n,x,y=0,0,0,0
   local ys,e = row1._about.y,math.exp(1)
   for _,col in pairs(ys) do
@@ -282,14 +299,11 @@ function around(row1,rows)
              lt"d") end
 
 ---- ---- ---- Clustering
--- Find two distant rows, then divide data according to its
--- distance to those two rows. To reduce the cost of this search,
--- only apply it to `some` of the rows (controlled by `the.Some`).
--- If `rowAbove` is supplied,
--- then use that for one of the two distant items.
+-- **Divide data according to its distance to two distant rows.**   
+-- Use all the `best` and some sample of the `rest`.
 local half={}
 function half.splits(rows)
-  local best,rest0 = half._recurse(rows)
+  local best,rest0 = half._splits(rows)
   local rest = many(rest0, #best*the.Balance)
   local both = {}
   for _,row in pairs(rest) do push(both,row).label="rest" end
@@ -300,21 +314,26 @@ function half.splits(rows)
 -- _first_ non-best half (as _worst_). Return the
 -- final best and the first worst (so the best best and the worst
 -- worst).
-function half._recurse(rows,  rowAbove,          stop,worst)
+function half._splits(rows,  rowAbove,          stop,worst)
   stop = stop or (#rows)^the.min
   if   #rows < stop
   then return rows,worst or {} -- rows is shriving best
   else local A,B,As,Bs = half._split(rows,rowAbove)
        if   better(A,B)
-       then return half._recurse(As,A,stop,worst or Bs)
-       else return half._recurse(Bs,B,stop,worst or As) end end end
+       then return half._splits(As,A,stop,worst or Bs)
+       else return half._splits(Bs,B,stop,worst or As) end end end
 
+-- Do one split. To reduce the cost of this search,
+-- only apply it to `some` of the rows (controlled by `the.Some`).
+-- If `rowAbove` is supplied,
+-- then use that for one of the two distant items (so top-level split seeks
+-- two poles and lower-level poles only seeks one new pole each time).
 function half._split(rows,  rowAbove)
   local As,Bs,A,B,c,far,project = {},{}
   local some= many(rows,the.Some)
-  function far(row)     return per(around(row,some), the.Far).row end
-  function project(row) return {row=row,
-                                x=(dist(row,A)^2 + c^2 - dist(row,B)^2)/(2*c)} end
+  function far(row) return per(around(row,some), the.Far).row end
+  function project(row) 
+    return {row=row, x=(dist(row,A)^2 + c^2 - dist(row,B)^2)/(2*c)} end
   A= rowAbove or far(any(some))
   B= far(A)
   c= dist(A,B)
@@ -323,22 +342,21 @@ function half._split(rows,  rowAbove)
   return A,B,As,Bs,c end
 
 ---- ---- ---- Discretization
--- **Divide column values into many bins, then merge unneeded ones**
--- NOMinals can't get rounded or merged.
+-- **Divide column values into many bins, then merge unneeded ones**   
+-- When reading this code, remember that NOMinals can't get rounded or merged
+-- (only RATIOS).
 local bins={}
 function bins.find(rows,col)
-  local n,xys= 0,{}
+  local n,xys = 0,{} 
   for _,row in pairs(rows) do
-    local v = row.cells[col.at]
-    if v ~= "?" then
-      n=n+1
-      local bin = col.isNom and v or bins._bin(col,v)
-      local xy    = xys[bin] or XY(col.txt,col.at,v)
-      xy.xlo = math.min(v,xy.xlo) 
-      xy.xhi = math.max(v,xy.xhi)
-      add(xy.y, row.label) 
+    local x = row.cells[col.at]
+    if x~= "?" then
+      n = n+1
+      local bin = col.isNom and x or bins._bin(col,x)
+      local xy  = xys[bin] or  XY(col.txt,col.at, x)
+      add2(xy, x, row.label)
       xys[bin] = xy end end
-  xys = sort(values(xys),lt"xlo")
+  xys = sort(values(xys), lt"xlo")
   return col.isNom and xys or bins._merges(xys,n^the.min) end
 
 -- RATIOs get rounded into  `the.bins` divisions.
@@ -348,13 +366,14 @@ function bins._bin(ratio,x,     a,b,lo,hi)
   b = (hi - lo)/the.bins
   return hi==lo and 1 or math.floor(x/b+.5)*b  end 
 
--- Keep looping while anything can be merged.
+-- While adjacent things can be merged, keep merging.
+-- Then make sure the bins to cover &pm; &infin;.
 function bins._merges(xys0,nMin) 
   local n,xys1 = 1,{}
   while n <= #xys0 do
     local xymerged = n<#xys0 and bins._merged(xys0[n], xys0[n+1],nMin) 
     xys1[#xys1+1]  = xymerged or xys0[n]
-    n              = n + (xymerged and 2 or 1) -- if merged, skip next bin
+    n = n + (xymerged and 2 or 1) -- if merged, skip next bin
   end
   if   #xys1 < #xys0 
   then return bins._merges(xys1,nMin) 
@@ -364,70 +383,63 @@ function bins._merges(xys0,nMin)
        return xys1 end end
 
 -- Merge two bins if they are too small or too complex.
+-- E.g. if each bin only has "rest" values, then combine them.
 -- Returns nil otherwise (which is used to signal "no merge possible").
 function bins._merged(xy1,xy2,nMin)   
   local i,j= xy1.y, xy2.y
   local k = NOM(i.txt, i.at)
   for x,n in pairs(i.has) do add(k,x,n) end
   for x,n in pairs(j.has) do add(k,x,n) end
-  local tooSmall  = i.n < nMin or j.n < nMin 
-  local tooComplex= div(k) <= (i.n*div(i) + j.n*div(j))/k.n 
+  local tooSmall   = i.n < nMin or j.n < nMin 
+  local tooComplex = div(k) <= (i.n*div(i) + j.n*div(j))/k.n 
   if tooSmall or tooComplex then 
     return XY(xy1.txt,xy1.at, xy1.xlo, xy2.xhi, k) end end 
 
-
 ---- ---- ---- Rules
--- **Find the xy range that most separates best from rest**   
--- Then call yourself recursively on the rows selected by the bestxy.   
-function bestxys(data,      nStop,xys)
-  -- **score**: rewards ranges with more best than rest.
-  function score(nom,sGoal,nBest,nRest)
-    local best,rest=0,0
-    for x,n in pairs(nom.has) do
-      if x==sGoal then best=best+n/nBest else rest=rest+n/nRest end end
-    return  best - rest < 1E-3 and 0 or best^2/(best + rest) 
-  end -----------------------
-  -- **bestxy** : return best range across all columns and ranges.
-  local function bestxy(data)
-    local best,rest,both = bestOrRest(data.rows)
-    local most,out = 0
-    for _,col in pairs(cols) do
-      local xys= bins.find(both,col)
-        if #xys > 1 then
-         for _,xy in pairs(xys) do
-           local tmp= score(xy.y, "best", #best, #rest)
-           if tmp>most then most,out = tmp,xy end end end end 
-    return out 
-  end -----------
-  -- **selects**: returns the subset of rows relevant to the bextxy 
-  --   (and if the subset is the same as the all, then return nil since they rule is silly).
-  local function selects(xy,rows)
-    local out={}
-    for _,row in pairs(rows) do
-      v= row.cells[xy.at]
-      if v=="?" or xy.xlo==xy.xhi or xy.xlo<v and v <=xy.xhi then 
-        push(out,row) end end 
-    if #out < #rows then return out end 
-  end------------
+-- **Find the xy range that most separates best from rest**      
+-- Then call yourself recursively on the rows selected by the that range.   
+local how={}
+function how.rules(data,  nStop,xys)
   xys = xys or {}
   nStop = nStop or the.stop
   if #data.rows > nStop then 
-    local xy = bestxy(data)
+    local xy = how._xyBest(data)
     if xy then 
-      local rows1 = selects(xy, rows)
+      local rows1 = how._selects(xy, data.rows)
       if rows1 then
         push(xys,xy)
-        return bestxys(clone(data,rows1),nStop,xys) end end  end
+        return how.rules(clone(data,rows1),nStop,xys) end end  end
   return xys,data end 
 
--- **Print one xy**.
-function printxy(xy)
-  local x,lo,hi = xy.txt, xy.xlo, xy.xhi
-  if     lo ==  hi  then return fmt("%s == %s", x, lo)
-  elseif hi ==  big then return fmt("%s >  %s", x, lo)
-  elseif lo == -big then return fmt("%s <= %s", x, hi)
-  else                   return fmt("%s <  %s <= %s", lo,x,hi) end end
+-- Return best xy across all columns and ranges.
+function how._xyBest(data)
+  local best,rest,both = half.splits(data.rows)
+  local most,xyOut = 0
+  for _,col in pairs(data.about.x) do
+    local xys = bins.find(both,col)
+    if #xys > 1 then
+      for _,xy in pairs(xys) do
+        local tmp= how._score(xy.y, "best", #best, #rest)
+        if tmp > most then most,xyOut = tmp,xy end end end end 
+  return xyOut end 
 
+-- Scores are greater when a NOM contains more of the `sGoal` than otherwise.
+function how._score(nom,sGoal,nBest,nRest)
+  local best,rest=0,0
+  for x,n in pairs(nom.has) do
+    if x==sGoal then best=best+n/nBest else rest=rest+n/nRest end end
+  return  (best - rest) < 1E-3 and 0 or best^2/(best + rest) end
+
+-- Returns the subset of rows relevant to an xy (and if the subset 
+-- same as `rows`, then return nil since they rule is silly).
+function how._selects(xy,rows)
+  print(xyShow(xy), #rows)
+  local rowsOut={}
+  for _,row in pairs(rows) do
+    local x= row.cells[xy.at]
+    if x=="?" or xy.xlo==xy.xhi and x==xy.xlo or xy.xlo<x and x <=xy.xhi then 
+      push(rowsOut,row) end end 
+  if #rowsOut < #rows then return rowsOut end end
 
 ---- ---- ---- ---- General Functions
 ---- ---- ---- Misc
@@ -485,14 +497,14 @@ function slice(t, go, stop, inc)
   for j=(go or 1)//1,(stop or #t)//1,(inc or 1)//1 do u[1+#u]=t[j] end
   return u end
 
--- Extact values from a list
-function values(t) local u={}; for _,v in pairs(t) do u[1+#u]=v end; return u end
-
 -- In-place sort,  returns sorted list
 function sort(t,f) table.sort(t,f); return t end
 -- Sorting predictates
 function lt(x) return function(a,b) return a[x] < b[x] end end
 function gt(x) return function(a,b) return a[x] > b[x] end end
+
+-- Return values in a table
+function values(t,   u) u={}; for _,v in pairs(t) do u[1+#u]=v end; return u end
 
 ---- ---- ---- Print
 -- Generate a string from `t`.
@@ -620,20 +632,30 @@ function go.bestOrRest(   data,data1,data2,best,rest0,rest)
   map({stats(data1),stats(data2)},chat) 
   return true end
 
-function go.bins(   data,data1,data2,best,rest0,rest)
+function go.bins()
   local data= csv2data("../../data/auto93.csv")
   local best,rest0 = half.splits(data.rows)
-  local rest = many(rest0, #best*the.Balance)
+  local rest = many(rest0, #best*2*the.Balance)
   local rows ={}
   for _,row in pairs(rest) do push(rows,row).label="rest" end
   for _,row in pairs(best) do push(rows,row).label="best" end
-  for _,row in pairs(rows) do chat(row.cells) end
   for _,col in pairs(data.about.x) do
     print("")
     map(bins.find(rows,col),
         function(xy) print(xy.txt,xy.xlo,xy.xhi, cat(xy.y.has)) end) end
   return true end
-   
+
+function go.rules(      data)
+  local function nEvaled(rows,  n) 
+    n=0;for _,row in pairs(rows) do if row.evaled then n=n+1 end end;return n end 
+
+  local data= csv2data("../../data/auto93.csv")
+  for n,row in pairs(sort(data.rows, better)) do 
+    row.rank = math.floor(100*n/#data.rows) end
+  data.rows = shuffle(data.rows)
+  for _,xy in pairs(how.rules(data)) do print(xyShow(xy), xy.y.n) end
+  return true end
+    
 ---- ---- ---- ---- Start-up
 -- Counter for test failures
 local fails=0
