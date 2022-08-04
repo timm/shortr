@@ -67,7 +67,7 @@ local ABOUT,COL,DATA,NOM,RATIO,ROW,XY,
      half, is, key,many,mid,norm,
      xyShow, row, selects, stats,
 ---- General functions
-     any,big,cat,chat,cli,coerce,csv,fmt,gt,
+     any,big,cat,chat,cli,coerce,csv,fmt,get,gt,
      lines,lt,map,per,push,
      rand,rev,rnd,same,shuffle, slice,sort,values,words
 ---- Startup
@@ -304,6 +304,7 @@ function around(row1,rows)
 local half={}
 function half.splits(rows)
   local best,rest0 = half._splits(rows)
+  print("!",cat(sort(map(rows,function(row) if row.evaled then return row.rank end end))))
   local rest = many(rest0, #best*the.Balance)
   local both = {}
   for _,row in pairs(rest) do push(both,row).label="rest" end
@@ -399,7 +400,9 @@ function bins._merged(xy1,xy2,nMin)
 -- **Find the xy range that most separates best from rest**      
 -- Then call yourself recursively on the rows selected by the that range.   
 local how={}
-function how.rules(data,  nStop,xys)
+function how.rules(data) return how._rules1(data, data.rows) end
+
+function how._rules1(data,rowsAll, nStop,xys)
   xys = xys or {}
   nStop = nStop or the.stop
   if #data.rows > nStop then 
@@ -408,7 +411,9 @@ function how.rules(data,  nStop,xys)
       local rows1 = how._selects(xy, data.rows)
       if rows1 then
         push(xys,xy)
-        return how.rules(clone(data,rows1),nStop,xys) end end  end
+        print(cat(how._evals(rowsAll)),
+				  xyShow(xy), how._nevaled(rowsAll),#rows1)
+        return how._rules1(clone(data,rows1),rowsAll, nStop,xys) end end  end
   return xys,data end 
 
 -- Return best xy across all columns and ranges.
@@ -423,6 +428,12 @@ function how._xyBest(data)
         if tmp > most then most,xyOut = tmp,xy end end end end 
   return xyOut end 
 
+function how._nevaled(rows,     n)
+  n=0;for _,row in pairs(rows) do if row.evaled then n=n+1 end end;return n end
+
+function how._evals(rows,     n)
+  return sort(map(rows,function(row) if row.evaled then return row.rank end end)) end
+
 -- Scores are greater when a NOM contains more of the `sGoal` than otherwise.
 function how._score(nom,sGoal,nBest,nRest)
   local best,rest=0,0
@@ -433,7 +444,6 @@ function how._score(nom,sGoal,nBest,nRest)
 -- Returns the subset of rows relevant to an xy (and if the subset 
 -- same as `rows`, then return nil since they rule is silly).
 function how._selects(xy,rows)
-  print(xyShow(xy), #rows)
   local rowsOut={}
   for _,row in pairs(rows) do
     local x= row.cells[xy.at]
@@ -470,6 +480,9 @@ function many(t,num, u)
 -- then the returned list will be shorter.
 function map(t,f)
   local u={}; for _,v in pairs(t) do u[1+#u]=f(v) end; return u end
+
+-- Helper function for `map` (extracts certain slots
+function get(x) return function(t) return t[x] end end
 
 -- Return the `p`-th item in `t` (assumed to be sorted). e.g.
 -- `per(t,.5)` returns the median.
@@ -646,15 +659,16 @@ function go.bins()
         function(xy) print(xy.txt,xy.xlo,xy.xhi, cat(xy.y.has)) end) end
   return true end
 
-function go.rules(      data)
-  local function nEvaled(rows,  n) 
-    n=0;for _,row in pairs(rows) do if row.evaled then n=n+1 end end;return n end 
+local _ranked=function(data)
+   for n,row in pairs(sort(data.rows,better)) do row.rank= rnd(100*n/#data.rows,0) end
+   for _,row in pairs(data.rows) do row.evaled=false end
+   shuffle(data.rows)
+   return data  end
 
-  local data= csv2data("../../data/auto93.csv")
-  for n,row in pairs(sort(data.rows, better)) do 
-    row.rank = math.floor(100*n/#data.rows) end
-  data.rows = shuffle(data.rows)
-  for _,xy in pairs(how.rules(data)) do print(xyShow(xy), xy.y.n) end
+function go.rules(      data)
+  local data= _ranked(csv2data("../../data/auto93.csv"))
+  how.rules(data)
+  --for _,xy in pairs(how.rules(data)) do print(xyShow(xy), xy.y.n) end
   return true end
     
 ---- ---- ---- ---- Start-up
