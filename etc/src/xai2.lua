@@ -105,13 +105,12 @@ is={num   = "^[A-Z]",  -- ratio cols start with uppercase
     skip  = ":$",      -- skip if ":"
     less  = "-$"}      -- minimize if "-"
 
-
 local function col(sName,iAt)
-  str=sName or ""
+  sName = sName or ""
   return {n    = 0,                -- how many items seen?
           at   = iAt or 0,         -- position ot column
-          txt  = str,              -- column header
-          w    = str:find(is.less) and -1 or 1,
+          txt  = sName,            -- column header
+          w    = sName:find(is.less) and -1 or 1,
           ok   = true,             -- false if some update needed
           has  = {}} end           -- place to keep (some) column values.
 
@@ -138,7 +137,7 @@ function DATA:new() return {rows={}, about=nil} end
 -- Goals and none-gaols are cached in `x` and `y` (ignorong
 -- anything that is `skipped`.
 function ABOUT:new(sNames)
-  local about = {names=s,all={}, x={}, y={}, klass=nil}
+  local about = {names=sNames,all={}, x={}, y={}, klass=nil}
   for at,name in pairs(sNames) do
     local one = name:find(is.num) and RATIO(name,at) or NOM(name,at)
     push(about.all, one)
@@ -164,7 +163,7 @@ function XY:new(txt,at,num1,num2,nom)
 -- Optionally, add rows of data (from `t`).
 function DATA:clone(t)
   local data1= DATA()
-  row(data1, self.about.names)
+  data1:add(self.about.names)
   for _,row1 in pairs(t or {}) do data1:add(row1) end
   return data1 end
 
@@ -184,12 +183,13 @@ function NOM:add(x,  num)
 
 function RATIO:add(x)
   if x ~= "?" then
+    local pos
     self.n = self.n + 1
-    if #self.has < the.ratios      then pos= (#self.has) + 1
-    elseif rand() < the.ratios/self.n then pos= rand(#self.has) end
+    if     #self.has < the.ratios        then pos = 1 + (#self.has) 
+    elseif rand()    < the.ratios/self.n then pos = rand(#self.has) end
     if pos then
-    self.ok=false  -- the `kept` list is no longer in sorted order
-    self.has[pos]=x end end end
+      self.ok=false -- the `kept` list is no longer in sorted order
+      self.has[pos]=x end end end
 
 -- **Add in `x,y` values from one row into an XY.**
 function XY:add(x,y)
@@ -227,15 +227,15 @@ function XY:__tostring()
 
 ---- ---- ---- Query
 -- **Return `col.has`, sorting numerics (if needed).**
-function NOM:has() return self.has end
-function RATIO:has()
+function NOM:holds() return self.has end
+function RATIO:holds()
   if not self.ok then table.sort(self.has) end
   self.ok=true 
   return self.has end
 
 -- **Return `num`, normalized to 0..1 for min..max.**
 function RATIO:norm(num)
-  local a= self:has() -- "a" contains all our numbers,  sorted.
+  local a= self:holds() -- "a" contains all our numbers,  sorted.
   return a[#a] - a[1] < 1E-9 and 0 or (num-a[1])/(a[#a]-a[1]) end
 
 -- **Return the central tendency of `col`umns**  
@@ -246,13 +246,13 @@ function NOM:mid(places)
   return mode end
 
 function RATIO:mid(places)
-  local median= per(self:has(),.5)
+  local median= per(self:holds(),.5)
   return places and rnd(median,places) or median end 
 
 -- **Return the `div`ersity of a `col`umns**   
 -- (sd/entropy for ratios/nominals (respectively).
 function RATIO:div(places)
-  local nums=self:has()
+  local nums=self:holds()
   local out = (per(nums,.9) - per(nums,.1))/2.58 
   return places and rnd(out,places) or out end 
 
@@ -263,14 +263,14 @@ function NOM:div(places)
   return places and rnd(out,places) or out end 
 
 -- **Returns stats collected across a set of `col`umns**   
---  Stats
--- selected by `f`. If `places` omitted, then no nums are rounded.
--- If `cols` is omitted then report the `y` values.
-function DATA:stats(  f,places,cols,   u)
-  f = f or mid
-  cols =cols or self.about.y
-  u={}; for k,col in pairs(cols) do
-    u.n=col.n; u[col.txt]=f(col,places) end;
+function DATA:mid(places,cols,    u)
+  u={}; for k,col in pairs(cols or self.about.y) do 
+          u.n=col.n; u[col.txt]=col:mid(places) end
+  return u end
+
+function DATA:div(places,cols,    u)
+  u={}; for k,col in pairs(cols or self.about.y) do 
+          u.n=col.n; u[col.txt]=col:div(places) end
   return u end
 
 -- **Return true if `row1`'s goals are better than `row2`.**
@@ -375,7 +375,7 @@ function bins.find(rows,col)
 
 -- RATIOs get rounded into  `the.bins` divisions.
 function bins._bin(ratio,x,     a,b,lo,hi)
-  a = has(ratio)
+  a = ratio:holds()
   lo,hi = a[1], a[#a]
   b = (hi - lo)/the.bins
   return hi==lo and 1 or math.floor(x/b+.5)*b  end 
@@ -591,7 +591,7 @@ function csv(filename, fun)
 -- Read `filename` into a DATA object. Return that object.
 function csv2data(filename,data)
   data=DATA()
-  csv(filename, function(t) row(data,t) end)
+  csv(filename, function(t) data:add(t) end)
   return data end
 
 ---- ---- ---- ---- Tests
@@ -607,23 +607,24 @@ function go.nom(   nom)
 
 function go.ratio(    r)
   r=RATIO()
-  the.ratios=32
-  for i=1,100 do add(r,i) end
-  chat(has(r))
-  return 50==mid(r) and 31.01==rnd(div(r),2)  end
+  the.ratios = 64
+  for i=1,100 do r:add(i) end
+  return 52==r:mid() and 32.56==rnd(r:div(),2)  end
 
 function go.about()
   map(  ABOUT{"Clndrs","Volume","Hp:","Lbs-",
-          "Acc+","Model","origin","Mpg+"}.x , chat)
+          "Acc+","Model","origin","Mpg+"}.y , chat)
   return true end
 
 function go.one(     data1,data2)
   data1=csv2data("../../data/auto93.csv")
-  print("mid1", cat(stats(data1,mid,2)))
-  print("div1", cat(stats(data1,div,2)))
-  data2=clone(data1,data1.rows)
-  print("mid2", cat(stats(data2,mid,2)))
-  print("div2", cat(stats(data2,div,2)))
+  print("mid1", cat(data1:mid(2)))
+  print("div1", cat(data1:div(2)))
+  print(1)
+  data2=            data1:clone(data1.rows)
+  print(2)
+  print("mid2", cat(data2:mid(2)))
+  print("div2", cat(data2:div(2)))
   return true
   end
 
