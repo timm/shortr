@@ -353,10 +353,10 @@ function bins.find(rows,col)
     if x~= "?" then
       n = n+1
       local bin = col.isNom and x or bins._bin(col,x)
-      local xy  = xys[bin] or  XY(col.txt,col.at, x)
+      local xy  = xys[bin] or XY(col.txt,col.at, x)
       add2(xy, x, row.label)
       xys[bin] = xy end end
-  xys = sort(values(xys), lt"xlo")
+  xys = sort(xys, lt"xlo")
   return col.isNom and xys or bins._merges(xys,n^the.min) end
 
 -- RATIOs get rounded into  `the.bins` divisions.
@@ -497,8 +497,9 @@ function slice(t, go, stop, inc)
   for j=(go or 1)//1,(stop or #t)//1,(inc or 1)//1 do u[1+#u]=t[j] end
   return u end
 
--- In-place sort,  returns sorted list
-function sort(t,f) table.sort(t,f); return t end
+-- In-place sort, returns sorted list
+function sort(t,f) if #t==0 then t=values(t) end; table.sort(t,f); return t end
+
 -- Sorting predictates
 function lt(x) return function(a,b) return a[x] < b[x] end end
 function gt(x) return function(a,b) return a[x] > b[x] end end
