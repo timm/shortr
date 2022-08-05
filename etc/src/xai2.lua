@@ -288,27 +288,28 @@ function better(row1,row2)
 ---- ---- ---- Dist
 -- Return 0..1 for distance between two rows using `cols`
 -- (and `cols`` defaults to the `x` columns).
-function dist(row1,row2,cols)
+function ROW:__sub(row2)
+  local row1=self
   local d,n,x,y,dist1=0,0
-  function dist1(col,x,y)
-    if x=="?" and y=="?" then return 1 end
-    if   col.isNom
-    then return (x=="?" or y=="?") and 1 or x==y and 0 or 1 
-    else if     x=="?" then y=norm(col,y); x=y<.5 and 1 or 0
-         elseif y=="?" then x=norm(col,x); y=x<.5 and 1 or 0
-         else   x,y = norm(col,x), norm(col,y) end
-         return math.abs(x-y) end
-  end ---------------
-  cols = cols or row1._about.x
+  local cols = cols or self._about.x
   for _,col in pairs(cols) do
     x,y = row1.cells[col.at], row2.cells[col.at]
-    d   = d + dist1(col,x,y)^the.p
+    d   = d + col:dist(x,y)^the.p
     n   = n + 1 end
   return (d/n)^(1/the.p) end
 
+function NOM:dist(x,y) 
+    return (x=="?" or y=="?") and 1 or x==y and 0 or 1 end
+
+function RATIO:dist(x,y)
+   if     x=="?" then y=self:norm(y); x=y<.5 and 1 or 0
+   elseif y=="?" then x=self:norm(x); y=x<.5 and 1 or 0
+   else   x,y = self:norm(x), self:norm(y) end
+  return math.abs(x-y) end
+
 -- Return all rows  sorted by their distance  to `row`.
 function around(row1,rows)
-  return sort(map(rows, function(row2) return {row=row2,d=dist(row1,row2)} end),
+  return sort(map(rows, function(row2) return {row=row2,d=row1-row2} end),--#
              lt"d") end
 
 ---- ---- ---- Clustering
@@ -347,10 +348,10 @@ function half._split(rows,  rowAbove)
   local some= many(rows,the.Some)
   function far(row) return per(around(row,some), the.Far).row end
   function project(row) 
-    return {row=row, x=(dist(row,A)^2 + c^2 - dist(row,B)^2)/(2*c)} end
+    return {row=row, x=((row- A)^2 + c^2 - (row- B)^2)/(2*c)} end
   A= rowAbove or far(any(some))
   B= far(A)
-  c= dist(A,B)
+  c= A-B
   for n,rd in pairs(sort(map(rows, project),lt"x")) do
     push(n < #rows/2 and As or Bs, rd.row) end
   return A,B,As,Bs,c end
@@ -620,9 +621,7 @@ function go.one(     data1,data2)
   data1=csv2data("../../data/auto93.csv")
   print("mid1", cat(data1:mid(2)))
   print("div1", cat(data1:div(2)))
-  print(1)
   data2=            data1:clone(data1.rows)
-  print(2)
   print("mid2", cat(data2:mid(2)))
   print("div2", cat(data2:div(2)))
   return true
@@ -634,7 +633,7 @@ function go.dist(    data,row1,row2)
   for i = 1,20 do
     row1=any(data.rows)
     row2=any(data.rows)
-    print(dist(row1,row2)) end
+    print(row1-row2) end
   return true end
 
 function go.betters(   data,data1,data2)
