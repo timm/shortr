@@ -56,22 +56,26 @@ local the= {
 ---- Cache names known `b4` we start
 -- Use that, later, to hunt down any rogue globals.
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
---- learning functions
-local  around, bins, half, how,
----- General functions
-     any,big,cat,chat,cli,coerce,csv,csv2data,fmt,get,gt,
-     klass,lines,lt,many,map,obj,per,push,
-     rand,rev,rnd,rogues,same,shuffle, slice,sort,values,words
----- Startup
+
+
+---- Startup actions
 local go={}
+
+--- learning modules
+local bins,half,how
+
+---- Misc general functions
+local any,big,cat,chat,cli,coerce,csv,csv2data,
+      fmt,get,gt,klass,lines,lt,many,map,
+      obj,per,push,rand,rev,rnd,rogues,
+      same,shuffle,slice,sort,values,words
 
 ---- Classes
 function klass(sName,     new,self,t)
- function new(k,...)
-   self = setmetatable({},k)
-   return setmetatable(k.new(self,...) or self,k) 
-  end ----------------- 
-  t={_is=sName, __tostring=function(x) return cat(x) end}
+  function new(k,...)
+    self = setmetatable({},k)
+    return setmetatable(k.new(self,...) or self,k) end
+  t={_is = sName, __tostring = function(x) return cat(x) end}
   t.__index = t
   return setmetatable(t,{__call=new}) end
 
@@ -79,18 +83,15 @@ local ABOUT,DATA,NOM= klass"ABOUT", klass"DATA", klass"NOM"
 local RATIO,ROW,XY  = klass"RATIO",klass"ROW",klass"XY"
 
 ---- This module
-local XAI= {
-     the=the,   go=go, 
-     ABOUT=ABOUT, COL=COL, DATA=DATA, NOM=NOM, RATIO=RATIO, ROW=ROW, XY=XY, 
-     around=around,  better=better,  bins=bins,  half=half,  how=how,
----- Misc library functions
-     any=any, big=big, cat=cat, chat=chat, cli=cli, coerce=coerce, 
-     csv=csv, csv2data=csv2data, fmt=fmt, get=get, gt=gt, 
-     klass=klass, lines=lines, lt=lt, many=many, map=map, obj=obj, per=per, push=push, 
-     rand=rand, rev=rev, rnd=rnd, rogues=rogues,
-     same=same, shuffle=shuffle,  slice=slice, sort=sort, 
-     values=values, words=words
-}
+local XAI= {the=the, go=go, 
+     klass= {ABOUT=ABOUT, COL=COL, DATA=DATA, NOM=NOM, RATIO=RATIO, ROW=ROW, XY=XY}, 
+     mod=   {bins=bins,  half=half,  how=how},
+     fun=   {any=any, big=big, cat=cat, chat=chat, cli=cli, coerce=coerce, 
+             csv=csv, csv2data=csv2data, fmt=fmt, get=get, gt=gt, 
+             klass=klass, lines=lines, lt=lt, many=many, map=map, 
+             obj=obj, per=per, push=push, rand=rand, rev=rev, rnd=rnd, rogues=rogues,
+             same=same, shuffle=shuffle,  slice=slice, sort=sort, 
+             values=values, words=words }}
 
 ---- ---- ---- ---- Types
 -- In this code,  function arguments offer some type hints. 
@@ -143,7 +144,7 @@ function DATA:new() return {rows={}, about=nil} end
 function ABOUT:new(sNames)
   local about = {names=sNames,all={}, x={}, y={}, klass=nil}
   for at,name in pairs(sNames) do
-    local one = name:find(_is.num) and RATIO(name,at) or NOM(name,at)
+    local one = (name:find(_is.num) and RATIO or NOM)(name,at) 
     push(about.all, one)
     if not name:find(_is.skip) then
       push(name:find(_is.goal) and about.y or about.x, one)
@@ -153,12 +154,12 @@ function ABOUT:new(sNames)
 -- **XY summarize data from the same rows from two columns.**   
 -- `num2` is optional (defaults to `num1`).   
 -- `y` is optional (defaults to a new NOM)
-function XY:new(txt,at,num1,num2,nom)
-  return {txt = txt,
+function XY:new(str,at,num1,num2,nom)
+  return {txt = str,
           at  = at,
           xlo = num1, 
           xhi = num2 or num1, 
-          y   = nom or NOM(txt,at)} end
+          y   = nom or NOM(str,at)} end
 
 ---- ---- ---- ---- Functions for Types
 ---- ---- ---- Create
@@ -248,39 +249,39 @@ function RATIO:norm(num)
   return a[#a] - a[1] < 1E-9 and 0 or (num-a[1])/(a[#a]-a[1]) end
 
 -- **Returns stats collected across a set of `col`umns**   
-function DATA:mid(places,cols,    u)
+function DATA:mid(  nPlaces,cols,    u)
   u={}; for k,col in pairs(cols or self.about.y) do 
-          u.n=col.n; u[col.txt]=col:mid(places) end
+          u.n=col.n; u[col.txt]=col:mid(nPlaces) end
   return u end
 
-function DATA:div(places,cols,    u)
+function DATA:div(  nPlaces,cols,    u)
   u={}; for k,col in pairs(cols or self.about.y) do 
-          u.n=col.n; u[col.txt]=col:div(places) end
+          u.n=col.n; u[col.txt]=col:div(nPlaces) end
   return u end
 
 --  Mode for NOM's mid
-function NOM:mid(places)
+function NOM:mid(...)
   local mode,most= nil,-1
   for x,n in pairs(self.has) do if n > most then mode,most=x,n end end
   return mode end
 
 -- Median for RATIO's mid
-function RATIO:mid(places)
+function RATIO:mid(  nPlaces)
   local median= per(self:holds(),.5)
-  return places and rnd(median,places) or median end 
+  return places and rnd(median,nPlaces) or median end 
 
 -- Entropy for RATIO'd div
-function NOM:div(places)
+function NOM:div(  nPlaces)
   local out = 0
   for _,n in pairs(self.has) do
     if n>0 then out=out-n/self.n*math.log(n/self.n,2) end end 
-  return places and rnd(out,places) or out end 
+  return places and rnd(out,nPlaces) or out end 
 
 -- sd for RATIOs
-function RATIO:div(places)
+function RATIO:div(  nPlaces)
   local nums=self:holds()
   local out = (per(nums,.9) - per(nums,.1))/2.58 
-  return places and rnd(out,places) or out end 
+  return places and rnd(out,nPlaces) or out end 
 
 -- **Return true if `row1`'s goals are worse than `row2:`.**
 function ROW:__lt(row2)
@@ -318,8 +319,8 @@ function RATIO:dist(x,y)
   return math.abs(x-y) end
 
 -- Return all rows  sorted by their distance  to `row`.
-function around(row1,rows)
-  return sort(map(rows, function(row2) return {row=row2,d=row1-row2} end),--#
+function ROW:around(rows)
+  return sort(map(rows, function(row2) return {row=row2,d = self-row2} end),--#
              lt"d") end
 
 ---- ---- ---- Clustering
@@ -356,7 +357,7 @@ function half._splits(rows,  rowAbove,          stop,worst)
 function half._split(rows,  rowAbove)
   local As,Bs,A,B,c,far,project = {},{}
   local some= many(rows,the.Some)
-  function far(row) return per(around(row,some), the.Far).row end
+  function far(row) return per(row:around(some), the.Far).row end
   function project(row) 
     return {row=row, x=((row- A)^2 + c^2 - (row- B)^2)/(2*c)} end
   A= rowAbove or far(any(some))
