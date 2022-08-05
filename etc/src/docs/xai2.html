@@ -602,52 +602,6 @@ To disable that, change line one of this function to<br><code>local row = ROW(ab
               <div class="sswrap ">
                 <a class="ss" href="#section-30">&#x00a7;</a>
               </div>
-              <p><strong>Return the central tendency of <code>col</code>umns</strong><br> (median/mode for ratios/nominals (respectively).</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NOM:mid</span><span class="hljs-params">(places)</span></span>
-  <span class="hljs-keyword">local</span> mode,most= <span class="hljs-literal">nil</span>,<span class="hljs-number">-1</span>
-  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">self</span>.has) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n &gt; most <span class="hljs-keyword">then</span> mode,most=x,n <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">return</span> mode <span class="hljs-keyword">end</span>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RATIO:mid</span><span class="hljs-params">(places)</span></span>
-  <span class="hljs-keyword">local</span> median= per(<span class="hljs-built_in">self</span>:holds(),<span class="hljs-number">.5</span>)
-  <span class="hljs-keyword">return</span> places <span class="hljs-keyword">and</span> rnd(median,places) <span class="hljs-keyword">or</span> median <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-31">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-31">&#x00a7;</a>
-              </div>
-              <p><strong>Return the <code>div</code>ersity of a <code>col</code>umns</strong><br>(sd/entropy for ratios/nominals (respectively).</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RATIO:div</span><span class="hljs-params">(places)</span></span>
-  <span class="hljs-keyword">local</span> nums=<span class="hljs-built_in">self</span>:holds()
-  <span class="hljs-keyword">local</span> out = (per(nums,<span class="hljs-number">.9</span>) - per(nums,<span class="hljs-number">.1</span>))/<span class="hljs-number">2.58</span> 
-  <span class="hljs-keyword">return</span> places <span class="hljs-keyword">and</span> rnd(out,places) <span class="hljs-keyword">or</span> out <span class="hljs-keyword">end</span> 
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NOM:div</span><span class="hljs-params">(places)</span></span>
-  <span class="hljs-keyword">local</span> out = <span class="hljs-number">0</span>
-  <span class="hljs-keyword">for</span> _,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">self</span>.has) <span class="hljs-keyword">do</span>
-    <span class="hljs-keyword">if</span> n&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">then</span> out=out-n/<span class="hljs-built_in">self</span>.n*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(n/<span class="hljs-built_in">self</span>.n,<span class="hljs-number">2</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
-  <span class="hljs-keyword">return</span> places <span class="hljs-keyword">and</span> rnd(out,places) <span class="hljs-keyword">or</span> out <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-32">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-32">&#x00a7;</a>
-              </div>
               <p><strong>Returns stats collected across a set of <code>col</code>umns</strong>   </p>
 
             </div>
@@ -665,11 +619,83 @@ To disable that, change line one of this function to<br><code>local row = ROW(ab
         </li>
         
         
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-31">&#x00a7;</a>
+              </div>
+              <p> Mode for NOM’s mid</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NOM:mid</span><span class="hljs-params">(places)</span></span>
+  <span class="hljs-keyword">local</span> mode,most= <span class="hljs-literal">nil</span>,<span class="hljs-number">-1</span>
+  <span class="hljs-keyword">for</span> x,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">self</span>.has) <span class="hljs-keyword">do</span> <span class="hljs-keyword">if</span> n &gt; most <span class="hljs-keyword">then</span> mode,most=x,n <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">return</span> mode <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-32">&#x00a7;</a>
+              </div>
+              <p>Entropy for RATIO’d div</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NOM:div</span><span class="hljs-params">(places)</span></span>
+  <span class="hljs-keyword">local</span> out = <span class="hljs-number">0</span>
+  <span class="hljs-keyword">for</span> _,n <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>(<span class="hljs-built_in">self</span>.has) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">if</span> n&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">then</span> out=out-n/<span class="hljs-built_in">self</span>.n*<span class="hljs-built_in">math</span>.<span class="hljs-built_in">log</span>(n/<span class="hljs-built_in">self</span>.n,<span class="hljs-number">2</span>) <span class="hljs-keyword">end</span> <span class="hljs-keyword">end</span> 
+  <span class="hljs-keyword">return</span> places <span class="hljs-keyword">and</span> rnd(out,places) <span class="hljs-keyword">or</span> out <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
         <li id="section-33">
             <div class="annotation">
               
               <div class="sswrap ">
                 <a class="ss" href="#section-33">&#x00a7;</a>
+              </div>
+              <p>Median for RATIO’s mid</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RATIO:mid</span><span class="hljs-params">(places)</span></span>
+  <span class="hljs-keyword">local</span> median= per(<span class="hljs-built_in">self</span>:holds(),<span class="hljs-number">.5</span>)
+  <span class="hljs-keyword">return</span> places <span class="hljs-keyword">and</span> rnd(median,places) <span class="hljs-keyword">or</span> median <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-34">&#x00a7;</a>
+              </div>
+              <p>sd for RATIOs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RATIO:div</span><span class="hljs-params">(places)</span></span>
+  <span class="hljs-keyword">local</span> nums=<span class="hljs-built_in">self</span>:holds()
+  <span class="hljs-keyword">local</span> out = (per(nums,<span class="hljs-number">.9</span>) - per(nums,<span class="hljs-number">.1</span>))/<span class="hljs-number">2.58</span> 
+  <span class="hljs-keyword">return</span> places <span class="hljs-keyword">and</span> rnd(out,places) <span class="hljs-keyword">or</span> out <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-35">&#x00a7;</a>
               </div>
               <p><strong>Return true if <code>row1</code>‘s goals are better than <code>row2</code>.</strong></p>
 
@@ -689,11 +715,11 @@ To disable that, change line one of this function to<br><code>local row = ROW(ab
         </li>
         
         
-        <li id="section-34">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-34">&#x00a7;</a>
+                <a class="ss" href="#section-36">&#x00a7;</a>
               </div>
               <h3 id="dist">Dist</h3>
 
@@ -702,11 +728,11 @@ To disable that, change line one of this function to<br><code>local row = ROW(ab
         </li>
         
         
-        <li id="section-35">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-35">&#x00a7;</a>
+                <a class="ss" href="#section-37">&#x00a7;</a>
               </div>
               <p>Return 0..1 for distance between two rows using <code>cols</code>
 (and <code>cols`` defaults to the </code>x` columns).</p>
@@ -735,11 +761,11 @@ To disable that, change line one of this function to<br><code>local row = ROW(ab
         </li>
         
         
-        <li id="section-36">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-36">&#x00a7;</a>
+                <a class="ss" href="#section-38">&#x00a7;</a>
               </div>
               <p>Return all rows  sorted by their distance  to <code>row</code>.</p>
 
@@ -752,11 +778,11 @@ To disable that, change line one of this function to<br><code>local row = ROW(ab
         </li>
         
         
-        <li id="section-37">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-37">&#x00a7;</a>
+                <a class="ss" href="#section-39">&#x00a7;</a>
               </div>
               <h3 id="clustering">Clustering</h3>
 
@@ -765,11 +791,11 @@ To disable that, change line one of this function to<br><code>local row = ROW(ab
         </li>
         
         
-        <li id="section-38">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-38">&#x00a7;</a>
+                <a class="ss" href="#section-40">&#x00a7;</a>
               </div>
               <p><strong>Divide data according to its distance to two distant rows.</strong><br>Use all the <code>best</code> and some sample of the <code>rest</code>.</p>
 
@@ -788,11 +814,11 @@ To disable that, change line one of this function to<br><code>local row = ROW(ab
         </li>
         
         
-        <li id="section-39">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-39">&#x00a7;</a>
+                <a class="ss" href="#section-41">&#x00a7;</a>
               </div>
               <p>Divide the data, recursing into the best half. Keep the
 <em>first</em> non-best half (as <em>worst</em>). Return the
@@ -813,11 +839,11 @@ worst).</p>
         </li>
         
         
-        <li id="section-40">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-40">&#x00a7;</a>
+                <a class="ss" href="#section-42">&#x00a7;</a>
               </div>
               <p>Do one split. To reduce the cost of this search,
 only apply it to <code>some</code> of the rows (controlled by <code>the.Some</code>).
@@ -843,11 +869,11 @@ two poles and lower-level poles only seeks one new pole each time).</p>
         </li>
         
         
-        <li id="section-41">
+        <li id="section-43">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-41">&#x00a7;</a>
+                <a class="ss" href="#section-43">&#x00a7;</a>
               </div>
               <h3 id="discretization">Discretization</h3>
 
@@ -856,11 +882,11 @@ two poles and lower-level poles only seeks one new pole each time).</p>
         </li>
         
         
-        <li id="section-42">
+        <li id="section-44">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-42">&#x00a7;</a>
+                <a class="ss" href="#section-44">&#x00a7;</a>
               </div>
               <p><strong>Divide column values into many bins, then merge unneeded ones</strong><br>When reading this code, remember that NOMinals can’t get rounded or merged
 (only RATIOS).</p>
@@ -884,11 +910,11 @@ two poles and lower-level poles only seeks one new pole each time).</p>
         </li>
         
         
-        <li id="section-43">
+        <li id="section-45">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-43">&#x00a7;</a>
+                <a class="ss" href="#section-45">&#x00a7;</a>
               </div>
               <p>RATIOs get rounded into  <code>the.bins</code> divisions.</p>
 
@@ -903,11 +929,11 @@ two poles and lower-level poles only seeks one new pole each time).</p>
         </li>
         
         
-        <li id="section-44">
+        <li id="section-46">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-44">&#x00a7;</a>
+                <a class="ss" href="#section-46">&#x00a7;</a>
               </div>
               <p>While adjacent things can be merged, keep merging.
 Then make sure the bins to cover &pm; &infin;.</p>
@@ -931,11 +957,11 @@ Then make sure the bins to cover &pm; &infin;.</p>
         </li>
         
         
-        <li id="section-45">
+        <li id="section-47">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-45">&#x00a7;</a>
+                <a class="ss" href="#section-47">&#x00a7;</a>
               </div>
               <p>Merge two bins if they are too small or too complex.
 E.g. if each bin only has “rest” values, then combine them.
@@ -956,11 +982,11 @@ Returns nil otherwise (which is used to signal “no merge possible”).</p>
         </li>
         
         
-        <li id="section-46">
+        <li id="section-48">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-46">&#x00a7;</a>
+                <a class="ss" href="#section-48">&#x00a7;</a>
               </div>
               <h3 id="rules">Rules</h3>
 
@@ -969,11 +995,11 @@ Returns nil otherwise (which is used to signal “no merge possible”).</p>
         </li>
         
         
-        <li id="section-47">
+        <li id="section-49">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-47">&#x00a7;</a>
+                <a class="ss" href="#section-49">&#x00a7;</a>
               </div>
               <p><strong>Find the xy range that most separates best from rest</strong><br>Then call yourself recursively on the rows selected by the that range.   </p>
 
@@ -999,11 +1025,11 @@ Returns nil otherwise (which is used to signal “no merge possible”).</p>
         </li>
         
         
-        <li id="section-48">
+        <li id="section-50">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-48">&#x00a7;</a>
+                <a class="ss" href="#section-50">&#x00a7;</a>
               </div>
               <p>Return best xy across all columns and ranges.</p>
 
@@ -1029,11 +1055,11 @@ Returns nil otherwise (which is used to signal “no merge possible”).</p>
         </li>
         
         
-        <li id="section-49">
+        <li id="section-51">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-49">&#x00a7;</a>
+                <a class="ss" href="#section-51">&#x00a7;</a>
               </div>
               <p>Scores are greater when a NOM contains more of the <code>sGoal</code> than otherwise.</p>
 
@@ -1048,11 +1074,11 @@ Returns nil otherwise (which is used to signal “no merge possible”).</p>
         </li>
         
         
-        <li id="section-50">
+        <li id="section-52">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-50">&#x00a7;</a>
+                <a class="ss" href="#section-52">&#x00a7;</a>
               </div>
               <p>Returns the subset of rows relevant to an xy (and if the subset 
 same as <code>rows</code>, then return nil since they rule is silly).</p>
@@ -1070,43 +1096,13 @@ same as <code>rows</code>, then return nil since they rule is silly).</p>
         </li>
         
         
-        <li id="section-51">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-51">&#x00a7;</a>
-              </div>
-              <h2 id="general-functions">General Functions</h2>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-52">
-            <div class="annotation">
-              
-              <div class="sswrap ">
-                <a class="ss" href="#section-52">&#x00a7;</a>
-              </div>
-              <h3 id="misc">Misc</h3>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">same</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span></pre></div></div>
-            
-        </li>
-        
-        
         <li id="section-53">
             <div class="annotation">
               
               <div class="sswrap ">
                 <a class="ss" href="#section-53">&#x00a7;</a>
               </div>
-              <h3 id="maths">Maths</h3>
+              <h2 id="general-functions">General Functions</h2>
 
             </div>
             
@@ -1119,11 +1115,13 @@ same as <code>rows</code>, then return nil since they rule is silly).</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-54">&#x00a7;</a>
               </div>
-              <p>Large number</p>
+              <h3 id="misc">Misc</h3>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>big=<span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">same</span><span class="hljs-params">(x)</span></span> <span class="hljs-keyword">return</span> x <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
         
@@ -1134,11 +1132,9 @@ same as <code>rows</code>, then return nil since they rule is silly).</p>
               <div class="sswrap ">
                 <a class="ss" href="#section-55">&#x00a7;</a>
               </div>
-              <p>Random num</p>
+              <h3 id="maths">Maths</h3>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre>rand=<span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span></pre></div></div>
             
         </li>
         
@@ -1148,6 +1144,36 @@ same as <code>rows</code>, then return nil since they rule is silly).</p>
               
               <div class="sswrap ">
                 <a class="ss" href="#section-56">&#x00a7;</a>
+              </div>
+              <p>Large number</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>big=<span class="hljs-built_in">math</span>.<span class="hljs-built_in">huge</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-57">&#x00a7;</a>
+              </div>
+              <p>Random num</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>rand=<span class="hljs-built_in">math</span>.<span class="hljs-built_in">random</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-58">&#x00a7;</a>
               </div>
               <p>Round nums.</p>
 
@@ -1160,11 +1186,11 @@ same as <code>rows</code>, then return nil since they rule is silly).</p>
         </li>
         
         
-        <li id="section-57">
+        <li id="section-59">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-57">&#x00a7;</a>
+                <a class="ss" href="#section-59">&#x00a7;</a>
               </div>
               <h3 id="lists">Lists</h3>
 
@@ -1173,11 +1199,11 @@ same as <code>rows</code>, then return nil since they rule is silly).</p>
         </li>
         
         
-        <li id="section-58">
+        <li id="section-60">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-58">&#x00a7;</a>
+                <a class="ss" href="#section-60">&#x00a7;</a>
               </div>
               <p>Return any item (selected at random) from list <code>t</code>.</p>
 
@@ -1188,11 +1214,11 @@ same as <code>rows</code>, then return nil since they rule is silly).</p>
         </li>
         
         
-        <li id="section-59">
+        <li id="section-61">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-59">&#x00a7;</a>
+                <a class="ss" href="#section-61">&#x00a7;</a>
               </div>
               <p>Return <code>num</code> items (selected at random) from list <code>t</code>.
 If <code>num</code> is more than the size of the list, return that list, shuffled.</p>
@@ -1206,11 +1232,11 @@ If <code>num</code> is more than the size of the list, return that list, shuffle
         </li>
         
         
-        <li id="section-60">
+        <li id="section-62">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-60">&#x00a7;</a>
+                <a class="ss" href="#section-62">&#x00a7;</a>
               </div>
               <p>Return items in <code>t</code> filtered through <code>f</code>. If <code>f</code> ever returns nil
 then the returned list will be shorter.</p>
@@ -1223,11 +1249,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-61">
+        <li id="section-63">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-61">&#x00a7;</a>
+                <a class="ss" href="#section-63">&#x00a7;</a>
               </div>
               <p>Helper function for <code>map</code> (extracts certain slots</p>
 
@@ -1238,11 +1264,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-62">
+        <li id="section-64">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-62">&#x00a7;</a>
+                <a class="ss" href="#section-64">&#x00a7;</a>
               </div>
               <p>Return the <code>p</code>-th item in <code>t</code> (assumed to be sorted). e.g.
 <code>per(t,.5)</code> returns the median.</p>
@@ -1255,11 +1281,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-63">
+        <li id="section-65">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-63">&#x00a7;</a>
+                <a class="ss" href="#section-65">&#x00a7;</a>
               </div>
               <p>Add <code>x</code> to list <code>t</code>, returning <code>x</code>.</p>
 
@@ -1270,11 +1296,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-64">
+        <li id="section-66">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-64">&#x00a7;</a>
+                <a class="ss" href="#section-66">&#x00a7;</a>
               </div>
               <p>In-place reverse, return reversed list</p>
 
@@ -1287,11 +1313,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-65">
+        <li id="section-67">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-65">&#x00a7;</a>
+                <a class="ss" href="#section-67">&#x00a7;</a>
               </div>
               <p>Randomly shuffle, in place, the list <code>t</code>.</p>
 
@@ -1303,11 +1329,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-66">
+        <li id="section-68">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-66">&#x00a7;</a>
+                <a class="ss" href="#section-68">&#x00a7;</a>
               </div>
               <p>Return <code>t</code> from <code>go</code> to <code>stop</code> by <code>inc</code>.<br><code>go</code> is optional (defaults to 1).
 <code>stop</code> is optional (defaults to length of <code>t</code>).<br><code>inc</code> is optional (defaults to 1)</p>
@@ -1322,11 +1348,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-67">
+        <li id="section-69">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-67">&#x00a7;</a>
+                <a class="ss" href="#section-69">&#x00a7;</a>
               </div>
               <p>In-place sort, returns sorted list</p>
 
@@ -1337,11 +1363,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-68">
+        <li id="section-70">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-68">&#x00a7;</a>
+                <a class="ss" href="#section-70">&#x00a7;</a>
               </div>
               <p>Sorting predictates</p>
 
@@ -1353,11 +1379,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-69">
+        <li id="section-71">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-69">&#x00a7;</a>
+                <a class="ss" href="#section-71">&#x00a7;</a>
               </div>
               <p>Return values in a table</p>
 
@@ -1368,11 +1394,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-70">
+        <li id="section-72">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-70">&#x00a7;</a>
+                <a class="ss" href="#section-72">&#x00a7;</a>
               </div>
               <h3 id="print">Print</h3>
 
@@ -1381,11 +1407,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-71">
+        <li id="section-73">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-71">&#x00a7;</a>
+                <a class="ss" href="#section-73">&#x00a7;</a>
               </div>
               <p>Generate a string from <code>t</code>.</p>
 
@@ -1406,11 +1432,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-72">
+        <li id="section-74">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-72">&#x00a7;</a>
+                <a class="ss" href="#section-74">&#x00a7;</a>
               </div>
               <p>Generate a string from <code>t</code> and print it (returning <code>t</code>).</p>
 
@@ -1421,11 +1447,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-73">
+        <li id="section-75">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-73">&#x00a7;</a>
+                <a class="ss" href="#section-75">&#x00a7;</a>
               </div>
               <p>Emulate Printf</p>
 
@@ -1436,11 +1462,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-74">
+        <li id="section-76">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-74">&#x00a7;</a>
+                <a class="ss" href="#section-76">&#x00a7;</a>
               </div>
               <h3 id="read">Read</h3>
 
@@ -1449,11 +1475,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-75">
+        <li id="section-77">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-75">&#x00a7;</a>
+                <a class="ss" href="#section-77">&#x00a7;</a>
               </div>
               <p>Try reading <code>str</code> as a boolean, then int, then float, then string.</p>
 
@@ -1467,11 +1493,11 @@ then the returned list will be shorter.</p>
         </li>
         
         
-        <li id="section-76">
+        <li id="section-78">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-76">&#x00a7;</a>
+                <a class="ss" href="#section-78">&#x00a7;</a>
               </div>
               <p>Read update for <code>slot</code> of table from command line flag <code>-s</code> or <code>--slot</code>.
 If slot’s is a boolean, this code flips old value.</p>
@@ -1490,11 +1516,11 @@ If slot’s is a boolean, this code flips old value.</p>
         </li>
         
         
-        <li id="section-77">
+        <li id="section-79">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-77">&#x00a7;</a>
+                <a class="ss" href="#section-79">&#x00a7;</a>
               </div>
               <p>Split  <code>str</code> on <code>sep</code>, filter each part through <code>fun</code>, return the resulting list.</p>
 
@@ -1508,11 +1534,11 @@ If slot’s is a boolean, this code flips old value.</p>
         </li>
         
         
-        <li id="section-78">
+        <li id="section-80">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-78">&#x00a7;</a>
+                <a class="ss" href="#section-80">&#x00a7;</a>
               </div>
               <p>Read lines from <code>filestr</code>, closing stream at end. Call <code>fun</code> on each line.</p>
 
@@ -1527,11 +1553,11 @@ If slot’s is a boolean, this code flips old value.</p>
         </li>
         
         
-        <li id="section-79">
+        <li id="section-81">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-79">&#x00a7;</a>
+                <a class="ss" href="#section-81">&#x00a7;</a>
               </div>
               <p>Read lines from <code>filestr</code>, converting each into words, passing that to <code>fun</code>.</p>
 
@@ -1543,11 +1569,11 @@ If slot’s is a boolean, this code flips old value.</p>
         </li>
         
         
-        <li id="section-80">
+        <li id="section-82">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-80">&#x00a7;</a>
+                <a class="ss" href="#section-82">&#x00a7;</a>
               </div>
               <p>Read <code>filename</code> into a DATA object. Return that object.</p>
 
@@ -1561,11 +1587,11 @@ If slot’s is a boolean, this code flips old value.</p>
         </li>
         
         
-        <li id="section-81">
+        <li id="section-83">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-81">&#x00a7;</a>
+                <a class="ss" href="#section-83">&#x00a7;</a>
               </div>
               <h2 id="tests">Tests</h2>
 
@@ -1574,11 +1600,11 @@ If slot’s is a boolean, this code flips old value.</p>
         </li>
         
         
-        <li id="section-82">
+        <li id="section-84">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-82">&#x00a7;</a>
+                <a class="ss" href="#section-84">&#x00a7;</a>
               </div>
               <p>Tests fail if they do not return <code>true</code>.</p>
 
@@ -1674,11 +1700,11 @@ If slot’s is a boolean, this code flips old value.</p>
         </li>
         
         
-        <li id="section-83">
+        <li id="section-85">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-83">&#x00a7;</a>
+                <a class="ss" href="#section-85">&#x00a7;</a>
               </div>
               <h2 id="start-up">Start-up</h2>
 
@@ -1687,11 +1713,11 @@ If slot’s is a boolean, this code flips old value.</p>
         </li>
         
         
-        <li id="section-84">
+        <li id="section-86">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-84">&#x00a7;</a>
+                <a class="ss" href="#section-86">&#x00a7;</a>
               </div>
               <p>Counter for test failures</p>
 
@@ -1702,11 +1728,11 @@ If slot’s is a boolean, this code flips old value.</p>
         </li>
         
         
-        <li id="section-85">
+        <li id="section-87">
             <div class="annotation">
               
               <div class="sswrap ">
-                <a class="ss" href="#section-85">&#x00a7;</a>
+                <a class="ss" href="#section-87">&#x00a7;</a>
               </div>
               <p>Run one test. Beforehand, reset random number seed. Afterwards,
 reset the settings to whatever they were before the test.</p>

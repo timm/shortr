@@ -252,30 +252,6 @@ function RATIO:norm(num)
   local a= self:holds() -- "a" contains all our numbers,  sorted.
   return a[#a] - a[1] < 1E-9 and 0 or (num-a[1])/(a[#a]-a[1]) end
 
--- **Return the central tendency of `col`umns**  
---  (median/mode for ratios/nominals (respectively).
-function NOM:mid(places)
-  local mode,most= nil,-1
-  for x,n in pairs(self.has) do if n > most then mode,most=x,n end end
-  return mode end
-
-function RATIO:mid(places)
-  local median= per(self:holds(),.5)
-  return places and rnd(median,places) or median end 
-
--- **Return the `div`ersity of a `col`umns**   
--- (sd/entropy for ratios/nominals (respectively).
-function RATIO:div(places)
-  local nums=self:holds()
-  local out = (per(nums,.9) - per(nums,.1))/2.58 
-  return places and rnd(out,places) or out end 
-
-function NOM:div(places)
-  local out = 0
-  for _,n in pairs(self.has) do
-    if n>0 then out=out-n/self.n*math.log(n/self.n,2) end end 
-  return places and rnd(out,places) or out end 
-
 -- **Returns stats collected across a set of `col`umns**   
 function DATA:mid(places,cols,    u)
   u={}; for k,col in pairs(cols or self.about.y) do 
@@ -286,6 +262,30 @@ function DATA:div(places,cols,    u)
   u={}; for k,col in pairs(cols or self.about.y) do 
           u.n=col.n; u[col.txt]=col:div(places) end
   return u end
+
+--  Mode for NOM's mid
+function NOM:mid(places)
+  local mode,most= nil,-1
+  for x,n in pairs(self.has) do if n > most then mode,most=x,n end end
+  return mode end
+
+-- Entropy for RATIO'd div
+function NOM:div(places)
+  local out = 0
+  for _,n in pairs(self.has) do
+    if n>0 then out=out-n/self.n*math.log(n/self.n,2) end end 
+  return places and rnd(out,places) or out end 
+
+-- Median for RATIO's mid
+function RATIO:mid(places)
+  local median= per(self:holds(),.5)
+  return places and rnd(median,places) or median end 
+
+-- sd for RATIOs
+function RATIO:div(places)
+  local nums=self:holds()
+  local out = (per(nums,.9) - per(nums,.1))/2.58 
+  return places and rnd(out,places) or out end 
 
 -- **Return true if `row1`'s goals are better than `row2`.**
 function better(row1,row2)
