@@ -56,15 +56,12 @@ local the= {
 ---- Cache names known `b4` we start
 -- Use that, later, to hunt down any rogue globals.
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
-local function rogues()
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
-
----- learning functions
-local  around, better, bins, half, how, is,
+--- learning functions
+local  around, bins, half, how,
 ---- General functions
      any,big,cat,chat,cli,coerce,csv,csv2data,fmt,get,gt,
      klass,lines,lt,many,map,obj,per,push,
-     rand,rev,rnd,same,shuffle, slice,sort,values,words
+     rand,rev,rnd,rogues,same,shuffle, slice,sort,values,words
 ---- Startup
 local go={}
 
@@ -83,9 +80,9 @@ local RATIO,ROW,XY  = klass"RATIO",klass"ROW",klass"XY"
 
 ---- This module
 local XAI= {
-     the=the,  rogues=rogues,  go=go, 
+     the=the,   go=go, 
      ABOUT=ABOUT, COL=COL, DATA=DATA, NOM=NOM, RATIO=RATIO, ROW=ROW, XY=XY, 
-     around=around,  better=better,  bins=bins,  half=half,  how=how,  is=is, 
+     around=around,  better=better,  bins=bins,  half=half,  how=how,
 ---- Misc library functions
      any=any, big=big, cat=cat, chat=chat, cli=cli, coerce=coerce, 
      csv=csv, csv2data=csv2data, fmt=fmt, get=get, gt=gt, 
@@ -105,7 +102,8 @@ local XAI= {
 
 -- **`is` recognizes column types.**  
 -- These column types appear in first row of our  CSV files.
-is={num   = "^[A-Z]",  -- ratio cols start with uppercase
+local _is={
+    num   = "^[A-Z]",  -- ratio cols start with uppercase
     goal  = "[!+-]$",  -- !=klass, [+,-]=maximize,minimize
     klass = "!$",      -- klass if "!"
     skip  = ":$",      -- skip if ":"
@@ -116,7 +114,7 @@ local function _col(sName,iAt)
   return {n    = 0,                -- how many items seen?
           at   = iAt or 0,         -- position ot column
           txt  = sName,            -- column header
-          w    = sName:find(is.less) and -1 or 1,
+          w    = sName:find(_is.less) and -1 or 1,
           ok   = true,             -- false if some update needed
           has  = {}} end           -- place to keep (some) column values.
 
@@ -145,11 +143,11 @@ function DATA:new() return {rows={}, about=nil} end
 function ABOUT:new(sNames)
   local about = {names=sNames,all={}, x={}, y={}, klass=nil}
   for at,name in pairs(sNames) do
-    local one = name:find(is.num) and RATIO(name,at) or NOM(name,at)
+    local one = name:find(_is.num) and RATIO(name,at) or NOM(name,at)
     push(about.all, one)
-    if not name:find(is.skip) then
-      push(name:find(is.goal) and about.y or about.x, one)
-      if name:find(is.klass) then about.klass=one end end end
+    if not name:find(_is.skip) then
+      push(name:find(_is.goal) and about.y or about.x, one)
+      if name:find(_is.klass) then about.klass=one end end end
   return about end
 
 -- **XY summarize data from the same rows from two columns.**   
@@ -162,9 +160,14 @@ function XY:new(txt,at,num1,num2,nom)
           xhi = num2 or num1, 
           y   = nom or NOM(txt,at)} end
 
-
 ---- ---- ---- ---- Functions for Types
 ---- ---- ---- Create
+-- Read `filename` into a DATA object. Return that object.
+function csv2data(sFilename)
+  local data=DATA()
+  csv(sFilename, function(t) data:add(t) end)
+  return data end
+
 -- **Copy the structure of `data`.**    
 -- Optionally, add rows of data (from `t`).
 function DATA:clone(t)
@@ -279,8 +282,9 @@ function RATIO:div(places)
   local out = (per(nums,.9) - per(nums,.1))/2.58 
   return places and rnd(out,places) or out end 
 
--- **Return true if `row1`'s goals are better than `row2`.**
-function better(row1,row2)
+-- **Return true if `row1`'s goals are worse than `row2:`.**
+function ROW:__lt(row2)
+  local row1=self
   row1.evaled,row2.evaled= true,true
   local s1,s2,d,n,x,y=0,0,0,0
   local ys,e = row1._about.y,math.exp(1)
@@ -289,7 +293,7 @@ function better(row1,row2)
     x,y= col:norm(x), col:norm(y)
     s1 = s1 - e^(col.w * (x-y)/#ys)
     s2 = s2 - e^(col.w * (y-x)/#ys) end
-  return s1/#ys < s2/#ys end
+  return s2/#ys < s1/#ys end
 
 ---- ---- ---- Dist
 -- Return 0..1 for distance between two rows using `cols`
@@ -340,7 +344,7 @@ function half._splits(rows,  rowAbove,          stop,worst)
   if   #rows < stop
   then return rows,worst or {} -- rows is shriving best
   else local A,B,As,Bs = half._split(rows,rowAbove)
-       if   better(A,B)
+       if   B < A
        then return half._splits(As,A,stop,worst or Bs)
        else return half._splits(Bs,B,stop,worst or As) end end end
 
@@ -432,7 +436,7 @@ function how._rules1(data,rowsAll, nStop,xys)
       if rows1 then
         push(xys,xy)
         print(cat(how._evals(rowsAll)),
-				  xyShow(xy), how._nevaled(rowsAll),#rows1)
+          xyShow(xy), how._nevaled(rowsAll),#rows1)
         return how._rules1(clone(data,rows1),rowsAll, nStop,xys) end end  end
   return xys,data end 
 
@@ -473,7 +477,12 @@ function how._selects(xy,rows)
 
 ---- ---- ---- ---- General Functions
 ---- ---- ---- Misc
+-- Do nothing. 
 function same(x) return x end
+
+-- Report rogue locals
+function rogues()
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 
 ---- ---- ---- Maths
 -- Large number
@@ -596,12 +605,6 @@ function words(str,sep,fun,      t)
   sep = fmt("([^%s]+)",sep)
   t={};for x in str:gmatch(sep) do t[1+#t]=fun(x) end;return t end
 
--- Read `filename` into a DATA object. Return that object.
-function csv2data(filename,data)
-  data=DATA()
-  csv(filename, function(t) data:add(t) end)
-  return data end
-
 ---- ---- ---- ---- Tests
 -- Tests fail if they do not return `true`.
 function go.the() chat(the); return true end
@@ -645,10 +648,10 @@ function go.dist(    data,row1,row2)
 
 function go.betters(   data,data1,data2)
   data= csv2data("../../data/auto93.csv")
-  data.rows = sort(data.rows, better) 
-  data1=clone(data, slice(data.rows,1,50))
-  data2=clone(data, slice(data.rows,(#data.rows)-50))
-  map({stats(data1),stats(data2)},chat)
+  data.rows = sort(data.rows) 
+  data1=data:clone(slice(data.rows,1,50))
+  data2=data:clone(slice(data.rows,(#data.rows)-50))
+  map({data1:mid(), data2:mid()},chat)
   return true end
 
 function go.half(   data)
@@ -680,7 +683,7 @@ function go.bins()
   return true end
 
 local _ranked=function(data)
-   for n,row in pairs(sort(data.rows,better)) do row.rank= rnd(100*n/#data.rows,0); end
+   for n,row in pairs(sort(data.rows)) do row.rank= rnd(100*n/#data.rows,0); end
    for _,row in pairs(data.rows) do row.evaled=false end
    shuffle(data.rows)
    return data  end
