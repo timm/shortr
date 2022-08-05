@@ -93,7 +93,7 @@ local XAI= {the=the, go=go,
              same=same, shuffle=shuffle,  slice=slice, sort=sort, 
              values=values, words=words }}
 
----- ---- ---- ---- Types
+---- ---- ---- ---- Classes
 -- In this code,  function arguments offer some type hints. 
 -- `xs` denotes a list of type `x` for
 -- x in bool, str, num, int or one of the user defined types.
