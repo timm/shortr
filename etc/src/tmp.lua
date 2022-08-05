@@ -60,27 +60,18 @@ local the= {
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
---**Types**<br>
-local ABOUT,COL,DATA,NOM,RATIO,ROW,XY,
+
 --**learning functions**<br>
-     add,add2,adds,around,bestOrRest, bestxy,bestxys,
-     bins,clone,half,has,
-     better, csv2data,dist,div,
-     half, is, key,many,mid,norm,
-     xyShow, row, selects, stats,
+local  around, better, bins, half, how, is,
 --**General functions**<br>
-     any,big,cat,chat,cli,coerce,csv,fmt,get,gt,
-     lines,lt,map,obj,per,push,
+     any,big,cat,chat,cli,coerce,csv,csv2data,fmt,get,gt,
+     klass,lines,lt,many,map,obj,per,push,
      rand,rev,rnd,same,shuffle, slice,sort,values,words
 --**Startup**<br>
 local go={}
 
---**This module**<br>
-local XAI= {-- to be completed later
-      the=the, rogues=rogues, go=go,
-      ABOUT=ABOUT,COL=COL,DATA=DATA,NOM=NOM,RATIO=RATIO,ROW=ROW,XY=XY}
-
-function obj(sName,     new,self,t)
+--**Classes**<br>
+function klass(sName,     new,self,t)
  function new(k,...)
    self = setmetatable({},k)
    return setmetatable(k.new(self,...) or self,k) 
@@ -89,8 +80,23 @@ function obj(sName,     new,self,t)
   t.__index = t
   return setmetatable(t,{__call=new}) end
 
-local ABOUT,DATA,NOM=obj"ABOUT", obj"DATA", obj"NOM"
-local RATIO,ROW,XY=obj"RATIO",obj"ROW",obj"XY"
+local ABOUT,DATA,NOM= klass"ABOUT", klass"DATA", klass"NOM"
+local RATIO,ROW,XY  = klass"RATIO",klass"ROW",klass"XY"
+
+--**This module**<br>
+local XAI= {
+     the=the,  rogues=rogues,  go=go, 
+     ABOUT=ABOUT, COL=COL, DATA=DATA, NOM=NOM, RATIO=RATIO, ROW=ROW, XY=XY, 
+     around=around,  better=better,  bins=bins,  half=half,  how=how,  is=is, 
+--**Misc library functions**<br>
+     any=any, big=big, cat=cat, chat=chat, cli=cli, coerce=coerce, 
+     csv=csv, csv2data=csv2data, fmt=fmt, get=get, gt=gt, 
+     klass=klass, lines=lines, lt=lt, many=many, map=map, obj=obj, per=per, push=push, 
+     rand=rand, rev=rev, rnd=rnd, rogues=rogues,
+     same=same, shuffle=shuffle,  slice=slice, sort=sort, 
+     values=values, words=words
+}
+
 -- ## Types
 
 
@@ -109,7 +115,7 @@ is={num   = "^[A-Z]",  -- ratio cols start with uppercase
     skip  = ":$",      -- skip if ":"
     less  = "-$"}      -- minimize if "-"
 
-local function col(sName,iAt)
+local function _col(sName,iAt)
   sName = sName or ""
   return {n    = 0,                -- how many items seen?
           at   = iAt or 0,         -- position ot column
@@ -120,9 +126,9 @@ local function col(sName,iAt)
 
 -- **RATIO are special COLs that handle ratios.**      
 -- **NOM are special COLs that handle nominals.**
-function RATIO:new(  sName,iAt) return col(sName,iAt) end
+function RATIO:new(  sName,iAt) return _col(sName,iAt) end
 
-function NOM:new(  sName,iAt) return col(sName,iAt) end
+function NOM:new(  sName,iAt) return _col(sName,iAt) end
 
 -- **ROW holds one record of data.**
 function ROW:new(about,t)
@@ -178,6 +184,25 @@ function DATA:clone(t)
 -- ### Update
 
 
+-- **Add a `row` to `data`.**   
+-- If this is top row, use `t` to initial `data.about`.
+function DATA:add(t)
+  if   self.about 
+  then push(self.rows,self.about:add(t)) 
+  else self.about=ABOUT(t) end end
+
+-- **Add a row of values, across all columns.**    
+-- This code implements _row sharing_; i.e. once a row is created,
+-- it is shared across many DATAs. This means that (e.g.) distance 
+-- calcs are normalized across the whole space and not specific sub-spaces.
+-- To disable that, change line one of this function to   
+-- `local row = ROW(about,x.cells and x.cells or x)` 
+function ABOUT:add(t)
+  local row = t.cells and t or ROW(self,t) -- ensure that "x" is a row.
+  for _,cols in pairs{self.x,self.y} do
+    for _,col in pairs(cols) do col:add(row.cells[col.at]) end end
+  return row end
+
 -- **Add something into one `col`.**  
 -- For `NOM` cols, keep a count
 -- of how many times we have seen `x'. For RATIO columns,
@@ -206,25 +231,6 @@ function XY:add(x,y)
   self.xlo = math.min(x, self.xlo)
   self.xhi = math.max(x, self.xhi)
   self.y:add(y) end
-
--- **Add a row of values, across all columns.**    
--- This code implements _row sharing_; i.e. once a row is created,
--- it is shared across many DATAs. This means that (e.g.) distance 
--- calcs are normalized across the whole space and not specific sub-spaces.
--- To disable that, change line one of this function to   
--- `local row = ROW(about,x.cells and x.cells or x)` 
-function ABOUT:add(t)
-  local row = t.cells and t or ROW(self,t) -- ensure that "x" is a row.
-  for _,cols in pairs{self.x,self.y} do
-    for _,col in pairs(cols) do col:add(row.cells[col.at]) end end
-  return row end
-
--- **Add a `row` to `data`.**   
--- If this is top row, use `t` to initial `data.about`.
-function DATA:add(t)
-  if   self.about  -- not first row
-  then push(self.rows, self.about:add(t))
-  else self.about = ABOUT(t) end end
 
 -- ### Print
 
@@ -269,17 +275,17 @@ function NOM:mid(places)
   for x,n in pairs(self.has) do if n > most then mode,most=x,n end end
   return mode end
 
+-- Median for RATIO's mid
+function RATIO:mid(places)
+  local median= per(self:holds(),.5)
+  return places and rnd(median,places) or median end 
+
 -- Entropy for RATIO'd div
 function NOM:div(places)
   local out = 0
   for _,n in pairs(self.has) do
     if n>0 then out=out-n/self.n*math.log(n/self.n,2) end end 
   return places and rnd(out,places) or out end 
-
--- Median for RATIO's mid
-function RATIO:mid(places)
-  local median= per(self:holds(),.5)
-  return places and rnd(median,places) or median end 
 
 -- sd for RATIOs
 function RATIO:div(places)
@@ -554,14 +560,17 @@ function slice(t, go, stop, inc)
   for j=(go or 1)//1,(stop or #t)//1,(inc or 1)//1 do u[1+#u]=t[j] end
   return u end
 
+-- ### Sorting
+
+
+-- Sorting predictates
+function gt(x) return function(a,b) return a[x] > b[x] end end
+function lt(x) return function(a,b) return a[x] < b[x] end end
+
 -- In-place sort, returns sorted list
 function sort(t,f) if #t==0 then t=values(t) end; table.sort(t,f); return t end
 
--- Sorting predictates
-function lt(x) return function(a,b) return a[x] < b[x] end end
-function gt(x) return function(a,b) return a[x] > b[x] end end
-
--- Return values in a table
+-- Return values in a table 
 function values(t,   u) u={}; for _,v in pairs(t) do u[1+#u]=v end; return u end
 
 -- ### Print
@@ -606,22 +615,22 @@ function cli(t)
     t[slot] =  coerce(v) end
   return t end
 
--- Split  `str` on `sep`, filter each part through `fun`, return the resulting list.
-function words(str,sep,fun,      t)
-  fun = fun or function(z) return z end
-  sep = fmt("([^%s]+)",sep)
-  t={};for x in str:gmatch(sep) do t[1+#t]=fun(x) end;return t end
+-- Read lines from `filestr`, converting each into words, passing that to `fun`.
+function csv(filename, fun)
+  lines(filename, function(t) fun(words(t,",",coerce)) end) end
 
--- Read lines from `filestr`, closing stream at end. Call `fun` on each line.
+--- Read lines from `filestr`, closing stream at end. Call `fun` on each line.
 function lines(filename, fun)
   local src = io.input(filename)
   while true do
     local str = io.read()
     if not str then return io.close(src) else fun(str) end end end
 
--- Read lines from `filestr`, converting each into words, passing that to `fun`.
-function csv(filename, fun)
-  lines(filename, function(t) fun(words(t,",",coerce)) end) end
+-- Split  `str` on `sep`, filter each part through `fun`, return the resulting list.
+function words(str,sep,fun,      t)
+  fun = fun or function(z) return z end
+  sep = fmt("([^%s]+)",sep)
+  t={};for x in str:gmatch(sep) do t[1+#t]=fun(x) end;return t end
 
 -- Read `filename` into a DATA object. Return that object.
 function csv2data(filename,data)
@@ -729,11 +738,11 @@ local fails=0
 -- Run one test. Beforehand, reset random number seed. Afterwards,
 -- reset the settings to whatever they were before the test.
 local function run(str)
-  if type(go[str])=="function" then
-    local saved={};for k,v in pairs(the) do saved[k]=v end
-    math.randomseed(the.seed)
-    if true ~= go[str]() then fails=fails+1; print("FAIL",str) end
-    for k,v in pairs(saved) do the[k]=v end  end end
+  if type(go[str])~="function" then return print("?? unknown",str) end
+  local saved={};for k,v in pairs(the) do saved[k]=v end
+  math.randomseed(the.seed)
+  if true ~= go[str]() then fails=fails+1; print("FAIL",str) end
+  for k,v in pairs(saved) do the[k]=v end  end 
 
 if pcall(debug.getlocal,4,1) then -- If code loaded via a `require` statement,
   return XAI                      -- Then just return the names.
