@@ -67,10 +67,10 @@ local ABOUT,COL,DATA,NOM,RATIO,ROW,XY,
      bins,clone,half,has,
      better, csv2data,dist,div,
      half, is, key,many,mid,norm,
-     printxy,row, selects, stats,
+     xyShow, row, selects, stats,
 --**General functions**<br>
-     any,big,cat,chat,cli,coerce,csv,fmt,gt,
-     lines,lt,map,per,push,
+     any,big,cat,chat,cli,coerce,csv,fmt,get,gt,
+     lines,lt,map,obj,per,push,
      rand,rev,rnd,same,shuffle, slice,sort,values,words
 --**Startup**<br>
 local go={}
@@ -80,6 +80,17 @@ local XAI= {-- to be completed later
       the=the, rogues=rogues, go=go,
       ABOUT=ABOUT,COL=COL,DATA=DATA,NOM=NOM,RATIO=RATIO,ROW=ROW,XY=XY}
 
+function obj(sName,     new,self,t)
+ function new(k,...)
+   self = setmetatable({},k)
+   return setmetatable(k.new(self,...) or self,k) 
+  end ----------------- 
+  t={_is=sName, __tostring=function(x) return cat(x) end}
+  t.__index = t
+  return setmetatable(t,{__call=new}) end
+
+local ABOUT,DATA,NOM=obj"ABOUT", obj"DATA", obj"NOM"
+local RATIO,ROW,XY=obj"RATIO",obj"ROW",obj"XY"
 -- ## Types
 
 
@@ -92,67 +103,63 @@ local XAI= {-- to be completed later
 
 -- **`is` recognizes column types.**  
 -- These column types appear in first row of our  CSV files.
-is={nom   = "^[a-z]",  -- nominal cols start with lowercase
+is={num   = "^[A-Z]",  -- ratio cols start with uppercase
     goal  = "[!+-]$",  -- !=klass, [+,-]=maximize,minimize
     klass = "!$",      -- klass if "!"
     skip  = ":$",      -- skip if ":"
     less  = "-$"}      -- minimize if "-"
 
--- **COLs summarize values seen in different columns.**   
---  If `txt` is
--- omitted,
--- COL returns a "ratio" column that handles nominals (and this
--- can be overridden with an lowercase `txt` name).
-function COL(str,int)
-  str=str or ""
-  return {_is="COL",
-          n    = 0,                -- how many items seen?
-          at   = int or 0,         -- position ot column
-          txt  = str,              -- column header
-          isNom = str:find(is.nom), -- is this a nominal?
-          w    = str:find(is.less) and -1 or 1,
+local function col(sName,iAt)
+  sName = sName or ""
+  return {n    = 0,                -- how many items seen?
+          at   = iAt or 0,         -- position ot column
+          txt  = sName,            -- column header
+          w    = sName:find(is.less) and -1 or 1,
           ok   = true,             -- false if some update needed
           has  = {}} end           -- place to keep (some) column values.
 
 -- **RATIO are special COLs that handle ratios.**      
 -- **NOM are special COLs that handle nominals.**
-function RATIO(str,int,   i) i=COL(str,int); i.isNom=false; return i end
-function NOM(txt,  int,   i) i=COL(str,int); i.isNom=true;  return i end
+function RATIO:new(  sName,iAt) return col(sName,iAt) end
+
+function NOM:new(  sName,iAt) return col(sName,iAt) end
 
 -- **ROW holds one record of data.**
-function ROW(about, t)
-  return {_is="ROW",
+function ROW:new(about,t)
+  return {
           _about=about,       -- pointer to background column info
           cells=t,            -- raw values
-          cooked=map(t,same), -- for (e.g) discretized values
+          cooked=nil,         -- for (e.g) discretized values
+          rank=0,             -- position between 1..100
           evaled=false} end   -- true if we touched the y-values
 
 -- **DATA holds many `ROWs`**   
 --  whose values are summarized in `ABOUT`.
-function DATA() return {_is="DATA", rows={}, about=nil} end
+function DATA:new() return {rows={}, about=nil} end
 
 -- **ABOUT is a factory for making columns from column header strings.**  
 -- Goals and none-gaols are cached in `x` and `y` (ignorong
 -- anything that is `skipped`.
-function ABOUT(strs)
-  local about = {_is="ABOUT",names=strs,all={}, x={}, y={}, klass=nil}
-  for at,txt in pairs(strs) do
-    local one = push(about.all, COL(txt,at))
-    if not txt:find(is.skip) then
-      push(txt:find(is.goal) and about.y or about.x, one)
-      if txt:find(is.klass) then about.klass=one end end end
+function ABOUT:new(sNames)
+  local about = {names=sNames,all={}, x={}, y={}, klass=nil}
+  for at,name in pairs(sNames) do
+    local one = name:find(is.num) and RATIO(name,at) or NOM(name,at)
+    push(about.all, one)
+    if not name:find(is.skip) then
+      push(name:find(is.goal) and about.y or about.x, one)
+      if name:find(is.klass) then about.klass=one end end end
   return about end
 
 -- **XY summarize data from the same rows from two columns.**   
 -- `num2` is optional (defaults to `num1`).   
 -- `y` is optional (defaults to a new NOM)
-function XY(txt,at,num1,num2,nom)
-  return {_is = "XY",
-          txt = txt,
+function XY:new(txt,at,num1,num2,nom)
+  return {txt = txt,
           at  = at,
           xlo = num1, 
           xhi = num2 or num1, 
           y   = nom or NOM(txt,at)} end
+
 
 -- ## Functions for Types
 
@@ -162,40 +169,43 @@ function XY(txt,at,num1,num2,nom)
 
 -- **Copy the structure of `data`.**    
 -- Optionally, add rows of data (from `t`).
-function clone(data,t)
+function DATA:clone(t)
   local data1= DATA()
-  row(data1, data.about.names)
-  for _,row1 in pairs(t or {}) do row(data1,row1) end
+  data1:add(self.about.names)
+  for _,row1 in pairs(t or {}) do data1:add(row1) end
   return data1 end
 
 -- ### Update
 
 
 -- **Add something into one `col`.**  
--- For `isNom` cols, keep a count
--- of how many times we have seen `x'. For other ratio columns,
+-- For `NOM` cols, keep a count
+-- of how many times we have seen `x'. For RATIO columns,
 -- keep at most `the.ratios` (after which, replace old items at random).   
--- `incnom` is optional (it is  little hack used during 
+-- `inc` is optional (it is  little hack used during 
 --  discretization for very
 -- for fast NOM merging).
-function add(col,x,  inc)
+function NOM:add(x,  num)
   if x ~= "?" then
-    inc = inc or 1
-    col.n = col.n + inc
-    if   col.isNom
-    then col.has[x] = inc + (col.has[x] or 0)
-    else local pos
-         if     #col.has < the.ratios      then pos= (#col.has) + 1
-         elseif rand() < the.ratios/col.n then pos= rand(#col.has) end
-         if pos then
-           col.ok=false  -- the `kept` list is no longer in sorted order
-           col.has[pos]=x end end end end
+    num = num or 1
+    self.n = self.n + num
+    self.has[x] = num + (self.has[x] or 0) end end
+
+function RATIO:add(x)
+  if x ~= "?" then
+    local pos
+    self.n = self.n + 1
+    if     #self.has < the.ratios        then pos = 1 + (#self.has) 
+    elseif rand()    < the.ratios/self.n then pos = rand(#self.has) end
+    if pos then
+      self.ok=false -- the `kept` list is no longer in sorted order
+      self.has[pos]=x end end end
 
 -- **Add in `x,y` values from one row into an XY.**
-function add2(xy,x,y)
-  xy.xlo = math.min(x, xy.xlo)
-  xy.xhi = math.max(x, xy.xhi)
-  add(xy.y, y) end
+function XY:add(x,y)
+  self.xlo = math.min(x, self.xlo)
+  self.xhi = math.max(x, self.xhi)
+  self.y:add(y) end
 
 -- **Add a row of values, across all columns.**    
 -- This code implements _row sharing_; i.e. once a row is created,
@@ -203,25 +213,25 @@ function add2(xy,x,y)
 -- calcs are normalized across the whole space and not specific sub-spaces.
 -- To disable that, change line one of this function to   
 -- `local row = ROW(about,x.cells and x.cells or x)` 
-function adds(about,x)
-  local row = x.cells and x or ROW(about,x) -- ensure that "x" is a row.
-  for _,cols in pairs{about.x,about.y} do
-    for _,col in pairs(cols) do add(col, row.cells[col.at]) end end
+function ABOUT:add(t)
+  local row = t.cells and t or ROW(self,t) -- ensure that "x" is a row.
+  for _,cols in pairs{self.x,self.y} do
+    for _,col in pairs(cols) do col:add(row.cells[col.at]) end end
   return row end
 
 -- **Add a `row` to `data`.**   
 -- If this is top row, use `t` to initial `data.about`.
-function row(data,t)
-  if   data.about  -- not first row
-  then push(data.rows, adds(data.about,t))
-  else data.about = ABOUT(t) end end
+function DATA:add(t)
+  if   self.about  -- not first row
+  then push(self.rows, self.about:add(t))
+  else self.about = ABOUT(t) end end
 
 -- ### Print
 
 
 -- **Print one xy**.
-function printxy(xy)
-  local x,lo,hi = xy.txt, xy.xlo, xy.xhi
+function XY:__tostring()
+  local x,lo,hi = self.txt, self.xlo, self.xhi
   if     lo ==  hi  then return fmt("%s == %s", x, lo)
   elseif hi ==  big then return fmt("%s >  %s", x, lo)
   elseif lo == -big then return fmt("%s <= %s", x, hi)
@@ -231,56 +241,60 @@ function printxy(xy)
 
 
 -- **Return `col.has`, sorting numerics (if needed).**
-function has(ratio)
-  if not ratio.isNom and not ratio.ok then 
-    table.sort(ratio.has); ratio.ok=true end
-  return ratio.has end
+function NOM:holds() return self.has end
+function RATIO:holds()
+  if not self.ok then table.sort(self.has) end
+  self.ok=true 
+  return self.has end
 
 -- **Return `num`, normalized to 0..1 for min..max.**
-function norm(ratio,num)
-  local a= has(ratio) -- "a" contains all our numbers,  sorted.
+function RATIO:norm(num)
+  local a= self:holds() -- "a" contains all our numbers,  sorted.
   return a[#a] - a[1] < 1E-9 and 0 or (num-a[1])/(a[#a]-a[1]) end
 
 -- **Return the central tendency of `col`umns**  
 --  (median/mode for ratios/nominals (respectively).
-function mid(col,places)
-  if   col.isNom
-  then local mode,most= nil,-1
-       for x,n in pairs(col.has) do if n > most then mode,most=x,n end end
-       return mode -- mode for nominals
-  else local median= per(has(col),.5)
-       return places and rnd(median,places) or median end end
+function NOM:mid(places)
+  local mode,most= nil,-1
+  for x,n in pairs(self.has) do if n > most then mode,most=x,n end end
+  return mode end
+
+function RATIO:mid(places)
+  local median= per(self:holds(),.5)
+  return places and rnd(median,places) or median end 
 
 -- **Return the `div`ersity of a `col`umns**   
 -- (sd/entropy for ratios/nominals (respectively).
-function div(col,places)
-  local out
-  if   col.isNom
-  then out = 0
-       for _,n in pairs(col.has) do
-         if n>0 then out=out-n/col.n*math.log(n/col.n,2) end end 
-  else out = (per(has(col),.9) - per(has(col),.1))/2.58 end
+function RATIO:div(places)
+  local nums=self:holds()
+  local out = (per(nums,.9) - per(nums,.1))/2.58 
+  return places and rnd(out,places) or out end 
+
+function NOM:div(places)
+  local out = 0
+  for _,n in pairs(self.has) do
+    if n>0 then out=out-n/self.n*math.log(n/self.n,2) end end 
   return places and rnd(out,places) or out end 
 
 -- **Returns stats collected across a set of `col`umns**   
---  Stats
--- selected by `f`. If `places` omitted, then no nums are rounded.
--- If `cols` is omitted then report the `y` values.
-function stats(data,   f,places,cols,   u)
-  f = f or mid
-  cols =cols or data.about.y
-  u={}; for k,col in pairs(cols) do
-    u.n=col.n; u[col.txt]=f(col,places) end;
+function DATA:mid(places,cols,    u)
+  u={}; for k,col in pairs(cols or self.about.y) do 
+          u.n=col.n; u[col.txt]=col:mid(places) end
+  return u end
+
+function DATA:div(places,cols,    u)
+  u={}; for k,col in pairs(cols or self.about.y) do 
+          u.n=col.n; u[col.txt]=col:div(places) end
   return u end
 
 -- **Return true if `row1`'s goals are better than `row2`.**
 function better(row1,row2)
-  row1.evaled, row2.evaled= true,true
+  row1.evaled,row2.evaled= true,true
   local s1,s2,d,n,x,y=0,0,0,0
   local ys,e = row1._about.y,math.exp(1)
   for _,col in pairs(ys) do
     x,y= row1.cells[col.at], row2.cells[col.at]
-    x,y= norm(col,x), norm(col,y)
+    x,y= col:norm(x), col:norm(y)
     s1 = s1 - e^(col.w * (x-y)/#ys)
     s2 = s2 - e^(col.w * (y-x)/#ys) end
   return s1/#ys < s2/#ys end
@@ -290,27 +304,28 @@ function better(row1,row2)
 
 -- Return 0..1 for distance between two rows using `cols`
 -- (and `cols`` defaults to the `x` columns).
-function dist(row1,row2,cols)
+function ROW:__sub(row2)
+  local row1=self
   local d,n,x,y,dist1=0,0
-  function dist1(col,x,y)
-    if x=="?" and y=="?" then return 1 end
-    if   col.isNom
-    then return (x=="?" or y=="?") and 1 or x==y and 0 or 1 
-    else if     x=="?" then y=norm(col,y); x=y<.5 and 1 or 0
-         elseif y=="?" then x=norm(col,x); y=x<.5 and 1 or 0
-         else   x,y = norm(col,x), norm(col,y) end
-         return math.abs(x-y) end
-  end ---------------
-  cols = cols or row1._about.x
+  local cols = cols or self._about.x
   for _,col in pairs(cols) do
     x,y = row1.cells[col.at], row2.cells[col.at]
-    d   = d + dist1(col,x,y)^the.p
+    d   = d + col:dist(x,y)^the.p
     n   = n + 1 end
   return (d/n)^(1/the.p) end
 
+function NOM:dist(x,y) 
+    return (x=="?" or y=="?") and 1 or x==y and 0 or 1 end
+
+function RATIO:dist(x,y)
+   if     x=="?" then y=self:norm(y); x=y<.5 and 1 or 0
+   elseif y=="?" then x=self:norm(x); y=x<.5 and 1 or 0
+   else   x,y = self:norm(x), self:norm(y) end
+  return math.abs(x-y) end
+
 -- Return all rows  sorted by their distance  to `row`.
 function around(row1,rows)
-  return sort(map(rows, function(row2) return {row=row2,d=dist(row1,row2)} end),
+  return sort(map(rows, function(row2) return {row=row2,d=row1-row2} end),--#
              lt"d") end
 
 -- ### Clustering
@@ -321,6 +336,7 @@ function around(row1,rows)
 local half={}
 function half.splits(rows)
   local best,rest0 = half._splits(rows)
+  print("!",cat(sort(map(rows,function(row) if row.evaled then return row.rank end end))))
   local rest = many(rest0, #best*the.Balance)
   local both = {}
   for _,row in pairs(rest) do push(both,row).label="rest" end
@@ -350,10 +366,10 @@ function half._split(rows,  rowAbove)
   local some= many(rows,the.Some)
   function far(row) return per(around(row,some), the.Far).row end
   function project(row) 
-    return {row=row, x=(dist(row,A)^2 + c^2 - dist(row,B)^2)/(2*c)} end
+    return {row=row, x=((row- A)^2 + c^2 - (row- B)^2)/(2*c)} end
   A= rowAbove or far(any(some))
   B= far(A)
-  c= dist(A,B)
+  c= A-B
   for n,rd in pairs(sort(map(rows, project),lt"x")) do
     push(n < #rows/2 and As or Bs, rd.row) end
   return A,B,As,Bs,c end
@@ -372,15 +388,15 @@ function bins.find(rows,col)
     if x~= "?" then
       n = n+1
       local bin = col.isNom and x or bins._bin(col,x)
-      local xy  = xys[bin] or  XY(col.txt,col.at, x)
+      local xy  = xys[bin] or XY(col.txt,col.at, x)
       add2(xy, x, row.label)
       xys[bin] = xy end end
-  xys = sort(values(xys), lt"xlo")
+  xys = sort(xys, lt"xlo")
   return col.isNom and xys or bins._merges(xys,n^the.min) end
 
 -- RATIOs get rounded into  `the.bins` divisions.
 function bins._bin(ratio,x,     a,b,lo,hi)
-  a = has(ratio)
+  a = ratio:holds()
   lo,hi = a[1], a[#a]
   b = (hi - lo)/the.bins
   return hi==lo and 1 or math.floor(x/b+.5)*b  end 
@@ -392,7 +408,7 @@ function bins._merges(xys0,nMin)
   while n <= #xys0 do
     local xymerged = n<#xys0 and bins._merged(xys0[n], xys0[n+1],nMin) 
     xys1[#xys1+1]  = xymerged or xys0[n]
-    n              = n + (xymerged and 2 or 1) -- if merged, skip next bin
+    n = n + (xymerged and 2 or 1) -- if merged, skip next bin
   end
   if   #xys1 < #xys0 
   then return bins._merges(xys1,nMin) 
@@ -418,31 +434,41 @@ function bins._merged(xy1,xy2,nMin)
 
 
 -- **Find the xy range that most separates best from rest**      
--- Then call yourself recursively on the rows selected by the bestxy.   
+-- Then call yourself recursively on the rows selected by the that range.   
 local how={}
-function how.rules(data,  nStop,xys)
+function how.rules(data) return how._rules1(data, data.rows) end
+
+function how._rules1(data,rowsAll, nStop,xys)
   xys = xys or {}
   nStop = nStop or the.stop
   if #data.rows > nStop then 
-    local xy = how._bestxy(data)
+    local xy = how._xyBest(data)
     if xy then 
-      local rows1 = how._selects(xy, rows)
+      local rows1 = how._selects(xy, data.rows)
       if rows1 then
         push(xys,xy)
-        return how.rules(clone(data,rows1),nStop,xys) end end  end
+        print(cat(how._evals(rowsAll)),
+				  xyShow(xy), how._nevaled(rowsAll),#rows1)
+        return how._rules1(clone(data,rows1),rowsAll, nStop,xys) end end  end
   return xys,data end 
 
--- Return best range across all columns and ranges.
-function how._bestxy(data)
+-- Return best xy across all columns and ranges.
+function how._xyBest(data)
   local best,rest,both = half.splits(data.rows)
   local most,xyOut = 0
-  for _,col in pairs(cols) do
-    local xys= bins.find(both,col)
+  for _,col in pairs(data.about.x) do
+    local xys = bins.find(both,col)
     if #xys > 1 then
       for _,xy in pairs(xys) do
         local tmp= how._score(xy.y, "best", #best, #rest)
-        if tmp>most then most,xyOut = tmp,xy end end end end 
+        if tmp > most then most,xyOut = tmp,xy end end end end 
   return xyOut end 
+
+function how._nevaled(rows,     n)
+  n=0;for _,row in pairs(rows) do if row.evaled then n=n+1 end end;return n end
+
+function how._evals(rows,     n)
+  return sort(map(rows,function(row) if row.evaled then return row.rank end end)) end
 
 -- Scores are greater when a NOM contains more of the `sGoal` than otherwise.
 function how._score(nom,sGoal,nBest,nRest)
@@ -456,10 +482,10 @@ function how._score(nom,sGoal,nBest,nRest)
 function how._selects(xy,rows)
   local rowsOut={}
   for _,row in pairs(rows) do
-    v= row.cells[xy.at]
-    if v=="?" or xy.xlo==xy.xhi or xy.xlo<v and v <=xy.xhi then 
+    local x= row.cells[xy.at]
+    if x=="?" or xy.xlo==xy.xhi and x==xy.xlo or xy.xlo<x and x <=xy.xhi then 
       push(rowsOut,row) end end 
-  if #rowsOut < #rows then return out end end
+  if #rowsOut < #rows then return rowsOut end end
 
 -- ## General Functions
 
@@ -499,6 +525,9 @@ function many(t,num, u)
 function map(t,f)
   local u={}; for _,v in pairs(t) do u[1+#u]=f(v) end; return u end
 
+-- Helper function for `map` (extracts certain slots
+function get(x) return function(t) return t[x] end end
+
 -- Return the `p`-th item in `t` (assumed to be sorted). e.g.
 -- `per(t,.5)` returns the median.
 function per(t,p)
@@ -525,8 +554,9 @@ function slice(t, go, stop, inc)
   for j=(go or 1)//1,(stop or #t)//1,(inc or 1)//1 do u[1+#u]=t[j] end
   return u end
 
--- In-place sort,  returns sorted list
-function sort(t,f) table.sort(t,f); return t end
+-- In-place sort, returns sorted list
+function sort(t,f) if #t==0 then t=values(t) end; table.sort(t,f); return t end
+
 -- Sorting predictates
 function lt(x) return function(a,b) return a[x] < b[x] end end
 function gt(x) return function(a,b) return a[x] > b[x] end end
@@ -596,7 +626,7 @@ function csv(filename, fun)
 -- Read `filename` into a DATA object. Return that object.
 function csv2data(filename,data)
   data=DATA()
-  csv(filename, function(t) row(data,t) end)
+  csv(filename, function(t) data:add(t) end)
   return data end
 
 -- ## Tests
@@ -605,32 +635,31 @@ function csv2data(filename,data)
 -- Tests fail if they do not return `true`.
 function go.the() chat(the); return true end
 
-function go.nom(   n)
-  n=NOM()
+function go.nom(   nom)
+  nom=NOM()
   for i=1,1 do 
     for _,x in pairs{"a","a","a","a","b","b","c"} do
-      add(n,x) end end
-  return "a"==mid(n) and 1.38==rnd(div(n),2) end
+      nom:add(x) end end
+  return "a"==nom:mid() and 1.38==rnd(nom:div(),2) end
 
 function go.ratio(    r)
   r=RATIO()
-  the.ratios=32
-  for i=1,100 do add(r,i) end
-  chat(has(r))
-  return 50==mid(r) and 31.01==rnd(div(r),2)  end
+  the.ratios = 64
+  for i=1,100 do r:add(i) end
+  return 52==r:mid() and 32.56==rnd(r:div(),2)  end
 
 function go.about()
   map(  ABOUT{"Clndrs","Volume","Hp:","Lbs-",
-          "Acc+","Model","origin","Mpg+"}.x , chat)
+          "Acc+","Model","origin","Mpg+"}.y , chat)
   return true end
 
 function go.one(     data1,data2)
   data1=csv2data("../../data/auto93.csv")
-  print("mid1", cat(stats(data1,mid,2)))
-  print("div1", cat(stats(data1,div,2)))
-  data2=clone(data1,data1.rows)
-  print("mid2", cat(stats(data2,mid,2)))
-  print("div2", cat(stats(data2,div,2)))
+  print("mid1", cat(data1:mid(2)))
+  print("div1", cat(data1:div(2)))
+  data2=            data1:clone(data1.rows)
+  print("mid2", cat(data2:mid(2)))
+  print("div2", cat(data2:div(2)))
   return true
   end
 
@@ -640,7 +669,7 @@ function go.dist(    data,row1,row2)
   for i = 1,20 do
     row1=any(data.rows)
     row2=any(data.rows)
-    print(dist(row1,row2)) end
+    print(row1-row2) end
   return true end
 
 function go.betters(   data,data1,data2)
@@ -666,7 +695,7 @@ function go.bestOrRest(   data,data1,data2,best,rest0,rest)
   map({stats(data1),stats(data2)},chat) 
   return true end
 
-function go.bins(   data,data1,data2,best,rest0,rest)
+function go.bins()
   local data= csv2data("../../data/auto93.csv")
   local best,rest0 = half.splits(data.rows)
   local rest = many(rest0, #best*2*the.Balance)
@@ -678,7 +707,19 @@ function go.bins(   data,data1,data2,best,rest0,rest)
     map(bins.find(rows,col),
         function(xy) print(xy.txt,xy.xlo,xy.xhi, cat(xy.y.has)) end) end
   return true end
-   
+
+local _ranked=function(data)
+   for n,row in pairs(sort(data.rows,better)) do row.rank= rnd(100*n/#data.rows,0); end
+   for _,row in pairs(data.rows) do row.evaled=false end
+   shuffle(data.rows)
+   return data  end
+
+function go.rules(      data)
+  local data= _ranked(csv2data("../../data/auto93.csv"))
+  how.rules(data)
+  chat(sort(map(data.rows,get"rank")))
+  return true end
+    
 -- ## Start-up
 
 
