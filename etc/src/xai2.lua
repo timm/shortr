@@ -363,8 +363,8 @@ function half._split(rows,  rowAbove)
   A= rowAbove or far(any(some))
   B= far(A)
   c= A-B
-  for n,rd in pairs(sort(map(rows, project),lt"x")) do
-    push(n < #rows/2 and As or Bs, rd.row) end
+  for n,rowx in pairs(sort(map(rows, project),lt"x")) do
+    push(n < #rows/2 and As or Bs, rowx.row) end
   return A,B,As,Bs,c end
 
 ---- ---- ---- Discretization

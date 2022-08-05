@@ -58,25 +58,26 @@ local the= {
 --**Cache names known `b4` we start**<br>
 -- Use that, later, to hunt down any rogue globals.
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
-local function rogues()
-  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 
---**learning functions**<br>
-local  around, better, bins, half, how, is,
---**General functions**<br>
-     any,big,cat,chat,cli,coerce,csv,csv2data,fmt,get,gt,
-     klass,lines,lt,many,map,obj,per,push,
-     rand,rev,rnd,same,shuffle, slice,sort,values,words
---**Startup**<br>
+
+--**Startup actions**<br>
 local go={}
+
+--- learning modules
+local bins,half,how
+
+--**Misc general functions**<br>
+local any,big,cat,chat,cli,coerce,csv,csv2data,
+      fmt,get,gt,klass,lines,lt,many,map,
+      obj,per,push,rand,rev,rnd,rogues,
+      same,shuffle,slice,sort,values,words
 
 --**Classes**<br>
 function klass(sName,     new,self,t)
- function new(k,...)
-   self = setmetatable({},k)
-   return setmetatable(k.new(self,...) or self,k) 
-  end ----------------- 
-  t={_is=sName, __tostring=function(x) return cat(x) end}
+  function new(k,...)
+    self = setmetatable({},k)
+    return setmetatable(k.new(self,...) or self,k) end
+  t={_is = sName, __tostring = function(x) return cat(x) end}
   t.__index = t
   return setmetatable(t,{__call=new}) end
 
@@ -84,18 +85,15 @@ local ABOUT,DATA,NOM= klass"ABOUT", klass"DATA", klass"NOM"
 local RATIO,ROW,XY  = klass"RATIO",klass"ROW",klass"XY"
 
 --**This module**<br>
-local XAI= {
-     the=the,  rogues=rogues,  go=go, 
-     ABOUT=ABOUT, COL=COL, DATA=DATA, NOM=NOM, RATIO=RATIO, ROW=ROW, XY=XY, 
-     around=around,  better=better,  bins=bins,  half=half,  how=how,  is=is, 
---**Misc library functions**<br>
-     any=any, big=big, cat=cat, chat=chat, cli=cli, coerce=coerce, 
-     csv=csv, csv2data=csv2data, fmt=fmt, get=get, gt=gt, 
-     klass=klass, lines=lines, lt=lt, many=many, map=map, obj=obj, per=per, push=push, 
-     rand=rand, rev=rev, rnd=rnd, rogues=rogues,
-     same=same, shuffle=shuffle,  slice=slice, sort=sort, 
-     values=values, words=words
-}
+local XAI= {the=the, go=go, 
+     klass= {ABOUT=ABOUT, COL=COL, DATA=DATA, NOM=NOM, RATIO=RATIO, ROW=ROW, XY=XY}, 
+     mod=   {bins=bins,  half=half,  how=how},
+     fun=   {any=any, big=big, cat=cat, chat=chat, cli=cli, coerce=coerce, 
+             csv=csv, csv2data=csv2data, fmt=fmt, get=get, gt=gt, 
+             klass=klass, lines=lines, lt=lt, many=many, map=map, 
+             obj=obj, per=per, push=push, rand=rand, rev=rev, rnd=rnd, rogues=rogues,
+             same=same, shuffle=shuffle,  slice=slice, sort=sort, 
+             values=values, words=words }}
 
 -- ## Types
 
@@ -109,7 +107,8 @@ local XAI= {
 
 -- **`is` recognizes column types.**  
 -- These column types appear in first row of our  CSV files.
-is={num   = "^[A-Z]",  -- ratio cols start with uppercase
+local _is={
+    num   = "^[A-Z]",  -- ratio cols start with uppercase
     goal  = "[!+-]$",  -- !=klass, [+,-]=maximize,minimize
     klass = "!$",      -- klass if "!"
     skip  = ":$",      -- skip if ":"
@@ -120,7 +119,7 @@ local function _col(sName,iAt)
   return {n    = 0,                -- how many items seen?
           at   = iAt or 0,         -- position ot column
           txt  = sName,            -- column header
-          w    = sName:find(is.less) and -1 or 1,
+          w    = sName:find(_is.less) and -1 or 1,
           ok   = true,             -- false if some update needed
           has  = {}} end           -- place to keep (some) column values.
 
@@ -149,29 +148,34 @@ function DATA:new() return {rows={}, about=nil} end
 function ABOUT:new(sNames)
   local about = {names=sNames,all={}, x={}, y={}, klass=nil}
   for at,name in pairs(sNames) do
-    local one = name:find(is.num) and RATIO(name,at) or NOM(name,at)
+    local one = (name:find(_is.num) and RATIO or NOM)(name,at) 
     push(about.all, one)
-    if not name:find(is.skip) then
-      push(name:find(is.goal) and about.y or about.x, one)
-      if name:find(is.klass) then about.klass=one end end end
+    if not name:find(_is.skip) then
+      push(name:find(_is.goal) and about.y or about.x, one)
+      if name:find(_is.klass) then about.klass=one end end end
   return about end
 
 -- **XY summarize data from the same rows from two columns.**   
 -- `num2` is optional (defaults to `num1`).   
 -- `y` is optional (defaults to a new NOM)
-function XY:new(txt,at,num1,num2,nom)
-  return {txt = txt,
+function XY:new(str,at,num1,num2,nom)
+  return {txt = str,
           at  = at,
           xlo = num1, 
           xhi = num2 or num1, 
-          y   = nom or NOM(txt,at)} end
-
+          y   = nom or NOM(str,at)} end
 
 -- ## Functions for Types
 
 
 -- ### Create
 
+
+-- Read `filename` into a DATA object. Return that object.
+function csv2data(sFilename)
+  local data=DATA()
+  csv(sFilename, function(t) data:add(t) end)
+  return data end
 
 -- **Copy the structure of `data`.**    
 -- Optionally, add rows of data (from `t`).
@@ -259,42 +263,43 @@ function RATIO:norm(num)
   return a[#a] - a[1] < 1E-9 and 0 or (num-a[1])/(a[#a]-a[1]) end
 
 -- **Returns stats collected across a set of `col`umns**   
-function DATA:mid(places,cols,    u)
+function DATA:mid(  nPlaces,cols,    u)
   u={}; for k,col in pairs(cols or self.about.y) do 
-          u.n=col.n; u[col.txt]=col:mid(places) end
+          u.n=col.n; u[col.txt]=col:mid(nPlaces) end
   return u end
 
-function DATA:div(places,cols,    u)
+function DATA:div(  nPlaces,cols,    u)
   u={}; for k,col in pairs(cols or self.about.y) do 
-          u.n=col.n; u[col.txt]=col:div(places) end
+          u.n=col.n; u[col.txt]=col:div(nPlaces) end
   return u end
 
 --  Mode for NOM's mid
-function NOM:mid(places)
+function NOM:mid(...)
   local mode,most= nil,-1
   for x,n in pairs(self.has) do if n > most then mode,most=x,n end end
   return mode end
 
 -- Median for RATIO's mid
-function RATIO:mid(places)
+function RATIO:mid(  nPlaces)
   local median= per(self:holds(),.5)
-  return places and rnd(median,places) or median end 
+  return places and rnd(median,nPlaces) or median end 
 
 -- Entropy for RATIO'd div
-function NOM:div(places)
+function NOM:div(  nPlaces)
   local out = 0
   for _,n in pairs(self.has) do
     if n>0 then out=out-n/self.n*math.log(n/self.n,2) end end 
-  return places and rnd(out,places) or out end 
+  return places and rnd(out,nPlaces) or out end 
 
 -- sd for RATIOs
-function RATIO:div(places)
+function RATIO:div(  nPlaces)
   local nums=self:holds()
   local out = (per(nums,.9) - per(nums,.1))/2.58 
-  return places and rnd(out,places) or out end 
+  return places and rnd(out,nPlaces) or out end 
 
--- **Return true if `row1`'s goals are better than `row2`.**
-function better(row1,row2)
+-- **Return true if `row1`'s goals are worse than `row2:`.**
+function ROW:__lt(row2)
+  local row1=self
   row1.evaled,row2.evaled= true,true
   local s1,s2,d,n,x,y=0,0,0,0
   local ys,e = row1._about.y,math.exp(1)
@@ -303,7 +308,7 @@ function better(row1,row2)
     x,y= col:norm(x), col:norm(y)
     s1 = s1 - e^(col.w * (x-y)/#ys)
     s2 = s2 - e^(col.w * (y-x)/#ys) end
-  return s1/#ys < s2/#ys end
+  return s2/#ys < s1/#ys end
 
 -- ### Dist
 
@@ -330,8 +335,8 @@ function RATIO:dist(x,y)
   return math.abs(x-y) end
 
 -- Return all rows  sorted by their distance  to `row`.
-function around(row1,rows)
-  return sort(map(rows, function(row2) return {row=row2,d=row1-row2} end),--#
+function ROW:around(rows)
+  return sort(map(rows, function(row2) return {row=row2,d = self-row2} end),--#
              lt"d") end
 
 -- ### Clustering
@@ -358,7 +363,7 @@ function half._splits(rows,  rowAbove,          stop,worst)
   if   #rows < stop
   then return rows,worst or {} -- rows is shriving best
   else local A,B,As,Bs = half._split(rows,rowAbove)
-       if   better(A,B)
+       if   B < A
        then return half._splits(As,A,stop,worst or Bs)
        else return half._splits(Bs,B,stop,worst or As) end end end
 
@@ -370,14 +375,14 @@ function half._splits(rows,  rowAbove,          stop,worst)
 function half._split(rows,  rowAbove)
   local As,Bs,A,B,c,far,project = {},{}
   local some= many(rows,the.Some)
-  function far(row) return per(around(row,some), the.Far).row end
+  function far(row) return per(row:around(some), the.Far).row end
   function project(row) 
     return {row=row, x=((row- A)^2 + c^2 - (row- B)^2)/(2*c)} end
   A= rowAbove or far(any(some))
   B= far(A)
   c= A-B
-  for n,rd in pairs(sort(map(rows, project),lt"x")) do
-    push(n < #rows/2 and As or Bs, rd.row) end
+  for n,rowx in pairs(sort(map(rows, project),lt"x")) do
+    push(n < #rows/2 and As or Bs, rowx.row) end
   return A,B,As,Bs,c end
 
 -- ### Discretization
@@ -454,7 +459,7 @@ function how._rules1(data,rowsAll, nStop,xys)
       if rows1 then
         push(xys,xy)
         print(cat(how._evals(rowsAll)),
-				  xyShow(xy), how._nevaled(rowsAll),#rows1)
+          xyShow(xy), how._nevaled(rowsAll),#rows1)
         return how._rules1(clone(data,rows1),rowsAll, nStop,xys) end end  end
   return xys,data end 
 
@@ -499,7 +504,12 @@ function how._selects(xy,rows)
 -- ### Misc
 
 
+-- Do nothing. 
 function same(x) return x end
+
+-- Report rogue locals
+function rogues()
+  for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 
 -- ### Maths
 
@@ -632,12 +642,6 @@ function words(str,sep,fun,      t)
   sep = fmt("([^%s]+)",sep)
   t={};for x in str:gmatch(sep) do t[1+#t]=fun(x) end;return t end
 
--- Read `filename` into a DATA object. Return that object.
-function csv2data(filename,data)
-  data=DATA()
-  csv(filename, function(t) data:add(t) end)
-  return data end
-
 -- ## Tests
 
 
@@ -683,10 +687,10 @@ function go.dist(    data,row1,row2)
 
 function go.betters(   data,data1,data2)
   data= csv2data("../../data/auto93.csv")
-  data.rows = sort(data.rows, better) 
-  data1=clone(data, slice(data.rows,1,50))
-  data2=clone(data, slice(data.rows,(#data.rows)-50))
-  map({stats(data1),stats(data2)},chat)
+  data.rows = sort(data.rows) 
+  data1=data:clone(slice(data.rows,1,50))
+  data2=data:clone(slice(data.rows,(#data.rows)-50))
+  map({data1:mid(), data2:mid()},chat)
   return true end
 
 function go.half(   data)
@@ -718,7 +722,7 @@ function go.bins()
   return true end
 
 local _ranked=function(data)
-   for n,row in pairs(sort(data.rows,better)) do row.rank= rnd(100*n/#data.rows,0); end
+   for n,row in pairs(sort(data.rows)) do row.rank= rnd(100*n/#data.rows,0); end
    for _,row in pairs(data.rows) do row.evaled=false end
    shuffle(data.rows)
    return data  end
