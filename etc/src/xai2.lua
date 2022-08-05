@@ -58,10 +58,21 @@ local the= {
 local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 local function rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
----- Types
-local ABOUT,COL,DATA,NOM,RATIO,ROW,XY,
+
+---- Classes
+local function klass(sName,     new,self,t)
+ function new(k,...)
+   self = setmetatable({},k)
+   return setmetatable(k.new(self,...) or self,k) 
+  end ----------------- 
+  t={_is=sName, __tostring=function(x) return cat(x) end}
+  t.__index = t
+  return setmetatable(t,{__call=new}) end
+
+local ABOUT,DATA,NOM= klass"ABOUT", klass"DATA", klass"NOM"
+local RATIO,ROW,XY  = klass"RATIO",klass"ROW",klass"XY"
 ---- learning functions
-     add,add2,adds,around,bestOrRest, bestxy,bestxys,
+local     around,bestOrRest, bestxy,bestxys,
      bins,clone,half,has,
      better, csv2data,dist,div,
      half, is, key,many,mid,norm,
@@ -78,17 +89,6 @@ local XAI= {-- to be completed later
       the=the, rogues=rogues, go=go,
       ABOUT=ABOUT,COL=COL,DATA=DATA,NOM=NOM,RATIO=RATIO,ROW=ROW,XY=XY}
 
-function obj(sName,     new,self,t)
- function new(k,...)
-   self = setmetatable({},k)
-   return setmetatable(k.new(self,...) or self,k) 
-  end ----------------- 
-  t={_is=sName, __tostring=function(x) return cat(x) end}
-  t.__index = t
-  return setmetatable(t,{__call=new}) end
-
-local ABOUT,DATA,NOM=obj"ABOUT", obj"DATA", obj"NOM"
-local RATIO,ROW,XY=obj"RATIO",obj"ROW",obj"XY"
 ---- ---- ---- ---- Types
 -- In this code,  function arguments offer some type hints. 
 -- `xs` denotes a list of type `x` for
@@ -524,14 +524,15 @@ function slice(t, go, stop, inc)
   for j=(go or 1)//1,(stop or #t)//1,(inc or 1)//1 do u[1+#u]=t[j] end
   return u end
 
+---- ---- ---- Sorting
+-- Sorting predictates
+function gt(x) return function(a,b) return a[x] > b[x] end end
+function lt(x) return function(a,b) return a[x] < b[x] end end
+
 -- In-place sort, returns sorted list
 function sort(t,f) if #t==0 then t=values(t) end; table.sort(t,f); return t end
 
--- Sorting predictates
-function lt(x) return function(a,b) return a[x] < b[x] end end
-function gt(x) return function(a,b) return a[x] > b[x] end end
-
--- Return values in a table
+-- Return values in a table 
 function values(t,   u) u={}; for _,v in pairs(t) do u[1+#u]=v end; return u end
 
 ---- ---- ---- Print
