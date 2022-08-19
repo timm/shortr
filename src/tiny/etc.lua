@@ -4,6 +4,9 @@ local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 function l.rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 
+-- Lists ----------------------------------------------------------------
+function l.push(t,x) t[1+#t]=x; return x end
+
 -- Print table ----------------------------------------------------------------
 function l.cat(t,        show,u,pub)
   if type(t)~="table" then return tostring(t) end
@@ -26,11 +29,11 @@ function l.cli(t)
   return t end
 
 -- Define classes --------------------------------------------------------------
-function l.klass(name,     new,self,t)
-  function l.new(k,...)
-    self = setmetatable({},k)
+function l.klass(name)
+  local function new(k,...)
+    local self = setmetatable({},k)
     return setmetatable(k.new(self,...) or self,k) end
-  t={_is = name, __tostring = l.cat}
+  local t={_is = name, __tostring = l.cat}
   t.__index = t
   return setmetatable(t,{__call=new}) end
 
