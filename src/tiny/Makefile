@@ -1,12 +1,9 @@
 R=$(shell git rev-parse --show-toplevel)
 
-want = col/cols col/num col/sample col/sym    \
-			 row/row row/rows \
-			 lib/macros lib/maths lib/strings lib/lists \
-			 lib/settings lib/structs lib/egs eg
+want = etc
 
 all: 
-	@figlet -W -f larry3d tiny.lua>_all.lua; cat tiny.lua>>_all.luat
+	@figlet -W -f larry3d tiny.lua>_all.lua; cat tiny.lua>>_all.lua
 	@$(foreach f,$(want),(figlet -W -f contessa $f>>_all.lua;cat $f.lua>>_all.lua;);)
 	@$(MAKE) ../../docs/_all.pdf
 	@rm _all.lua

@@ -4,10 +4,19 @@ local b4={}; for k,_ in pairs(_ENV) do b4[k]=k end
 function l.rogues()
   for k,v in pairs(_ENV) do if not b4[k] then print("?",k,type(v)) end end end
 
--- Lists ----------------------------------------------------------------
+-- Lists -----------------------------------------------------------------------
+function l.any(t) return t[math.random(#t)] end
+
+function l.copy(t)
+  if type(t) ~= "table" then return t end
+  local u={}; for k,v in pairs(t) do u[k] = l.copy(v) end
+  return setmetatable(u,getmetatable(t))  end
+
+function l.many(t,n,  u)  u={}; for i=1,n do u[1+#u]=l.any(t) end; return u end
+
 function l.push(t,x) t[1+#t]=x; return x end
 
--- Print table ----------------------------------------------------------------
+-- Print table -----------------------------------------------------------------
 function l.cat(t,        show,u,pub)
   if type(t)~="table" then return tostring(t) end
   function show(k,v)
@@ -29,7 +38,7 @@ function l.cli(t)
   return t end
 
 -- Define classes --------------------------------------------------------------
-function l.klass(name)
+function l.obj(name)
   local function new(k,...)
     local self = setmetatable({},k)
     return setmetatable(k.new(self,...) or self,k) end
