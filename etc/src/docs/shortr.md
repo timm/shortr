@@ -3,7 +3,7 @@
 <a href="https://opensource.org/licenses/BSD-2-Clause"><img  src="https://img.shields.io/badge/License-BSD%202--Clause-orange.svg?logo=opensourceinitiative&logoColor=white"></a>
 <a href="https://zenodo.org/badge/latestdoi/206205826"> <img  src="https://zenodo.org/badge/206205826.svg" alt="DOI"></a> 
 
-# [:high_brightness: SHORTr : less (but better) XAI](oo.md)
+# [:high_brightness: SHORTr : less (but bet/ter) XAI](oo.md)
 <img align=right width=600 src="xai4.jpeg"> a
 AI and XAI (explainable artificial intelligence) need not be hard. 
 E.g. here's a few hundred lines of LUA to search N items to find and 

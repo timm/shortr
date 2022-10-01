@@ -366,6 +366,18 @@ function half._split(rows,  rowAbove)
   for n,rowx in pairs(sort(map(rows, project),lt"x")) do
     push(n < #rows/2 and As or Bs, rowx.row) end
   return A,B,As,Bs,c end
+-- **Return true if `row1`'s goals are worse than `row2:`.**
+function ROW:__lt(row2)
+  local row1=self
+  row1.evaled,row2.evaled= true,true
+  local s1,s2,d,n,x,y=0,0,0,0
+  local ys,e = row1._about.y,math.exp(1)
+  for _,col in pairs(ys) do
+    x,y= row1.cells[col.at], row2.cells[col.at]
+    x,y= col:norm(x), col:norm(y)
+    s1 = s1 - e^(col.w * (x-y)/#ys)
+    s2 = s2 - e^(col.w * (y-x)/#ys) end
+  return s2/#ys < s1/#ys end
 
 ---- ---- ---- Discretization
 -- **Divide column values into many bins, then merge unneeded ones**   
